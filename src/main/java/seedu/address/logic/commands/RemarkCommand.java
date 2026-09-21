@@ -13,12 +13,15 @@ public class RemarkCommand extends Command {
     public static final String COMMAND_WORD = "remark";
 
     public static final String MESSAGE_USAGE = COMMAND_WORD
-            + ": Adds a remark to the person identified by the index number used in the displayed person list.\n"
+            + ": Adds a remark to the person identified by the index number used in the displayed person list."
+            + "Existing remark will be overwritten by the input.\n"
             + "Parameters: INDEX (must be a positive integer) " + PREFIX_REMARK + "REMARK\n"
             + "Example: " + COMMAND_WORD + " 2 " + PREFIX_REMARK + "Likes baseball";
 
+    public static final String MESSAGE_NOT_IMPLEMENTED_YET = "Remark command not implemented yet";
+
     @Override
     public CommandResult execute(Model model) throws CommandException {
-        throw new UnsupportedOperationException("RemarkCommand is not implemented yet");
+        throw new CommandException(MESSAGE_NOT_IMPLEMENTED_YET);
     }
 }
