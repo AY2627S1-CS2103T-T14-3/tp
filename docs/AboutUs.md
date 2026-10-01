@@ -42,10 +42,10 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 
 <img src="images/birdsarentreal.png" width="200px">
 
-[[github](http://github.com/johndoe)] [[portfolio](team/johndoe.md)]
+[[github](http://github.com/BirdsArentReal)] [[portfolio](team/johndoe.md)]
 
-- Role: Developer
-- Responsibilities: Data
+* Role: Developer
+* Responsibilities: Logic, Code Quality
 
 ### Jean Doe
 
