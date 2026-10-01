@@ -9,6 +9,15 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 
 ## Project team
 
+### Javier Lim
+
+<img src="images/javierlimzh.png" width="200px">
+
+[[github](https://github.com/JavierLimZH)]
+
+* Role: Developer
+* Responsibilities: Testing and code quality
+
 ### John Doe
 
 <img src="images/johndoe.png" width="200px">
@@ -17,7 +26,7 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 [[github](https://github.com/johndoe)]
 [[portfolio](team/johndoe.md)]
 
-* Role: Project Advisor
+- Role: Project Advisor
 
 ### Jane Doe
 
@@ -26,12 +35,12 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 [[github](http://github.com/johndoe)]
 [[portfolio](team/johndoe.md)]
 
-* Role: Team Lead
-* Responsibilities: UI
+- Role: Team Lead
+- Responsibilities: UI
 
 ### BirdsArentReal
 
-<img src="images/johndoe.png" width="200px">
+<img src="images/birdsarentreal.png" width="200px">
 
 [[github](http://github.com/BirdsArentReal)] [[portfolio](team/johndoe.md)]
 
@@ -45,15 +54,15 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 [[github](http://github.com/johndoe)]
 [[portfolio](team/johndoe.md)]
 
-* Role: Developer
-* Responsibilities: Dev Ops + Threading
+- Role: Developer
+- Responsibilities: Dev Ops + Threading
 
-### James Doe
+### HUANG JUNCHENG
 
-<img src="images/johndoe.png" width="200px">
+<img src="images/hytradebridge.png" width="200px">
 
-[[github](http://github.com/johndoe)]
+[[github](http://github.com/hytradebridge)]
 [[portfolio](team/johndoe.md)]
 
-* Role: Developer
-* Responsibilities: UI
+- Role: Developer
+- Responsibilities: UI
