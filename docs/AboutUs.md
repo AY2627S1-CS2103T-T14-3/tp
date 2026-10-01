@@ -57,6 +57,16 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 - Role: Developer
 - Responsibilities: Dev Ops + Threading
 
+### Joon Zen
+
+<img src="images/meowymacmeowza.png" width="200px">
+
+[[github](http://github.com/meowymacmeowza)]
+[[portfolio](team/johndoe.md)]
+
+* Role: Developer
+* Responsibilities: Coding
+
 ### HUANG JUNCHENG
 
 <img src="images/hytradebridge.png" width="200px">
