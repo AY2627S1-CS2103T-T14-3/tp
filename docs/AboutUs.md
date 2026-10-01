@@ -9,6 +9,15 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 
 ## Project team
 
+### Javier Lim
+
+<img src="images/javierlimzh.png" width="200px">
+
+[[github](https://github.com/JavierLimZH)]
+
+* Role: Developer
+* Responsibilities: Testing and code quality
+
 ### John Doe
 
 <img src="images/johndoe.png" width="200px">
