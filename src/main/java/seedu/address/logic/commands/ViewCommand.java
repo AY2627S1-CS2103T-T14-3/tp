@@ -44,6 +44,7 @@ public class ViewCommand extends Command {
         if (lastShownList.isEmpty()) {
             throw new CommandException(MESSAGE_EMPTY_LIST);
         }
+        assert targetIndex.getZeroBased() >= 0;
         if (targetIndex.getZeroBased() >= lastShownList.size()) {
             throw new CommandException(String.format(MESSAGE_INVALID_INDEX, lastShownList.size()));
         }
