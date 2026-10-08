@@ -55,6 +55,11 @@ public class ArgumentMultimap {
         return new ArrayList<>(argMultimap.get(prefix));
     }
 
+    /** Returns true if {@code prefix} was present, including when it was a flag. */
+    public boolean contains(Prefix prefix) {
+        return argMultimap.containsKey(prefix);
+    }
+
     /**
      * Returns the preamble (text before the first valid prefix). Trims any leading/trailing spaces.
      */
