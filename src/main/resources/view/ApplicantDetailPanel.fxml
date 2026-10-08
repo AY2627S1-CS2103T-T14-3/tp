@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="detail-scroll"
+            xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+  <content>
+    <VBox spacing="12" styleClass="panel,detail-panel">
+      <Label text="Applicant details" styleClass="section-title" />
+      <HBox alignment="CENTER_LEFT" spacing="14">
+        <Label fx:id="initials" text="?" styleClass="avatar" />
+        <VBox spacing="4" HBox.hgrow="ALWAYS">
+          <Label fx:id="applicantName" styleClass="applicant-name" wrapText="true" maxWidth="Infinity" />
+          <Label fx:id="selectionHint" styleClass="muted-label" wrapText="true" />
+        </VBox>
+      </HBox>
+      <Separator />
+      <VBox spacing="12" fx:id="contactDetails">
+        <HBox spacing="24">
+          <VBox spacing="4" HBox.hgrow="ALWAYS">
+            <Label text="EMAIL" styleClass="field-heading" />
+            <Label fx:id="email" styleClass="detail-value" wrapText="true" />
+          </VBox>
+          <VBox spacing="4" minWidth="120">
+            <Label text="PHONE" styleClass="field-heading" />
+            <Label fx:id="phone" styleClass="detail-value" wrapText="true" />
+          </VBox>
+        </HBox>
+        <VBox spacing="4">
+          <Label text="ADDRESS" styleClass="field-heading" />
+          <Label fx:id="address" styleClass="detail-value" wrapText="true" />
+        </VBox>
+        <VBox spacing="6">
+          <Label text="TAGS" styleClass="field-heading" />
+          <FlowPane fx:id="tags" hgap="6" vgap="6" styleClass="tags" />
+        </VBox>
+      </VBox>
+      <Separator />
+      <VBox spacing="8" styleClass="application-section">
+        <Label text="Application" styleClass="section-title" />
+        <Label fx:id="applicationStatus" text="No application recorded." styleClass="muted-label" wrapText="true" />
+      </VBox>
+    </VBox>
+  </content>
+</ScrollPane>
