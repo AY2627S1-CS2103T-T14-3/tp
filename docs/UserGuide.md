@@ -152,6 +152,21 @@ Exits the program.
 
 Format: `exit`
 
+### Viewing an applicant: `view`
+
+Shows the selected applicant's name and email in the command result display.
+
+Format: `view INDEX`
+
+* `INDEX` is the positive integer shown beside an applicant in the current list.
+* When the list is filtered, the index refers to that filtered list.
+* The command keeps the applicant list and its filter unchanged.
+* Missing, additional, or invalid arguments produce a format error with a usage hint.
+  An index beyond the displayed list produces an error showing the valid range.
+  An empty list produces a message that there are no applicants to view.
+
+Example: `view 1` shows the name and email of the first applicant in the displayed list.
+
 ### Saving the data
 
 AddressBook automatically saves data after every command. You do not need to save manually.
@@ -195,4 +210,5 @@ Action | Format, Examples
 **Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]…​`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
 **List** | `list`
+**View** | `view INDEX`<br> e.g., `view 1`
 **Help** | `help`
