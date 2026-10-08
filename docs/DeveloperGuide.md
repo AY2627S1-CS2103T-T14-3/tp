@@ -255,35 +255,61 @@ _{Explain here how the data archiving feature will be implemented}_
 
 --------------------------------------------------------------------------------------------------------------------
 
+
 ## **Appendix: Requirements**
 
-### Product scope
+### Product Scope
+**Target User Profile**
 
-**Target user profile**:
+Recruiters
+- managing application pipelines for 100s of students and multiple job listings
+- working under HR
+- who are actively looking for a good management app
+- who have a relatively streamlined hiring process
+- who are also directly in charge of contacting the candidates
+- who are working in a multi-role environment (e.g. there are also interviewers who interview the candidates)
+- who prefer desktop apps over other types of applications
+- who type fast
+- who prefers typing to mouse interactions
+- who is comfortable using CLI apps.
 
-* has a need to manage a significant number of contacts
-* prefers desktop apps over other types of applications
-* can type fast
-* prefers typing to mouse interactions
-* is reasonably comfortable using CLI apps
-
-**Value proposition**: Manage contacts faster than with a typical mouse-driven GUI application.
+**Value Proposition:**
+The application will manage students applying to
+a role in a company.
+Recruiters can use the application to
+keep track of student applications for job roles,
+as well as to look up the list of
+employees to contact if there are changes to
+a student’s application status.
 
 
 ### User stories
 
 Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unlikely to have) - `*`
 
-| Priority | As a …​                                    | I want to …​                     | So that I can…​                                                        |
-| -------- | ------------------------------------------ | ------------------------------ | ---------------------------------------------------------------------- |
-| `* * *`  | new user                                   | see usage instructions         | refer to instructions when I forget how to use the App                 |
-| `* * *`  | user                                       | add a new person               |                                                                        |
-| `* * *`  | user                                       | delete a person                | remove entries that I no longer need                                   |
-| `* * *`  | user                                       | find a person by name          | locate details of persons without having to go through the entire list |
-| `* *`    | user                                       | hide private contact details   | minimize chance of someone else seeing them by accident                |
-| `*`      | user with many persons in the address book | sort persons by name           | locate a person easily                                                 |
+| Priority | As a …​                                | I want to …​                                                         | So that I can…​                                             |
+| -------- |----------------------------------------|----------------------------------------------------------------------|-------------------------------------------------------------|
+| `* * *`  | recruiter                              | add an applicant                                                     | start tracking applicants                                   |
+| `* * *`  | recruiter                              | delete an applicant                                                  | clear my contacts after finishing an application            |
+| `* * *`  | recruiter                              | view all applicants as individual entries                            | get a bird’s-eye view of the current information to process |
+| `* * *`  | recruiter                              | modify an application status (pending/accept/reject)                 | keep track of which state each application is in            |
+| `* *`    | recruiter                              | get an accept/reject email template for an application               | prepare my entire email in one application                  |
+| `* *`    | recruiter                              | edit an applicant’s details                                          | correct wrong or missing information                        |
+| `* *`    | recruiter                              | add a job role                                                       | start tracking applicants                                   |
+| `* *`    | recruiter                              | delete a job role                                                    | clear my contacts after finishing an application            |
+| `* *`    | recruiter                              | view all job roles as individual entries                             | get a bird’s-eye view of the current information to process |
+| `* *`    | beginner user                          | view the list of commands                                            | understand what the app can do                              |
+| `* *`    | HR admin                               | filter applications by resume                                        | find relevant applicants                                    |
+| `* *`    | HR admin                               | filter people by roles                                               | view specific people such as interviewers and applicants    |
+| `*`      | recruiter                              | edit a job role’s details (status, title, description, etc.)         | correct wrong or missing information                        |
+| `*`      | recruiter                              | match job roles to applicants                                        | avoid manually searching for a matching applicant           |
+| `*`      | new user who is migrating to LinkedOut | import a list of applicants and applications from an existing system | migrate seamlessly with little issues                       |
+| `*`      | new user who is migrating to LinkedOut | import a list of demanded roles                                      | save time entering them manually                            |
+| `*`      | experienced user                       | use auto-complete commands                                           | do my work faster                                           |
+| `*`      | beginner user                          | go through an onboarding process                                     | learn how to use the application                            |
+| `*`      | recruiter                              | modify an accept/reject email template                               | configure the email appropriately                           |
+| `*`      | recruiter                              | draft multiple emails through the application at once                | easily mass-send accept/reject emails                       |
 
-*{More to be added}*
 
 ### Use cases
 
