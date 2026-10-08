@@ -380,3 +380,24 @@ testers are expected to do more *exploratory* testing.
    1. _{Explain how to simulate missing or corrupted data files and state the expected behavior.}_
 
 1. _{ more test cases …​ }_
+
+--------------------------------------------------------------------------------------------------------------------
+
+## **Appendix: Requirements**
+
+### Product Scope
+**Target User Profile**
+
+Recruiters
+- managing application pipelines for 100s of students and multiple job listings 
+- working under HR
+- who are actively looking for a good management app
+- who have a relatively streamlined hiring process
+- who are also directly in charge of contacting the candidates
+- who are working in a multi-role environment (e.g. there are also interviewers who interview the candidates)
+- who prefer desktop apps over other types of applications
+- who type fast
+- who prefers typing to mouse interactions
+- who is comfortable using CLI apps.
+
+--------------------------------------------------------------------------------------------------------------------
