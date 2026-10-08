@@ -317,10 +317,11 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 ### Non-Functional Requirements
 
 1.  Should work on any _mainstream OS_ as long as it has Java `25` or above installed.
-2.  Should be able to hold up to 1000 persons without noticeable sluggishness in performance for typical usage.
+2.  Should be able to hold up to 1000 applicants and applications without noticeable sluggishness in performance for typical usage.
 3.  A user with above average typing speed for regular English text (i.e. not code, not system admin commands) should be able to accomplish most of the tasks faster using commands than using the mouse.
-
-*{More to be added}*
+4.  A new user should be able to add a new applicant or application immediately upon app launch.
+5.  Every command should finish within 2s (for up to 1000 applicants/applications).
+6.  Should not use more than 2 GB of RAM.
 
 ### Glossary
 
