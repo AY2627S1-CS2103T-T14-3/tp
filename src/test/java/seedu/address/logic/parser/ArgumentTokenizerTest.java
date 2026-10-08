@@ -3,9 +3,13 @@ package seedu.address.logic.parser;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static seedu.address.logic.parser.ArgumentTokenizer.MESSAGE_INVALID_COMMAND_OPTIONS;
 
 import org.junit.jupiter.api.Test;
+
+import seedu.address.logic.parser.exceptions.ParseException;
 
 public class ArgumentTokenizerTest {
 
@@ -13,6 +17,9 @@ public class ArgumentTokenizerTest {
     private final Prefix pSlash = new Prefix("p/");
     private final Prefix dashT = new Prefix("-t");
     private final Prefix hatQ = new Prefix("^Q");
+    private final Prefix nameOption = new Prefix("name");
+    private final Prefix emailOption = new Prefix("email");
+    private final Prefix applicantFlag = new Prefix("applicant");
 
     @Test
     public void tokenize_emptyArgsString_noValues() {
@@ -145,6 +152,113 @@ public class ArgumentTokenizerTest {
 
         assertNotEquals(aaa, "aaa");
         assertNotEquals(aaa, new Prefix("aab"));
+    }
+
+    @Test
+    public void tokenizeOptions_shortAndLongAliases_valuesCanonicalized() throws ParseException {
+        ArgumentMultimap shortOptions = ArgumentTokenizer.tokenizeOptions(
+                " -n John Doe -e john@example.com",
+                Option.required(nameOption, "-n", "-name"),
+                Option.required(emailOption, "-e", "-email"));
+        ArgumentMultimap longOptions = ArgumentTokenizer.tokenizeOptions(
+                " -name John Doe -email john@example.com",
+                Option.required(nameOption, "-n", "-name"),
+                Option.required(emailOption, "-e", "-email"));
+
+        assertArgumentPresent(shortOptions, nameOption, "John Doe");
+        assertArgumentPresent(shortOptions, emailOption, "john@example.com");
+        assertArgumentPresent(longOptions, nameOption, "John Doe");
+        assertArgumentPresent(longOptions, emailOption, "john@example.com");
+        assertArgumentAbsent(longOptions, new Prefix("-name"));
+    }
+
+    @Test
+    public void tokenizeOptions_optionalOptionMayBeAbsent() throws ParseException {
+        ArgumentMultimap options = ArgumentTokenizer.tokenizeOptions(
+                "-n John Doe",
+                Option.required(nameOption, "-n", "-name"),
+                Option.optional(emailOption, "-e", "-email"));
+
+        assertArgumentPresent(options, nameOption, "John Doe");
+        assertArgumentAbsent(options, emailOption);
+    }
+
+    @Test
+    public void tokenizeOptions_flagOption_presentWithoutValue() throws ParseException {
+        ArgumentMultimap options = ArgumentTokenizer.tokenizeOptions(
+                "-applicant -n John Doe",
+                Option.flag(applicantFlag, "-applicant"),
+                Option.required(nameOption, "-n", "-name"));
+
+        assertTrue(options.contains(applicantFlag));
+        assertEquals("", options.getValue(applicantFlag).orElseThrow());
+    }
+
+    @Test
+    public void tokenizeOptions_duplicateMixedAliases_throwsParseException() {
+        assertMalformedOptions("-n John -name Jane",
+                Option.required(nameOption, "-n", "-name"));
+    }
+
+    @Test
+    public void tokenizeOptions_missingValue_throwsParseException() {
+        assertMalformedOptions("-n -e john@example.com",
+                Option.required(nameOption, "-n", "-name"),
+                Option.required(emailOption, "-e", "-email"));
+        assertMalformedOptions("-n John -e",
+                Option.required(nameOption, "-n", "-name"),
+                Option.required(emailOption, "-e", "-email"));
+    }
+
+    @Test
+    public void tokenizeOptions_unknownOption_throwsParseException() {
+        assertMalformedOptions("-n John Doe -unknown value",
+                Option.required(nameOption, "-n", "-name"));
+    }
+
+    @Test
+    public void tokenizeOptions_unexpectedPositionalText_throwsParseException() {
+        assertMalformedOptions("unexpected -n John Doe",
+                Option.required(nameOption, "-n", "-name"));
+        assertMalformedOptions("-applicant unexpected",
+                Option.flag(applicantFlag, "-applicant"));
+    }
+
+    @Test
+    public void tokenizeOptions_missingRequiredOption_throwsParseException() {
+        assertMalformedOptions("-e john@example.com",
+                Option.required(nameOption, "-n", "-name"),
+                Option.optional(emailOption, "-e", "-email"));
+    }
+
+    @Test
+    public void tokenizeOptions_optionLikeTextInsideValue_throwsParseException() {
+        assertMalformedOptions("-n John -nickname Doe",
+                Option.required(nameOption, "-n", "-name"));
+    }
+
+    @Test
+    public void option_invalidOrDuplicateAliases_throwsIllegalArgumentException() {
+        assertThrows(IllegalArgumentException.class, () -> Option.required(nameOption));
+        assertThrows(IllegalArgumentException.class, () -> Option.required(nameOption, "name"));
+        assertThrows(IllegalArgumentException.class, () -> Option.required(nameOption, "-n", "-n"));
+    }
+
+    @Test
+    public void tokenizeOptions_conflictingConfiguration_throwsIllegalArgumentException() {
+        Option name = Option.required(nameOption, "-n", "-name");
+        Option emailWithConflictingAlias = Option.required(emailOption, "-e", "-name");
+
+        assertThrows(IllegalArgumentException.class, () ->
+                ArgumentTokenizer.tokenizeOptions("", name, emailWithConflictingAlias));
+        assertThrows(IllegalArgumentException.class, () ->
+                ArgumentTokenizer.tokenizeOptions("", name, name));
+    }
+
+    private void assertMalformedOptions(String argsString, Option... options) {
+        ParseException exception = assertThrows(ParseException.class, () ->
+                ArgumentTokenizer.tokenizeOptions(argsString, options));
+        assertEquals(MESSAGE_INVALID_COMMAND_OPTIONS, exception.getMessage());
     }
 
 }
