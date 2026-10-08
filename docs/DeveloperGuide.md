@@ -326,7 +326,11 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 ### Glossary
 
 * **Mainstream OS**: Windows, Linux, Unix, or macOS
-* **Private contact detail**: A contact detail that is not meant to be shared with others
+* **Applicant**: A person registered in LinkedOut with a name and email address, whose job application can be tracked.
+* **Application**: A record of an applicant's application for a job, containing a job description and an application status. An applicant can have at most one application.
+* **Job description**: The text describing the job an applicant is applying for, stored as part of their application.
+* **Application status**: The recorded outcome of an application: `accept` (accepted), `reject` (rejected), or `pending` (awaiting a decision). These values are case-sensitive.
+* **Applicant index**: The number used in commands to identify an applicant in the applicant list, starting from 1.
 
 --------------------------------------------------------------------------------------------------------------------
 
