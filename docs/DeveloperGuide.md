@@ -255,19 +255,32 @@ _{Explain here how the data archiving feature will be implemented}_
 
 --------------------------------------------------------------------------------------------------------------------
 
+
 ## **Appendix: Requirements**
 
-### Product scope
+### Product Scope
+**Target User Profile**
 
-**Target user profile**:
+Recruiters
+- managing application pipelines for 100s of students and multiple job listings
+- working under HR
+- who are actively looking for a good management app
+- who have a relatively streamlined hiring process
+- who are also directly in charge of contacting the candidates
+- who are working in a multi-role environment (e.g. there are also interviewers who interview the candidates)
+- who prefer desktop apps over other types of applications
+- who type fast
+- who prefers typing to mouse interactions
+- who is comfortable using CLI apps.
 
-* has a need to manage a significant number of contacts
-* prefers desktop apps over other types of applications
-* can type fast
-* prefers typing to mouse interactions
-* is reasonably comfortable using CLI apps
-
-**Value proposition**: Manage contacts faster than with a typical mouse-driven GUI application.
+**Value Proposition:**
+The application will manage students applying to
+a role in a company.
+Recruiters can use the application to
+keep track of student applications for job roles,
+as well as to look up the list of
+employees to contact if there are changes to
+a student’s application status.
 
 
 ### User stories
@@ -380,33 +393,3 @@ testers are expected to do more *exploratory* testing.
    1. _{Explain how to simulate missing or corrupted data files and state the expected behavior.}_
 
 1. _{ more test cases …​ }_
-
---------------------------------------------------------------------------------------------------------------------
-
-## **Appendix: Requirements**
-
-### Product Scope
-**Target User Profile**
-
-Recruiters
-- managing application pipelines for 100s of students and multiple job listings 
-- working under HR
-- who are actively looking for a good management app
-- who have a relatively streamlined hiring process
-- who are also directly in charge of contacting the candidates
-- who are working in a multi-role environment (e.g. there are also interviewers who interview the candidates)
-- who prefer desktop apps over other types of applications
-- who type fast
-- who prefers typing to mouse interactions
-- who is comfortable using CLI apps.
-
-**Value Proposition:** 
-The application will manage students applying to 
-a role in a company. 
-Recruiters can use the application to 
-keep track of student applications for job roles, 
-as well as to look up the list of 
-employees to contact if there are changes to 
-a student’s application status.
-
---------------------------------------------------------------------------------------------------------------------
