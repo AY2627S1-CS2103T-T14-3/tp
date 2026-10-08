@@ -2,8 +2,11 @@ package seedu.address.ui;
 
 import java.util.logging.Logger;
 
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.Region;
@@ -27,6 +30,18 @@ public class PersonListPanel extends UiPart<Region> {
         super(FXML);
         personListView.setItems(personList);
         personListView.setCellFactory(listView -> new PersonListViewCell());
+        personListView.setPlaceholder(new Label("No applicants to display."));
+        personList.addListener((ListChangeListener<Person>) change -> {
+            if (personListView.getSelectionModel().getSelectedItem() == null && !personList.isEmpty()) {
+                personListView.getSelectionModel().selectFirst();
+            }
+        });
+        personListView.getSelectionModel().selectFirst();
+    }
+
+    /** The applicant currently selected by mouse or keyboard. */
+    public ReadOnlyObjectProperty<Person> selectedPersonProperty() {
+        return personListView.getSelectionModel().selectedItemProperty();
     }
 
     /**

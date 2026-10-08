@@ -3,8 +3,10 @@ package seedu.address.ui;
 import java.nio.file.Path;
 import java.util.logging.Logger;
 
+import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.input.KeyCombination;
@@ -36,6 +38,12 @@ public class MainWindow extends UiPart<Stage> {
     private PersonListPanel personListPanel;
     private ResultDisplay resultDisplay;
     private HelpWindow helpWindow;
+
+    @FXML
+    private StackPane applicantDetailPlaceholder;
+
+    @FXML
+    private Label applicantCount;
 
     @FXML
     private StackPane commandBoxPlaceholder;
@@ -117,8 +125,19 @@ public class MainWindow extends UiPart<Stage> {
         personListPanel = new PersonListPanel(logic.getFilteredPersonList());
         personListPanelPlaceholder.getChildren().add(personListPanel.getRoot());
 
+        ApplicantDetailPanel detailPanel = new ApplicantDetailPanel();
+        applicantDetailPlaceholder.getChildren().add(detailPanel.getRoot());
+        personListPanel.selectedPersonProperty().addListener((observable, previous, selected) ->
+                detailPanel.showApplicant(selected));
+        detailPanel.showApplicant(personListPanel.selectedPersonProperty().get());
+        applicantCount.textProperty().bind(Bindings.createStringBinding(() -> {
+            int count = logic.getFilteredPersonList().size();
+            return count + (count == 1 ? " applicant" : " applicants");
+        }, logic.getFilteredPersonList()));
+
         resultDisplay = new ResultDisplay();
         resultDisplayPlaceholder.getChildren().add(resultDisplay.getRoot());
+        resultDisplay.setFeedbackToUser("Ready. Type a command to get started, or use help for available commands.");
 
         StatusBarFooter statusBarFooter = new StatusBarFooter(dataFilePath);
         statusbarPlaceholder.getChildren().add(statusBarFooter.getRoot());
@@ -131,8 +150,8 @@ public class MainWindow extends UiPart<Stage> {
      * Sets the default size based on {@code guiSettings}.
      */
     private void setWindowDefaultSize(GuiSettings guiSettings) {
-        primaryStage.setHeight(guiSettings.getWindowHeight());
-        primaryStage.setWidth(guiSettings.getWindowWidth());
+        primaryStage.setHeight(Math.max(primaryStage.getMinHeight(), guiSettings.getWindowHeight()));
+        primaryStage.setWidth(Math.max(primaryStage.getMinWidth(), guiSettings.getWindowWidth()));
         if (guiSettings.getWindowCoordinates() != null) {
             primaryStage.setX(guiSettings.getWindowCoordinates().getX());
             primaryStage.setY(guiSettings.getWindowCoordinates().getY());
