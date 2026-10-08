@@ -400,4 +400,13 @@ Recruiters
 - who prefers typing to mouse interactions
 - who is comfortable using CLI apps.
 
+**Value Proposition:** 
+The application will manage students applying to 
+a role in a company. 
+Recruiters can use the application to 
+keep track of student applications for job roles, 
+as well as to look up the list of 
+employees to contact if there are changes to 
+a student’s application status.
+
 --------------------------------------------------------------------------------------------------------------------
