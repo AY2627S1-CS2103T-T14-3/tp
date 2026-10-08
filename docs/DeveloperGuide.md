@@ -289,14 +289,27 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 | Priority | As a …​                                    | I want to …​                     | So that I can…​                                                        |
 | -------- | ------------------------------------------ | ------------------------------ | ---------------------------------------------------------------------- |
-| `* * *`  | new user                                   | see usage instructions         | refer to instructions when I forget how to use the App                 |
-| `* * *`  | user                                       | add a new person               |                                                                        |
-| `* * *`  | user                                       | delete a person                | remove entries that I no longer need                                   |
-| `* * *`  | user                                       | find a person by name          | locate details of persons without having to go through the entire list |
-| `* *`    | user                                       | hide private contact details   | minimize chance of someone else seeing them by accident                |
-| `*`      | user with many persons in the address book | sort persons by name           | locate a person easily                                                 |
+| `* * *`  | recruiter                                  | add an applicant               | start tracking applicants                                              |
+| `* * *`  | recruiter                                  | delete an applicant            | clear my contacts after finishing an application                       |
+| `* * *`  | recruiter                                  | view all applicants as individual entries | get a bird’s-eye view of the current information to process       |
+| `* * *`  | recruiter                                  | modify an application status   | accept or reject an application                                        |
+| `* *`    | recruiter                                  | modify an accept/reject email template | prepare my entire email in one application                     |
+| `* *`    | recruiter                                  | edit an applicant’s details    | correct wrong or missing information                                   |
+| `* *`    | recruiter                                  | add a job role                 | start tracking applicants                                              |
+| `* *`    | recruiter                                  | delete a job role              | clear my contacts after finishing an application                       |
+| `* *`    | recruiter                                  | view all job roles as individual entries | get a bird’s-eye view of the current information to process       |
+| `* *`    | beginner user                              | view the list of commands      | understand what the app can do                                         |
+| `* *`    | HR admin                                   | filter applications by resume | find relevant applicants                                               |
+| `* *`    | HR admin                                   | filter people by roles         | view specific people such as interviewers and applicants               |
+| `*`      | recruiter                                  | edit a job role’s details      | correct wrong or missing information                                   |
+| `*`      | recruiter                                  | match job roles to applicants  | avoid manually searching for a matching applicant                      |
+| `*`      | recruiter                                  | import a list of applicants and applications from an existing system | migrate seamlessly with little issues |
+| `*`      | recruiter                                  | import a list of demanded roles | save time entering them manually                                      |
+| `*`      | recruiter                                  | use auto-complete commands     | do my work faster                                                      |
+| `*`      | beginner user                              | go through an onboarding process | learn how to use the application                                    |
+| `*`      | recruiter                                  | modify an email template for an accept/reject email | configure the email appropriately                     |
+| `*`      | recruiter                                  | send multiple emails through the application at once | easily mass-send accept/reject emails                  |
 
-*{More to be added}*
 
 ### Use cases
 
