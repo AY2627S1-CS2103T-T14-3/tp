@@ -18,31 +18,11 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 * Role: Developer
 * Responsibilities: Testing and code quality
 
-### John Doe
-
-<img src="images/johndoe.png" width="200px">
-
-[[homepage](http://www.comp.nus.edu.sg/~damithch)]
-[[github](https://github.com/johndoe)]
-[[portfolio](team/johndoe.md)]
-
-- Role: Project Advisor
-
-### Jane Doe
-
-<img src="images/johndoe.png" width="200px">
-
-[[github](http://github.com/johndoe)]
-[[portfolio](team/johndoe.md)]
-
-- Role: Team Lead
-- Responsibilities: UI
-
 ### BirdsArentReal
 
 <img src="images/birdsarentreal.png" width="200px">
 
-[[github](http://github.com/BirdsArentReal)] [[portfolio](team/johndoe.md)]
+[[github](http://github.com/BirdsArentReal)]
 
 * Role: Developer
 * Responsibilities: Logic, Code Quality
@@ -61,7 +41,6 @@ You can reach us at the email `seer[at]comp.nus.edu.sg`
 <img src="images/meowymacmeowza.png" width="200px">
 
 [[github](http://github.com/meowymacmeowza)]
-[[portfolio](team/johndoe.md)]
 
 * Role: Developer
 * Responsibilities: Coding
