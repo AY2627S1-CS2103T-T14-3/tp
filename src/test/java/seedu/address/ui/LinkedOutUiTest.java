@@ -51,6 +51,14 @@ public class LinkedOutUiTest {
                 assertEquals("LinkedOut", window.getRoot().getTitle());
                 ListView<?> applicants = (ListView<?>) window.getRoot().getScene().lookup("#personListView");
                 assertEquals("Alice Pauline", label(window, "applicantName").getText());
+                command(window, "remark 1 r/Likes baseball");
+                Person remarked = (Person) applicants.getItems().get(0);
+                PersonCard card = new PersonCard(remarked, 1);
+                assertEquals("Likes baseball", ((Label) card.getRoot().lookup("#remark")).getText());
+                command(window, "remark 1 r/");
+                Person cleared = (Person) applicants.getItems().get(0);
+                PersonCard clearedCard = new PersonCard(cleared, 1);
+                assertEquals("", ((Label) clearedCard.getRoot().lookup("#remark")).getText());
                 applicants.getSelectionModel().select(1);
                 assertEquals("Benson Meier", label(window, "applicantName").getText());
 

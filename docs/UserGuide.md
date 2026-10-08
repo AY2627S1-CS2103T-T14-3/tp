@@ -126,6 +126,16 @@ Examples:
 * `find alex david` returns `Alex Yeoh`, `David Li`<br>
   ![result for 'find alex david'](images/findAlexDavidResult.png)
 
+### Adding or clearing a remark: `remark`
+
+Format: `remark INDEX r/[REMARK]`
+
+Adds or replaces the remark for the person at the given positive index in the displayed list.
+Use `remark INDEX r/` to clear a remark. Following the AB3 tutorial, omitting `r/` also clears it.
+Remarks are displayed on the person card and saved with the address book.
+
+Example: `remark 2 r/Likes baseball`
+
 ### Deleting a person: `delete`
 
 Deletes the specified person from the address book.

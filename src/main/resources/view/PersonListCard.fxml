@@ -11,5 +11,6 @@
     <Label fx:id="name" styleClass="list-name" maxWidth="Infinity" />
     <Label fx:id="email" styleClass="muted-label" maxWidth="Infinity" />
     <Label fx:id="phone" styleClass="muted-label" maxWidth="Infinity" />
+    <Label fx:id="remark" styleClass="muted-label" maxWidth="Infinity" wrapText="true" />
   </VBox>
 </HBox>

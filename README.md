@@ -36,6 +36,8 @@ The guides are being adapted alongside the application and currently describe th
 
 ## Acknowledgements
 
+* The remark command follows the [SE-EDU AB3 Adding a Command tutorial](https://se-education.org/guides/tutorials/ab3AddRemark.html).
+
 LinkedOut uses [JavaFX](https://openjfx.io/) for the interface, [Jackson](https://github.com/FasterXML/jackson) for JSON storage, and [JUnit 5](https://github.com/junit-team/junit5) for testing.
 
 This project is available under the [MIT License](LICENSE).
