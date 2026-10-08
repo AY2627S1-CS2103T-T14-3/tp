@@ -287,30 +287,138 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 ### Use cases
 
-(For all use cases below, the **System** is the `AddressBook` and the **Actor** is the `user`, unless specified otherwise)
+**System:** LinkedOut
 
-**Use case: Delete a person**
+**Use case:** UC01 - Add an applicant and their application
+
+**Actor:** User
 
 **MSS**
 
-1.  User requests to list persons
-2.  AddressBook shows a list of persons
-3.  User requests to delete a specific person in the list
-4.  AddressBook deletes the person
+1.  User requests to add an applicant with their name and email.
+2.  LinkedOut adds the applicant and displays the updated applicant list.
+3.  User requests to add an application to the applicant, providing the job description and optionally the application status.
+4.  LinkedOut adds the application and displays the applicant's updated details.
 
     Use case ends.
 
 **Extensions**
 
-* 2a. The list is empty.
+* 1a. The applicant's name or email is invalid or missing.
 
-  Use case ends.
+  * 1a1. LinkedOut shows an error message.
 
-* 3a. The given index is invalid.
+    Use case resumes at step 1.
 
-    * 3a1. AddressBook shows an error message.
+* 1b. Another applicant has the same name or email.
 
-      Use case resumes at step 2.
+  * 1b1. LinkedOut shows an error message.
+
+    Use case resumes at step 1.
+
+* 1c. LinkedOut is unable to complete the request.
+
+  * 1c1. LinkedOut shows an error message.
+
+    Use case ends.
+
+* 3a. The specified applicant does not exist.
+
+  * 3a1. LinkedOut shows an error message.
+
+    Use case resumes at step 3.
+
+* 3b. The applicant already has an application.
+
+  * 3b1. LinkedOut shows an error message.
+
+    Use case resumes at step 3.
+
+* 3c. The application details are invalid or missing.
+
+  * 3c1. LinkedOut shows an error message.
+
+    Use case resumes at step 3.
+
+* 3d. LinkedOut is unable to complete the request.
+
+  * 3d1. LinkedOut shows an error message.
+
+    Use case ends.
+
+**System:** LinkedOut
+
+**Use case:** UC02 - Review and update an application
+
+**Actor:** User
+
+**MSS**
+
+1.  User requests to view a specific applicant.
+2.  LinkedOut displays the applicant's details and application.
+3.  User requests to update the application's status.
+4.  LinkedOut updates the status and displays the applicant's updated details.
+
+    Use case ends.
+
+**Extensions**
+
+* 1a. The specified applicant does not exist.
+
+  * 1a1. LinkedOut shows an error message.
+
+    Use case resumes at step 1.
+
+* 1b. The applicant does not have an application.
+
+  * 1b1. LinkedOut displays the applicant's details without an application.
+
+    Use case ends.
+
+* 3a. The requested status is invalid.
+
+  * 3a1. LinkedOut shows an error message.
+
+    Use case resumes at step 3.
+
+* 3b. The application already has the requested status.
+
+  * 3b1. LinkedOut informs the user that no changes were made.
+
+    Use case ends.
+
+* 3c. LinkedOut is unable to complete the request.
+
+  * 3c1. LinkedOut shows an error message.
+
+    Use case ends.
+
+**System:** LinkedOut
+
+**Use case:** UC03 - Delete an applicant
+
+**Actor:** User
+
+**MSS**
+
+1.  User requests to delete a specific applicant.
+2.  LinkedOut deletes the applicant and their application, if one exists, and displays the updated applicant list.
+
+    Use case ends.
+
+**Extensions**
+
+* 1a. The specified applicant does not exist.
+
+  * 1a1. LinkedOut shows an error message.
+
+    Use case resumes at step 1.
+
+* 1b. LinkedOut is unable to complete the request.
+
+  * 1b1. LinkedOut shows an error message.
+
+    Use case ends.
 
 *{More to be added}*
 
