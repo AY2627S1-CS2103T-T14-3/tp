@@ -7,6 +7,8 @@ import static java.util.Objects.requireNonNull;
  * Guarantees: immutable; is always valid
  */
 public class Remark {
+    public static final String VALIDATION_REGEX = "\\p{Alnum}+";
+
     public final String value;
 
     public Remark(String remark) {
@@ -24,6 +26,10 @@ public class Remark {
         return other == this // short circuit if same object
                 || (other instanceof Remark // instanceof handles nulls
                 && value.equals(((Remark) other).value)); // state check
+    }
+
+    public static boolean isValidRemark(String test) {
+        return test.matches(VALIDATION_REGEX);
     }
 
     @Override
