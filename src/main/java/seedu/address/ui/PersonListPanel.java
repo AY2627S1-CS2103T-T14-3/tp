@@ -19,6 +19,7 @@ import seedu.address.model.person.Person;
 public class PersonListPanel extends UiPart<Region> {
     private static final String FXML = "PersonListPanel.fxml";
     private final Logger logger = LogsCenter.getLogger(PersonListPanel.class);
+    private int lastSelectedIndex = -1;
 
     @FXML
     private ListView<Person> personListView;
@@ -31,12 +32,61 @@ public class PersonListPanel extends UiPart<Region> {
         personListView.setItems(personList);
         personListView.setCellFactory(listView -> new PersonListViewCell());
         personListView.setPlaceholder(new Label("No applicants to display."));
-        personList.addListener((ListChangeListener<Person>) change -> {
-            if (personListView.getSelectionModel().getSelectedItem() == null && !personList.isEmpty()) {
-                personListView.getSelectionModel().selectFirst();
-            }
-        });
+
+        personListView.getSelectionModel().selectedIndexProperty()
+                .addListener((observable, previous, current) ->
+                        updateLastSelectedIndex(current.intValue()));
+
+        personList.addListener((ListChangeListener<Person>) change ->
+                handlePersonListChange(change, personList));
+
         personListView.getSelectionModel().selectFirst();
+    }
+
+    private void updateLastSelectedIndex(int selectedIndex) {
+        if (isValidSelectedIndex(selectedIndex)) {
+            lastSelectedIndex = selectedIndex;
+        }
+    }
+
+    private boolean isValidSelectedIndex(int selectedIndex) {
+        return selectedIndex >= 0;
+    }
+
+    private void handlePersonListChange(ListChangeListener.Change<? extends Person> change,
+                                         ObservableList<Person> personList) {
+        assert change != null : "List change must not be null";
+        assert personList != null : "Person list must not be null";
+
+        boolean wasReplaced = wasReplacement(change);
+        if (wasReplaced && isValidLastSelectedIndex(personList)) {
+            restoreLastSelection(personList);
+        } else if (personListView.getSelectionModel().getSelectedItem() == null
+                && !personList.isEmpty()) {
+            personListView.getSelectionModel().selectFirst();
+        }
+    }
+
+    private boolean wasReplacement(ListChangeListener.Change<? extends Person> change) {
+        assert change != null : "List change must not be null";
+
+        boolean wasReplaced = false;
+        while (change.next()) {
+            wasReplaced |= change.wasReplaced();
+        }
+        return wasReplaced;
+    }
+
+    private void restoreLastSelection(ObservableList<Person> personList) {
+        assert personList != null : "Person list must not be null";
+
+        if (isValidLastSelectedIndex(personList)) {
+            personListView.getSelectionModel().select(lastSelectedIndex);
+        }
+    }
+
+    private boolean isValidLastSelectedIndex(ObservableList<Person> personList) {
+        return lastSelectedIndex >= 0 && lastSelectedIndex < personList.size();
     }
 
     /** The applicant currently selected by mouse or keyboard. */
