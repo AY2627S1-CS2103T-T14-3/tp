@@ -1,12 +1,10 @@
 package seedu.address.ui;
 
-import java.util.Comparator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import seedu.address.model.person.Person;
