@@ -47,28 +47,28 @@ public class LinkedOutUiTest {
     @Test
     public void selectionAndCommands_keepApplicantDetailsCurrent() throws Exception {
         withWindow(window -> {
-                assertEquals("LinkedOut", window.getRoot().getTitle());
-                ListView<?> applicants = (ListView<?>) window.getRoot().getScene().lookup("#personListView");
+            assertEquals("LinkedOut", window.getRoot().getTitle());
+            ListView<?> applicants = (ListView<?>) window.getRoot().getScene().lookup("#personListView");
 
-                System.out.println(1);
-                assertEquals("Alice Pauline", label(window, "applicantName").getText());
-                applicants.getSelectionModel().select(1);
-                assertEquals("Benson Meier", label(window, "applicantName").getText());
-                command(window, "edit 2 n/Benson Updated");
-                assertEquals("Benson Updated", label(window, "applicantName").getText());
+            System.out.println(1);
+            assertEquals("Alice Pauline", label(window, "applicantName").getText());
+            applicants.getSelectionModel().select(1);
+            assertEquals("Benson Meier", label(window, "applicantName").getText());
+            command(window, "edit 2 n/Benson Updated");
+            assertEquals("Benson Updated", label(window, "applicantName").getText());
 
-                System.out.println(2);
-                command(window, "find Alice");
-                assertEquals("Alice Pauline", label(window, "applicantName").getText());
-                assertEquals("1 applicant", label(window, "applicantCount").getText());
-                command(window, "delete 1");
-                assertEquals("No applicant selected", label(window, "applicantName").getText());
-                assertEquals("0 applicants", label(window, "applicantCount").getText());
-                command(window, "list");
-                assertNotNull(applicants.getSelectionModel().getSelectedItem());
-                Person selected = (Person) applicants.getSelectionModel().getSelectedItem();
-                assertEquals(selected.getName().fullName, label(window, "applicantName").getText());
-                assertEquals("No application recorded.", label(window, "applicationStatus").getText());
+            System.out.println(2);
+            command(window, "find Alice");
+            assertEquals("Alice Pauline", label(window, "applicantName").getText());
+            assertEquals("1 applicant", label(window, "applicantCount").getText());
+            command(window, "delete 1");
+            assertEquals("No applicant selected", label(window, "applicantName").getText());
+            assertEquals("0 applicants", label(window, "applicantCount").getText());
+            command(window, "list");
+            assertNotNull(applicants.getSelectionModel().getSelectedItem());
+            Person selected = (Person) applicants.getSelectionModel().getSelectedItem();
+            assertEquals(selected.getName().fullName, label(window, "applicantName").getText());
+            assertEquals("No application recorded.", label(window, "applicationStatus").getText());
         });
     }
 
