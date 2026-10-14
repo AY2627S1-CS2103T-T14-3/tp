@@ -28,8 +28,6 @@ public class ApplicantDetailPanel extends UiPart<Region> {
     @FXML
     private Label address;
     @FXML
-    private FlowPane tags;
-    @FXML
     private VBox contactDetails;
 
     /** Creates the detail panel with no applicant selected. */
@@ -43,7 +41,6 @@ public class ApplicantDetailPanel extends UiPart<Region> {
         boolean selected = person != null;
         contactDetails.setVisible(selected);
         contactDetails.setManaged(selected);
-        tags.getChildren().clear();
         if (!selected) {
             applicantName.setText("No applicant selected");
             initials.setText("?");
@@ -62,10 +59,5 @@ public class ApplicantDetailPanel extends UiPart<Region> {
         email.setText(person.getEmail().value);
         phone.setText(person.getPhone().value);
         address.setText(person.getAddress().value);
-        person.getTags().stream().sorted(Comparator.comparing(tag -> tag.tagName))
-                .forEach(tag -> tags.getChildren().add(new Label(tag.tagName)));
-        if (tags.getChildren().isEmpty()) {
-            tags.getChildren().add(new Label("No tags"));
-        }
     }
 }
