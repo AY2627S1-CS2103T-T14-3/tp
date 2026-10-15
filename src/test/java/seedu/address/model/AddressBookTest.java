@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_EMAIL_BOB;
 import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalPersons.ALICE;
+import static seedu.address.testutil.TypicalPersons.BOB;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
 
 import java.util.Collection;
@@ -15,6 +16,8 @@ import org.junit.jupiter.api.Test;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import seedu.address.model.application.Application;
+import seedu.address.model.application.exceptions.DuplicateApplicationException;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.exceptions.DuplicatePersonException;
 import seedu.address.testutil.PersonBuilder;
@@ -26,6 +29,7 @@ public class AddressBookTest {
     @Test
     public void constructor() {
         assertEquals(List.of(), addressBook.getPersonList());
+        assertEquals(List.of(), addressBook.getApplicationList());
     }
 
     @Test
@@ -82,8 +86,67 @@ public class AddressBookTest {
 
     @Test
     public void toStringMethod() {
-        String expected = AddressBook.class.getCanonicalName() + "{persons=" + addressBook.getPersonList() + "}";
+        String expected = AddressBook.class.getCanonicalName() + "{persons=" + addressBook.getPersonList()
+                + ", applications=" + addressBook.getApplicationList() + "}";
         assertEquals(expected, addressBook.toString());
+    }
+
+    @Test
+    public void addApplication_newApplicant_success() {
+        addressBook.addPerson(ALICE);
+        Application application = new Application(ALICE, "Janitor", Application.Status.PENDING);
+        addressBook.addApplication(application);
+
+        assertTrue(addressBook.hasApplication(ALICE));
+        assertEquals(application, addressBook.getApplication(ALICE).orElseThrow());
+    }
+
+    @Test
+    public void addApplication_duplicateApplicant_throwsDuplicateApplicationException() {
+        addressBook.addPerson(ALICE);
+        addressBook.addApplication(new Application(ALICE, "Janitor", Application.Status.PENDING));
+        Application duplicate = new Application(
+                new PersonBuilder(ALICE).withPhone("91234567").build(), "Engineer", Application.Status.ACCEPT);
+
+        assertThrows(DuplicateApplicationException.class, () -> addressBook.addApplication(duplicate));
+    }
+
+    @Test
+    public void setPerson_applicantWithApplication_updatesStoredApplicant() {
+        addressBook.addPerson(ALICE);
+        addressBook.addApplication(new Application(ALICE, "Janitor", Application.Status.PENDING));
+        Person editedAlice = new PersonBuilder(ALICE).withPhone("91234567").build();
+
+        addressBook.setPerson(ALICE, editedAlice);
+
+        Application updated = addressBook.getApplication(editedAlice).orElseThrow();
+        assertEquals(editedAlice, updated.getApplicant());
+        assertEquals("Janitor", updated.getJobDescription());
+        assertEquals(Application.Status.PENDING, updated.getStatus());
+    }
+
+    @Test
+    public void removePerson_applicantWithApplication_removesApplication() {
+        addressBook.addPerson(ALICE);
+        addressBook.addPerson(BOB);
+        addressBook.addApplication(new Application(ALICE, "Janitor", Application.Status.PENDING));
+        addressBook.addApplication(new Application(BOB, "Engineer", Application.Status.ACCEPT));
+
+        addressBook.removePerson(ALICE);
+
+        assertFalse(addressBook.hasApplication(ALICE));
+        assertTrue(addressBook.hasApplication(BOB));
+    }
+
+    @Test
+    public void resetData_withApplications_copiesApplications() {
+        AddressBook original = new AddressBook();
+        original.addPerson(ALICE);
+        original.addApplication(new Application(ALICE, "Janitor", Application.Status.ACCEPT));
+
+        addressBook.resetData(original);
+
+        assertEquals(original, addressBook);
     }
 
     /**
@@ -99,6 +162,11 @@ public class AddressBookTest {
         @Override
         public ObservableList<Person> getPersonList() {
             return persons;
+        }
+
+        @Override
+        public ObservableList<Application> getApplicationList() {
+            return FXCollections.observableArrayList();
         }
     }
 

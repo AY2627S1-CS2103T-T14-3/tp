@@ -132,7 +132,9 @@ represents one applicant’s job application. It contains a reference to the app
 immutable job description and application status. Applicant identity is determined using `Person#isSamePerson`, while
 `Application#equals` compares the complete applicant, job description, and status. Job descriptions must be non-blank
 and must not contain option-like tokens; statuses are restricted to the case-sensitive values `accept`, `reject`, and
-`pending`.
+`pending`. `AddressBook` stores these applications separately from its person list and keeps at most one application
+per applicant. `add -p` creates an application for an applicant in the displayed list. Deleting an applicant also
+deletes that applicant's application, and editing an applicant updates the person stored on the application.
 
 <div markdown="span" class="alert alert-info">:information_source: **Note:** The alternative, arguably more object-oriented, design below keeps a unique list of tags in `AddressBook`, and each `Person` references tags from that list. This lets `AddressBook` maintain one `Tag` object per unique tag instead of each `Person` holding its own `Tag` objects.<br>
 
