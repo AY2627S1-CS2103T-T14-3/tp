@@ -1,35 +1,19 @@
 package seedu.address.logic.parser;
 
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
-import static seedu.address.logic.commands.CommandTestUtil.ADDRESS_DESC_AMY;
-import static seedu.address.logic.commands.CommandTestUtil.ADDRESS_DESC_BOB;
-import static seedu.address.logic.commands.CommandTestUtil.EMAIL_DESC_AMY;
-import static seedu.address.logic.commands.CommandTestUtil.EMAIL_DESC_BOB;
-import static seedu.address.logic.commands.CommandTestUtil.INVALID_ADDRESS_DESC;
-import static seedu.address.logic.commands.CommandTestUtil.INVALID_EMAIL_DESC;
-import static seedu.address.logic.commands.CommandTestUtil.INVALID_NAME_DESC;
-import static seedu.address.logic.commands.CommandTestUtil.INVALID_PHONE_DESC;
-import static seedu.address.logic.commands.CommandTestUtil.NAME_DESC_AMY;
-import static seedu.address.logic.commands.CommandTestUtil.NAME_DESC_BOB;
-import static seedu.address.logic.commands.CommandTestUtil.PHONE_DESC_AMY;
-import static seedu.address.logic.commands.CommandTestUtil.PHONE_DESC_BOB;
-import static seedu.address.logic.commands.CommandTestUtil.PREAMBLE_NON_EMPTY;
 import static seedu.address.logic.commands.CommandTestUtil.PREAMBLE_WHITESPACE;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_ADDRESS_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_EMAIL_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_NAME_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_PHONE_BOB;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_ADDRESS;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_EMAIL;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
 import static seedu.address.testutil.TypicalPersons.BOB;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
-import seedu.address.logic.Messages;
 import seedu.address.logic.commands.AddCommand;
 import seedu.address.model.person.Address;
 import seedu.address.model.person.Email;
@@ -38,132 +22,122 @@ import seedu.address.model.person.Person;
 import seedu.address.model.person.Phone;
 import seedu.address.testutil.PersonBuilder;
 
+/**
+ * Verifies add-command option parsing and person-field validation.
+ */
 public class AddCommandParserTest {
-    private AddCommandParser parser = new AddCommandParser();
+    private static final String NAME_OPTION = " -n " + VALID_NAME_BOB;
+    private static final String PHONE_OPTION = " -p " + VALID_PHONE_BOB;
+    private static final String EMAIL_OPTION = " -e " + VALID_EMAIL_BOB;
+    private static final String ADDRESS_OPTION = " -a " + VALID_ADDRESS_BOB;
+    private static final String VALID_ARGUMENTS = NAME_OPTION + PHONE_OPTION + EMAIL_OPTION + ADDRESS_OPTION;
+    private static final String MESSAGE_INVALID_FORMAT =
+            String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddCommand.MESSAGE_USAGE);
+
+    private final AddCommandParser parser = new AddCommandParser();
 
     @Test
     public void parse_allFieldsPresent_success() {
-        Person expectedPerson = new PersonBuilder(BOB).build();
-
-        // whitespace only preamble
-        assertParseSuccess(parser, PREAMBLE_WHITESPACE + NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB
-                + ADDRESS_DESC_BOB, new AddCommand(expectedPerson));
+        assertParseSuccess(parser, PREAMBLE_WHITESPACE + VALID_ARGUMENTS, new AddCommand(BOB));
     }
 
     @Test
-    public void parse_repeatedValue_failure() {
-        String validExpectedPersonString = NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB
-                + ADDRESS_DESC_BOB;
+    public void parse_longAliases_success() {
+        String arguments = " -name " + VALID_NAME_BOB + " -phone " + VALID_PHONE_BOB
+                + " -email " + VALID_EMAIL_BOB + " -address " + VALID_ADDRESS_BOB;
+        assertParseSuccess(parser, arguments, new AddCommand(BOB));
+    }
 
-        // multiple names
-        assertParseFailure(parser, NAME_DESC_AMY + validExpectedPersonString,
-                Messages.getErrorMessageForDuplicatePrefixes(PREFIX_NAME));
+    @Test
+    public void parse_mixedAliasesInAnyOrder_success() {
+        String arguments = "-email " + VALID_EMAIL_BOB + ADDRESS_OPTION
+                + " -name " + VALID_NAME_BOB + PHONE_OPTION;
+        assertParseSuccess(parser, arguments, new AddCommand(BOB));
+    }
 
-        // multiple phones
-        assertParseFailure(parser, PHONE_DESC_AMY + validExpectedPersonString,
-                Messages.getErrorMessageForDuplicatePrefixes(PREFIX_PHONE));
+    @Test
+    public void parse_optionsSeparatedByTabs_success() {
+        String arguments = "\t-n\t" + VALID_NAME_BOB + "\t-p\t" + VALID_PHONE_BOB
+                + "\t-e\t" + VALID_EMAIL_BOB + "\t-a\t" + VALID_ADDRESS_BOB + "\t";
+        assertParseSuccess(parser, arguments, new AddCommand(BOB));
+    }
 
-        // multiple emails
-        assertParseFailure(parser, EMAIL_DESC_AMY + validExpectedPersonString,
-                Messages.getErrorMessageForDuplicatePrefixes(PREFIX_EMAIL));
+    @Test
+    public void parse_hyphensInsideValues_success() {
+        Person expectedPerson = new PersonBuilder(BOB).withEmail("bob-choo@example.com")
+                .withAddress("123 Bobby Street, #01-01").build();
+        String arguments = NAME_OPTION + PHONE_OPTION
+                + " -e bob-choo@example.com -a 123 Bobby Street, #01-01";
+        assertParseSuccess(parser, arguments, new AddCommand(expectedPerson));
+    }
 
-        // multiple addresses
-        assertParseFailure(parser, ADDRESS_DESC_AMY + validExpectedPersonString,
-                Messages.getErrorMessageForDuplicatePrefixes(PREFIX_ADDRESS));
+    @Test
+    public void parse_repeatedOptions_failure() {
+        for (String duplicate : List.of(" -n Amy Bee", " -name Amy Bee", " -p 1234567", " -phone 1234567",
+                " -e amy@example.com", " -email amy@example.com", " -a Amy Street", " -address Amy Street")) {
+            assertParseFailure(parser, VALID_ARGUMENTS + duplicate, MESSAGE_INVALID_FORMAT);
+        }
+    }
 
-        // multiple fields repeated
-        assertParseFailure(parser,
-                validExpectedPersonString + PHONE_DESC_AMY + EMAIL_DESC_AMY + NAME_DESC_AMY + ADDRESS_DESC_AMY
-                        + validExpectedPersonString,
-                Messages.getErrorMessageForDuplicatePrefixes(PREFIX_NAME, PREFIX_ADDRESS, PREFIX_EMAIL, PREFIX_PHONE));
-
-        // invalid value followed by valid value
-
-        // invalid name
-        assertParseFailure(parser, INVALID_NAME_DESC + validExpectedPersonString,
-                Messages.getErrorMessageForDuplicatePrefixes(PREFIX_NAME));
-
-        // invalid email
-        assertParseFailure(parser, INVALID_EMAIL_DESC + validExpectedPersonString,
-                Messages.getErrorMessageForDuplicatePrefixes(PREFIX_EMAIL));
-
-        // invalid phone
-        assertParseFailure(parser, INVALID_PHONE_DESC + validExpectedPersonString,
-                Messages.getErrorMessageForDuplicatePrefixes(PREFIX_PHONE));
-
-        // invalid address
-        assertParseFailure(parser, INVALID_ADDRESS_DESC + validExpectedPersonString,
-                Messages.getErrorMessageForDuplicatePrefixes(PREFIX_ADDRESS));
-
-        // valid value followed by invalid value
-
-        // invalid name
-        assertParseFailure(parser, validExpectedPersonString + INVALID_NAME_DESC,
-                Messages.getErrorMessageForDuplicatePrefixes(PREFIX_NAME));
-
-        // invalid email
-        assertParseFailure(parser, validExpectedPersonString + INVALID_EMAIL_DESC,
-                Messages.getErrorMessageForDuplicatePrefixes(PREFIX_EMAIL));
-
-        // invalid phone
-        assertParseFailure(parser, validExpectedPersonString + INVALID_PHONE_DESC,
-                Messages.getErrorMessageForDuplicatePrefixes(PREFIX_PHONE));
-
-        // invalid address
-        assertParseFailure(parser, validExpectedPersonString + INVALID_ADDRESS_DESC,
-                Messages.getErrorMessageForDuplicatePrefixes(PREFIX_ADDRESS));
+    @Test
+    public void parse_repeatedInvalidValues_failure() {
+        for (String duplicate : List.of(" -n James&", " -p 911a", " -e bob!yahoo", " -a ")) {
+            assertParseFailure(parser, duplicate + VALID_ARGUMENTS, MESSAGE_INVALID_FORMAT);
+            assertParseFailure(parser, VALID_ARGUMENTS + duplicate, MESSAGE_INVALID_FORMAT);
+        }
     }
 
     @Test
     public void parse_compulsoryFieldMissing_failure() {
-        String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddCommand.MESSAGE_USAGE);
+        for (String arguments : List.of("", PHONE_OPTION + EMAIL_OPTION + ADDRESS_OPTION,
+                NAME_OPTION + EMAIL_OPTION + ADDRESS_OPTION, NAME_OPTION + PHONE_OPTION + ADDRESS_OPTION,
+                NAME_OPTION + PHONE_OPTION + EMAIL_OPTION)) {
+            assertParseFailure(parser, arguments, MESSAGE_INVALID_FORMAT);
+        }
+    }
 
-        // missing name prefix
-        assertParseFailure(parser, VALID_NAME_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB,
-                expectedMessage);
-
-        // missing phone prefix
-        assertParseFailure(parser, NAME_DESC_BOB + VALID_PHONE_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB,
-                expectedMessage);
-
-        // missing email prefix
-        assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + VALID_EMAIL_BOB + ADDRESS_DESC_BOB,
-                expectedMessage);
-
-        // missing address prefix
-        assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + VALID_ADDRESS_BOB,
-                expectedMessage);
-
-        // all prefixes missing
-        assertParseFailure(parser, VALID_NAME_BOB + VALID_PHONE_BOB + VALID_EMAIL_BOB + VALID_ADDRESS_BOB,
-                expectedMessage);
+    @Test
+    public void parse_optionValueMissing_failure() {
+        for (String arguments : List.of(" -n " + PHONE_OPTION + EMAIL_OPTION + ADDRESS_OPTION,
+                NAME_OPTION + " -p " + EMAIL_OPTION + ADDRESS_OPTION,
+                NAME_OPTION + PHONE_OPTION + " -e " + ADDRESS_OPTION,
+                NAME_OPTION + PHONE_OPTION + EMAIL_OPTION + " -a ")) {
+            assertParseFailure(parser, arguments, MESSAGE_INVALID_FORMAT);
+        }
     }
 
     @Test
     public void parse_invalidValue_failure() {
-        // invalid name
-        assertParseFailure(parser, INVALID_NAME_DESC + PHONE_DESC_BOB + EMAIL_DESC_BOB + ADDRESS_DESC_BOB,
+        assertParseFailure(parser, " -n James&" + PHONE_OPTION + EMAIL_OPTION + ADDRESS_OPTION,
                 Name.MESSAGE_CONSTRAINTS);
-
-        // invalid phone
-        assertParseFailure(parser, NAME_DESC_BOB + INVALID_PHONE_DESC + EMAIL_DESC_BOB + ADDRESS_DESC_BOB,
+        assertParseFailure(parser, NAME_OPTION + " -p 911a" + EMAIL_OPTION + ADDRESS_OPTION,
                 Phone.MESSAGE_CONSTRAINTS);
-
-        // invalid email
-        assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + INVALID_EMAIL_DESC + ADDRESS_DESC_BOB,
+        assertParseFailure(parser, NAME_OPTION + PHONE_OPTION + " -e bob!yahoo" + ADDRESS_OPTION,
                 Email.MESSAGE_CONSTRAINTS);
-
-        // invalid address
-        assertParseFailure(parser, NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB + INVALID_ADDRESS_DESC,
+        assertParseFailure(parser, NAME_OPTION + PHONE_OPTION + EMAIL_OPTION + " -a Block\n123",
                 Address.MESSAGE_CONSTRAINTS);
 
-        // two invalid values, only first invalid value reported
-        assertParseFailure(parser, INVALID_NAME_DESC + PHONE_DESC_BOB + EMAIL_DESC_BOB + INVALID_ADDRESS_DESC,
+        // Report the first invalid field when multiple person details are invalid.
+        assertParseFailure(parser, " -n James& -p 911a" + EMAIL_OPTION + ADDRESS_OPTION,
                 Name.MESSAGE_CONSTRAINTS);
+    }
 
-        // non-empty preamble
-        assertParseFailure(parser, PREAMBLE_NON_EMPTY + NAME_DESC_BOB + PHONE_DESC_BOB + EMAIL_DESC_BOB
-                + ADDRESS_DESC_BOB,
-                String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddCommand.MESSAGE_USAGE));
+    @Test
+    public void parse_unknownOptions_failure() {
+        for (String option : List.of(" -unknown value", " -applicant", " -t friend")) {
+            assertParseFailure(parser, VALID_ARGUMENTS + option, MESSAGE_INVALID_FORMAT);
+        }
+    }
+
+    @Test
+    public void parse_nonEmptyPreamble_failure() {
+        assertParseFailure(parser, "unexpected text" + VALID_ARGUMENTS, MESSAGE_INVALID_FORMAT);
+    }
+
+    @Test
+    public void parse_legacySyntax_failure() {
+        String arguments = " n/" + VALID_NAME_BOB + " p/" + VALID_PHONE_BOB
+                + " e/" + VALID_EMAIL_BOB + " a/" + VALID_ADDRESS_BOB;
+        assertParseFailure(parser, arguments, MESSAGE_INVALID_FORMAT);
     }
 }
