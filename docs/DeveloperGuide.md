@@ -133,7 +133,7 @@ immutable job description and application status. Applicant identity is determin
 `Application#equals` compares the complete applicant, job description, and status. Job descriptions must be non-blank
 and must not contain option-like tokens; statuses are restricted to the case-sensitive values `accept`, `reject`, and
 `pending`. `AddressBook` stores these applications separately from its person list and keeps at most one application
-per applicant. `add -p` creates an application for an applicant in the displayed list, and `set -p` updates the
+per applicant. `add -p` creates an application for an applicant in the displayed list, and `set` updates the
 status of an existing application without changing its job. Deleting an applicant also
 deletes that applicant's application, and editing an applicant updates the person stored on the application.
 
