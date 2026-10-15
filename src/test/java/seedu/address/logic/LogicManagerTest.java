@@ -69,7 +69,7 @@ public class LogicManagerTest {
 
     @Test
     public void execute_addWithHyphenOptions_savesPerson() throws Exception {
-        String addCommand = "add -n Amy Bee -p 11111111 -e amy@example.com -a Block 312, Amy Street 1";
+        String addCommand = "add -n Amy Bee -p 11111111 -e amy@example.com";
         Model expectedModel = new ModelManager();
         expectedModel.addPerson(AMY);
 

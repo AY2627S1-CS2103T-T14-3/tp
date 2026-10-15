@@ -28,7 +28,7 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 
    * `list` : Lists all contacts.
 
-   * `add -n John Doe -p 98765432 -e johnd@example.com -a John street, block 123, #01-01` : Adds a contact named `John Doe` to the Address Book.
+   * `add -n John Doe -p 98765432 -e johnd@example.com` : Adds a contact named `John Doe` to the Address Book.
 
    * `delete 3` : Deletes the 3rd contact shown in the current list.
 
@@ -51,9 +51,6 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 
 * Items in square brackets are optional.<br>
   For example, `edit INDEX [n/NAME] [p/PHONE]` can be used as `edit 1 n/John Doe p/98765432` or as `edit 1 n/John Doe`.
-
-* Items followed by `…`​ can appear zero or more times.<br>
-  For example, `[t/TAG]…​` may be omitted, or written as `t/friend` or `t/friend t/family`.
 
 * Parameters can be in any order.<br>
   For example, if the command specifies `-n NAME -p PHONE_NUMBER`, `-p PHONE_NUMBER -n NAME` is also acceptable.
@@ -79,7 +76,7 @@ Format: `help`
 
 Adds a person to the address book.
 
-Format: `add -n NAME -p PHONE_NUMBER -e EMAIL -a ADDRESS`
+Format: `add -n NAME -p PHONE_NUMBER -e EMAIL`
 
 Each option also accepts a long alias:
 
@@ -88,19 +85,18 @@ Field | Short option | Long option
 Name | `-n` | `-name`
 Phone | `-p` | `-phone`
 Email | `-e` | `-email`
-Address | `-a` | `-address`
 
-* All four fields are required. Each option must appear exactly once and have a non-empty value.
+* All three fields are required. Each option must appear exactly once and have a non-empty value.
 * Short and long aliases can be mixed, and options can appear in any order.
-* Values containing spaces, such as a full name or address, do not need quotation marks.
+* Values containing spaces, such as a full name, do not need quotation marks.
 * Unknown options, repeated options (including different aliases for the same field), missing values, and text before the first option produce a format error with a usage hint.
 * Standalone words such as `-unknown` are treated as options, even inside a value.
-* The legacy `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS` format is no longer accepted.
+* The legacy `add n/NAME p/PHONE_NUMBER e/EMAIL` format is no longer accepted.
 
 Examples:
 
-* `add -n John Doe -p 98765432 -e johnd@example.com -a John street, block 123, #01-01`
-* `add -name Betsy Crowe -email betsycrowe@example.com -address Newgate Prison -phone 1234567`
+* `add -n John Doe -p 98765432 -e johnd@example.com`
+* `add -name Betsy Crowe -email betsycrowe@example.com -phone 1234567`
 
 ### Listing all persons: `list`
 
@@ -112,17 +108,15 @@ Format: `list`
 
 Edits an existing person in the address book.
 
-Format: `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL] [a/ADDRESS] [t/TAG]…​`
+Format: `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL]`
 
 * Edits the person at the specified `INDEX`. The index refers to the index number shown in the displayed person list. The index **must be a positive integer** 1, 2, 3, …​
 * At least one of the optional fields must be provided.
 * Existing values will be updated to the input values.
-* When editing tags, all of the person's existing tags are removed; adding tags is not cumulative.
-* To remove all of a person's tags, enter `t/` without a tag after it.
 
 Examples:
 *  `edit 1 p/91234567 e/johndoe@example.com` Edits the phone number and email address of the 1st person to be `91234567` and `johndoe@example.com` respectively.
-*  `edit 2 n/Betsy Crower t/` Edits the name of the 2nd person to be `Betsy Crower` and clears all existing tags.
+*  `edit 2 n/Betsy Crower` Edits the name of the 2nd person to be `Betsy Crower`.
 
 ### Locating persons by name: `find`
 
@@ -171,8 +165,8 @@ Format: `bye`
 
 ### Viewing an applicant: `view`
 
-Selects an applicant in the list, scrolls to their entry, and shows their name, email, phone,
-address, and tags in the applicant detail panel. The command result display confirms the applicant's name.
+Selects an applicant in the list, scrolls to their entry, and shows their name, email and phone in the applicant detail panel.
+The command result display confirms the applicant's name.
 
 Format: `view INDEX`
 
@@ -225,10 +219,10 @@ _Details coming soon ..._
 
 Action | Format, Examples
 --------|------------------
-**Add** | `add -n NAME -p PHONE_NUMBER -e EMAIL -a ADDRESS` <br> e.g., `add -n James Ho -p 22224444 -e jamesho@example.com -a 123, Clementi Rd, 1234665`
+**Add** | `add -n NAME -p PHONE_NUMBER -e EMAIL` <br> e.g., `add -n James Ho -p 22224444 -e jamesho@example.com`
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
-**Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]…​`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com`
+**Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL]`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
 **List** | `list`
 **View** | `view INDEX`<br> e.g., `view 1`
