@@ -62,6 +62,19 @@ public class Application {
         return status;
     }
 
+    /**
+     * Returns true if both applications belong to the same applicant.
+     * This defines application identity because an applicant may have at most one application.
+     */
+    public boolean isForSameApplicant(Application otherApplication) {
+        if (otherApplication == this) {
+            return true;
+        }
+
+        return otherApplication != null
+                && otherApplication.getApplicant().isSamePerson(getApplicant());
+    }
+
     @Override
     public boolean equals(Object other) {
         if (other == this) {
