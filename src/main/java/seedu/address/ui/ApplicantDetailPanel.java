@@ -24,8 +24,6 @@ public class ApplicantDetailPanel extends UiPart<Region> {
     @FXML
     private Label phone;
     @FXML
-    private Label address;
-    @FXML
     private VBox contactDetails;
 
     /** Creates the detail panel with no applicant selected. */
@@ -45,7 +43,6 @@ public class ApplicantDetailPanel extends UiPart<Region> {
             selectionHint.setText("Select an applicant from the list to view their details.");
             email.setText("");
             phone.setText("");
-            address.setText("");
             return;
         }
 
@@ -56,6 +53,5 @@ public class ApplicantDetailPanel extends UiPart<Region> {
         selectionHint.setText("Applicant contact information");
         email.setText(person.getEmail().value);
         phone.setText(person.getPhone().value);
-        address.setText(person.getAddress().value);
     }
 }
