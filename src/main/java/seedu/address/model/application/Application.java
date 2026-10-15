@@ -4,6 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.AppUtil.checkArgument;
 
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.model.person.Person;
@@ -19,7 +20,9 @@ public class Application {
     public static final String MESSAGE_JOB_DESCRIPTION_CONSTRAINTS =
             "Job descriptions should not be blank or contain option-like parameters.";
 
-    private static final String OPTION_LIKE_TOKEN_REGEX = ".* -[a-z] .*";
+    /** Matches an option-like token using the same whitespace boundaries as {@code ArgumentTokenizer}. */
+    private static final Pattern OPTION_LIKE_TOKEN_PATTERN =
+            Pattern.compile("(?<!\\S)-[a-z]+(?:-[a-z]+)*(?=\\s|$)");
 
     private final Person applicant;
     private final String jobDescription;
@@ -28,9 +31,9 @@ public class Application {
     /**
      * Creates an application.
      *
-     * @param applicant the person submitting the application
-     * @param jobDescription the job the applicant is applying for
-     * @param status the application's status
+     * @param applicant the person submitting the application.
+     * @param jobDescription the job the applicant is applying for.
+     * @param status the application's status.
      */
     public Application(Person applicant, String jobDescription, Status status) {
         requireNonNull(applicant);
@@ -39,15 +42,15 @@ public class Application {
         checkArgument(isValidJobDescription(jobDescription), MESSAGE_JOB_DESCRIPTION_CONSTRAINTS);
 
         this.applicant = applicant;
-        this.jobDescription = jobDescription.trim();
+        this.jobDescription = jobDescription.strip();
         this.status = status;
     }
 
     /** Returns true if the job description is valid. */
     public static boolean isValidJobDescription(String jobDescription) {
         return jobDescription != null
-                && !jobDescription.trim().isEmpty()
-                && !jobDescription.matches(OPTION_LIKE_TOKEN_REGEX);
+                && !jobDescription.isBlank()
+                && !OPTION_LIKE_TOKEN_PATTERN.matcher(jobDescription).find();
     }
 
     public Person getApplicant() {
@@ -102,7 +105,10 @@ public class Application {
                 .toString();
     }
 
-    /** The allowed application states. Enum names intentionally match the case-sensitive command values. */
+    /**
+     * The allowed application states.
+     * Enum constants use uppercase Java naming, while their backing command values are lowercase and case-sensitive.
+     */
     public enum Status {
         ACCEPT("accept"),
         REJECT("reject"),
@@ -120,6 +126,7 @@ public class Application {
 
         /**
          * Converts a command or storage value to a status without accepting different casing.
+         * For example, {@code fromValue("accept")} succeeds, while {@code fromValue("ACCEPT")} throws.
          *
          * @throws IllegalArgumentException if {@code value} is not an allowed status
          */

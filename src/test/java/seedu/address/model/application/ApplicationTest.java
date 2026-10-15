@@ -5,8 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.testutil.TypicalPersons.ALICE;
+import static seedu.address.testutil.TypicalPersons.BOB;
+
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
+
+import seedu.address.testutil.PersonBuilder;
 
 public class ApplicationTest {
 
@@ -38,6 +43,19 @@ public class ApplicationTest {
     }
 
     @Test
+    public void constructor_optionLikeJobDescription_throwsException() {
+        List<String> invalidDescriptions = List.of(
+                "-s accept",
+                "Janitor -s",
+                "Janitor -status accept",
+                "Janitor\t-s\taccept",
+                "Janitor\n-s\naccept");
+
+        invalidDescriptions.forEach(description -> assertThrows(IllegalArgumentException.class, ()
+                -> new Application(ALICE, description, Application.Status.PENDING)));
+    }
+
+    @Test
     public void status_fromValue_isCaseSensitive() {
         assertEquals(Application.Status.ACCEPT, Application.Status.fromValue("accept"));
         assertEquals(Application.Status.REJECT, Application.Status.fromValue("reject"));
@@ -50,9 +68,36 @@ public class ApplicationTest {
         Application first = new Application(ALICE, "Janitor", Application.Status.PENDING);
         Application second = new Application(ALICE, "Janitor", Application.Status.PENDING);
 
-        assertTrue(first.equals(second));
+        assertEquals(first, second);
         assertEquals(first.hashCode(), second.hashCode());
-        assertFalse(first.equals(null));
-        assertFalse(first.equals("application"));
+    }
+
+    @Test
+    public void equals_differentValues_failure() {
+        Application alicePending = new Application(ALICE, "Janitor", Application.Status.PENDING);
+        Application aliceAccept = new Application(ALICE, "Janitor", Application.Status.ACCEPT);
+        Application aliceReject = new Application(ALICE, "Janitor", Application.Status.REJECT);
+        Application aliceNotJanitor = new Application(ALICE, "Not Janitor", Application.Status.PENDING);
+        Application bobPending = new Application(BOB, "Janitor", Application.Status.PENDING);
+
+        assertFalse(alicePending.equals(aliceAccept));
+        assertFalse(alicePending.equals(aliceReject));
+        assertFalse(alicePending.equals(aliceNotJanitor));
+        assertFalse(aliceAccept.equals(aliceReject));
+        assertFalse(alicePending.equals(bobPending));
+    }
+
+    @Test
+    public void isForSameApplicant_variousApplicants_returnsExpectedResult() {
+        Application aliceApplication = new Application(ALICE, "Janitor", Application.Status.PENDING);
+        Application sameApplicantApplication = new Application(
+                new PersonBuilder(ALICE).withPhone("91234567").build(),
+                "Engineer", Application.Status.ACCEPT);
+        Application bobApplication = new Application(BOB, "Janitor", Application.Status.PENDING);
+
+        assertTrue(aliceApplication.isForSameApplicant(aliceApplication));
+        assertTrue(aliceApplication.isForSameApplicant(sameApplicantApplication));
+        assertFalse(aliceApplication.isForSameApplicant(null));
+        assertFalse(aliceApplication.isForSameApplicant(bobApplication));
     }
 }
