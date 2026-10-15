@@ -1,7 +1,6 @@
 package seedu.address.logic.parser;
 
 import static java.util.Objects.requireNonNull;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_APPLICANT;
 import static seedu.address.logic.parser.CliSyntax.PREFIX_STATUS;
 
 import seedu.address.commons.core.index.Index;
@@ -14,64 +13,68 @@ import seedu.address.model.application.Application;
  */
 public class SetApplicationStatusCommandParser implements Parser<SetApplicationStatusCommand> {
 
-    private static final Option APPLICANT_OPTION = Option.required(PREFIX_APPLICANT, "-p", "-application");
     private static final Option STATUS_OPTION = Option.required(PREFIX_STATUS, "-s", "-status");
 
     /**
      * Parses the given {@code String} of arguments in the context of the SetApplicationStatusCommand
      * and returns a SetApplicationStatusCommand object for execution.
-     * @param args arguments string of the form {@code -p INDEX -s STATUS}
+     * @param args arguments string of the form {@code INDEX -s STATUS}
      * @return a SetApplicationStatusCommand object for execution
      * @throws ParseException if the user input does not conform to the expected format
      */
     public SetApplicationStatusCommand parse(String args) throws ParseException {
         requireNonNull(args);
-        ArgumentMultimap values = parseOptions(args);
-        Index index = parseIndex(args, values);
-        Application.Status status = parseStatus(values);
+        String[] tokens = args.trim().split("\\s+", 2);
+        Index index = parseIndex(args, tokens[0]);
+        String optionArgs = tokens.length == 2 ? tokens[1] : "";
+        Application.Status status = parseStatus(args, optionArgs);
         return new SetApplicationStatusCommand(index, status);
     }
 
     /**
-     * Tokenizes {@code args} as set-status options.
-     * @param args arguments string for the set-status command
-     * @return tokenized option values
-     * @throws ParseException if the user input does not conform to the expected format
-     */
-    private ArgumentMultimap parseOptions(String args) throws ParseException {
-        try {
-            return ArgumentTokenizer.tokenizeOptions(args, APPLICANT_OPTION, STATUS_OPTION);
-        } catch (ParseException pe) {
-            throw unrecognized(args);
-        }
-    }
-
-    /**
-     * Parses the applicant index from the tokenized options.
+     * Parses the applicant index from the leading positional token.
+     * The index is not prefixed, matching {@code delete} and {@code view}.
      * @param args original arguments string, used in the error message
-     * @param values tokenized option values
+     * @param indexToken first token of the arguments
      * @return index of the applicant in the displayed list
      * @throws ParseException if the user input does not conform to the expected format
      */
-    private Index parseIndex(String args, ArgumentMultimap values) throws ParseException {
+    private Index parseIndex(String args, String indexToken) throws ParseException {
         try {
-            return ParserUtil.parseIndex(values.getValue(PREFIX_APPLICANT).orElseThrow());
+            return ParserUtil.parseIndex(indexToken);
         } catch (ParseException pe) {
             throw unrecognized(args);
         }
     }
 
     /**
-     * Parses the required application status.
-     * @param values tokenized option values
+     * Parses the required application status from the option portion of the command.
+     * @param args original arguments string, used in the error message
+     * @param optionArgs arguments after the index
      * @return application status
-     * @throws ParseException if the status is not accept, reject, or pending
+     * @throws ParseException if the status is missing, malformed, or not accept, reject, or pending
      */
-    private Application.Status parseStatus(ArgumentMultimap values) throws ParseException {
+    private Application.Status parseStatus(String args, String optionArgs) throws ParseException {
+        ArgumentMultimap values = parseOptions(args, optionArgs);
         try {
             return Application.Status.fromValue(values.getValue(PREFIX_STATUS).orElseThrow());
         } catch (IllegalArgumentException exception) {
             throw new ParseException(SetApplicationStatusCommand.MESSAGE_INVALID_STATUS);
+        }
+    }
+
+    /**
+     * Tokenizes {@code optionArgs} as the status option.
+     * @param args original arguments string, used in the error message
+     * @param optionArgs arguments after the index
+     * @return tokenized option values
+     * @throws ParseException if the user input does not conform to the expected format
+     */
+    private ArgumentMultimap parseOptions(String args, String optionArgs) throws ParseException {
+        try {
+            return ArgumentTokenizer.tokenizeOptions(optionArgs, STATUS_OPTION);
+        } catch (ParseException pe) {
+            throw unrecognized(args);
         }
     }
 

@@ -33,11 +33,11 @@ public class SetApplicationStatusCommand extends Command {
     public static final String MESSAGE_INVALID_STATUS = "Invalid status. Please choose a status from "
             + "\"accept\", \"reject\", or \"pending\".\n"
             + "Please note that the input is case-sensitive.\n"
-            + "Example: set -p 1 -s accept";
+            + "Example: set 1 -s accept";
 
     public static final String MESSAGE_UNRECOGNIZED = "Unable to recognize the command %1$s.\n"
-            + "Please follow the format: set -p <index> -s <status>.\n"
-            + "Example: set -p 1 -s accept";
+            + "Please follow the format: set <index> -s <status>.\n"
+            + "Example: set 1 -s accept";
 
     private final Index targetIndex;
     private final Application.Status status;

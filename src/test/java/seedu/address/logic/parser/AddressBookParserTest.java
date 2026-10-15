@@ -88,12 +88,16 @@ public class AddressBookParserTest {
     @Test
     public void parseCommand_setApplicationStatus() throws Exception {
         assertEquals(new SetApplicationStatusCommand(INDEX_FIRST_PERSON, Application.Status.ACCEPT),
-                parser.parseCommand("set -p 1 -s accept"));
+                parser.parseCommand("set 1 -s accept"));
         assertEquals(new SetApplicationStatusCommand(INDEX_FIRST_PERSON, Application.Status.REJECT),
-                parser.parseCommand("  set   -application   1   -status   reject  "));
+                parser.parseCommand("  set   1   -status   reject  "));
         assertThrows(ParseException.class, SetApplicationStatusCommand.MESSAGE_INVALID_STATUS, () ->
-                parser.parseCommand("set -p 1 -s ACCEPT"));
-        assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> parser.parseCommand("Set -p 1 -s accept"));
+                parser.parseCommand("set 1 -s ACCEPT"));
+        assertThrows(ParseException.class, String.format(SetApplicationStatusCommand.MESSAGE_UNRECOGNIZED,
+                "set -p 1 -s accept"), () -> parser.parseCommand("set -p 1 -s accept"));
+        assertThrows(ParseException.class, String.format(SetApplicationStatusCommand.MESSAGE_UNRECOGNIZED,
+                "set -application 1 -status reject"), () -> parser.parseCommand("set -application 1 -status reject"));
+        assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> parser.parseCommand("Set 1 -s accept"));
     }
 
     @Test

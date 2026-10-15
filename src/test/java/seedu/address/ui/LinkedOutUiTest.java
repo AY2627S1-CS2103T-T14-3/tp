@@ -317,7 +317,7 @@ public class LinkedOutUiTest {
     public void setApplicationStatus_existingApplication_updatesDetailPanel() throws Exception {
         withWindow(window -> {
             command(window, "add -p 2 -j Janitor");
-            command(window, "set -application 2 -status accept");
+            command(window, "set 2 -status accept");
             ListView<?> applicants = (ListView<?>) window.getRoot().getScene().lookup("#personListView");
             assertEquals(1, applicants.getSelectionModel().getSelectedIndex());
             assertApplicantDetails(window, BENSON);
@@ -334,14 +334,14 @@ public class LinkedOutUiTest {
             ListView<?> applicants = (ListView<?>) window.getRoot().getScene().lookup("#personListView");
             TextField input = (TextField) window.getRoot().getScene().lookup("#commandTextField");
 
-            input.setText("set -p 1 -s ACCEPT");
+            input.setText("set 1 -s ACCEPT");
             input.fireEvent(new ActionEvent());
-            assertEquals("set -p 1 -s ACCEPT", input.getText());
+            assertEquals("set 1 -s ACCEPT", input.getText());
             assertTrue(input.getStyleClass().contains(CommandBox.ERROR_STYLE_CLASS));
             assertEquals(SetApplicationStatusCommand.MESSAGE_INVALID_STATUS, feedback(window));
             assertApplication(window, "Janitor", "Pending");
 
-            input.setText("set -p 2 -s reject");
+            input.setText("set 2 -s reject");
             input.fireEvent(new ActionEvent());
             assertEquals(SetApplicationStatusCommand.MESSAGE_MISSING_APPLICATION, feedback(window));
             assertEquals(0, applicants.getSelectionModel().getSelectedIndex());
