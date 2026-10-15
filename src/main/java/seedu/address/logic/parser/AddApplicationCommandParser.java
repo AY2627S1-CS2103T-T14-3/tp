@@ -18,21 +18,26 @@ import seedu.address.model.application.Application;
  */
 public class AddApplicationCommandParser implements Parser<AddApplicationCommand> {
 
-    /** Matches an option token using the same boundaries as {@code ArgumentTokenizer}. */
-    private static final Pattern OPTION_TOKEN =
-            Pattern.compile("(?<!\\S)-[a-z]+(?:-[a-z]+)*(?=\\s|$)");
+    /**
+     * Matches an add-application option. {@code -p} is shared with add-person, so routing
+     * uses options that only an application command accepts.
+     */
+    private static final Pattern APPLICATION_OPTION =
+            Pattern.compile("(?<!\\S)-(?:application|job|status|j|s)(?=\\s|$)");
 
     private static final Option APPLICANT_OPTION = Option.required(PREFIX_APPLICANT, "-p", "-application");
     private static final Option JOB_OPTION = Option.required(PREFIX_JOB, "-j", "-job");
     private static final Option STATUS_OPTION = Option.optional(PREFIX_STATUS, "-s", "-status");
 
     /**
-     * Returns true if {@code args} contains hyphen options for an add-application command.
+     * Returns true if {@code args} contains an option used only by an add-application command.
+     * Add-person commands also use hyphen options, including {@code -p} for phone, so a bare
+     * hyphen is not enough to choose this parser.
      * @param args arguments string following the add command word
      * @return true if {@code args} should be parsed as an add-application command
      */
     static boolean isApplicationCommand(String args) {
-        return OPTION_TOKEN.matcher(args).find();
+        return APPLICATION_OPTION.matcher(args).find();
     }
 
     /**
