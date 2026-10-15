@@ -9,7 +9,7 @@ import seedu.address.logic.commands.EditCommand.EditPersonDescriptor;
 import seedu.address.model.person.Person;
 
 /**
- * A utility class for Person.
+ * Provides helper methods for constructing person commands.
  */
 public class PersonUtil {
 
@@ -21,13 +21,13 @@ public class PersonUtil {
     }
 
     /**
-     * Returns the part of command string for the given {@code person}'s details.
+     * Returns add-command options for the given {@code person}'s details.
      */
     public static String getPersonDetails(Person person) {
         StringBuilder sb = new StringBuilder();
-        sb.append(PREFIX_NAME + person.getName().fullName + " ");
-        sb.append(PREFIX_PHONE + person.getPhone().value + " ");
-        sb.append(PREFIX_EMAIL + person.getEmail().value + " ");
+        sb.append("-n ").append(person.getName().fullName).append(" ");
+        sb.append("-p ").append(person.getPhone().value).append(" ");
+        sb.append("-e ").append(person.getEmail().value).append(" ");
         return sb.toString();
     }
 
