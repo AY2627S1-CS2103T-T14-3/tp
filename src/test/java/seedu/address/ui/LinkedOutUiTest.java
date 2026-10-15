@@ -2,9 +2,15 @@ package seedu.address.ui;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
+import static seedu.address.testutil.TypicalPersons.ALICE;
+import static seedu.address.testutil.TypicalPersons.BENSON;
+import static seedu.address.testutil.TypicalPersons.DANIEL;
+import static seedu.address.testutil.TypicalPersons.GEORGE;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -15,11 +21,15 @@ import org.junit.jupiter.api.io.TempDir;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
 import seedu.address.logic.LogicManager;
+import seedu.address.logic.commands.ViewCommand;
 import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
 import seedu.address.model.person.Person;
@@ -155,6 +165,90 @@ public class LinkedOutUiTest {
         });
     }
 
+    @Test
+    public void viewCommand_validIndex_selectsApplicantAndShowsDetails() throws Exception {
+        onFxThread(() -> {
+            MainWindow window = createWindow();
+            try {
+                ListView<?> applicants = (ListView<?>) window.getRoot().getScene().lookup("#personListView");
+                command(window, "view 2");
+                assertApplicantDetails(window, BENSON);
+                assertEquals(1, applicants.getSelectionModel().getSelectedIndex());
+                assertEquals("Viewing applicant: Benson Meier", feedback(window));
+                FlowPane tags = (FlowPane) window.getRoot().getScene().lookup("#tags");
+                assertEquals(List.of("friends", "owesMoney"), tags.getChildren().stream()
+                        .map(node -> ((Label) node).getText()).toList());
+
+                command(window, "view 2");
+                assertApplicantDetails(window, BENSON);
+                applicants.getSelectionModel().selectFirst();
+                assertApplicantDetails(window, ALICE);
+                command(window, "view 7");
+                assertApplicantDetails(window, GEORGE);
+                assertEquals(6, applicants.getSelectionModel().getSelectedIndex());
+                assertEquals("7 applicants", label(window, "applicantCount").getText());
+            } finally {
+                window.getRoot().close();
+            }
+        });
+    }
+
+    @Test
+    public void viewCommand_filteredList_usesDisplayedIndexAndPreservesFilter() throws Exception {
+        onFxThread(() -> {
+            MainWindow window = createWindow();
+            try {
+                command(window, "find Meier");
+                command(window, "view 2");
+                ListView<?> applicants = (ListView<?>) window.getRoot().getScene().lookup("#personListView");
+                assertEquals(List.of(BENSON, DANIEL), applicants.getItems());
+                assertEquals(1, applicants.getSelectionModel().getSelectedIndex());
+                assertApplicantDetails(window, DANIEL);
+                assertEquals("2 applicants", label(window, "applicantCount").getText());
+                assertEquals("Viewing applicant: Daniel Meier", feedback(window));
+            } finally {
+                window.getRoot().close();
+            }
+        });
+    }
+
+    @Test
+    public void viewCommand_invalidInput_preservesSelectionAndShowsError() throws Exception {
+        onFxThread(() -> {
+            MainWindow window = createWindow();
+            try {
+                command(window, "find Meier");
+                command(window, "view 2");
+                ListView<?> applicants = (ListView<?>) window.getRoot().getScene().lookup("#personListView");
+                TextField input = (TextField) window.getRoot().getScene().lookup("#commandTextField");
+                for (String invalidCommand : List.of("view 3", "view 0", "view", "view 1 extra")) {
+                    input.setText(invalidCommand);
+                    input.fireEvent(new ActionEvent());
+                    assertEquals(invalidCommand, input.getText());
+                    assertTrue(input.getStyleClass().contains(CommandBox.ERROR_STYLE_CLASS));
+                    assertEquals(DANIEL, applicants.getSelectionModel().getSelectedItem());
+                    assertApplicantDetails(window, DANIEL);
+                    assertEquals(List.of(BENSON, DANIEL), applicants.getItems());
+                    if (invalidCommand.equals("view 3")) {
+                        assertEquals(String.format(ViewCommand.MESSAGE_INVALID_INDEX, 2), feedback(window));
+                    } else {
+                        assertTrue(feedback(window).contains(ViewCommand.MESSAGE_USAGE));
+                    }
+                }
+
+                command(window, "clear");
+                input.setText("view 1");
+                input.fireEvent(new ActionEvent());
+                assertEquals("view 1", input.getText());
+                assertEquals(ViewCommand.MESSAGE_EMPTY_LIST, feedback(window));
+                assertEquals("No applicant selected", label(window, "applicantName").getText());
+                assertEquals("0 applicants", label(window, "applicantCount").getText());
+            } finally {
+                window.getRoot().close();
+            }
+        });
+    }
+
     private MainWindow createWindow() {
         ModelManager model = new ModelManager(TypicalPersons.getTypicalAddressBook(), new UserPrefs());
         Path dataPath = testFolder.resolve("applicants.json");
@@ -193,6 +287,19 @@ public class LinkedOutUiTest {
         Label label = (Label) window.getRoot().getScene().lookup("#" + id);
         assertNotNull(label, "Missing applicant detail: " + id);
         return label;
+    }
+
+    private void assertApplicantDetails(MainWindow window, Person person) {
+        assertEquals(person, window.getPersonListPanel().selectedPersonProperty().get());
+        assertEquals(person.getName().fullName, label(window, "applicantName").getText());
+        Node contactDetails = window.getRoot().getScene().lookup("#contactDetails");
+        assertEquals(person.getEmail().value, ((Label) contactDetails.lookup("#email")).getText());
+        assertEquals(person.getPhone().value, ((Label) contactDetails.lookup("#phone")).getText());
+        assertEquals(person.getAddress().value, ((Label) contactDetails.lookup("#address")).getText());
+    }
+
+    private String feedback(MainWindow window) {
+        return ((TextArea) window.getRoot().getScene().lookup("#resultDisplay")).getText();
     }
 
     private void command(MainWindow window, String text) {
