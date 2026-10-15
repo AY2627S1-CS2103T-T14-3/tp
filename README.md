@@ -21,7 +21,7 @@ Our initial recruitment workflow focuses on:
 - Reviewing the applicant list and opening an applicant's full details.
 - Showing the relevant job and department contacts alongside an application.
 
-The current code supports adding, editing, finding, listing, and deleting contacts, with local JSON storage. Recruitment-specific commands and views are planned additions.
+The current code supports adding, finding, listing, and deleting contacts, with local JSON storage. Recruitment-specific commands and views are planned additions.
 
 ## Getting started
 
