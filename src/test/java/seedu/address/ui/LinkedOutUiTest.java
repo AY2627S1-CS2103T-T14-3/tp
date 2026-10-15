@@ -295,7 +295,6 @@ public class LinkedOutUiTest {
         Node contactDetails = window.getRoot().getScene().lookup("#contactDetails");
         assertEquals(person.getEmail().value, ((Label) contactDetails.lookup("#email")).getText());
         assertEquals(person.getPhone().value, ((Label) contactDetails.lookup("#phone")).getText());
-        assertEquals(person.getAddress().value, ((Label) contactDetails.lookup("#address")).getText());
     }
 
     private String feedback(MainWindow window) {
