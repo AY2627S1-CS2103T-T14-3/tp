@@ -34,7 +34,7 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 
    * `clear` : Deletes all contacts.
 
-   * `exit` : Exits the app.
+   * `bye` : Exits the app.
 
 1. Refer to the [Features](#features) section below for details of each command.
 
@@ -146,11 +146,11 @@ Clears all entries from the address book.
 
 Format: `clear`
 
-### Exiting the program: `exit`
+### Exiting the program: `bye`
 
-Exits the program.
+Exits the program without displaying a message. The command is case-sensitive and accepts no arguments or options.
 
-Format: `exit`
+Format: `bye`
 
 ### Viewing an applicant: `view`
 
@@ -212,3 +212,4 @@ Action | Format, Examples
 **List** | `list`
 **View** | `view INDEX`<br> e.g., `view 1`
 **Help** | `help`
+**Bye** | `bye`
