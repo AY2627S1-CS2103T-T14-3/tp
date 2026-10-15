@@ -28,7 +28,7 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 
    * `list` : Lists all contacts.
 
-   * `add n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01` : Adds a contact named `John Doe` to the Address Book.
+   * `add -n John Doe -p 98765432 -e johnd@example.com -a John street, block 123, #01-01` : Adds a contact named `John Doe` to the Address Book.
 
    * `delete 3` : Deletes the 3rd contact shown in the current list.
 
@@ -47,16 +47,18 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 **:information_source: Notes about the command format:**<br>
 
 * Words in `UPPER_CASE` are the parameters to be supplied by the user.<br>
-  For example, in `add n/NAME`, replace `NAME` with a value such as `John Doe`.
+  For example, in `add -n NAME`, replace `NAME` with a value such as `John Doe`.
 
 * Items in square brackets are optional.<br>
-  For example, `n/NAME [t/TAG]` can be used as `n/John Doe t/friend` or as `n/John Doe`.
+  For example, `edit INDEX [n/NAME] [p/PHONE]` can be used as `edit 1 n/John Doe p/98765432` or as `edit 1 n/John Doe`.
 
 * Items followed by `…`​ can appear zero or more times.<br>
   For example, `[t/TAG]…​` may be omitted, or written as `t/friend` or `t/friend t/family`.
 
 * Parameters can be in any order.<br>
-  For example, if the command specifies `n/NAME p/PHONE_NUMBER`, `p/PHONE_NUMBER n/NAME` is also acceptable.
+  For example, if the command specifies `-n NAME -p PHONE_NUMBER`, `-p PHONE_NUMBER -n NAME` is also acceptable.
+
+* `add` uses hyphen-prefixed options such as `-n NAME`. `edit` uses slash-prefixed fields such as `n/NAME`.
 
 * Extraneous parameters for `help`, `list`, and `clear` are ignored. `bye` and its alias `exit` reject extra parameters.<br>
   For example, `help 123` is interpreted as `help`.
@@ -77,15 +79,28 @@ Format: `help`
 
 Adds a person to the address book.
 
-Format: `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]…​`
+Format: `add -n NAME -p PHONE_NUMBER -e EMAIL -a ADDRESS`
 
-<div markdown="span" class="alert alert-primary">:bulb: **Tip:**
-A person can have any number of tags, including zero.
-</div>
+Each option also accepts a long alias:
+
+Field | Short option | Long option
+------|--------------|------------
+Name | `-n` | `-name`
+Phone | `-p` | `-phone`
+Email | `-e` | `-email`
+Address | `-a` | `-address`
+
+* All four fields are required. Each option must appear exactly once and have a non-empty value.
+* Short and long aliases can be mixed, and options can appear in any order.
+* Values containing spaces, such as a full name or address, do not need quotation marks.
+* Unknown options, repeated options (including different aliases for the same field), missing values, and text before the first option produce a format error with a usage hint.
+* Standalone words such as `-unknown` are treated as options, even inside a value.
+* The legacy `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS` format is no longer accepted.
 
 Examples:
-* `add n/John Doe p/98765432 e/johnd@example.com a/John street, block 123, #01-01`
-* `add n/Betsy Crowe t/friend e/betsycrowe@example.com a/Newgate Prison p/1234567 t/criminal`
+
+* `add -n John Doe -p 98765432 -e johnd@example.com -a John street, block 123, #01-01`
+* `add -name Betsy Crowe -email betsycrowe@example.com -address Newgate Prison -phone 1234567`
 
 ### Listing all persons: `list`
 
@@ -210,7 +225,7 @@ _Details coming soon ..._
 
 Action | Format, Examples
 --------|------------------
-**Add** | `add n/NAME p/PHONE_NUMBER e/EMAIL a/ADDRESS [t/TAG]…​` <br> e.g., `add n/James Ho p/22224444 e/jamesho@example.com a/123, Clementi Rd, 1234665 t/friend t/colleague`
+**Add** | `add -n NAME -p PHONE_NUMBER -e EMAIL -a ADDRESS` <br> e.g., `add -n James Ho -p 22224444 -e jamesho@example.com -a 123, Clementi Rd, 1234665`
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
 **Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL] [a/ADDRESS] [t/TAG]…​`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com`
