@@ -151,8 +151,8 @@ Format: `bye`
 
 ### Viewing an applicant: `view`
 
-Selects an applicant in the list, scrolls to their entry, and shows their name, email, phone,
-address, and tags in the applicant detail panel. The command result display confirms the applicant's name.
+Selects an applicant in the list, scrolls to their entry, and shows their name, email and phone in the applicant detail panel.
+The command result display confirms the applicant's name.
 
 Format: `view INDEX`
 
