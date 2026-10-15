@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
 import seedu.address.logic.commands.AddCommand;
+import seedu.address.logic.commands.ByeCommand;
 import seedu.address.logic.commands.ClearCommand;
 import seedu.address.logic.commands.DeleteCommand;
 import seedu.address.logic.commands.EditCommand;
@@ -32,6 +33,28 @@ import seedu.address.testutil.PersonUtil;
 public class AddressBookParserTest {
 
     private final AddressBookParser parser = new AddressBookParser();
+
+    @Test
+    public void parseCommand_bye() throws Exception {
+        assertTrue(parser.parseCommand("bye") instanceof ByeCommand);
+        assertTrue(parser.parseCommand(" \tbye \t") instanceof ByeCommand);
+    }
+
+    @Test
+    public void parseCommand_byeWithArguments_throwsParseException() {
+        for (String input : List.of("bye 3", "bye -p 1", "bye -applicant")) {
+            assertThrows(ParseException.class,
+                    String.format(MESSAGE_INVALID_COMMAND_FORMAT, ByeCommand.MESSAGE_USAGE), ()
+                        -> parser.parseCommand(input));
+        }
+    }
+
+    @Test
+    public void parseCommand_byeWithIncorrectCase_throwsParseException() {
+        for (String input : List.of("Bye", "BYE")) {
+            assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> parser.parseCommand(input));
+        }
+    }
 
     @Test
     public void parseCommand_view() throws Exception {

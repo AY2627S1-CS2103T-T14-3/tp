@@ -71,6 +71,17 @@ public class LogicManagerTest {
     }
 
     @Test
+    public void execute_bye_savesDataBeforeRequestingExit() throws Exception {
+        model.addPerson(AMY);
+
+        assertEquals(new CommandResult("", false, true), logic.execute("bye"));
+
+        JsonAddressBookStorage savedStorage =
+                new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
+        assertEquals(model.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
+    }
+
+    @Test
     public void execute_view_showsDetailsWithoutChangingModel() throws Exception {
         model.addPerson(AMY);
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
