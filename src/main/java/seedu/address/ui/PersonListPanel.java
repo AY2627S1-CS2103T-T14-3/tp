@@ -45,6 +45,14 @@ public class PersonListPanel extends UiPart<Region> {
     }
 
     /**
+     * Selects an applicant in the displayed list and scrolls to make them visible.
+     */
+    public void selectPerson(Person person) {
+        personListView.getSelectionModel().select(person);
+        personListView.scrollTo(person);
+    }
+
+    /**
      * Custom {@code ListCell} that displays the graphics of a {@code Person} using a {@code PersonCard}.
      */
     class PersonListViewCell extends ListCell<Person> {
