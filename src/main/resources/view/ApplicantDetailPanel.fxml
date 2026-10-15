@@ -30,10 +30,6 @@
             <Label fx:id="phone" styleClass="detail-value" wrapText="true" />
           </VBox>
         </HBox>
-        <VBox spacing="4">
-          <Label text="ADDRESS" styleClass="field-heading" />
-          <Label fx:id="address" styleClass="detail-value" wrapText="true" />
-        </VBox>
       </VBox>
       <Separator />
       <VBox spacing="8" styleClass="application-section">

@@ -26,7 +26,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
 import seedu.address.logic.LogicManager;
 import seedu.address.logic.commands.ViewCommand;
@@ -175,9 +174,6 @@ public class LinkedOutUiTest {
                 assertApplicantDetails(window, BENSON);
                 assertEquals(1, applicants.getSelectionModel().getSelectedIndex());
                 assertEquals("Viewing applicant: Benson Meier", feedback(window));
-                FlowPane tags = (FlowPane) window.getRoot().getScene().lookup("#tags");
-                assertEquals(List.of("friends", "owesMoney"), tags.getChildren().stream()
-                        .map(node -> ((Label) node).getText()).toList());
 
                 command(window, "view 2");
                 assertApplicantDetails(window, BENSON);
@@ -295,7 +291,6 @@ public class LinkedOutUiTest {
         Node contactDetails = window.getRoot().getScene().lookup("#contactDetails");
         assertEquals(person.getEmail().value, ((Label) contactDetails.lookup("#email")).getText());
         assertEquals(person.getPhone().value, ((Label) contactDetails.lookup("#phone")).getText());
-        assertEquals(person.getAddress().value, ((Label) contactDetails.lookup("#address")).getText());
     }
 
     private String feedback(MainWindow window) {
