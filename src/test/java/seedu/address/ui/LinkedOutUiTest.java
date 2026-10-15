@@ -2,11 +2,18 @@ package seedu.address.ui;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
+import static seedu.address.testutil.TypicalPersons.ALICE;
+import static seedu.address.testutil.TypicalPersons.BENSON;
+import static seedu.address.testutil.TypicalPersons.DANIEL;
+import static seedu.address.testutil.TypicalPersons.GEORGE;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -14,11 +21,15 @@ import org.junit.jupiter.api.io.TempDir;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
 import seedu.address.logic.LogicManager;
+import seedu.address.logic.commands.ViewCommand;
 import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
 import seedu.address.model.person.Person;
@@ -45,28 +56,193 @@ public class LinkedOutUiTest {
 
     @Test
     public void selectionAndCommands_keepApplicantDetailsCurrent() throws Exception {
+        withWindow(window -> {
+            assertEquals("LinkedOut", window.getRoot().getTitle());
+            ListView<?> applicants = (ListView<?>) window.getRoot().getScene().lookup("#personListView");
+
+            System.out.println(1);
+            assertEquals("Alice Pauline", label(window, "applicantName").getText());
+            applicants.getSelectionModel().select(1);
+            assertEquals("Benson Meier", label(window, "applicantName").getText());
+            command(window, "edit 2 n/Benson Updated");
+            assertEquals("Benson Updated", label(window, "applicantName").getText());
+
+            System.out.println(2);
+            command(window, "find Alice");
+            assertEquals("Alice Pauline", label(window, "applicantName").getText());
+            assertEquals("1 applicant", label(window, "applicantCount").getText());
+            command(window, "delete 1");
+            assertEquals("No applicant selected", label(window, "applicantName").getText());
+            assertEquals("0 applicants", label(window, "applicantCount").getText());
+            command(window, "list");
+            assertNotNull(applicants.getSelectionModel().getSelectedItem());
+            Person selected = (Person) applicants.getSelectionModel().getSelectedItem();
+            assertEquals(selected.getName().fullName, label(window, "applicantName").getText());
+            assertEquals("No application recorded.", label(window, "applicationStatus").getText());
+        });
+    }
+
+    @Test
+    public void editApplicant_selectedFirstApplicant_applicantNameUpdated() throws Exception {
+        withWindow(window -> {
+            command(window, "edit 1 n/Alice Updated");
+            assertApplicantName(window, "Alice Updated");
+        });
+    }
+
+    @Test
+    public void editApplicant_selectedSecondApplicant_applicantNameUpdated() throws Exception {
+        withWindow(window -> {
+            selectApplicant(window, 1);
+            command(window, "edit 2 n/Benson Updated");
+            assertApplicantName(window, "Benson Updated");
+        });
+    }
+
+    @Test
+    public void editApplicant_unselectedFirstApplicant_applicantNameUnchanged() throws Exception {
+        withWindow(window -> {
+            selectApplicant(window, 1);
+            command(window, "edit 1 n/Alice Updated");
+            assertApplicantName(window, "Benson Meier");
+        });
+    }
+
+    @Test
+    public void editApplicant_unselectedSecondApplicant_applicantNameUnchanged() throws Exception {
+        withWindow(window -> {
+            command(window, "edit 2 n/Benson Updated");
+            assertApplicantName(window, "Alice Pauline");
+        });
+    }
+
+    @Test
+    public void deleteApplicant_selectedApplicant_applicantNameUpdated() throws Exception {
+        withWindow(window -> {
+            command(window, "delete 1");
+            assertApplicantName(window, "Benson Meier");
+        });
+    }
+
+    @Test
+    public void deleteApplicant_unselectedApplicant_applicantNameUnchanged() throws Exception {
+        withWindow(window -> {
+            command(window, "delete 2");
+            assertApplicantName(window, "Alice Pauline");
+        });
+    }
+
+    @Test
+    public void findApplicant_currentApplicant_applicantNameUnchanged() throws Exception {
+        withWindow(window -> {
+            command(window, "find Alice");
+            assertApplicantName(window, "Alice Pauline");
+        });
+    }
+
+    @Test
+    public void findApplicant_anotherApplicant_applicantNameUpdated() throws Exception {
+        withWindow(window -> {
+            command(window, "find Benson");
+            assertApplicantName(window, "Benson Meier");
+        });
+    }
+
+    @Test
+    public void selectApplicant_anotherApplicant_applicantNameUpdated() throws Exception {
+        withWindow(window -> {
+            selectApplicant(window, 1);
+            assertApplicantName(window, "Benson Meier");
+        });
+    }
+
+    @Test
+    public void findApplicant_noMatchingApplicant_noApplicantSelected() throws Exception {
+        withWindow(window -> {
+            command(window, "find completely-random-string");
+            assertApplicantName(window, "No applicant selected");
+            assertEquals("0 applicants", label(window, "applicantCount").getText());
+        });
+    }
+
+    @Test
+    public void viewCommand_validIndex_selectsApplicantAndShowsDetails() throws Exception {
         onFxThread(() -> {
             MainWindow window = createWindow();
             try {
-                assertEquals("LinkedOut", window.getRoot().getTitle());
                 ListView<?> applicants = (ListView<?>) window.getRoot().getScene().lookup("#personListView");
-                assertEquals("Alice Pauline", label(window, "applicantName").getText());
-                applicants.getSelectionModel().select(1);
-                assertEquals("Benson Meier", label(window, "applicantName").getText());
+                command(window, "view 2");
+                assertApplicantDetails(window, BENSON);
+                assertEquals(1, applicants.getSelectionModel().getSelectedIndex());
+                assertEquals("Viewing applicant: Benson Meier", feedback(window));
+                FlowPane tags = (FlowPane) window.getRoot().getScene().lookup("#tags");
+                assertEquals(List.of("friends", "owesMoney"), tags.getChildren().stream()
+                        .map(node -> ((Label) node).getText()).toList());
 
-                command(window, "edit 2 n/Benson Updated");
-                assertEquals("Benson Updated", label(window, "applicantName").getText());
-                command(window, "find Alice");
-                assertEquals("Alice Pauline", label(window, "applicantName").getText());
-                assertEquals("1 applicant", label(window, "applicantCount").getText());
-                command(window, "delete 1");
+                command(window, "view 2");
+                assertApplicantDetails(window, BENSON);
+                applicants.getSelectionModel().selectFirst();
+                assertApplicantDetails(window, ALICE);
+                command(window, "view 7");
+                assertApplicantDetails(window, GEORGE);
+                assertEquals(6, applicants.getSelectionModel().getSelectedIndex());
+                assertEquals("7 applicants", label(window, "applicantCount").getText());
+            } finally {
+                window.getRoot().close();
+            }
+        });
+    }
+
+    @Test
+    public void viewCommand_filteredList_usesDisplayedIndexAndPreservesFilter() throws Exception {
+        onFxThread(() -> {
+            MainWindow window = createWindow();
+            try {
+                command(window, "find Meier");
+                command(window, "view 2");
+                ListView<?> applicants = (ListView<?>) window.getRoot().getScene().lookup("#personListView");
+                assertEquals(List.of(BENSON, DANIEL), applicants.getItems());
+                assertEquals(1, applicants.getSelectionModel().getSelectedIndex());
+                assertApplicantDetails(window, DANIEL);
+                assertEquals("2 applicants", label(window, "applicantCount").getText());
+                assertEquals("Viewing applicant: Daniel Meier", feedback(window));
+            } finally {
+                window.getRoot().close();
+            }
+        });
+    }
+
+    @Test
+    public void viewCommand_invalidInput_preservesSelectionAndShowsError() throws Exception {
+        onFxThread(() -> {
+            MainWindow window = createWindow();
+            try {
+                command(window, "find Meier");
+                command(window, "view 2");
+                ListView<?> applicants = (ListView<?>) window.getRoot().getScene().lookup("#personListView");
+                TextField input = (TextField) window.getRoot().getScene().lookup("#commandTextField");
+                for (String invalidCommand : List.of("view 3", "view 0", "view", "view 1 extra")) {
+                    input.setText(invalidCommand);
+                    input.fireEvent(new ActionEvent());
+                    assertEquals(invalidCommand, input.getText());
+                    assertTrue(input.getStyleClass().contains(CommandBox.ERROR_STYLE_CLASS));
+                    assertEquals(DANIEL, applicants.getSelectionModel().getSelectedItem());
+                    assertApplicantDetails(window, DANIEL);
+                    assertEquals(List.of(BENSON, DANIEL), applicants.getItems());
+                    if (invalidCommand.equals("view 3")) {
+                        assertEquals(String.format(ViewCommand.MESSAGE_INVALID_INDEX, 2), feedback(window));
+                    } else {
+                        assertTrue(feedback(window).contains(ViewCommand.MESSAGE_USAGE));
+                    }
+                }
+
+                command(window, "clear");
+                input.setText("view 1");
+                input.fireEvent(new ActionEvent());
+                assertEquals("view 1", input.getText());
+                assertEquals(ViewCommand.MESSAGE_EMPTY_LIST, feedback(window));
                 assertEquals("No applicant selected", label(window, "applicantName").getText());
                 assertEquals("0 applicants", label(window, "applicantCount").getText());
-                command(window, "list");
-                assertNotNull(applicants.getSelectionModel().getSelectedItem());
-                Person selected = (Person) applicants.getSelectionModel().getSelectedItem();
-                assertEquals(selected.getName().fullName, label(window, "applicantName").getText());
-                assertEquals("No application recorded.", label(window, "applicationStatus").getText());
             } finally {
                 window.getRoot().close();
             }
@@ -86,10 +262,44 @@ public class LinkedOutUiTest {
         return window;
     }
 
+    private void withWindow(Consumer<MainWindow> action) throws Exception {
+        onFxThread(() -> {
+            MainWindow window = createWindow();
+            try {
+                assertEquals("LinkedOut", window.getRoot().getTitle());
+                action.accept(window);
+            } finally {
+                window.getRoot().close();
+            }
+        });
+    }
+
+    private void selectApplicant(MainWindow window, int zeroBasedIndex) {
+        ListView<?> applicants = (ListView<?>) window.getRoot().getScene().lookup("#personListView");
+        applicants.getSelectionModel().select(zeroBasedIndex);
+    }
+
+    private void assertApplicantName(MainWindow window, String expectedName) {
+        assertEquals(expectedName, label(window, "applicantName").getText());
+    }
+
     private Label label(MainWindow window, String id) {
         Label label = (Label) window.getRoot().getScene().lookup("#" + id);
         assertNotNull(label, "Missing applicant detail: " + id);
         return label;
+    }
+
+    private void assertApplicantDetails(MainWindow window, Person person) {
+        assertEquals(person, window.getPersonListPanel().selectedPersonProperty().get());
+        assertEquals(person.getName().fullName, label(window, "applicantName").getText());
+        Node contactDetails = window.getRoot().getScene().lookup("#contactDetails");
+        assertEquals(person.getEmail().value, ((Label) contactDetails.lookup("#email")).getText());
+        assertEquals(person.getPhone().value, ((Label) contactDetails.lookup("#phone")).getText());
+        assertEquals(person.getAddress().value, ((Label) contactDetails.lookup("#address")).getText());
+    }
+
+    private String feedback(MainWindow window) {
+        return ((TextArea) window.getRoot().getScene().lookup("#resultDisplay")).getText();
     }
 
     private void command(MainWindow window, String text) {

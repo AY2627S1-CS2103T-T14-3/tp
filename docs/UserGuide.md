@@ -34,7 +34,7 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 
    * `clear` : Deletes all contacts.
 
-   * `exit` : Exits the app.
+   * `bye` : Exits the app.
 
 1. Refer to the [Features](#features) section below for details of each command.
 
@@ -58,7 +58,7 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 * Parameters can be in any order.<br>
   For example, if the command specifies `n/NAME p/PHONE_NUMBER`, `p/PHONE_NUMBER n/NAME` is also acceptable.
 
-* Extraneous parameters for commands that take no parameters, such as `help`, `list`, `exit`, and `clear`, are ignored.<br>
+* Extraneous parameters for `help`, `list`, and `clear` are ignored. `bye` and its alias `exit` reject extra parameters.<br>
   For example, `help 123` is interpreted as `help`.
 
 * If you are using a PDF version of this document, be careful when copying and pasting commands that span multiple lines as space characters surrounding line-breaks may be omitted when copied over to the application.
@@ -146,15 +146,18 @@ Clears all entries from the address book.
 
 Format: `clear`
 
-### Exiting the program: `exit`
+### Exiting the program: `bye`
 
-Exits the program.
+Exits the program without displaying a message. The command is case-sensitive and accepts no arguments or options.
 
-Format: `exit`
+Alias: `exit`, which follows the same validation and behaviour as `bye`.
+
+Format: `bye`
 
 ### Viewing an applicant: `view`
 
-Shows the selected applicant's name and email in the command result display.
+Selects an applicant in the list, scrolls to their entry, and shows their name, email, phone,
+address, and tags in the applicant detail panel. The command result display confirms the applicant's name.
 
 Format: `view INDEX`
 
@@ -165,7 +168,10 @@ Format: `view INDEX`
   An index beyond the displayed list produces an error showing the valid range.
   An empty list produces a message that there are no applicants to view.
 
-Example: `view 1` shows the name and email of the first applicant in the displayed list.
+Examples:
+
+* `view 1` selects the first applicant in the displayed list and shows their details.
+* `find Meier` followed by `view 2` shows the details of the second applicant in the search results.
 
 ### Saving the data
 
@@ -212,3 +218,4 @@ Action | Format, Examples
 **List** | `list`
 **View** | `view INDEX`<br> e.g., `view 1`
 **Help** | `help`
+**Bye** | `bye` or `exit`

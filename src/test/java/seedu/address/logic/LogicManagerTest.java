@@ -70,11 +70,24 @@ public class LogicManagerTest {
     }
 
     @Test
-    public void execute_view_showsDetailsWithoutChangingModel() throws Exception {
+    public void execute_bye_savesDataBeforeRequestingExit() throws Exception {
+        model.addPerson(AMY);
+
+        assertEquals(new CommandResult("", false, true), logic.execute("bye"));
+
+        JsonAddressBookStorage savedStorage =
+                new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
+        assertEquals(model.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
+    }
+
+    @Test
+    public void execute_view_returnsApplicantWithoutChangingModel() throws Exception {
         model.addPerson(AMY);
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
 
-        assertCommandSuccess("view 1", "Name: Amy Bee\nEmail: amy@example.com", expectedModel);
+        CommandResult result = logic.execute("view 1");
+        assertEquals(new CommandResult("Viewing applicant: Amy Bee", AMY), result);
+        assertEquals(expectedModel, model);
     }
 
     @Test

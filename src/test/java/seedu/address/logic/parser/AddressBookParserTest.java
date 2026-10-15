@@ -13,11 +13,11 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
 import seedu.address.logic.commands.AddCommand;
+import seedu.address.logic.commands.ByeCommand;
 import seedu.address.logic.commands.ClearCommand;
 import seedu.address.logic.commands.DeleteCommand;
 import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.EditCommand.EditPersonDescriptor;
-import seedu.address.logic.commands.ExitCommand;
 import seedu.address.logic.commands.FindCommand;
 import seedu.address.logic.commands.HelpCommand;
 import seedu.address.logic.commands.ListCommand;
@@ -32,6 +32,31 @@ import seedu.address.testutil.PersonUtil;
 public class AddressBookParserTest {
 
     private final AddressBookParser parser = new AddressBookParser();
+
+    @Test
+    public void parseCommand_bye() throws Exception {
+        assertTrue(parser.parseCommand("bye") instanceof ByeCommand);
+        assertTrue(parser.parseCommand(" \tbye \t") instanceof ByeCommand);
+        assertTrue(parser.parseCommand("exit") instanceof ByeCommand);
+        assertTrue(parser.parseCommand(" \texit \t") instanceof ByeCommand);
+    }
+
+    @Test
+    public void parseCommand_byeWithArguments_throwsParseException() {
+        for (String input : List.of("bye 3", "bye -p 1", "bye -applicant",
+                "exit 3", "exit -p 1", "exit -applicant")) {
+            assertThrows(ParseException.class,
+                    String.format(MESSAGE_INVALID_COMMAND_FORMAT, ByeCommand.MESSAGE_USAGE), ()
+                        -> parser.parseCommand(input));
+        }
+    }
+
+    @Test
+    public void parseCommand_byeWithIncorrectCase_throwsParseException() {
+        for (String input : List.of("Bye", "BYE", "Exit", "EXIT")) {
+            assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> parser.parseCommand(input));
+        }
+    }
 
     @Test
     public void parseCommand_view() throws Exception {
@@ -69,12 +94,6 @@ public class AddressBookParserTest {
         EditCommand command = (EditCommand) parser.parseCommand(EditCommand.COMMAND_WORD + " "
                 + INDEX_FIRST_PERSON.getOneBased() + " " + PersonUtil.getEditPersonDescriptorDetails(descriptor));
         assertEquals(new EditCommand(INDEX_FIRST_PERSON, descriptor), command);
-    }
-
-    @Test
-    public void parseCommand_exit() throws Exception {
-        assertTrue(parser.parseCommand(ExitCommand.COMMAND_WORD) instanceof ExitCommand);
-        assertTrue(parser.parseCommand(ExitCommand.COMMAND_WORD + " 3") instanceof ExitCommand);
     }
 
     @Test

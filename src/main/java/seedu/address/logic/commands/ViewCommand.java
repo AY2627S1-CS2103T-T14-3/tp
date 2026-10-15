@@ -11,18 +11,18 @@ import seedu.address.model.Model;
 import seedu.address.model.person.Person;
 
 /**
- * Shows an applicant's name and email using their index in the displayed list.
+ * Selects an applicant and shows their details using their index in the displayed list.
  */
 public class ViewCommand extends Command {
 
     public static final String COMMAND_WORD = "view";
 
     public static final String MESSAGE_USAGE = COMMAND_WORD
-            + ": Shows the name and email of the applicant identified by the displayed index.\n"
+            + ": Selects the applicant identified by the displayed index and shows their details in the UI.\n"
             + "Parameters: INDEX (must be a positive integer)\n"
             + "Example: " + COMMAND_WORD + " 1";
 
-    public static final String MESSAGE_SUCCESS = "Name: %1$s\nEmail: %2$s";
+    public static final String MESSAGE_SUCCESS = "Viewing applicant: %1$s";
     public static final String MESSAGE_INVALID_INDEX =
             "Invalid applicant index. Please enter an integer from 1 to %1$d.";
     public static final String MESSAGE_EMPTY_LIST = "There are no applicants in the displayed list to view.";
@@ -50,7 +50,7 @@ public class ViewCommand extends Command {
         }
 
         Person personToView = lastShownList.get(targetIndex.getZeroBased());
-        return new CommandResult(String.format(MESSAGE_SUCCESS, personToView.getName(), personToView.getEmail()));
+        return new CommandResult(String.format(MESSAGE_SUCCESS, personToView.getName()), personToView);
     }
 
     @Override
