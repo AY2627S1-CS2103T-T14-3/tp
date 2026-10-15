@@ -56,6 +56,5 @@ public class ApplicantDetailPanel extends UiPart<Region> {
         selectionHint.setText("Applicant contact information");
         email.setText(person.getEmail().value);
         phone.setText(person.getPhone().value);
-        address.setText(person.getAddress().value);
     }
 }
