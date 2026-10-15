@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import seedu.address.model.application.Application;
 import seedu.address.model.person.Person;
 
 /** Displays the selected applicant's contact information and application placeholder. */
@@ -24,16 +25,22 @@ public class ApplicantDetailPanel extends UiPart<Region> {
     @FXML
     private Label phone;
     @FXML
+    private Label applicationStatus;
+    @FXML
     private VBox contactDetails;
 
     /** Creates the detail panel with no applicant selected. */
     public ApplicantDetailPanel() {
         super(FXML);
-        showApplicant(null);
+        showApplicant(null, null);
     }
 
-    /** Updates all details, or shows the empty state when no applicant is selected. */
-    public void showApplicant(Person person) {
+    /**
+     * Updates all details, or shows the empty state when no applicant is selected.
+     * @param person applicant to display, or null when none is selected
+     * @param application application belonging to {@code person}, or null when none is recorded
+     */
+    public void showApplicant(Person person, Application application) {
         boolean selected = person != null;
         contactDetails.setVisible(selected);
         contactDetails.setManaged(selected);
@@ -43,6 +50,7 @@ public class ApplicantDetailPanel extends UiPart<Region> {
             selectionHint.setText("Select an applicant from the list to view their details.");
             email.setText("");
             phone.setText("");
+            applicationStatus.setText("No application recorded.");
             return;
         }
 
@@ -53,5 +61,10 @@ public class ApplicantDetailPanel extends UiPart<Region> {
         selectionHint.setText("Applicant contact information");
         email.setText(person.getEmail().value);
         phone.setText(person.getPhone().value);
+        if (application == null) {
+            applicationStatus.setText("No application recorded.");
+        } else {
+            applicationStatus.setText(application.getJobDescription() + " (" + application.getStatus() + ")");
+        }
     }
 }

@@ -30,6 +30,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import seedu.address.logic.LogicManager;
+import seedu.address.logic.commands.AddApplicationCommand;
 import seedu.address.logic.commands.ViewCommand;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
@@ -268,6 +269,45 @@ public class LinkedOutUiTest {
             } finally {
                 window.getRoot().close();
             }
+        });
+    }
+
+    @Test
+    public void addApplication_validCommand_selectsApplicantAndShowsApplication() throws Exception {
+        withWindow(window -> {
+            command(window, "add -application 2 -job Janitor -s accept");
+            ListView<?> applicants = (ListView<?>) window.getRoot().getScene().lookup("#personListView");
+            assertEquals(1, applicants.getSelectionModel().getSelectedIndex());
+            assertApplicantDetails(window, BENSON);
+            assertEquals("Janitor (accept)", label(window, "applicationStatus").getText());
+            assertEquals(String.format(AddApplicationCommand.MESSAGE_SUCCESS, BENSON.getName(), BENSON.getEmail()),
+                    feedback(window));
+            assertEquals("7 applicants", label(window, "applicantCount").getText());
+        });
+    }
+
+    @Test
+    public void addApplication_duplicateAndInvalidStatus_preservesExistingApplication() throws Exception {
+        withWindow(window -> {
+            command(window, "find Meier");
+            command(window, "add -p 1 -j Janitor");
+            ListView<?> applicants = (ListView<?>) window.getRoot().getScene().lookup("#personListView");
+            TextField input = (TextField) window.getRoot().getScene().lookup("#commandTextField");
+
+            input.setText("add -p 1 -j Engineer -s ACCEPT");
+            input.fireEvent(new ActionEvent());
+            assertEquals("add -p 1 -j Engineer -s ACCEPT", input.getText());
+            assertTrue(input.getStyleClass().contains(CommandBox.ERROR_STYLE_CLASS));
+            assertEquals(AddApplicationCommand.MESSAGE_INVALID_STATUS, feedback(window));
+            assertEquals(List.of(BENSON, DANIEL), applicants.getItems());
+            assertApplicantDetails(window, BENSON);
+            assertEquals("Janitor (pending)", label(window, "applicationStatus").getText());
+
+            input.setText("add -p 1 -j Engineer");
+            input.fireEvent(new ActionEvent());
+            assertEquals(AddApplicationCommand.MESSAGE_DUPLICATE_APPLICATION, feedback(window));
+            assertEquals("Janitor (pending)", label(window, "applicationStatus").getText());
+            assertEquals(List.of(BENSON, DANIEL), applicants.getItems());
         });
     }
 

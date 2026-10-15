@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.util.logging.Logger;
 
 import javafx.beans.binding.Bindings;
+import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -19,6 +20,8 @@ import seedu.address.logic.Logic;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.model.application.Application;
+import seedu.address.model.person.Person;
 
 /**
  * The Main Window. Provides the basic application layout containing
@@ -128,8 +131,10 @@ public class MainWindow extends UiPart<Stage> {
         ApplicantDetailPanel detailPanel = new ApplicantDetailPanel();
         applicantDetailPlaceholder.getChildren().add(detailPanel.getRoot());
         personListPanel.selectedPersonProperty().addListener((observable, previous, selected) ->
-                detailPanel.showApplicant(selected));
-        detailPanel.showApplicant(personListPanel.selectedPersonProperty().get());
+                showSelectedApplicant(detailPanel));
+        logic.getApplicationList().addListener((ListChangeListener<Application>) change ->
+                showSelectedApplicant(detailPanel));
+        showSelectedApplicant(detailPanel);
         applicantCount.textProperty().bind(Bindings.createStringBinding(() -> {
             int count = logic.getFilteredPersonList().size();
             return count + (count == 1 ? " applicant" : " applicants");
@@ -188,6 +193,22 @@ public class MainWindow extends UiPart<Stage> {
 
     public PersonListPanel getPersonListPanel() {
         return personListPanel;
+    }
+
+    /**
+     * Shows the selected applicant and that applicant's application, if one has been recorded.
+     * @param detailPanel panel that displays the selected applicant
+     */
+    private void showSelectedApplicant(ApplicantDetailPanel detailPanel) {
+        Person selected = personListPanel.selectedPersonProperty().get();
+        Application application = null;
+        if (selected != null) {
+            application = logic.getApplicationList().stream()
+                    .filter(existing -> existing.getApplicant().isSamePerson(selected))
+                    .findFirst()
+                    .orElse(null);
+        }
+        detailPanel.showApplicant(selected, application);
     }
 
     /**

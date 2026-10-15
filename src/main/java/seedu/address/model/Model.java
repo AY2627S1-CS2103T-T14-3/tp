@@ -1,9 +1,11 @@
 package seedu.address.model;
 
+import java.util.Optional;
 import java.util.function.Predicate;
 
 import javafx.collections.ObservableList;
 import seedu.address.commons.core.GuiSettings;
+import seedu.address.model.application.Application;
 import seedu.address.model.person.Person;
 
 /**
@@ -59,6 +61,29 @@ public interface Model {
      * The person identity of {@code editedPerson} must not be the same as another existing person in the address book.
      */
     void setPerson(Person target, Person editedPerson);
+
+    /**
+     * Returns true if {@code person} already has an application.
+     * @param person applicant to check
+     * @return true if {@code person} already has an application
+     */
+    boolean hasApplication(Person person);
+
+    /**
+     * Adds an application for an existing applicant who does not already have one.
+     * @param application application to add
+     */
+    void addApplication(Application application);
+
+    /**
+     * Returns the application recorded for {@code person}, if any.
+     * @param person applicant whose application is requested
+     * @return the application recorded for {@code person}, if any
+     */
+    Optional<Application> getApplication(Person person);
+
+    /** Returns an unmodifiable view of the applications */
+    ObservableList<Application> getApplicationList();
 
     /** Returns an unmodifiable view of the filtered person list */
     ObservableList<Person> getFilteredPersonList();

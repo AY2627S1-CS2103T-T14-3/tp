@@ -182,6 +182,26 @@ Examples:
 * `view 1` selects the first applicant in the displayed list and shows their details.
 * `find Meier` followed by `view 2` shows the details of the second applicant in the search results.
 
+### Adding an application: `add -p`
+
+Adds one job application to an applicant in the displayed list. Each applicant can have only one application.
+
+Format: `add -p INDEX -j JOB_DESCRIPTION [-s STATUS]`
+
+* `INDEX` is the positive integer shown beside an applicant in the current list.
+* When the list is filtered, the index refers to that filtered list.
+* `JOB_DESCRIPTION` is the role the applicant is applying for. It cannot contain another option, such as `-s`.
+* `STATUS` is optional. When it is omitted, the status is `pending`.
+* Accepted statuses are `accept`, `reject`, and `pending`. The value is case-sensitive.
+* Aliases: `-application` for `-p`, `-job` for `-j`, and `-status` for `-s`.
+* A successful command selects that applicant and shows the job and status in the detail panel.
+* An applicant who already has an application cannot receive a second one.
+
+Examples:
+
+* `add -p 1 -j Janitor` adds a pending Janitor application for the first displayed applicant.
+* `add -application 2 -job ClaudeGPT Expert -s accept` adds an accepted application for the second displayed applicant.
+
 ### Saving the data
 
 AddressBook automatically saves data after every command. You do not need to save manually.
@@ -220,6 +240,7 @@ _Details coming soon ..._
 Action | Format, Examples
 --------|------------------
 **Add** | `add -n NAME -p PHONE_NUMBER -e EMAIL` <br> e.g., `add -n James Ho -p 22224444 -e jamesho@example.com`
+**Add application** | `add -p INDEX -j JOB_DESCRIPTION [-s STATUS]`<br> e.g., `add -p 1 -j Janitor -s pending`
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
