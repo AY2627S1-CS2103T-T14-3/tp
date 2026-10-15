@@ -76,6 +76,15 @@
 .detail-value { -fx-font-size: 14px; }
 .separator .line { -fx-border-color: #e7edf5; -fx-border-width: 1 0 0 0; }
 .application-section { -fx-background-color: #f7f9fd; -fx-background-radius: 8; -fx-padding: 14; }
+.status-badge {
+    -fx-background-radius: 12;
+    -fx-padding: 3 10;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+.status-badge.status-accept { -fx-background-color: #dcfce7; -fx-text-fill: #166534; }
+.status-badge.status-reject { -fx-background-color: #fee2e2; -fx-text-fill: #991b1b; }
+.status-badge.status-pending { -fx-background-color: #fef3c7; -fx-text-fill: #92400e; }
 .count-badge {
     -fx-background-color: #edf3ff;
     -fx-background-radius: 12;

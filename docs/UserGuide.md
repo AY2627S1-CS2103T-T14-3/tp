@@ -202,6 +202,24 @@ Examples:
 * `add -p 1 -j Janitor` adds a pending Janitor application for the first displayed applicant.
 * `add -application 2 -job ClaudeGPT Expert -s accept` adds an accepted application for the second displayed applicant.
 
+### Updating an application status: `set`
+
+Changes the status of an application that already belongs to an applicant in the displayed list. The job description is left unchanged.
+
+Format: `set -p INDEX -s STATUS`
+
+* `INDEX` is the positive integer shown beside an applicant in the current list.
+* When the list is filtered, the index refers to that filtered list.
+* `STATUS` is required. Accepted statuses are `accept`, `reject`, and `pending`. The value is case-sensitive.
+* Aliases: `-application` for `-p`, and `-status` for `-s`.
+* A successful command selects that applicant and shows the job and updated status in the detail panel.
+* An applicant who does not have an application cannot have a status set.
+
+Examples:
+
+* `set -p 1 -s accept` marks the first displayed applicant's application as accepted.
+* `set -application 2 -status reject` marks the second displayed applicant's application as rejected.
+
 ### Saving the data
 
 AddressBook automatically saves data after every command. You do not need to save manually.
@@ -241,6 +259,7 @@ Action | Format, Examples
 --------|------------------
 **Add** | `add -n NAME -p PHONE_NUMBER -e EMAIL` <br> e.g., `add -n James Ho -p 22224444 -e jamesho@example.com`
 **Add application** | `add -p INDEX -j JOB_DESCRIPTION [-s STATUS]`<br> e.g., `add -p 1 -j Janitor -s pending`
+**Set application status** | `set -p INDEX -s STATUS`<br> e.g., `set -p 1 -s accept`
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`

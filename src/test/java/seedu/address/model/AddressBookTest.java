@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import seedu.address.model.application.Application;
+import seedu.address.model.application.exceptions.ApplicationNotFoundException;
 import seedu.address.model.application.exceptions.DuplicateApplicationException;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.exceptions.DuplicatePersonException;
@@ -109,6 +110,26 @@ public class AddressBookTest {
                 new PersonBuilder(ALICE).withPhone("91234567").build(), "Engineer", Application.Status.ACCEPT);
 
         assertThrows(DuplicateApplicationException.class, () -> addressBook.addApplication(duplicate));
+    }
+
+    @Test
+    public void setApplication_existingApplication_updatesStatusAndKeepsJob() {
+        addressBook.addPerson(ALICE);
+        Application original = new Application(ALICE, "Janitor", Application.Status.PENDING);
+        addressBook.addApplication(original);
+
+        Application updated = new Application(ALICE, "Janitor", Application.Status.ACCEPT);
+        addressBook.setApplication(original, updated);
+
+        assertEquals(updated, addressBook.getApplication(ALICE).orElseThrow());
+    }
+
+    @Test
+    public void setApplication_missingApplication_throwsApplicationNotFoundException() {
+        Application original = new Application(ALICE, "Janitor", Application.Status.PENDING);
+        Application updated = new Application(ALICE, "Janitor", Application.Status.ACCEPT);
+
+        assertThrows(ApplicationNotFoundException.class, () -> addressBook.setApplication(original, updated));
     }
 
     @Test

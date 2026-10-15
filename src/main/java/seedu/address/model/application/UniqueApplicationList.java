@@ -9,6 +9,7 @@ import java.util.Optional;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import seedu.address.model.application.exceptions.ApplicationNotFoundException;
 import seedu.address.model.application.exceptions.DuplicateApplicationException;
 import seedu.address.model.person.Person;
 
@@ -72,6 +73,24 @@ public class UniqueApplicationList implements Iterable<Application> {
             internalList.set(index, new Application(
                     editedPerson, application.getJobDescription(), application.getStatus()));
         });
+    }
+
+    /**
+     * Replaces {@code target} with {@code editedApplication}.
+     * {@code target} must already be in the list, and both applications must belong to the same applicant.
+     * @param target application currently stored
+     * @param editedApplication application to store instead
+     */
+    public void setApplication(Application target, Application editedApplication) {
+        requireAllNonNull(target, editedApplication);
+        int index = internalList.indexOf(target);
+        if (index == -1) {
+            throw new ApplicationNotFoundException();
+        }
+        if (!target.isForSameApplicant(editedApplication)) {
+            throw new DuplicateApplicationException();
+        }
+        internalList.set(index, editedApplication);
     }
 
     /**

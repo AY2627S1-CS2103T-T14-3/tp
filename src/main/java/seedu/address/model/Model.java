@@ -76,6 +76,14 @@ public interface Model {
     void addApplication(Application application);
 
     /**
+     * Replaces {@code target} with {@code editedApplication}.
+     * {@code target} must already be recorded, and both applications must belong to the same applicant.
+     * @param target application currently stored
+     * @param editedApplication application to store instead
+     */
+    void setApplication(Application target, Application editedApplication);
+
+    /**
      * Returns the application recorded for {@code person}, if any.
      * @param person applicant whose application is requested
      * @return the application recorded for {@code person}, if any
