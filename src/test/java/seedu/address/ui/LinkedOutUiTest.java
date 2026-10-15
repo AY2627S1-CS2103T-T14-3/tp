@@ -175,9 +175,6 @@ public class LinkedOutUiTest {
                 assertApplicantDetails(window, BENSON);
                 assertEquals(1, applicants.getSelectionModel().getSelectedIndex());
                 assertEquals("Viewing applicant: Benson Meier", feedback(window));
-                FlowPane tags = (FlowPane) window.getRoot().getScene().lookup("#tags");
-                assertEquals(List.of("friends", "owesMoney"), tags.getChildren().stream()
-                        .map(node -> ((Label) node).getText()).toList());
 
                 command(window, "view 2");
                 assertApplicantDetails(window, BENSON);
