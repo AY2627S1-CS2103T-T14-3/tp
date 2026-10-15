@@ -58,7 +58,7 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 * Parameters can be in any order.<br>
   For example, if the command specifies `n/NAME p/PHONE_NUMBER`, `p/PHONE_NUMBER n/NAME` is also acceptable.
 
-* Extraneous parameters for commands that take no parameters, such as `help`, `list`, `exit`, and `clear`, are ignored.<br>
+* Extraneous parameters for `help`, `list`, and `clear` are ignored. `bye` and its alias `exit` reject extra parameters.<br>
   For example, `help 123` is interpreted as `help`.
 
 * If you are using a PDF version of this document, be careful when copying and pasting commands that span multiple lines as space characters surrounding line-breaks may be omitted when copied over to the application.
@@ -150,6 +150,8 @@ Format: `clear`
 
 Exits the program without displaying a message. The command is case-sensitive and accepts no arguments or options.
 
+Alias: `exit`, which follows the same validation and behaviour as `bye`.
+
 Format: `bye`
 
 ### Viewing an applicant: `view`
@@ -212,4 +214,4 @@ Action | Format, Examples
 **List** | `list`
 **View** | `view INDEX`<br> e.g., `view 1`
 **Help** | `help`
-**Bye** | `bye`
+**Bye** | `bye` or `exit`
