@@ -27,6 +27,8 @@ public class ApplicantDetailPanel extends UiPart<Region> {
     @FXML
     private Label applicationStatus;
     @FXML
+    private Label applicationStatusBadge;
+    @FXML
     private VBox contactDetails;
 
     /** Creates the detail panel with no applicant selected. */
@@ -50,7 +52,7 @@ public class ApplicantDetailPanel extends UiPart<Region> {
             selectionHint.setText("Select an applicant from the list to view their details.");
             email.setText("");
             phone.setText("");
-            applicationStatus.setText("No application recorded.");
+            showApplication(null);
             return;
         }
 
@@ -61,10 +63,39 @@ public class ApplicantDetailPanel extends UiPart<Region> {
         selectionHint.setText("Applicant contact information");
         email.setText(person.getEmail().value);
         phone.setText(person.getPhone().value);
+        showApplication(application);
+    }
+
+    /**
+     * Shows the job and a status badge, or the empty message when {@code application} is null.
+     * @param application application to display, or null when none is recorded
+     */
+    private void showApplication(Application application) {
+        applicationStatus.getStyleClass().removeAll("muted-label", "detail-value");
+        applicationStatusBadge.getStyleClass().removeAll("status-accept", "status-reject", "status-pending");
         if (application == null) {
+            applicationStatus.getStyleClass().add("muted-label");
             applicationStatus.setText("No application recorded.");
+            applicationStatusBadge.setText("");
+            applicationStatusBadge.setVisible(false);
+            applicationStatusBadge.setManaged(false);
+            return;
+        }
+
+        applicationStatus.getStyleClass().add("detail-value");
+        applicationStatus.setText(application.getJobDescription());
+        applicationStatusBadge.setVisible(true);
+        applicationStatusBadge.setManaged(true);
+        Application.Status status = application.getStatus();
+        if (status == Application.Status.ACCEPT) {
+            applicationStatusBadge.setText("Accepted");
+            applicationStatusBadge.getStyleClass().add("status-accept");
+        } else if (status == Application.Status.REJECT) {
+            applicationStatusBadge.setText("Rejected");
+            applicationStatusBadge.getStyleClass().add("status-reject");
         } else {
-            applicationStatus.setText(application.getJobDescription() + " (" + application.getStatus() + ")");
+            applicationStatusBadge.setText("Pending");
+            applicationStatusBadge.getStyleClass().add("status-pending");
         }
     }
 }

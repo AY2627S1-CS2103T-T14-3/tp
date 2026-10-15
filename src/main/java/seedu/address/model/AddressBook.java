@@ -123,6 +123,16 @@ public class AddressBook implements ReadOnlyAddressBook {
     }
 
     /**
+     * Replaces {@code target} with {@code editedApplication}.
+     * {@code target} must already be recorded, and both applications must belong to the same applicant.
+     * @param target application currently stored
+     * @param editedApplication application to store instead
+     */
+    public void setApplication(Application target, Application editedApplication) {
+        applications.setApplication(target, editedApplication);
+    }
+
+    /**
      * Replaces the application list with {@code applications}.
      * {@code applications} must not contain more than one application per applicant.
      * @param applications applications to store

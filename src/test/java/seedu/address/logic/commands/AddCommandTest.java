@@ -145,6 +145,11 @@ public class AddCommandTest {
         }
 
         @Override
+        public void setApplication(Application target, Application editedApplication) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
         public Optional<Application> getApplication(Person person) {
             throw new AssertionError("This method should not be called.");
         }

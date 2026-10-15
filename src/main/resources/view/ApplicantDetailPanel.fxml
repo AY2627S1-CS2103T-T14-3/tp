@@ -34,7 +34,11 @@
       <Separator />
       <VBox spacing="8" styleClass="application-section">
         <Label text="Application" styleClass="section-title" />
-        <Label fx:id="applicationStatus" text="No application recorded." styleClass="muted-label" wrapText="true" />
+        <HBox alignment="CENTER_LEFT" spacing="10">
+          <Label fx:id="applicationStatus" text="No application recorded." styleClass="muted-label"
+                 wrapText="true" HBox.hgrow="ALWAYS" />
+          <Label fx:id="applicationStatusBadge" styleClass="status-badge" />
+        </HBox>
       </VBox>
     </VBox>
   </content>

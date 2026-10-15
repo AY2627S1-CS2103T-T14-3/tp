@@ -108,6 +108,12 @@ public class ModelManager implements Model {
     }
 
     @Override
+    public void setApplication(Application target, Application editedApplication) {
+        requireAllNonNull(target, editedApplication);
+        addressBook.setApplication(target, editedApplication);
+    }
+
+    @Override
     public Optional<Application> getApplication(Person person) {
         requireNonNull(person);
         return addressBook.getApplication(person);

@@ -23,6 +23,7 @@ import seedu.address.logic.commands.EditCommand.EditPersonDescriptor;
 import seedu.address.logic.commands.FindCommand;
 import seedu.address.logic.commands.HelpCommand;
 import seedu.address.logic.commands.ListCommand;
+import seedu.address.logic.commands.SetApplicationStatusCommand;
 import seedu.address.logic.commands.ViewCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.application.Application;
@@ -85,6 +86,17 @@ public class AddressBookParserTest {
         assertEquals(expected, parser.parseCommand("  add   -application   1   -job   Janitor  "));
         assertThrows(ParseException.class, MESSAGE_INVALID_STATUS, () ->
                 parser.parseCommand("add -p 1 -j Janitor -s ACCEPT"));
+    }
+
+    @Test
+    public void parseCommand_setApplicationStatus() throws Exception {
+        assertEquals(new SetApplicationStatusCommand(INDEX_FIRST_PERSON, Application.Status.ACCEPT),
+                parser.parseCommand("set -p 1 -s accept"));
+        assertEquals(new SetApplicationStatusCommand(INDEX_FIRST_PERSON, Application.Status.REJECT),
+                parser.parseCommand("  set   -application   1   -status   reject  "));
+        assertThrows(ParseException.class, SetApplicationStatusCommand.MESSAGE_INVALID_STATUS, () ->
+                parser.parseCommand("set -p 1 -s ACCEPT"));
+        assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> parser.parseCommand("Set -p 1 -s accept"));
     }
 
     @Test
