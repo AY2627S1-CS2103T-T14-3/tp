@@ -75,13 +75,6 @@
 }
 .detail-value { -fx-font-size: 14px; }
 .separator .line { -fx-border-color: #e7edf5; -fx-border-width: 1 0 0 0; }
-.tags .label {
-    -fx-background-color: #edf3ff;
-    -fx-background-radius: 5;
-    -fx-text-fill: #365a99;
-    -fx-padding: 4 8;
-    -fx-font-size: 11px;
-}
 .application-section { -fx-background-color: #f7f9fd; -fx-background-radius: 8; -fx-padding: 14; }
 .count-badge {
     -fx-background-color: #edf3ff;

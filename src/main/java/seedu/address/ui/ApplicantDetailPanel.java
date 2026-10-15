@@ -1,12 +1,10 @@
 package seedu.address.ui;
 
-import java.util.Comparator;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import seedu.address.model.person.Person;
@@ -28,8 +26,6 @@ public class ApplicantDetailPanel extends UiPart<Region> {
     @FXML
     private Label address;
     @FXML
-    private FlowPane tags;
-    @FXML
     private VBox contactDetails;
 
     /** Creates the detail panel with no applicant selected. */
@@ -43,7 +39,6 @@ public class ApplicantDetailPanel extends UiPart<Region> {
         boolean selected = person != null;
         contactDetails.setVisible(selected);
         contactDetails.setManaged(selected);
-        tags.getChildren().clear();
         if (!selected) {
             applicantName.setText("No applicant selected");
             initials.setText("?");
@@ -62,10 +57,5 @@ public class ApplicantDetailPanel extends UiPart<Region> {
         email.setText(person.getEmail().value);
         phone.setText(person.getPhone().value);
         address.setText(person.getAddress().value);
-        person.getTags().stream().sorted(Comparator.comparing(tag -> tag.tagName))
-                .forEach(tag -> tags.getChildren().add(new Label(tag.tagName)));
-        if (tags.getChildren().isEmpty()) {
-            tags.getChildren().add(new Label("No tags"));
-        }
     }
 }
