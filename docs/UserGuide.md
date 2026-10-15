@@ -28,7 +28,7 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 
    * `list` : Lists all contacts.
 
-   * `add n/John Doe p/98765432 e/johnd@example.com` : Adds a contact named `John Doe` to the Address Book.
+   * `add -n John Doe -p 98765432 -e johnd@example.com` : Adds a contact named `John Doe` to the Address Book.
 
    * `delete 3` : Deletes the 3rd contact shown in the current list.
 
@@ -47,13 +47,15 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 **:information_source: Notes about the command format:**<br>
 
 * Words in `UPPER_CASE` are the parameters to be supplied by the user.<br>
-  For example, in `add n/NAME`, replace `NAME` with a value such as `John Doe`.
+  For example, in `add -n NAME`, replace `NAME` with a value such as `John Doe`.
 
 * Items in square brackets are optional.<br>
-  For example, `n/NAME [t/TAG]` can be used as `n/John Doe t/friend` or as `n/John Doe`.
+  For example, `edit INDEX [n/NAME] [p/PHONE]` can be used as `edit 1 n/John Doe p/98765432` or as `edit 1 n/John Doe`.
 
 * Parameters can be in any order.<br>
-  For example, if the command specifies `n/NAME p/PHONE_NUMBER`, `p/PHONE_NUMBER n/NAME` is also acceptable.
+  For example, if the command specifies `-n NAME -p PHONE_NUMBER`, `-p PHONE_NUMBER -n NAME` is also acceptable.
+
+* `add` uses hyphen-prefixed options such as `-n NAME`. `edit` uses slash-prefixed fields such as `n/NAME`.
 
 * Extraneous parameters for `help`, `list`, and `clear` are ignored. `bye` and its alias `exit` reject extra parameters.<br>
   For example, `help 123` is interpreted as `help`.
@@ -74,15 +76,27 @@ Format: `help`
 
 Adds a person to the address book.
 
-Format: `add n/NAME p/PHONE_NUMBER e/EMAIL`
+Format: `add -n NAME -p PHONE_NUMBER -e EMAIL`
 
-<div markdown="span" class="alert alert-primary">:bulb: **Tip:**
-A person can have any number of tags, including zero.
-</div>
+Each option also accepts a long alias:
+
+Field | Short option | Long option
+------|--------------|------------
+Name | `-n` | `-name`
+Phone | `-p` | `-phone`
+Email | `-e` | `-email`
+
+* All three fields are required. Each option must appear exactly once and have a non-empty value.
+* Short and long aliases can be mixed, and options can appear in any order.
+* Values containing spaces, such as a full name, do not need quotation marks.
+* Unknown options, repeated options (including different aliases for the same field), missing values, and text before the first option produce a format error with a usage hint.
+* Standalone words such as `-unknown` are treated as options, even inside a value.
+* The legacy `add n/NAME p/PHONE_NUMBER e/EMAIL` format is no longer accepted.
 
 Examples:
-* `add n/John Doe p/98765432 e/johnd@example.com`
-* `add n/Betsy Crowe e/betsycrowe@example.com p/1234567`
+
+* `add -n John Doe -p 98765432 -e johnd@example.com`
+* `add -name Betsy Crowe -email betsycrowe@example.com -phone 1234567`
 
 ### Listing all persons: `list`
 
@@ -102,7 +116,7 @@ Format: `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL]`
 
 Examples:
 *  `edit 1 p/91234567 e/johndoe@example.com` Edits the phone number and email address of the 1st person to be `91234567` and `johndoe@example.com` respectively.
-*  `edit 2 n/Betsy Crower t/` Edits the name of the 2nd person to be `Betsy Crower` and clears all existing tags.
+*  `edit 2 n/Betsy Crower` Edits the name of the 2nd person to be `Betsy Crower`.
 
 ### Locating persons by name: `find`
 
@@ -205,7 +219,7 @@ _Details coming soon ..._
 
 Action | Format, Examples
 --------|------------------
-**Add** | `add n/NAME p/PHONE_NUMBER e/EMAIL` <br> e.g., `add n/James Ho p/22224444 e/jamesho@example.com`
+**Add** | `add -n NAME -p PHONE_NUMBER -e EMAIL` <br> e.g., `add -n James Ho -p 22224444 -e jamesho@example.com`
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
 **Edit** | `edit INDEX [n/NAME] [p/PHONE_NUMBER] [e/EMAIL]`<br> e.g., `edit 2 n/James Lee e/jameslee@example.com`
