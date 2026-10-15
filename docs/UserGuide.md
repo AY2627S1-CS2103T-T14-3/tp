@@ -156,7 +156,8 @@ Format: `bye`
 
 ### Viewing an applicant: `view`
 
-Shows the selected applicant's name and email in the command result display.
+Selects an applicant in the list, scrolls to their entry, and shows their name, email, phone,
+address, and tags in the applicant detail panel. The command result display confirms the applicant's name.
 
 Format: `view INDEX`
 
@@ -167,7 +168,10 @@ Format: `view INDEX`
   An index beyond the displayed list produces an error showing the valid range.
   An empty list produces a message that there are no applicants to view.
 
-Example: `view 1` shows the name and email of the first applicant in the displayed list.
+Examples:
+
+* `view 1` selects the first applicant in the displayed list and shows their details.
+* `find Meier` followed by `view 2` shows the details of the second applicant in the search results.
 
 ### Saving the data
 

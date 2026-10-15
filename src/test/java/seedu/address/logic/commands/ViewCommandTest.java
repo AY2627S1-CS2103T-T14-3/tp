@@ -8,6 +8,8 @@ import static seedu.address.logic.commands.CommandTestUtil.assertCommandSuccess;
 import static seedu.address.logic.commands.CommandTestUtil.showPersonAtIndex;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
 import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND_PERSON;
+import static seedu.address.testutil.TypicalPersons.ALICE;
+import static seedu.address.testutil.TypicalPersons.BENSON;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
 
 import org.junit.jupiter.api.Test;
@@ -22,10 +24,11 @@ public class ViewCommandTest {
     private final Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs());
 
     @Test
-    public void execute_validIndexUnfilteredList_showsDetailsWithoutChangingModel() {
+    public void execute_validIndexUnfilteredList_returnsApplicantWithoutChangingModel() {
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
+        CommandResult expectedResult = new CommandResult("Viewing applicant: Alice Pauline", ALICE);
         assertCommandSuccess(new ViewCommand(INDEX_FIRST_PERSON), model,
-                "Name: Alice Pauline\nEmail: alice@example.com", expectedModel);
+                expectedResult, expectedModel);
     }
 
     @Test
@@ -34,8 +37,9 @@ public class ViewCommandTest {
         showPersonAtIndex(model, INDEX_SECOND_PERSON);
         showPersonAtIndex(expectedModel, INDEX_SECOND_PERSON);
 
+        CommandResult expectedResult = new CommandResult("Viewing applicant: Benson Meier", BENSON);
         assertCommandSuccess(new ViewCommand(INDEX_FIRST_PERSON), model,
-                "Name: Benson Meier\nEmail: johnd@example.com", expectedModel);
+                expectedResult, expectedModel);
     }
 
     @Test
