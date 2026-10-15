@@ -26,7 +26,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.FlowPane;
 import javafx.stage.Stage;
 import seedu.address.logic.LogicManager;
 import seedu.address.logic.commands.ViewCommand;
