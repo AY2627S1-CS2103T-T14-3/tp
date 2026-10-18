@@ -72,7 +72,7 @@ dependencies {
 }
 
 shadowJar {
-    archiveFileName = 'addressbook.jar'
+    archiveFileName = 'linkedout.jar'
 }
 
 defaultTasks 'clean', 'test'
