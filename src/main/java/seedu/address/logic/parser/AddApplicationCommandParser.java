@@ -1,8 +1,8 @@
 package seedu.address.logic.parser;
 
 import static java.util.Objects.requireNonNull;
-import static seedu.address.logic.parser.CliSyntax.OPTION_STATUS;
 import static seedu.address.logic.parser.CliSyntax.OPTION_JOB;
+import static seedu.address.logic.parser.CliSyntax.OPTION_STATUS;
 
 import seedu.address.commons.core.index.Index;
 import seedu.address.logic.commands.AddApplicationCommand;
@@ -45,7 +45,7 @@ public class AddApplicationCommandParser implements Parser<AddApplicationCommand
      */
     private ArgumentMultimap parseOptions(String args) throws ParseException {
         try {
-            return ArgumentTokenizer.tokenizeOptions(args, OPTION_JOB, OPTION_STATUS);
+            return ArgumentTokenizer.tokenizeOptions(args, true, OPTION_JOB, OPTION_STATUS);
         } catch (ParseException pe) {
             throw unrecognized(args);
         }

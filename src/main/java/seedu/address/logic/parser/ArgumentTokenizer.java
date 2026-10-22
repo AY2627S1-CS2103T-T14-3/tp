@@ -40,14 +40,20 @@ public class ArgumentTokenizer {
      * @return the parsed options, keyed by their canonical options
      * @throws ParseException if the input or option configuration is malformed
      */
-    public static ArgumentMultimap tokenizeOptions(String argsString, Option... options) throws ParseException {
+    public static ArgumentMultimap tokenizeOptions(String argsString, boolean hasPreamble, Option... options)
+            throws ParseException {
         if (argsString == null || options == null) {
             throw new NullPointerException("Arguments and options must not be null");
         }
 
         Map<String, Option> optionsByAlias = buildAliasMap(options);
         List<OptionOccurrence> occurrences = findOptionOccurrences(argsString, optionsByAlias);
-        validateNoPositionalPreamble(argsString, occurrences);
+
+        if (hasPreamble) {
+            addPositionalPreamble(argsString, occurrences);
+        } else {
+            validateNoPositionalPreamble(argsString, occurrences);
+        }
 
         ArgumentMultimap result = new ArgumentMultimap();
         Set<Option> seenOptions = new HashSet<>();
@@ -113,6 +119,16 @@ public class ArgumentTokenizer {
         if (!argsString.substring(0, firstOptionStart).trim().isEmpty()) {
             throw malformedOptions();
         }
+    }
+
+    private static List<OptionOccurrence> addPositionalPreamble(String argsString, List<OptionOccurrence> occurrences)
+            throws ParseException {
+        int firstOptionStart = occurrences.isEmpty() ? argsString.length() : occurrences.getFirst().startPosition();
+        if (argsString.substring(0, firstOptionStart).trim().isEmpty()) {
+            throw malformedOptions();
+        }
+        occurrences.addFirst(new OptionOccurrence(Option.OPTION_EMPTY, 0, 0));
+        return occurrences;
     }
 
     private static ParseException malformedOptions() {

@@ -70,7 +70,7 @@ public class SetApplicationStatusCommandParser implements Parser<SetApplicationS
      */
     private ArgumentMultimap parseOptions(String args, String optionArgs) throws ParseException {
         try {
-            return ArgumentTokenizer.tokenizeOptions(optionArgs, OPTION_STATUS);
+            return ArgumentTokenizer.tokenizeOptions(optionArgs, true, OPTION_STATUS);
         } catch (ParseException pe) {
             throw unrecognized(args);
         }

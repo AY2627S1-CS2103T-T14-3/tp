@@ -43,10 +43,12 @@ public class ArgumentTokenizerTest {
     public void tokenizeOptions_shortAndLongAliases_valuesCanonicalized() throws ParseException {
         ArgumentMultimap shortOptions = ArgumentTokenizer.tokenizeOptions(
                 " -n John Doe -e john@example.com",
+                false,
                 nameOption,
                 emailOption);
         ArgumentMultimap longOptions = ArgumentTokenizer.tokenizeOptions(
                 " -name John Doe -email john@example.com",
+                false,
                 nameOption,
                 emailOption);
 
@@ -61,6 +63,7 @@ public class ArgumentTokenizerTest {
     public void tokenizeOptions_optionalOptionMayBeAbsent() throws ParseException {
         ArgumentMultimap options = ArgumentTokenizer.tokenizeOptions(
                 "-n John Doe",
+                false,
                 nameOption,
                 unusedOption);
 
@@ -72,6 +75,7 @@ public class ArgumentTokenizerTest {
     public void tokenizeOptions_flagOption_presentWithoutValue() throws ParseException {
         ArgumentMultimap options = ArgumentTokenizer.tokenizeOptions(
                 "-t -n John Doe",
+                false,
                 testFlag,
                 nameOption);
 
@@ -136,14 +140,14 @@ public class ArgumentTokenizerTest {
         Option emailWithConflictingAlias = Option.required("-e", "-name");
 
         assertThrows(IllegalArgumentException.class, () ->
-                ArgumentTokenizer.tokenizeOptions("", name, emailWithConflictingAlias));
+                ArgumentTokenizer.tokenizeOptions("", false, name, emailWithConflictingAlias));
         assertThrows(IllegalArgumentException.class, () ->
-                ArgumentTokenizer.tokenizeOptions("", name, name));
+                ArgumentTokenizer.tokenizeOptions("", false, name, name));
     }
 
     private void assertMalformedOptions(String argsString, Option... options) {
         ParseException exception = assertThrows(ParseException.class, () ->
-                ArgumentTokenizer.tokenizeOptions(argsString, options));
+                ArgumentTokenizer.tokenizeOptions(argsString, false, options));
         assertEquals(MESSAGE_INVALID_COMMAND_OPTIONS, exception.getMessage());
     }
 
