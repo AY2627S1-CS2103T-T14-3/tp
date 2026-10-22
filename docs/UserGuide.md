@@ -28,6 +28,10 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 
    * `list` : Lists all contacts.
 
+   * `viewa` : Shows the applicants view.
+
+   * `viewp` : Shows the applications view.
+
    * `add -n John Doe -p 98765432 -e johnd@example.com` : Adds a contact named `John Doe` to the Address Book.
 
    * `delete 3` : Deletes the 3rd contact shown in the current list.
@@ -107,6 +111,22 @@ Examples:
 Shows a list of all persons in the address book.
 
 Format: `list`
+
+### Viewing applicants: `viewa`
+
+Switches the list to the Applicants tab and displays the current applicant list.
+
+Format: `viewa`
+
+The command accepts no arguments.
+
+### Viewing applications: `viewp`
+
+Switches the list to the Applications tab. Each application shows its applicant, job description, and status.
+
+Format: `viewp`
+
+The command accepts no arguments.
 
 ### Editing a person: `edit`
 
@@ -251,7 +271,7 @@ Format: `viewj [-f KEYWORD]`
 * Alias: `-filter` for `-f`.
 * The command word is case-sensitive. `Viewj` is not recognised.
 * `deletej` uses the index in the list currently displayed, including a filtered list.
-* Other commands, such as `list` and `view`, switch the list back to applicants.
+* Other commands, such as `list` and `viewa`, switch the list back to applicants.
 
 Examples:
 
@@ -315,8 +335,12 @@ Action | Format, Examples
 **Set application status** | `set INDEX -s STATUS`<br> e.g., `set 1 -s accept`
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
+**Delete job** | `deletej INDEX`<br> e.g., `deletej 1`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
 **List** | `list`
-**View** | `view INDEX`<br> e.g., `view 1`
+**View applicants** | `viewa`
+**View applications** | `viewp`
+**View applicant** | `view INDEX`<br> e.g., `view 1`
+**View jobs** | `viewj [-f KEYWORD]`<br> e.g., `viewj -f jan`
 **Help** | `help`
 **Bye** | `bye` or `exit`

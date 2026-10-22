@@ -23,7 +23,7 @@ public class Application {
      * Creates an application.
      *
      * @param applicant the person submitting the application.
-     * @param jobDescription the job the applicant is applying for.
+     * @param job the job the applicant is applying for.
      * @param status the application's status.
      */
     public Application(Person applicant, Job job, Status status) {
@@ -40,10 +40,24 @@ public class Application {
         return applicant;
     }
 
-    public Job getJob() {
-        return job;
+    /** Returns the applicant's display name. */
+    public String getApplicantName() {
+        return applicant.getDisplayName();
     }
 
+    /** Returns whether this application belongs to the supplied applicant. */
+    public boolean isForApplicant(Person person) {
+        return applicant.isSamePerson(person);
+    }
+
+    /** Returns the display value of this application's status. */
+    public String getStatusValue() {
+        return status.getValue();
+    }
+
+    /**
+     * Returns the status of the application.
+     */
     public Status getStatus() {
         return status;
     }
@@ -86,6 +100,10 @@ public class Application {
                 .add("job", job)
                 .add("status", status)
                 .toString();
+    }
+
+    public Job getJob() {
+        return job;
     }
 
     /**

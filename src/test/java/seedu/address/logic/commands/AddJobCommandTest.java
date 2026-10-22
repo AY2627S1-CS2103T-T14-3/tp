@@ -34,7 +34,8 @@ public class AddJobCommandTest {
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
         expectedModel.addJob(ENGINEER);
 
-        assertCommandSuccess(command, model, new CommandResult(expectedMessage, ENGINEER), expectedModel);
+        assertCommandSuccess(command, model,
+                new CommandResult(expectedMessage, ViewRequest.job(ENGINEER)), expectedModel);
         assertTrue(model.hasJob(ENGINEER));
     }
 
