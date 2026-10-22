@@ -9,17 +9,20 @@ import java.util.regex.Pattern;
 
 import seedu.address.commons.core.LogsCenter;
 import seedu.address.logic.commands.AddCommand;
+import seedu.address.logic.commands.AddJobCommand;
 import seedu.address.logic.commands.ApplicantsCommand;
 import seedu.address.logic.commands.ApplicationsCommand;
 import seedu.address.logic.commands.ByeCommand;
 import seedu.address.logic.commands.ClearCommand;
 import seedu.address.logic.commands.Command;
 import seedu.address.logic.commands.DeleteCommand;
+import seedu.address.logic.commands.DeleteJobCommand;
 import seedu.address.logic.commands.FindCommand;
 import seedu.address.logic.commands.HelpCommand;
 import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.commands.SetApplicationStatusCommand;
 import seedu.address.logic.commands.ViewCommand;
+import seedu.address.logic.commands.ViewJobCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 
 /**
@@ -56,7 +59,9 @@ public class AddressBookParser {
 
         return switch (commandWord) {
             case AddCommand.COMMAND_WORD -> parseAddCommand(arguments);
+            case AddJobCommand.COMMAND_WORD -> new AddJobCommandParser().parse(arguments);
             case DeleteCommand.COMMAND_WORD -> new DeleteCommandParser().parse(arguments);
+            case DeleteJobCommand.COMMAND_WORD -> new DeleteJobCommandParser().parse(arguments);
             case ClearCommand.COMMAND_WORD -> new ClearCommand();
             case FindCommand.COMMAND_WORD -> new FindCommandParser().parse(arguments);
             case ListCommand.COMMAND_WORD -> new ListCommand();
@@ -64,6 +69,7 @@ public class AddressBookParser {
             case ApplicationsCommand.COMMAND_WORD -> new ApplicationsCommand();
             case SetApplicationStatusCommand.COMMAND_WORD -> new SetApplicationStatusCommandParser().parse(arguments);
             case ViewCommand.COMMAND_WORD -> new ViewCommandParser().parse(arguments);
+            case ViewJobCommand.COMMAND_WORD -> new ViewJobCommandParser().parse(arguments);
             case ByeCommand.COMMAND_WORD, "exit" -> new ByeCommandParser().parse(arguments);
             case HelpCommand.COMMAND_WORD -> new HelpCommand();
             default -> {

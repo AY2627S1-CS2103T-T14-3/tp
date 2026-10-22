@@ -1,5 +1,8 @@
 package seedu.address.ui;
 
+import java.util.Objects;
+
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -10,6 +13,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import seedu.address.model.application.Application;
 import seedu.address.model.person.Person;
+
 
 /** Panel containing the list of applications. */
 public class ApplicationListPanel extends UiPart<Region> {
@@ -58,8 +62,24 @@ public class ApplicationListPanel extends UiPart<Region> {
                 .map(applicant -> applications.stream()
                         .filter(application -> application.isForApplicant(applicant))
                         .findFirst().orElse(null))
-                .filter(application -> application != null)
+                .filter(Objects::nonNull)
                 .toList());
+        if (applicationListView.getSelectionModel().getSelectedItem() == null
+                && !displayedApplications.isEmpty()) {
+            applicationListView.getSelectionModel().selectFirst();
+        }
+    }
+
+    /** Returns the application currently selected by mouse or keyboard. */
+    public ReadOnlyObjectProperty<Application> selectedApplicationProperty() {
+        return applicationListView.getSelectionModel().selectedItemProperty();
+    }
+
+    /** Selects an application in the displayed list and scrolls to make it visible. */
+    public void selectApplication(Application application) {
+        Objects.requireNonNull(application);
+        applicationListView.getSelectionModel().select(application);
+        applicationListView.scrollTo(application);
     }
 
     private int findApplicantIndex(Application application) {

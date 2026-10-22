@@ -6,6 +6,7 @@ import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.application.Application;
+import seedu.address.model.application.Job;
 import seedu.address.model.person.Person;
 
 /**
@@ -26,6 +27,18 @@ public interface Logic {
 
     /** Returns an unmodifiable view of the recorded applications */
     ObservableList<Application> getApplicationList();
+
+    /**
+     * Returns an unmodifiable view of the jobs.
+     * @return every stored job
+     */
+    ObservableList<Job> getJobList();
+
+    /**
+     * Returns an unmodifiable view of the filtered job list.
+     * @return jobs that match the current filter
+     */
+    ObservableList<Job> getFilteredJobList();
 
     /**
      * Returns the user prefs' GUI settings.

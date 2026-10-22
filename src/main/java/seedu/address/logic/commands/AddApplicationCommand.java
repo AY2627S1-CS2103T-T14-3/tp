@@ -73,7 +73,8 @@ public class AddApplicationCommand extends Command {
 
         Application application = new Application(applicant, new Job(jobDescription), status);
         model.addApplication(application);
-        return new CommandResult(String.format(MESSAGE_SUCCESS, applicant.getName(), applicant.getEmail()), applicant);
+        return new CommandResult(String.format(MESSAGE_SUCCESS, applicant.getName(), applicant.getEmail()),
+                ViewRequest.applicant(applicant));
     }
 
     @Override

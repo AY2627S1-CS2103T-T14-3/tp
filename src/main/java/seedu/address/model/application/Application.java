@@ -102,6 +102,10 @@ public class Application {
                 .toString();
     }
 
+    public Job getJob() {
+        return job;
+    }
+
     /**
      * The allowed application states.
      * Enum constants use uppercase Java naming, while their backing command values are lowercase and case-sensitive.

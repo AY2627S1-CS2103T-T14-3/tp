@@ -26,7 +26,7 @@ public class ApplicationTest {
 
     @Test
     public void applicantDisplayMethods_returnApplicantDetails() {
-        Application application = new Application(ALICE, "Janitor", Application.Status.PENDING);
+        Application application = new Application(ALICE, new Job("Janitor"), Application.Status.PENDING);
 
         assertEquals(ALICE.getDisplayName(), application.getApplicantName());
         assertEquals("pending", application.getStatusValue());

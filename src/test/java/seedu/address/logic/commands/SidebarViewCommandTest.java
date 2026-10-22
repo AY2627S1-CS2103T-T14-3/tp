@@ -15,13 +15,13 @@ public class SidebarViewCommandTest {
     public void applicantsCommand_requestsApplicantsView() throws Exception {
         Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs());
         assertEquals(new CommandResult(ApplicantsCommand.MESSAGE_SUCCESS,
-                CommandResult.SidebarView.APPLICANTS), new ApplicantsCommand().execute(model));
+                ViewRequest.applicants()), new ApplicantsCommand().execute(model));
     }
 
     @Test
     public void applicationsCommand_requestsApplicationsView() throws Exception {
         Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs());
         assertEquals(new CommandResult(ApplicationsCommand.MESSAGE_SUCCESS,
-                CommandResult.SidebarView.APPLICATIONS), new ApplicationsCommand().execute(model));
+                ViewRequest.applications()), new ApplicationsCommand().execute(model));
     }
 }

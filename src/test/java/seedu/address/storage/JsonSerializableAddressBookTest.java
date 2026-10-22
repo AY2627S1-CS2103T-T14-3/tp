@@ -6,6 +6,7 @@ import static seedu.address.testutil.TypicalPersons.ALICE;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -54,6 +55,35 @@ public class JsonSerializableAddressBookTest {
         assertEquals(original, loaded);
         assertEquals(new Job("Janitor"), loaded.getApplication(ALICE).orElseThrow().getJob());
         assertEquals(Application.Status.ACCEPT, loaded.getApplication(ALICE).orElseThrow().getStatus());
+    }
+
+    @Test
+    public void toModelType_jobsRoundTrip_success() throws Exception {
+        AddressBook original = new AddressBook();
+        original.addJob(new Job("Software Engineer"));
+        original.addJob(new Job("Data Analyst"));
+
+        AddressBook loaded = new JsonSerializableAddressBook(original).toModelType();
+
+        assertEquals(original, loaded);
+        assertEquals(List.of(new Job("Software Engineer"), new Job("Data Analyst")), loaded.getJobList());
+    }
+
+    @Test
+    public void toModelType_duplicateJobs_throwsIllegalValueException() throws Exception {
+        JsonSerializableAddressBook dataFromFile = JsonUtil.readJsonFile(
+                TEST_DATA_FOLDER.resolve("duplicateJobAddressBook.json"),
+                JsonSerializableAddressBook.class).get();
+        assertThrows(IllegalValueException.class, JsonSerializableAddressBook.MESSAGE_DUPLICATE_JOB,
+                dataFromFile::toModelType);
+    }
+
+    @Test
+    public void toModelType_invalidJob_throwsIllegalValueException() throws Exception {
+        JsonSerializableAddressBook dataFromFile = JsonUtil.readJsonFile(
+                TEST_DATA_FOLDER.resolve("invalidJobAddressBook.json"),
+                JsonSerializableAddressBook.class).get();
+        assertThrows(IllegalValueException.class, Job.MESSAGE_CONSTRAINTS, dataFromFile::toModelType);
     }
 
     @Test

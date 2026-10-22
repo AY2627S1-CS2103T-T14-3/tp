@@ -34,7 +34,8 @@ public class AddApplicationCommandTest {
         Model expectedModel = new ModelManager(getTypicalAddressBook(), new UserPrefs());
         expectedModel.addApplication(application);
         CommandResult expectedResult = new CommandResult(String.format(
-                AddApplicationCommand.MESSAGE_SUCCESS, ALICE.getName(), ALICE.getEmail()), ALICE);
+                AddApplicationCommand.MESSAGE_SUCCESS, ALICE.getName(), ALICE.getEmail()),
+                ViewRequest.applicant(ALICE));
 
         assertCommandSuccess(command, model, expectedResult, expectedModel);
         assertEquals(application, model.getApplication(ALICE).orElseThrow());
@@ -49,7 +50,8 @@ public class AddApplicationCommandTest {
         Model expectedModel = new ModelManager(getTypicalAddressBook(), new UserPrefs());
         expectedModel.addApplication(application);
         CommandResult expectedResult = new CommandResult(String.format(
-                AddApplicationCommand.MESSAGE_SUCCESS, BENSON.getName(), BENSON.getEmail()), BENSON);
+                AddApplicationCommand.MESSAGE_SUCCESS, BENSON.getName(), BENSON.getEmail()),
+                ViewRequest.applicant(BENSON));
 
         assertCommandSuccess(command, model, expectedResult, expectedModel);
     }
@@ -64,7 +66,8 @@ public class AddApplicationCommandTest {
         showPersonAtIndex(expectedModel, INDEX_SECOND_PERSON);
         expectedModel.addApplication(new Application(BENSON, new Job("Janitor"), Application.Status.REJECT));
         CommandResult expectedResult = new CommandResult(String.format(
-                AddApplicationCommand.MESSAGE_SUCCESS, BENSON.getName(), BENSON.getEmail()), BENSON);
+                AddApplicationCommand.MESSAGE_SUCCESS, BENSON.getName(), BENSON.getEmail()),
+                ViewRequest.applicant(BENSON));
 
         assertCommandSuccess(command, model, expectedResult, expectedModel);
         assertEquals(1, model.getFilteredPersonList().size());

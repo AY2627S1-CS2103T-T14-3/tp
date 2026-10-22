@@ -7,6 +7,6 @@ public class ApplicantsCommand extends Command {
 
     @Override
     public CommandResult execute(seedu.address.model.Model model) {
-        return new CommandResult(MESSAGE_SUCCESS, CommandResult.SidebarView.APPLICANTS);
+        return new CommandResult(MESSAGE_SUCCESS, ViewRequest.applicants());
     }
 }

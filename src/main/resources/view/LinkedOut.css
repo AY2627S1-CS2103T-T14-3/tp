@@ -85,6 +85,7 @@
 .status-badge.status-accept { -fx-background-color: #dcfce7; -fx-text-fill: #166534; }
 .status-badge.status-reject { -fx-background-color: #fee2e2; -fx-text-fill: #991b1b; }
 .status-badge.status-pending { -fx-background-color: #fef3c7; -fx-text-fill: #92400e; }
+.status-badge.status-open { -fx-background-color: #dbeafe; -fx-text-fill: #1d4ed8; }
 .count-badge {
     -fx-background-color: #edf3ff;
     -fx-background-radius: 12;
@@ -117,6 +118,28 @@
 .list-cell:empty { -fx-background-color: transparent; }
 .list-name { -fx-font-weight: bold; -fx-font-size: 14px; }
 .list-index { -fx-text-fill: #2563eb; -fx-font-weight: bold; }
+.job-card {
+    -fx-background-color: #f8faff;
+    -fx-background-radius: 9;
+    -fx-border-color: #2563eb #e6edf7 #e6edf7 #e6edf7;
+    -fx-border-width: 1 1 1 4;
+    -fx-border-radius: 9;
+    -fx-padding: 12 10;
+}
+.list-cell:filled:hover .job-card { -fx-background-color: #edf3ff; }
+.list-cell:filled:selected .job-card {
+    -fx-background-color: #e7efff;
+    -fx-border-color: #1d4ed8 #7ca5f6 #7ca5f6 #1d4ed8;
+}
+.role-chip {
+    -fx-background-color: #edf3ff;
+    -fx-background-radius: 8;
+    -fx-text-fill: #365a99;
+    -fx-padding: 2 8;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+}
+.job-avatar { -fx-background-color: #dbeafe; }
 .scroll-bar { -fx-background-color: transparent; }
 .scroll-bar .thumb { -fx-background-color: #cbd7e7; -fx-background-radius: 8; }
 .scroll-bar .track { -fx-background-color: transparent; }

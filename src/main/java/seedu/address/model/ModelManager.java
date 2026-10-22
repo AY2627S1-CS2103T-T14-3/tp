@@ -12,6 +12,7 @@ import javafx.collections.transformation.FilteredList;
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.LogsCenter;
 import seedu.address.model.application.Application;
+import seedu.address.model.application.Job;
 import seedu.address.model.person.Person;
 
 /**
@@ -23,6 +24,7 @@ public class ModelManager implements Model {
     private final AddressBook addressBook;
     private final UserPrefs userPrefs;
     private final FilteredList<Person> filteredPersons;
+    private final FilteredList<Job> filteredJobs;
 
     /**
      * Initializes a ModelManager with the given addressBook and userPrefs.
@@ -35,6 +37,7 @@ public class ModelManager implements Model {
         this.addressBook = new AddressBook(addressBook);
         this.userPrefs = new UserPrefs(userPrefs);
         filteredPersons = new FilteredList<>(this.addressBook.getPersonList());
+        filteredJobs = new FilteredList<>(this.addressBook.getJobList());
     }
 
     public ModelManager() {
@@ -124,6 +127,41 @@ public class ModelManager implements Model {
         return addressBook.getApplicationList();
     }
 
+    @Override
+    public boolean hasJob(Job job) {
+        requireNonNull(job);
+        return addressBook.hasJob(job);
+    }
+
+    @Override
+    public void addJob(Job job) {
+        requireNonNull(job);
+        addressBook.addJob(job);
+        updateFilteredJobList(PREDICATE_SHOW_ALL_JOBS);
+    }
+
+    @Override
+    public void deleteJob(Job target) {
+        requireNonNull(target);
+        addressBook.removeJob(target);
+    }
+
+    @Override
+    public ObservableList<Job> getJobList() {
+        return addressBook.getJobList();
+    }
+
+    @Override
+    public ObservableList<Job> getFilteredJobList() {
+        return filteredJobs;
+    }
+
+    @Override
+    public void updateFilteredJobList(Predicate<Job> predicate) {
+        requireNonNull(predicate);
+        filteredJobs.setPredicate(predicate);
+    }
+
     //=========== Filtered Person List Accessors =============================================================
 
     /**
@@ -154,7 +192,8 @@ public class ModelManager implements Model {
 
         return addressBook.equals(otherModelManager.addressBook)
                 && userPrefs.equals(otherModelManager.userPrefs)
-                && filteredPersons.equals(otherModelManager.filteredPersons);
+                && filteredPersons.equals(otherModelManager.filteredPersons)
+                && filteredJobs.equals(otherModelManager.filteredJobs);
     }
 
 }

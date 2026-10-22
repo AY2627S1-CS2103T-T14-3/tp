@@ -2,6 +2,7 @@ package seedu.address.model;
 
 import javafx.collections.ObservableList;
 import seedu.address.model.application.Application;
+import seedu.address.model.application.Job;
 import seedu.address.model.person.Person;
 
 /**
@@ -20,5 +21,12 @@ public interface ReadOnlyAddressBook {
      * This list contains at most one application for each person.
      */
     ObservableList<Application> getApplicationList();
+
+    /**
+     * Returns an unmodifiable view of the job list.
+     * This list will not contain duplicate jobs.
+     * @return every stored job
+     */
+    ObservableList<Job> getJobList();
 
 }
