@@ -35,6 +35,12 @@ public interface Logic {
     ObservableList<Job> getJobList();
 
     /**
+     * Returns an unmodifiable view of the filtered job list.
+     * @return jobs that match the current filter
+     */
+    ObservableList<Job> getFilteredJobList();
+
+    /**
      * Returns the user prefs' GUI settings.
      */
     GuiSettings getGuiSettings();

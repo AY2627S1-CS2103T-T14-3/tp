@@ -16,6 +16,9 @@ public interface Model {
     /** {@code Predicate} that always evaluates to true */
     Predicate<Person> PREDICATE_SHOW_ALL_PERSONS = unused -> true;
 
+    /** {@code Predicate} that always evaluates to true */
+    Predicate<Job> PREDICATE_SHOW_ALL_JOBS = unused -> true;
+
     /**
      * Returns the user prefs.
      */
@@ -104,6 +107,7 @@ public interface Model {
     /**
      * Adds a job.
      * {@code job} must not already exist in the address book.
+     * Shows every job afterwards so the added job is visible.
      * @param job job to add
      */
     void addJob(Job job);
@@ -120,6 +124,19 @@ public interface Model {
      * @return every stored job
      */
     ObservableList<Job> getJobList();
+
+    /**
+     * Returns an unmodifiable view of the filtered job list.
+     * @return jobs that match the current filter
+     */
+    ObservableList<Job> getFilteredJobList();
+
+    /**
+     * Updates the filter of the filtered job list to filter by the given {@code predicate}.
+     * @param predicate filter to apply
+     * @throws NullPointerException if {@code predicate} is null
+     */
+    void updateFilteredJobList(Predicate<Job> predicate);
 
     /** Returns an unmodifiable view of the filtered person list */
     ObservableList<Person> getFilteredPersonList();

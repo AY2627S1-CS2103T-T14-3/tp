@@ -54,6 +54,21 @@ public class DeleteJobCommandTest {
     }
 
     @Test
+    public void execute_filteredList_deletesDisplayedJob() {
+        model.updateFilteredJobList(job -> job.toString().contains("Data"));
+        DeleteJobCommand command = new DeleteJobCommand(INDEX_FIRST_PERSON);
+        String expectedMessage = String.format(DeleteJobCommand.MESSAGE_DELETE_JOB_SUCCESS, ANALYST);
+
+        Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
+        expectedModel.updateFilteredJobList(job -> job.toString().contains("Data"));
+        expectedModel.deleteJob(ANALYST);
+
+        assertCommandSuccess(command, model, CommandResult.showJobs(expectedMessage), expectedModel);
+        assertTrue(model.hasJob(ENGINEER));
+        assertFalse(model.hasJob(ANALYST));
+    }
+
+    @Test
     public void execute_emptyList_throwsCommandException() {
         Model emptyModel = new ModelManager(getTypicalAddressBook(), new UserPrefs());
         DeleteJobCommand command = new DeleteJobCommand(INDEX_FIRST_PERSON);

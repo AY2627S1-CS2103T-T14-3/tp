@@ -25,6 +25,7 @@ import seedu.address.logic.commands.HelpCommand;
 import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.commands.SetApplicationStatusCommand;
 import seedu.address.logic.commands.ViewCommand;
+import seedu.address.logic.commands.ViewJobCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.application.Application;
 import seedu.address.model.application.Job;
@@ -115,7 +116,10 @@ public class AddressBookParserTest {
         assertEquals(new AddJobCommand(job), parser.parseCommand("addj -j Software Engineer"));
         assertEquals(new AddJobCommand(job), parser.parseCommand("  addj   -job   Software Engineer  "));
         assertEquals(new DeleteJobCommand(INDEX_FIRST_PERSON), parser.parseCommand("deletej 1"));
+        assertEquals(new ViewJobCommand(), parser.parseCommand("viewj"));
+        assertEquals(new ViewJobCommand("jan"), parser.parseCommand("viewj -f jan"));
         assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> parser.parseCommand("Addj -j Engineer"));
+        assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> parser.parseCommand("Viewj"));
         assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> parser.parseCommand("Deletej 1"));
     }
 

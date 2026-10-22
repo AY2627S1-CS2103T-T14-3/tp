@@ -41,7 +41,7 @@ public class DeleteJobCommand extends Command {
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
-        List<Job> lastShownList = model.getJobList();
+        List<Job> lastShownList = model.getFilteredJobList();
 
         if (lastShownList.isEmpty()) {
             throw new CommandException(MESSAGE_EMPTY_LIST);

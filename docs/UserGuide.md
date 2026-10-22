@@ -236,13 +236,30 @@ Examples:
 * `addj -j Software Engineer Intern` adds that role and shows it in the job list.
 * `addj -job Data Analyst` adds a Data Analyst role.
 
+### Viewing jobs: `viewj`
+
+Shows open roles.
+
+Format: `viewj [-f KEYWORD]`
+
+* Without `-f`, every job is shown.
+* `-f KEYWORD` shows roles whose description contains `KEYWORD`. Matching ignores case and does not need a full word, so `jan` matches `Janitor`.
+* Alias: `-filter` for `-f`.
+* The command word is case-sensitive. `Viewj` is not recognised.
+* `deletej` uses the index in the list currently displayed, including a filtered list.
+
+Examples:
+
+* `viewj` lists every job.
+* `viewj -f jan` lists roles such as Janitor.
+
 ### Deleting a job: `deletej`
 
 Deletes the role at the displayed index.
 
 Format: `deletej INDEX`
 
-* `INDEX` is the positive integer shown beside a job in the job list.
+* `INDEX` is the positive integer shown beside a job in the job list currently displayed. After `viewj -f jan`, index 1 is the first matching job.
 * Deleting a role does not delete applicants or their applications.
 * An empty list, a missing index, or an index past the end of the list produces an error and leaves the jobs unchanged.
 
