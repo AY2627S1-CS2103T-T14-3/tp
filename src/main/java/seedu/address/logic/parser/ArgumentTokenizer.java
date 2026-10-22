@@ -12,7 +12,6 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import seedu.address.logic.parser.Option.Kind;
 import seedu.address.logic.parser.exceptions.ParseException;
