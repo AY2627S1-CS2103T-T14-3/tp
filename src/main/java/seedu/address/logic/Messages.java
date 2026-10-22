@@ -25,10 +25,10 @@ public class Messages {
     public static String getErrorMessageForDuplicateOptions(Option... duplicateOptions) {
         assert duplicateOptions.length > 0;
 
-        String duplicateFields =
-                Stream.of(duplicateOptions).map(Option::toString).reduce("", (e, x) -> String.join(" ", e, x));
+        Set<String> duplicateFields =
+                Stream.of(duplicateOptions).map(Option::toString).collect(Collectors.toSet());
 
-        return MESSAGE_DUPLICATE_FIELDS + duplicateFields.trim();
+        return MESSAGE_DUPLICATE_FIELDS + String.join(" ", duplicateFields);
     }
 
     /**

@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import seedu.address.logic.parser.Option.Kind;
 import seedu.address.logic.parser.exceptions.ParseException;
@@ -140,8 +142,12 @@ public class ArgumentTokenizer {
         return new ParseException(MESSAGE_INVALID_COMMAND_OPTIONS);
     }
     private static ParseException multipleOptions(Set<Option> errorOptions) {
-        return new ParseException(MESSAGE_DUPLICATE_FIELDS
-                + errorOptions.stream().map(Option::toString).reduce("", (e, x) -> String.join(" ", e, x)).trim());
+        assert !errorOptions.isEmpty();
+
+        Set<String> duplicateFields =
+                errorOptions.stream().map(Option::toString).collect(Collectors.toSet());
+
+        return new ParseException(MESSAGE_DUPLICATE_FIELDS + String.join(" ", duplicateFields));
     }
 
     private record OptionOccurrence(Option option, int startPosition, int endPosition) { }
