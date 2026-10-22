@@ -67,4 +67,9 @@ public final class Option {
     public List<String> getAliases() {
         return aliases;
     }
+
+    @Override
+    public String toString() {
+        return getAliases().getFirst();
+    }
 }
