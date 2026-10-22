@@ -92,6 +92,7 @@ Email | `-e` | `-email`
 * Unknown options, repeated options (including different aliases for the same field), missing values, and text before the first option produce a format error with a usage hint.
 * Standalone words such as `-unknown` are treated as options, even inside a value.
 * The legacy `add n/NAME p/PHONE_NUMBER e/EMAIL` format is no longer accepted.
+* `-p` is also the applicant index when adding an application. A command such as `add -p 1` is rejected, because it could be either command. Include `-n`, `-e`, or `-phone` to add an applicant. Include `-j` or `-application` to add an application. Mixing options from both commands is also rejected, and both formats are shown.
 
 Examples:
 
@@ -190,6 +191,7 @@ Format: `add -p INDEX -j JOB_DESCRIPTION [-s STATUS]`
 
 * `INDEX` is the positive integer shown beside an applicant in the current list.
 * When the list is filtered, the index refers to that filtered list.
+* `-p` is also the phone number when adding an applicant. `add -p 1` is rejected as ambiguous. Include the job, for example `add -p 1 -j Janitor`, so the command is read as an application.
 * `JOB_DESCRIPTION` is the role the applicant is applying for. It cannot contain another option, such as `-s`.
 * `STATUS` is optional. When it is omitted, the status is `pending`.
 * Accepted statuses are `accept`, `reject`, and `pending`. The value is case-sensitive.

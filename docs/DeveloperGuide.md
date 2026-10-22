@@ -134,8 +134,13 @@ immutable job description and application status. Applicant identity is determin
 and must not contain option-like tokens; statuses are restricted to the case-sensitive values `accept`, `reject`, and
 `pending`. `AddressBook` stores these applications separately from its person list and keeps at most one application
 per applicant. `add -p` creates an application for an applicant in the displayed list, and `set` updates the
-status of an existing application without changing its job. Deleting an applicant also
-deletes that applicant's application, and editing an applicant updates the person stored on the application.
+status of an existing application without changing its job. `AddressBookParser` chooses between adding an applicant
+and adding an application from options that belong to only one command: `-n`, `-name`, `-e`, `-email`, and `-phone`
+select an applicant, while `-j`, `-job`, `-s`, `-status`, and `-application` select an application. The short option
+`-p` is shared (phone number, or applicant index), so an `add` command that uses `-p` without one of those options,
+or that mixes both groups, is rejected as ambiguous instead of being reported as the wrong command. Deleting an
+applicant also deletes that applicant's application, and editing an applicant updates the person stored on the
+application.
 
 <div markdown="span" class="alert alert-info">:information_source: **Note:** The alternative, arguably more object-oriented, design below keeps a unique list of tags in `AddressBook`, and each `Person` references tags from that list. This lets `AddressBook` maintain one `Tag` object per unique tag instead of each `Person` holding its own `Tag` objects.<br>
 

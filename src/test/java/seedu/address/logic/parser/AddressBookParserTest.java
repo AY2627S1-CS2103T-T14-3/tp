@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.Messages.MESSAGE_UNKNOWN_COMMAND;
 import static seedu.address.logic.commands.AddApplicationCommand.MESSAGE_INVALID_STATUS;
+import static seedu.address.logic.commands.AddApplicationCommand.MESSAGE_UNRECOGNIZED;
+import static seedu.address.logic.parser.AddressBookParser.MESSAGE_AMBIGUOUS_ADD;
 import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
 
@@ -86,6 +88,33 @@ public class AddressBookParserTest {
     }
 
     @Test
+    public void parseCommand_ambiguousAdd_throwsParseException() {
+        for (String input : List.of("add -p", "add -p 1", "add -p 98765432",
+                "add -n John Doe -j Janitor", "add -phone 12345678 -status pending",
+                "  add   -p   1  ")) {
+            assertThrows(ParseException.class, String.format(MESSAGE_AMBIGUOUS_ADD, normalized(input)), ()
+                    -> parser.parseCommand(input));
+        }
+    }
+
+    @Test
+    public void parseCommand_incompleteApplicant_throwsPersonFormatError() {
+        String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddCommand.MESSAGE_USAGE);
+        for (String input : List.of("add", "add -n John Doe", "add -phone 12345678",
+                "add -e john@example.com")) {
+            assertThrows(ParseException.class, expectedMessage, () -> parser.parseCommand(input));
+        }
+    }
+
+    @Test
+    public void parseCommand_incompleteApplication_throwsUnrecognized() {
+        for (String input : List.of("add -j Janitor", "add -p 1 -s accept", "add -application 1")) {
+            assertThrows(ParseException.class, String.format(MESSAGE_UNRECOGNIZED, input), ()
+                    -> parser.parseCommand(input));
+        }
+    }
+
+    @Test
     public void parseCommand_setApplicationStatus() throws Exception {
         assertEquals(new SetApplicationStatusCommand(INDEX_FIRST_PERSON, Application.Status.ACCEPT),
                 parser.parseCommand("set 1 -s accept"));
@@ -150,5 +179,9 @@ public class AddressBookParserTest {
     @Test
     public void parseCommand_unknownCommand_throwsParseException() {
         assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> parser.parseCommand("unknownCommand"));
+    }
+
+    private String normalized(String input) {
+        return input.trim().replaceAll("\\s+", " ");
     }
 }

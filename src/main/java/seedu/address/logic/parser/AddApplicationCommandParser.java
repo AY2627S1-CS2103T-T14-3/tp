@@ -19,10 +19,10 @@ import seedu.address.model.application.Application;
 public class AddApplicationCommandParser implements Parser<AddApplicationCommand> {
 
     /**
-     * Matches an add-application option. {@code -p} is shared with add-person, so routing
-     * uses options that only an application command accepts.
+     * Matches an option used only when adding an application. {@code -p} is excluded because
+     * adding an applicant uses that option for the phone number.
      */
-    private static final Pattern APPLICATION_OPTION =
+    private static final Pattern APPLICATION_ONLY_OPTION =
             Pattern.compile("(?<!\\S)-(?:application|job|status|j|s)(?=\\s|$)");
 
     private static final Option APPLICANT_OPTION = Option.required(PREFIX_APPLICANT, "-p", "-application");
@@ -30,14 +30,13 @@ public class AddApplicationCommandParser implements Parser<AddApplicationCommand
     private static final Option STATUS_OPTION = Option.optional(PREFIX_STATUS, "-s", "-status");
 
     /**
-     * Returns true if {@code args} contains an option used only by an add-application command.
-     * Add-person commands also use hyphen options, including {@code -p} for phone, so a bare
-     * hyphen is not enough to choose this parser.
+     * Returns true if {@code args} contains an option used only when adding an application.
+     * {@code -p} is shared with adding an applicant, so it does not select this command.
      * @param args arguments string following the add command word
-     * @return true if {@code args} should be parsed as an add-application command
+     * @return true if {@code args} includes an application-only option
      */
-    static boolean isApplicationCommand(String args) {
-        return APPLICATION_OPTION.matcher(args).find();
+    static boolean hasExclusiveOption(String args) {
+        return APPLICATION_ONLY_OPTION.matcher(args).find();
     }
 
     /**
