@@ -46,17 +46,17 @@ public final class Option {
     }
 
     /** Creates an option which must be present and have a value. */
-    public static Option required(Prefix prefix, String... aliases) {
+    public static Option required(String... aliases) {
         return new Option(Kind.REQUIRED, aliases);
     }
 
     /** Creates an option which may be omitted, but must have a value when present. */
-    public static Option optional(Prefix prefix, String... aliases) {
+    public static Option optional(String... aliases) {
         return new Option(Kind.OPTIONAL, aliases);
     }
 
     /** Creates an option which takes no value. */
-    public static Option flag(Prefix prefix, String... aliases) {
+    public static Option flag(String... aliases) {
         return new Option(Kind.FLAG, aliases);
     }
 
