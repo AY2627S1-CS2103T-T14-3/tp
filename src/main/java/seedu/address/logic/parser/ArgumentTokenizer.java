@@ -55,24 +55,21 @@ public class ArgumentTokenizer {
      * @throws ParseException if the input or option configuration is malformed
      */
     public static ArgumentMultimap tokenizeOptions(String argsString, Option... options) throws ParseException {
-        ArgumentMultimap result = tokenizeOptionsWithPreamble(argsString, options);
-        if (!result.getPreamble().isEmpty()) {
-            throw malformedOptions();
-        }
-        return result;
+        return tokenizeOptions(argsString, false, options);
     }
 
     /**
-     * Tokenizes hyphen-prefixed options while preserving leading positional text as the preamble.
-     * The caller is responsible for validating the preamble, such as parsing it as an index.
+     * Tokenizes hyphen-prefixed options, optionally preserving leading positional text as the preamble.
+     * When a preamble is allowed, the caller validates it, such as by parsing it as an index.
      * Options follow the same alias, value, duplicate, and required-option rules as {@link #tokenizeOptions}.
      *
-     * @param argsString command arguments containing a preamble followed by configured options
+     * @param argsString command arguments containing configured options and an optional preamble
+     * @param hasPreamble whether leading positional text is allowed and stored as the preamble
      * @param options required, optional, and flag-only option specifications
      * @return the preamble and parsed options, keyed by their canonical prefixes
      * @throws ParseException if the options are malformed
      */
-    public static ArgumentMultimap tokenizeOptionsWithPreamble(String argsString, Option... options)
+    public static ArgumentMultimap tokenizeOptions(String argsString, boolean hasPreamble, Option... options)
             throws ParseException {
         if (argsString == null || options == null) {
             throw new NullPointerException("Arguments and options must not be null");
@@ -84,6 +81,9 @@ public class ArgumentTokenizer {
         ArgumentMultimap result = new ArgumentMultimap();
         int firstOptionStart = occurrences.isEmpty() ? argsString.length() : occurrences.getFirst().startPosition();
         String preamble = argsString.substring(0, firstOptionStart).trim();
+        if (!hasPreamble && !preamble.isEmpty()) {
+            throw malformedOptions();
+        }
         if (!preamble.isEmpty()) {
             result.put(new Prefix(""), preamble);
         }

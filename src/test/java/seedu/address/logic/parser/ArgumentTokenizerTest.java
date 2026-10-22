@@ -173,9 +173,9 @@ public class ArgumentTokenizerTest {
     }
 
     @Test
-    public void tokenizeOptionsWithPreamble_leadingIndexAndAliases_preserved() throws ParseException {
-        ArgumentMultimap options = ArgumentTokenizer.tokenizeOptionsWithPreamble(
-                " \t2 \t-email john@example.com -n John Doe ",
+    public void tokenizeOptions_preambleAllowed_leadingIndexAndAliasesPreserved() throws ParseException {
+        ArgumentMultimap options = ArgumentTokenizer.tokenizeOptions(
+                " \t2 \t-email john@example.com -n John Doe ", true,
                 Option.optional(nameOption, "-n", "-name"),
                 Option.optional(emailOption, "-e", "-email"));
 
@@ -186,33 +186,60 @@ public class ArgumentTokenizerTest {
     }
 
     @Test
-    public void tokenizeOptionsWithPreamble_noOptions_allTakenAsPreamble() throws ParseException {
-        ArgumentMultimap options = ArgumentTokenizer.tokenizeOptionsWithPreamble(
-                " \t1 extra text \t", Option.optional(nameOption, "-n", "-name"));
+    public void tokenizeOptions_preambleAllowed_noOptionsAllTakenAsPreamble() throws ParseException {
+        ArgumentMultimap options = ArgumentTokenizer.tokenizeOptions(
+                " \t1 extra text \t", true, Option.optional(nameOption, "-n", "-name"));
 
         assertPreamblePresent(options, "1 extra text");
         assertArgumentAbsent(options, nameOption);
     }
 
     @Test
-    public void tokenizeOptionsWithPreamble_noPreamble_preambleEmpty() throws ParseException {
-        ArgumentMultimap options = ArgumentTokenizer.tokenizeOptionsWithPreamble(
-                "-n John Doe", Option.optional(nameOption, "-n", "-name"));
+    public void tokenizeOptions_preambleAllowed_noPreambleAccepted() throws ParseException {
+        ArgumentMultimap options = ArgumentTokenizer.tokenizeOptions(
+                "-n John Doe", true, Option.optional(nameOption, "-n", "-name"));
         assertPreambleEmpty(options);
         assertArgumentPresent(options, nameOption, "John Doe");
 
-        options = ArgumentTokenizer.tokenizeOptionsWithPreamble(" \t", Option.optional(nameOption, "-n"));
+        options = ArgumentTokenizer.tokenizeOptions(" \t", true, Option.optional(nameOption, "-n"));
         assertPreambleEmpty(options);
         assertArgumentAbsent(options, nameOption);
     }
 
     @Test
-    public void tokenizeOptionsWithPreamble_malformedOptions_throwsParseException() {
+    public void tokenizeOptions_preambleAllowed_malformedOptionsThrowParseException() {
         for (String args : new String[] {"1 -n John -name Jane", "1 -n", "1 -unknown value", "1"}) {
             ParseException exception = assertThrows(ParseException.class, () ->
-                    ArgumentTokenizer.tokenizeOptionsWithPreamble(args, Option.required(nameOption, "-n", "-name")));
+                    ArgumentTokenizer.tokenizeOptions(args, true, Option.required(nameOption, "-n", "-name")));
             assertEquals(MESSAGE_INVALID_COMMAND_OPTIONS, exception.getMessage());
         }
+    }
+
+    @Test
+    public void tokenizeOptions_preambleDisabled_rejectsPositionalText() throws ParseException {
+        Option name = Option.optional(nameOption, "-n", "-name");
+        ParseException exception = assertThrows(ParseException.class, () ->
+                ArgumentTokenizer.tokenizeOptions("1 -n John Doe", false, name));
+        assertEquals(MESSAGE_INVALID_COMMAND_OPTIONS, exception.getMessage());
+
+        ArgumentMultimap options = ArgumentTokenizer.tokenizeOptions("-name John Doe", false, name);
+        assertPreambleEmpty(options);
+        assertArgumentPresent(options, nameOption, "John Doe");
+    }
+
+    @Test
+    public void tokenizeOptions_preambleAllowed_flagAndRequiredOptionValidated() throws ParseException {
+        Option applicant = Option.flag(applicantFlag, "-applicant");
+        Option name = Option.required(nameOption, "-n", "-name");
+        ArgumentMultimap options = ArgumentTokenizer.tokenizeOptions("2 -applicant -n John Doe", true, applicant, name);
+        assertPreamblePresent(options, "2");
+        assertTrue(options.contains(applicantFlag));
+        assertArgumentPresent(options, nameOption, "John Doe");
+
+        assertThrows(ParseException.class, () ->
+                ArgumentTokenizer.tokenizeOptions("2 -applicant unexpected -n John Doe", true, applicant, name));
+        assertThrows(ParseException.class, () ->
+                ArgumentTokenizer.tokenizeOptions("2 -applicant", true, applicant, name));
     }
 
     @Test
