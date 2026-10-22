@@ -9,13 +9,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import seedu.address.logic.parser.Option.Kind;
 import seedu.address.logic.parser.exceptions.ParseException;
 
 /**
- * Tokenizes arguments string of the form: {@code preamble <prefix> value <prefix> value ...}<br>
+ * Tokenizes arguments string of the form: {@code preamble <option> value <option> value ...}<br>
  *     e.g. {@code some preamble text -t 11.00 -t 12.00 -k -m July}  where prefixes are {@code -t -k -m}.<br>
  * 1. An argument's value can be an empty string e.g. the value of {@code -k} in the above example.<br>
  * 2. Leading and trailing whitespaces of an argument value will be discarded.<br>

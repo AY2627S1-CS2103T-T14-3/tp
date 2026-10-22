@@ -13,4 +13,6 @@ public class CliSyntax {
     public static final Option OPTION_JOB = Option.required("-j", "-job");
     public static final Option OPTION_STATUS = Option.optional("-s", "-status");
 
+    public static final Option OPTION_EMPTY = Option.required("");
+
 }
