@@ -5,14 +5,12 @@ package seedu.address.logic.parser;
  */
 public class CliSyntax {
 
-    /* Prefix definitions */
-    public static final Prefix PREFIX_NAME = new Prefix("n/");
-    public static final Prefix PREFIX_PHONE = new Prefix("p/");
-    public static final Prefix PREFIX_EMAIL = new Prefix("e/");
-
     /* Option definitions */
-    public static final Prefix PREFIX_APPLICANT = new Prefix("-p");
-    public static final Prefix PREFIX_JOB = new Prefix("-j");
-    public static final Prefix PREFIX_STATUS = new Prefix("-s");
+    public static final Option OPTION_NAME = Option.required("-n", "-name");
+    public static final Option OPTION_PHONE = Option.required("-p", "-phone");
+    public static final Option OPTION_EMAIL = Option.required("-e", "-email");
+    public static final Option OPTION_APPLICANT = Option.required("-app", "-application");
+    public static final Option OPTION_JOB = Option.required("-j", "-job");
+    public static final Option OPTION_STATUS = Option.optional("-s", "-status");
 
 }
