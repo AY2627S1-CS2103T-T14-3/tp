@@ -1,8 +1,8 @@
 package seedu.address.testutil;
 
-import static seedu.address.logic.parser.CliSyntax.OPTION_EMAIL;
-import static seedu.address.logic.parser.CliSyntax.OPTION_NAME;
-import static seedu.address.logic.parser.CliSyntax.OPTION_PHONE;
+import static seedu.address.logic.parser.CliSyntax.OPTION_EMAIL_REQ;
+import static seedu.address.logic.parser.CliSyntax.OPTION_NAME_REQ;
+import static seedu.address.logic.parser.CliSyntax.OPTION_PHONE_REQ;
 
 import seedu.address.logic.commands.AddCommand;
 import seedu.address.logic.commands.EditCommand.EditPersonDescriptor;
@@ -36,9 +36,9 @@ public class PersonUtil {
      */
     public static String getEditPersonDescriptorDetails(EditPersonDescriptor descriptor) {
         StringBuilder sb = new StringBuilder();
-        descriptor.getName().ifPresent(name -> sb.append(OPTION_NAME).append(name.fullName).append(" "));
-        descriptor.getPhone().ifPresent(phone -> sb.append(OPTION_PHONE).append(phone.value).append(" "));
-        descriptor.getEmail().ifPresent(email -> sb.append(OPTION_EMAIL).append(email.value).append(" "));
+        descriptor.getName().ifPresent(name -> sb.append(OPTION_NAME_REQ).append(name.fullName).append(" "));
+        descriptor.getPhone().ifPresent(phone -> sb.append(OPTION_PHONE_REQ).append(phone.value).append(" "));
+        descriptor.getEmail().ifPresent(email -> sb.append(OPTION_EMAIL_REQ).append(email.value).append(" "));
         return sb.toString();
     }
 }

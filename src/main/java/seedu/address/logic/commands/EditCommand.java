@@ -1,9 +1,9 @@
 package seedu.address.logic.commands;
 
 import static java.util.Objects.requireNonNull;
-import static seedu.address.logic.parser.CliSyntax.OPTION_EMAIL;
-import static seedu.address.logic.parser.CliSyntax.OPTION_NAME;
-import static seedu.address.logic.parser.CliSyntax.OPTION_PHONE;
+import static seedu.address.logic.parser.CliSyntax.OPTION_EMAIL_REQ;
+import static seedu.address.logic.parser.CliSyntax.OPTION_NAME_REQ;
+import static seedu.address.logic.parser.CliSyntax.OPTION_PHONE_REQ;
 import static seedu.address.model.Model.PREDICATE_SHOW_ALL_PERSONS;
 
 import java.util.List;
@@ -32,12 +32,12 @@ public class EditCommand extends Command {
             + "by the index number used in the displayed person list. "
             + "Existing values will be overwritten by the input values.\n"
             + "Parameters: INDEX (must be a positive integer) "
-            + "[" + OPTION_NAME + "NAME] "
-            + "[" + OPTION_PHONE + "PHONE] "
-            + "[" + OPTION_EMAIL + "EMAIL]...\n"
+            + "[" + OPTION_NAME_REQ + "NAME] "
+            + "[" + OPTION_PHONE_REQ + "PHONE] "
+            + "[" + OPTION_EMAIL_REQ + "EMAIL]...\n"
             + "Example: " + COMMAND_WORD + " 1 "
-            + OPTION_PHONE + "91234567 "
-            + OPTION_EMAIL + "johndoe@example.com";
+            + OPTION_PHONE_REQ + "91234567 "
+            + OPTION_EMAIL_REQ + "johndoe@example.com";
 
     public static final String MESSAGE_EDIT_PERSON_SUCCESS = "Edited person: %1$s";
     public static final String MESSAGE_NOT_EDITED = "At least one field to edit must be provided.";

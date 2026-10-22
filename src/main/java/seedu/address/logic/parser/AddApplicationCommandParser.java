@@ -1,8 +1,8 @@
 package seedu.address.logic.parser;
 
 import static java.util.Objects.requireNonNull;
-import static seedu.address.logic.parser.CliSyntax.OPTION_JOB;
-import static seedu.address.logic.parser.CliSyntax.OPTION_STATUS;
+import static seedu.address.logic.parser.CliSyntax.OPTION_JOB_REQ;
+import static seedu.address.logic.parser.CliSyntax.OPTION_STATUS_OPT;
 
 import seedu.address.commons.core.index.Index;
 import seedu.address.logic.commands.AddApplicationCommand;
@@ -28,7 +28,7 @@ public class AddApplicationCommandParser implements Parser<AddApplicationCommand
         ArgumentMultimap values = parseOptions(args);
 
         Index index = parseIndex(args, values);
-        String jobDescription = values.getValue(OPTION_JOB).orElseThrow();
+        String jobDescription = values.getValue(OPTION_JOB_REQ).orElseThrow();
         if (!Application.isValidJobDescription(jobDescription)) {
             throw unrecognized(args);
         }
@@ -45,7 +45,7 @@ public class AddApplicationCommandParser implements Parser<AddApplicationCommand
      */
     private ArgumentMultimap parseOptions(String args) throws ParseException {
         try {
-            return ArgumentTokenizer.tokenizeOptions(args, true, OPTION_JOB, OPTION_STATUS);
+            return ArgumentTokenizer.tokenizeOptions(args, true, OPTION_JOB_REQ, OPTION_STATUS_OPT);
         } catch (ParseException pe) {
             throw unrecognized(args);
         }
@@ -73,11 +73,11 @@ public class AddApplicationCommandParser implements Parser<AddApplicationCommand
      * @throws ParseException if the status is not accept, reject, or pending
      */
     private Application.Status parseStatus(ArgumentMultimap values) throws ParseException {
-        if (values.getValue(OPTION_STATUS).isEmpty()) {
+        if (values.getValue(OPTION_STATUS_OPT).isEmpty()) {
             return Application.Status.PENDING;
         }
         try {
-            return Application.Status.fromValue(values.getValue(OPTION_STATUS).get());
+            return Application.Status.fromValue(values.getValue(OPTION_STATUS_OPT).get());
         } catch (IllegalArgumentException exception) {
             throw new ParseException(AddApplicationCommand.MESSAGE_INVALID_STATUS);
         }

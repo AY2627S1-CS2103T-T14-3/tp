@@ -1,7 +1,7 @@
 package seedu.address.logic.parser;
 
 import static java.util.Objects.requireNonNull;
-import static seedu.address.logic.parser.CliSyntax.OPTION_STATUS;
+import static seedu.address.logic.parser.CliSyntax.OPTION_STATUS_OPT;
 
 import seedu.address.commons.core.index.Index;
 import seedu.address.logic.commands.SetApplicationStatusCommand;
@@ -55,7 +55,7 @@ public class SetApplicationStatusCommandParser implements Parser<SetApplicationS
     private Application.Status parseStatus(String args, String optionArgs) throws ParseException {
         ArgumentMultimap values = parseOptions(args, optionArgs);
         try {
-            return Application.Status.fromValue(values.getValue(OPTION_STATUS).orElseThrow());
+            return Application.Status.fromValue(values.getValue(OPTION_STATUS_OPT).orElseThrow());
         } catch (IllegalArgumentException exception) {
             throw new ParseException(SetApplicationStatusCommand.MESSAGE_INVALID_STATUS);
         }
@@ -70,7 +70,7 @@ public class SetApplicationStatusCommandParser implements Parser<SetApplicationS
      */
     private ArgumentMultimap parseOptions(String args, String optionArgs) throws ParseException {
         try {
-            return ArgumentTokenizer.tokenizeOptions(optionArgs, true, OPTION_STATUS);
+            return ArgumentTokenizer.tokenizeOptions(optionArgs, false, OPTION_STATUS_OPT);
         } catch (ParseException pe) {
             throw unrecognized(args);
         }
