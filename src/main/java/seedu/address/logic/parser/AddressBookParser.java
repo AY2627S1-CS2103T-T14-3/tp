@@ -25,10 +25,25 @@ import seedu.address.logic.parser.exceptions.ParseException;
  */
 public class AddressBookParser {
 
+    public static final String MESSAGE_AMBIGUOUS_ADD = "Unable to tell whether the command %1$s adds an applicant "
+            + "or an application.\n"
+            + "-p is a phone number for an applicant and an applicant index for an application.\n"
+            + "To add an applicant: add -n NAME -p PHONE -e EMAIL\n"
+            + "Example: add -n John Doe -p 98765432 -e johnd@example.com\n"
+            + "To add an application: add -p INDEX -j JOB_DESCRIPTION [-s STATUS]\n"
+            + "Example: add -p 1 -j Janitor -s pending";
+
     /**
      * Used for initial separation of command word and args.
      */
     private static final Pattern BASIC_COMMAND_FORMAT = Pattern.compile("(?<commandWord>\\S+)(?<arguments>.*)");
+
+    /**
+     * Matches the option shared by adding an applicant ({@code -p PHONE}) and adding an
+     * application ({@code -p INDEX}). Longer options such as {@code -phone} do not match.
+     */
+    private static final Pattern SHARED_ADD_OPTION = Pattern.compile("(?<!\\S)-p(?=\\s|$)");
+
     private static final Logger logger = LogsCenter.getLogger(AddressBookParser.class);
 
     /**
@@ -70,17 +85,37 @@ public class AddressBookParser {
     }
 
     /**
-     * Parses the given {@code String} of arguments in the context of the AddCommand
-     * and returns an AddCommand or AddApplicationCommand object for execution.
+     * Parses an add command as either an applicant or an application.
+     * An option used by only one of those commands selects that command. A command that uses
+     * the shared {@code -p} option without such an option, or that mixes both groups, is rejected
+     * as ambiguous so a failed command is not reported as the wrong one.
      * @param arguments arguments string following the add command word
      * @return an AddCommand or AddApplicationCommand object for execution
      * @throws ParseException if the user input does not conform to the expected format
      */
     private Command parseAddCommand(String arguments) throws ParseException {
-        if (AddApplicationCommandParser.isApplicationCommand(arguments)) {
+        boolean addsApplicant = AddCommandParser.hasExclusiveOption(arguments);
+        boolean addsApplication = AddApplicationCommandParser.hasExclusiveOption(arguments);
+        if (addsApplicant && addsApplication) {
+            throw ambiguousAddCommand(arguments);
+        }
+        if (!addsApplicant && !addsApplication && SHARED_ADD_OPTION.matcher(arguments).find()) {
+            throw ambiguousAddCommand(arguments);
+        }
+        if (addsApplication) {
             return new AddApplicationCommandParser().parse(arguments);
         }
         return new AddCommandParser().parse(arguments);
+    }
+
+    /**
+     * Returns a parse exception that shows both add formats.
+     * @param arguments arguments string following the add command word
+     * @return parse exception describing the two add commands
+     */
+    private static ParseException ambiguousAddCommand(String arguments) {
+        String input = (AddCommand.COMMAND_WORD + arguments).trim().replaceAll("\\s+", " ");
+        return new ParseException(String.format(MESSAGE_AMBIGUOUS_ADD, input));
     }
 
 }
