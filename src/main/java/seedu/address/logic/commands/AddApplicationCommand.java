@@ -16,6 +16,8 @@ import seedu.address.model.person.Person;
  */
 public class AddApplicationCommand extends Command {
 
+    public static final String COMMAND_WORD = "addp";
+
     public static final String MESSAGE_SUCCESS = "New application for %1$s (email %2$s) has been created!\n"
             + "Applicant's details have been displayed below.";
 
