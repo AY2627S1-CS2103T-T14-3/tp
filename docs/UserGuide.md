@@ -222,7 +222,7 @@ Examples:
 
 ### Adding a job: `addj`
 
-Adds an open role to the job list.
+Adds an open role to the job list. The list on the right switches from applicants to jobs, and the new role is selected.
 
 Format: `addj -j JOB_DESCRIPTION`
 
@@ -238,7 +238,7 @@ Examples:
 
 ### Viewing jobs: `viewj`
 
-Shows open roles.
+Shows open roles. The list on the right switches to jobs, and the detail panel shows the selected role.
 
 Format: `viewj [-f KEYWORD]`
 
@@ -247,15 +247,16 @@ Format: `viewj [-f KEYWORD]`
 * Alias: `-filter` for `-f`.
 * The command word is case-sensitive. `Viewj` is not recognised.
 * `deletej` uses the index in the list currently displayed, including a filtered list.
+* Other commands, such as `list` and `view`, switch the list back to applicants.
 
 Examples:
 
-* `viewj` lists every job.
+* `viewj` lists every job. An empty list shows "No jobs to display."
 * `viewj -f jan` lists roles such as Janitor.
 
 ### Deleting a job: `deletej`
 
-Deletes the role at the displayed index.
+Deletes the role at the displayed index. The list stays on jobs.
 
 Format: `deletej INDEX`
 
@@ -266,7 +267,7 @@ Format: `deletej INDEX`
 Examples:
 
 * `deletej 1` deletes the first job.
-* `deletej 2` deletes the second job.
+* `viewj` followed by `deletej 2` deletes the second job.
 
 ### Saving the data
 

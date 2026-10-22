@@ -3,6 +3,7 @@ package seedu.address.ui;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static seedu.address.logic.Messages.MESSAGE_UNKNOWN_COMMAND;
@@ -349,6 +350,61 @@ public class LinkedOutUiTest {
         });
     }
 
+    @Test
+    public void jobCommands_switchToJobListAndBackToApplicants() throws Exception {
+        withWindow(window -> {
+            assertEquals("Applicants", label(window, "listTitle").getText());
+
+            command(window, "addj -j Software Engineer");
+            pulse(window);
+            assertEquals("Jobs", label(window, "listTitle").getText());
+            assertEquals("1 job", label(window, "applicantCount").getText());
+            assertEquals("Software Engineer", label(window, "jobName").getText());
+            assertEquals("Open", label(window, "openBadge").getText());
+            assertNull(window.getRoot().getScene().lookup("#applicantSummary"));
+            assertEquals("New job added: Software Engineer", feedback(window));
+
+            command(window, "addj -job Data Analyst");
+            pulse(window);
+            assertEquals("2 jobs", label(window, "applicantCount").getText());
+            assertEquals("Data Analyst", label(window, "jobName").getText());
+
+            command(window, "viewj -f data");
+            pulse(window);
+            assertEquals("1 job", label(window, "applicantCount").getText());
+            assertEquals("Data Analyst", label(window, "jobName").getText());
+            assertEquals("1 job(s) listed!", feedback(window));
+
+            command(window, "viewj");
+            pulse(window);
+            assertEquals("2 jobs", label(window, "applicantCount").getText());
+
+            command(window, "list");
+            pulse(window);
+            assertEquals("Applicants", label(window, "listTitle").getText());
+            assertEquals("Alice Pauline", label(window, "applicantName").getText());
+
+            command(window, "add -p 1 -j Janitor");
+            command(window, "addj -j Janitor");
+            pulse(window);
+            assertEquals("Jobs", label(window, "listTitle").getText());
+            assertEquals("3 jobs", label(window, "applicantCount").getText());
+            assertEquals("Janitor", label(window, "jobName").getText());
+            assertNull(window.getRoot().getScene().lookup("#applicantSummary"));
+
+            command(window, "viewj");
+            assertEquals("Listed all jobs.", feedback(window));
+            assertEquals("Jobs", label(window, "listTitle").getText());
+
+            command(window, "deletej 1");
+            assertEquals("Deleted job: Software Engineer", feedback(window));
+            assertEquals("2 jobs", label(window, "applicantCount").getText());
+            ListView<?> jobs = (ListView<?>) window.getRoot().getScene().lookup("#jobListView");
+            assertEquals("Data Analyst", jobs.getItems().get(0).toString());
+            assertNotNull(jobs.getSelectionModel().getSelectedItem());
+        });
+    }
+
     private MainWindow createWindow() {
         return createWindow(new ModelManager(TypicalPersons.getTypicalAddressBook(), new UserPrefs()));
     }
@@ -418,6 +474,11 @@ public class LinkedOutUiTest {
 
     private String feedback(MainWindow window) {
         return ((TextArea) window.getRoot().getScene().lookup("#resultDisplay")).getText();
+    }
+
+    private void pulse(MainWindow window) {
+        window.getRoot().getScene().getRoot().applyCss();
+        window.getRoot().getScene().getRoot().layout();
     }
 
     private void command(MainWindow window, String text) {
