@@ -17,6 +17,8 @@ import seedu.address.logic.Messages;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
+import seedu.address.model.application.Application;
+import seedu.address.model.application.Job;
 import seedu.address.model.person.Person;
 
 /**
@@ -38,7 +40,8 @@ public class DeleteCommandTest {
         ModelManager expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
         expectedModel.deletePerson(personToDelete);
 
-        assertCommandSuccess(deleteCommand, model, expectedMessage, expectedModel);
+        assertCommandSuccess(deleteCommand, model,
+                CommandResult.deletedApplicant(expectedMessage, personToDelete, null), expectedModel);
     }
 
     @Test
@@ -63,7 +66,23 @@ public class DeleteCommandTest {
         expectedModel.deletePerson(personToDelete);
         showNoPerson(expectedModel);
 
-        assertCommandSuccess(deleteCommand, model, expectedMessage, expectedModel);
+        assertCommandSuccess(deleteCommand, model,
+                CommandResult.deletedApplicant(expectedMessage, personToDelete, null), expectedModel);
+    }
+
+    @Test
+    public void execute_applicantWithApplication_returnsSnapshotAndRemovesBoth() throws Exception {
+        Person person = model.getFilteredPersonList().getFirst();
+        Application application = new Application(person, new Job("Engineer"), Application.Status.ACCEPT);
+        model.addApplication(application);
+
+        CommandResult result = new DeleteCommand(INDEX_FIRST_PERSON).execute(model);
+
+        assertEquals(new CommandResult.DeletedApplicant(person, application),
+                result.getDeletedApplicant().orElseThrow());
+        assertFalse(model.hasPerson(person));
+        assertTrue(model.getApplicationList().isEmpty());
+        assertTrue(result.getPersonToView().isEmpty());
     }
 
     @Test
