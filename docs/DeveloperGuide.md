@@ -139,7 +139,8 @@ deletes that applicant's application, and editing an applicant updates the perso
 
 `AddressBook` also keeps a separate `UniqueJobList` of open roles. A job is identified by its description:
 duplicate descriptions are rejected, surrounding spaces are ignored, and other differences in case are kept.
-`addj` adds a role. Adding an application does not add a job to this list. Jobs are stored in the same JSON
+`addj` adds a role and `deletej` removes the role at the displayed index. Deleting a job does not delete
+applications. Adding an application does not add a job to this list. Jobs are stored in the same JSON
 address book under `jobs`.
 
 <div markdown="span" class="alert alert-info">:information_source: **Note:** The alternative, arguably more object-oriented, design below keeps a unique list of tags in `AddressBook`, and each `Person` references tags from that list. This lets `AddressBook` maintain one `Tag` object per unique tag instead of each `Person` holding its own `Tag` objects.<br>

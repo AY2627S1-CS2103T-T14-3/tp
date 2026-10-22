@@ -236,6 +236,21 @@ Examples:
 * `addj -j Software Engineer Intern` adds that role and shows it in the job list.
 * `addj -job Data Analyst` adds a Data Analyst role.
 
+### Deleting a job: `deletej`
+
+Deletes the role at the displayed index.
+
+Format: `deletej INDEX`
+
+* `INDEX` is the positive integer shown beside a job in the job list.
+* Deleting a role does not delete applicants or their applications.
+* An empty list, a missing index, or an index past the end of the list produces an error and leaves the jobs unchanged.
+
+Examples:
+
+* `deletej 1` deletes the first job.
+* `deletej 2` deletes the second job.
+
 ### Saving the data
 
 AddressBook automatically saves data after every command. You do not need to save manually.
