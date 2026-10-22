@@ -298,7 +298,18 @@ public class MainWindow extends UiPart<Stage> {
                 commandResult.getJobToView().ifPresent(jobListPanel::selectJob);
             } else {
                 showApplicantView();
-                commandResult.getPersonToView().ifPresent(personListPanel::selectPerson);
+                if (commandResult.getDeletedApplicant().isPresent()) {
+                    CommandResult.DeletedApplicant deleted = commandResult.getDeletedApplicant().orElseThrow();
+                    personListPanel.clearSelection();
+                    applicantDetailPanel.showDeletedApplicant(deleted.applicant(), deleted.application());
+                } else {
+                    commandResult.getPersonToView().ifPresent(personListPanel::selectPerson);
+                    if (personListPanel.selectedPersonProperty().get() == null
+                            && !logic.getFilteredPersonList().isEmpty()) {
+                        personListPanel.selectPerson(logic.getFilteredPersonList().getFirst());
+                    }
+                    showSelectedApplicant();
+                }
             }
 
             if (commandResult.isShowHelp()) {
