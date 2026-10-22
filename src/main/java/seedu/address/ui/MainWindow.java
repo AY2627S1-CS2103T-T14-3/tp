@@ -5,6 +5,7 @@ import java.util.logging.Logger;
 
 import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -30,6 +31,8 @@ import seedu.address.model.person.Person;
 public class MainWindow extends UiPart<Stage> {
 
     private static final String FXML = "MainWindow.fxml";
+    private static final String APPLICANT_HINT = "Find and manage applicants using commands.";
+    private static final String JOB_HINT = "Add, view, and remove open roles.";
 
     private final Logger logger = LogsCenter.getLogger(getClass());
 
@@ -39,14 +42,27 @@ public class MainWindow extends UiPart<Stage> {
 
     // Independent Ui parts residing in this Ui container
     private PersonListPanel personListPanel;
+    private JobListPanel jobListPanel;
+    private ApplicantDetailPanel applicantDetailPanel;
+    private JobDetailPanel jobDetailPanel;
     private ResultDisplay resultDisplay;
     private HelpWindow helpWindow;
+    private boolean showingJobs;
 
     @FXML
     private StackPane applicantDetailPlaceholder;
 
     @FXML
+    private Label listTitle;
+
+    @FXML
     private Label applicantCount;
+
+    @FXML
+    private Label listHint;
+
+    @FXML
+    private Label consoleHint;
 
     @FXML
     private StackPane commandBoxPlaceholder;
@@ -126,19 +142,20 @@ public class MainWindow extends UiPart<Stage> {
      */
     void fillInnerParts() {
         personListPanel = new PersonListPanel(logic.getFilteredPersonList());
+        jobListPanel = new JobListPanel(logic.getFilteredJobList());
         personListPanelPlaceholder.getChildren().add(personListPanel.getRoot());
 
-        ApplicantDetailPanel detailPanel = new ApplicantDetailPanel();
-        applicantDetailPlaceholder.getChildren().add(detailPanel.getRoot());
+        applicantDetailPanel = new ApplicantDetailPanel();
+        jobDetailPanel = new JobDetailPanel();
+        applicantDetailPlaceholder.getChildren().add(applicantDetailPanel.getRoot());
         personListPanel.selectedPersonProperty().addListener((observable, previous, selected) ->
-                showSelectedApplicant(detailPanel));
+                showSelectedApplicant());
+        jobListPanel.selectedJobProperty().addListener((observable, previous, selected) ->
+                showSelectedJob());
         logic.getApplicationList().addListener((ListChangeListener<Application>) change ->
-                showSelectedApplicant(detailPanel));
-        showSelectedApplicant(detailPanel);
-        applicantCount.textProperty().bind(Bindings.createStringBinding(() -> {
-            int count = logic.getFilteredPersonList().size();
-            return count + (count == 1 ? " applicant" : " applicants");
-        }, logic.getFilteredPersonList()));
+                showSelectedApplicant());
+        showSelectedApplicant();
+        bindCount(logic.getFilteredPersonList(), "applicant", "applicants");
 
         resultDisplay = new ResultDisplay();
         resultDisplayPlaceholder.getChildren().add(resultDisplay.getRoot());
@@ -197,9 +214,8 @@ public class MainWindow extends UiPart<Stage> {
 
     /**
      * Shows the selected applicant and that applicant's application, if one has been recorded.
-     * @param detailPanel panel that displays the selected applicant
      */
-    private void showSelectedApplicant(ApplicantDetailPanel detailPanel) {
+    private void showSelectedApplicant() {
         Person selected = personListPanel.selectedPersonProperty().get();
         Application application = null;
         if (selected != null) {
@@ -208,7 +224,63 @@ public class MainWindow extends UiPart<Stage> {
                     .findFirst()
                     .orElse(null);
         }
-        detailPanel.showApplicant(selected, application);
+        applicantDetailPanel.showApplicant(selected, application);
+    }
+
+    /**
+     * Shows the selected job. Applications are not matched to the role by description.
+     */
+    private void showSelectedJob() {
+        jobDetailPanel.showJob(jobListPanel.selectedJobProperty().get());
+    }
+
+    /**
+     * Shows the applicant list and detail panel.
+     */
+    private void showApplicantView() {
+        if (!showingJobs) {
+            return;
+        }
+        showingJobs = false;
+        listTitle.setText("Applicants");
+        listHint.setText("Select an applicant to view their details.");
+        consoleHint.setText(APPLICANT_HINT);
+        personListPanelPlaceholder.getChildren().setAll(personListPanel.getRoot());
+        applicantDetailPlaceholder.getChildren().setAll(applicantDetailPanel.getRoot());
+        bindCount(logic.getFilteredPersonList(), "applicant", "applicants");
+        showSelectedApplicant();
+    }
+
+    /**
+     * Shows the job list and detail panel.
+     */
+    private void showJobView() {
+        if (showingJobs) {
+            showSelectedJob();
+            return;
+        }
+        showingJobs = true;
+        listTitle.setText("Jobs");
+        listHint.setText("Select a job to view its details.");
+        consoleHint.setText(JOB_HINT);
+        personListPanelPlaceholder.getChildren().setAll(jobListPanel.getRoot());
+        applicantDetailPlaceholder.getChildren().setAll(jobDetailPanel.getRoot());
+        bindCount(logic.getFilteredJobList(), "job", "jobs");
+        showSelectedJob();
+    }
+
+    /**
+     * Binds the list count badge to {@code items}.
+     * @param items list whose size is shown
+     * @param singular label used when the list contains one item
+     * @param plural label used when the list does not contain one item
+     */
+    private void bindCount(ObservableList<?> items, String singular, String plural) {
+        applicantCount.textProperty().unbind();
+        applicantCount.textProperty().bind(Bindings.createStringBinding(() -> {
+            int count = items.size();
+            return count + " " + (count == 1 ? singular : plural);
+        }, items));
     }
 
     /**
@@ -221,7 +293,13 @@ public class MainWindow extends UiPart<Stage> {
             CommandResult commandResult = logic.execute(commandText);
             logger.info("Result: " + commandResult.getFeedbackToUser());
             resultDisplay.setFeedbackToUser(commandResult.getFeedbackToUser());
-            commandResult.getPersonToView().ifPresent(personListPanel::selectPerson);
+            if (commandResult.isShowJobs()) {
+                showJobView();
+                commandResult.getJobToView().ifPresent(jobListPanel::selectJob);
+            } else {
+                showApplicantView();
+                commandResult.getPersonToView().ifPresent(personListPanel::selectPerson);
+            }
 
             if (commandResult.isShowHelp()) {
                 handleHelp();

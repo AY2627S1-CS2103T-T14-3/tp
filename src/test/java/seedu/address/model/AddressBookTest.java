@@ -20,6 +20,7 @@ import seedu.address.model.application.Application;
 import seedu.address.model.application.Job;
 import seedu.address.model.application.exceptions.ApplicationNotFoundException;
 import seedu.address.model.application.exceptions.DuplicateApplicationException;
+import seedu.address.model.application.exceptions.DuplicateJobException;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.exceptions.DuplicatePersonException;
 import seedu.address.testutil.PersonBuilder;
@@ -32,6 +33,7 @@ public class AddressBookTest {
     public void constructor() {
         assertEquals(List.of(), addressBook.getPersonList());
         assertEquals(List.of(), addressBook.getApplicationList());
+        assertEquals(List.of(), addressBook.getJobList());
     }
 
     @Test
@@ -89,7 +91,8 @@ public class AddressBookTest {
     @Test
     public void toStringMethod() {
         String expected = AddressBook.class.getCanonicalName() + "{persons=" + addressBook.getPersonList()
-                + ", applications=" + addressBook.getApplicationList() + "}";
+                + ", applications=" + addressBook.getApplicationList()
+                + ", jobs=" + addressBook.getJobList() + "}";
         assertEquals(expected, addressBook.toString());
     }
 
@@ -171,6 +174,36 @@ public class AddressBookTest {
         assertEquals(original, addressBook);
     }
 
+    @Test
+    public void addJob_newJob_success() {
+        Job job = new Job("Software Engineer");
+        addressBook.addJob(job);
+        assertTrue(addressBook.hasJob(job));
+        assertEquals(List.of(job), addressBook.getJobList());
+    }
+
+    @Test
+    public void addJob_duplicate_throwsDuplicateJobException() {
+        addressBook.addJob(new Job("Software Engineer"));
+        assertThrows(DuplicateJobException.class, () -> addressBook.addJob(new Job("Software Engineer")));
+    }
+
+    @Test
+    public void removeJob_existingJob_removesJob() {
+        Job job = new Job("Data Analyst");
+        addressBook.addJob(job);
+        addressBook.removeJob(job);
+        assertFalse(addressBook.hasJob(job));
+    }
+
+    @Test
+    public void resetData_withJobs_copiesJobs() {
+        AddressBook original = new AddressBook();
+        original.addJob(new Job("Product Designer"));
+        addressBook.resetData(original);
+        assertEquals(original, addressBook);
+    }
+
     /**
      * A stub ReadOnlyAddressBook whose persons list can violate interface constraints.
      */
@@ -188,6 +221,11 @@ public class AddressBookTest {
 
         @Override
         public ObservableList<Application> getApplicationList() {
+            return FXCollections.observableArrayList();
+        }
+
+        @Override
+        public ObservableList<Job> getJobList() {
             return FXCollections.observableArrayList();
         }
     }
