@@ -6,6 +6,7 @@ import java.util.function.Predicate;
 import javafx.collections.ObservableList;
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.model.application.Application;
+import seedu.address.model.application.Job;
 import seedu.address.model.person.Person;
 
 /**
@@ -92,6 +93,33 @@ public interface Model {
 
     /** Returns an unmodifiable view of the applications */
     ObservableList<Application> getApplicationList();
+
+    /**
+     * Returns true if a job with the same description as {@code job} exists.
+     * @param job job to check
+     * @return true if {@code job} is already stored
+     */
+    boolean hasJob(Job job);
+
+    /**
+     * Adds a job.
+     * {@code job} must not already exist in the address book.
+     * @param job job to add
+     */
+    void addJob(Job job);
+
+    /**
+     * Deletes the given job.
+     * The job must exist in the address book.
+     * @param target job to delete
+     */
+    void deleteJob(Job target);
+
+    /**
+     * Returns an unmodifiable view of the full job list.
+     * @return every stored job
+     */
+    ObservableList<Job> getJobList();
 
     /** Returns an unmodifiable view of the filtered person list */
     ObservableList<Person> getFilteredPersonList();

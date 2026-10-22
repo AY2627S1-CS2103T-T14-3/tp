@@ -220,6 +220,22 @@ Examples:
 * `set 1 -s accept` marks the first displayed applicant's application as accepted.
 * `set 2 -status reject` marks the second displayed applicant's application as rejected.
 
+### Adding a job: `addj`
+
+Adds an open role to the job list.
+
+Format: `addj -j JOB_DESCRIPTION`
+
+* `JOB_DESCRIPTION` is the role name. It cannot be blank and cannot contain another option, such as `-s`.
+* Alias: `-job` for `-j`.
+* A role that is already in the list cannot be added again. Matching ignores surrounding spaces and is otherwise case-sensitive.
+* Adding a role does not create an application. Use `add -p` to record an applicant's application for a role.
+
+Examples:
+
+* `addj -j Software Engineer Intern` adds that role and shows it in the job list.
+* `addj -job Data Analyst` adds a Data Analyst role.
+
 ### Saving the data
 
 AddressBook automatically saves data after every command. You do not need to save manually.

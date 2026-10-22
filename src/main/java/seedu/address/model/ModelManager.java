@@ -12,6 +12,7 @@ import javafx.collections.transformation.FilteredList;
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.LogsCenter;
 import seedu.address.model.application.Application;
+import seedu.address.model.application.Job;
 import seedu.address.model.person.Person;
 
 /**
@@ -122,6 +123,29 @@ public class ModelManager implements Model {
     @Override
     public ObservableList<Application> getApplicationList() {
         return addressBook.getApplicationList();
+    }
+
+    @Override
+    public boolean hasJob(Job job) {
+        requireNonNull(job);
+        return addressBook.hasJob(job);
+    }
+
+    @Override
+    public void addJob(Job job) {
+        requireNonNull(job);
+        addressBook.addJob(job);
+    }
+
+    @Override
+    public void deleteJob(Job target) {
+        requireNonNull(target);
+        addressBook.removeJob(target);
+    }
+
+    @Override
+    public ObservableList<Job> getJobList() {
+        return addressBook.getJobList();
     }
 
     //=========== Filtered Person List Accessors =============================================================

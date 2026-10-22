@@ -9,7 +9,9 @@ import java.util.Optional;
 import javafx.collections.ObservableList;
 import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.model.application.Application;
+import seedu.address.model.application.Job;
 import seedu.address.model.application.UniqueApplicationList;
+import seedu.address.model.application.UniqueJobList;
 import seedu.address.model.person.Person;
 import seedu.address.model.person.UniquePersonList;
 
@@ -21,6 +23,7 @@ public class AddressBook implements ReadOnlyAddressBook {
 
     private final UniquePersonList persons = new UniquePersonList();
     private final UniqueApplicationList applications = new UniqueApplicationList();
+    private final UniqueJobList jobs = new UniqueJobList();
 
     public AddressBook() {}
 
@@ -50,6 +53,7 @@ public class AddressBook implements ReadOnlyAddressBook {
 
         setPersons(newData.getPersonList());
         setApplications(newData.getApplicationList());
+        setJobs(newData.getJobList());
     }
 
     //// person-level operations
@@ -141,6 +145,43 @@ public class AddressBook implements ReadOnlyAddressBook {
         this.applications.setApplications(applications);
     }
 
+    /**
+     * Returns true if a job with the same description as {@code job} exists.
+     * @param job job to check
+     * @return true if {@code job} is already stored
+     */
+    public boolean hasJob(Job job) {
+        requireNonNull(job);
+        return jobs.contains(job);
+    }
+
+    /**
+     * Adds a job to the address book.
+     * The job must not already exist in the address book.
+     * @param job job to add
+     */
+    public void addJob(Job job) {
+        jobs.add(job);
+    }
+
+    /**
+     * Removes {@code key} from this {@code AddressBook}.
+     * {@code key} must exist in the address book.
+     * @param key job to remove
+     */
+    public void removeJob(Job key) {
+        jobs.remove(key);
+    }
+
+    /**
+     * Replaces the job list with {@code jobs}.
+     * {@code jobs} must not contain duplicate jobs.
+     * @param jobs jobs to store
+     */
+    public void setJobs(List<Job> jobs) {
+        this.jobs.setJobs(jobs);
+    }
+
     //// util methods
 
     @Override
@@ -148,6 +189,7 @@ public class AddressBook implements ReadOnlyAddressBook {
         return new ToStringBuilder(this)
                 .add("persons", persons)
                 .add("applications", applications)
+                .add("jobs", jobs)
                 .toString();
     }
 
@@ -162,6 +204,11 @@ public class AddressBook implements ReadOnlyAddressBook {
     }
 
     @Override
+    public ObservableList<Job> getJobList() {
+        return jobs.asUnmodifiableObservableList();
+    }
+
+    @Override
     public boolean equals(Object other) {
         if (other == this) {
             return true;
@@ -173,11 +220,12 @@ public class AddressBook implements ReadOnlyAddressBook {
         }
 
         return persons.equals(otherAddressBook.persons)
-                && applications.equals(otherAddressBook.applications);
+                && applications.equals(otherAddressBook.applications)
+                && jobs.equals(otherAddressBook.jobs);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(persons, applications);
+        return Objects.hash(persons, applications, jobs);
     }
 }

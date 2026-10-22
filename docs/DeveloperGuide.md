@@ -137,6 +137,11 @@ per applicant. `add -p` creates an application for an applicant in the displayed
 status of an existing application without changing its job. Deleting an applicant also
 deletes that applicant's application, and editing an applicant updates the person stored on the application.
 
+`AddressBook` also keeps a separate `UniqueJobList` of open roles. A job is identified by its description:
+duplicate descriptions are rejected, surrounding spaces are ignored, and other differences in case are kept.
+`addj` adds a role. Adding an application does not add a job to this list. Jobs are stored in the same JSON
+address book under `jobs`.
+
 <div markdown="span" class="alert alert-info">:information_source: **Note:** The alternative, arguably more object-oriented, design below keeps a unique list of tags in `AddressBook`, and each `Person` references tags from that list. This lets `AddressBook` maintain one `Tag` object per unique tag instead of each `Person` holding its own `Tag` objects.<br>
 
 <img src="images/BetterModelClassDiagram.png" width="450" />
@@ -472,7 +477,8 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 * **Mainstream OS**: Windows, Linux, Unix, or macOS
 * **Applicant**: A person registered in LinkedOut with a name and email address, whose job application can be tracked.
 * **Application**: A record of an applicant's application for a job, containing a job description and an application status. An applicant can have at most one application.
-* **Job description**: The text describing the job an applicant is applying for, stored as part of their application.
+* **Job**: An open role stored in the job list, identified by its description. It is separate from an applicant's application.
+* **Job description**: The text describing a job. On an application, it records the role that applicant applied for. In the job list, it is the role's identity.
 * **Application status**: The recorded outcome of an application: `accept` (accepted), `reject` (rejected), or `pending` (awaiting a decision). These values are case-sensitive.
 * **Applicant index**: The number used in commands to identify an applicant in the applicant list, starting from 1.
 

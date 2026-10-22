@@ -12,6 +12,7 @@ import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.model.AddressBook;
 import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.application.Application;
+import seedu.address.model.application.Job;
 import seedu.address.model.person.Person;
 
 /**
@@ -23,20 +24,30 @@ class JsonSerializableAddressBook {
     public static final String MESSAGE_DUPLICATE_PERSON = "Persons list contains duplicate person(s).";
     public static final String MESSAGE_DUPLICATE_APPLICATION =
             "Applications list contains duplicate application(s).";
+    public static final String MESSAGE_DUPLICATE_JOB = "Jobs list contains duplicate job(s).";
 
     private final List<JsonAdaptedPerson> persons = new ArrayList<>();
     private final List<JsonAdaptedApplication> applications = new ArrayList<>();
+    private final List<String> jobs = new ArrayList<>();
 
     /**
-     * Constructs a {@code JsonSerializableAddressBook} with the given persons and applications.
+     * Constructs a {@code JsonSerializableAddressBook} with the given persons, applications, and jobs.
      * {@code applications} may be null when loading a save file created before applications were stored.
+     * {@code jobs} may be null when loading a save file created before jobs were stored.
+     * @param persons persons to store
+     * @param applications applications to store, or null when the save file has none
+     * @param jobs job descriptions to store, or null when the save file has none
      */
     @JsonCreator
     public JsonSerializableAddressBook(@JsonProperty("persons") List<JsonAdaptedPerson> persons,
-            @JsonProperty("applications") List<JsonAdaptedApplication> applications) {
+            @JsonProperty("applications") List<JsonAdaptedApplication> applications,
+            @JsonProperty("jobs") List<String> jobs) {
         this.persons.addAll(persons);
         if (applications != null) {
             this.applications.addAll(applications);
+        }
+        if (jobs != null) {
+            this.jobs.addAll(jobs);
         }
     }
 
@@ -49,6 +60,7 @@ class JsonSerializableAddressBook {
         persons.addAll(source.getPersonList().stream().map(JsonAdaptedPerson::new).collect(Collectors.toList()));
         applications.addAll(source.getApplicationList().stream()
                 .map(JsonAdaptedApplication::new).collect(Collectors.toList()));
+        jobs.addAll(source.getJobList().stream().map(Job::toString).collect(Collectors.toList()));
     }
 
     /**
@@ -71,6 +83,16 @@ class JsonSerializableAddressBook {
                 throw new IllegalValueException(MESSAGE_DUPLICATE_APPLICATION);
             }
             addressBook.addApplication(application);
+        }
+        for (String description : jobs) {
+            if (!Job.isValidDescription(description)) {
+                throw new IllegalValueException(Job.MESSAGE_CONSTRAINTS);
+            }
+            Job job = new Job(description);
+            if (addressBook.hasJob(job)) {
+                throw new IllegalValueException(MESSAGE_DUPLICATE_JOB);
+            }
+            addressBook.addJob(job);
         }
         return addressBook;
     }

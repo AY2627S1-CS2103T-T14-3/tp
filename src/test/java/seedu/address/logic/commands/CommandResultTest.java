@@ -102,7 +102,8 @@ public class CommandResultTest {
         CommandResult commandResult = new CommandResult("feedback");
         String expected = CommandResult.class.getCanonicalName() + "{feedbackToUser="
                 + commandResult.getFeedbackToUser() + ", showHelp=" + commandResult.isShowHelp()
-                + ", exit=" + commandResult.isExit() + ", personToView=null}";
+                + ", exit=" + commandResult.isExit()
+                + ", personToView=null, showJobs=false, jobToView=null}";
         assertEquals(expected, commandResult.toString());
     }
 }
