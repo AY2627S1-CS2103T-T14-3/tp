@@ -13,6 +13,7 @@ import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.commons.util.JsonUtil;
 import seedu.address.model.AddressBook;
 import seedu.address.model.application.Application;
+import seedu.address.model.application.Job;
 import seedu.address.testutil.TypicalPersons;
 
 public class JsonSerializableAddressBookTest {
@@ -46,12 +47,12 @@ public class JsonSerializableAddressBookTest {
     public void toModelType_applicationRoundTrip_success() throws Exception {
         AddressBook original = new AddressBook();
         original.addPerson(ALICE);
-        original.addApplication(new Application(ALICE, "Janitor", Application.Status.ACCEPT));
+        original.addApplication(new Application(ALICE, new Job("Janitor"), Application.Status.ACCEPT));
 
         AddressBook loaded = new JsonSerializableAddressBook(original).toModelType();
 
         assertEquals(original, loaded);
-        assertEquals("Janitor", loaded.getApplication(ALICE).orElseThrow().getJobDescription());
+        assertEquals(new Job("Janitor"), loaded.getApplication(ALICE).orElseThrow().getJob());
         assertEquals(Application.Status.ACCEPT, loaded.getApplication(ALICE).orElseThrow().getStatus());
     }
 

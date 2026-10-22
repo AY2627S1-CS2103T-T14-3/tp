@@ -19,6 +19,7 @@ import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
 import seedu.address.model.application.Application;
+import seedu.address.model.application.Job;
 
 public class AddApplicationCommandTest {
 
@@ -26,7 +27,7 @@ public class AddApplicationCommandTest {
 
     @Test
     public void execute_newApplicationWithoutStatus_addsPendingApplication() {
-        Application application = new Application(ALICE, "Janitor", Application.Status.PENDING);
+        Application application = new Application(ALICE, new Job("Janitor"), Application.Status.PENDING);
         AddApplicationCommand command = new AddApplicationCommand(
                 INDEX_FIRST_PERSON, "Janitor", Application.Status.PENDING);
 
@@ -41,7 +42,7 @@ public class AddApplicationCommandTest {
 
     @Test
     public void execute_newApplicationWithStatus_addsRequestedStatus() {
-        Application application = new Application(BENSON, "ClaudeGPT Expert", Application.Status.ACCEPT);
+        Application application = new Application(BENSON, new Job("ClaudeGPT Expert"), Application.Status.ACCEPT);
         AddApplicationCommand command = new AddApplicationCommand(
                 INDEX_SECOND_PERSON, "ClaudeGPT Expert", Application.Status.ACCEPT);
 
@@ -61,7 +62,7 @@ public class AddApplicationCommandTest {
 
         Model expectedModel = new ModelManager(getTypicalAddressBook(), new UserPrefs());
         showPersonAtIndex(expectedModel, INDEX_SECOND_PERSON);
-        expectedModel.addApplication(new Application(BENSON, "Janitor", Application.Status.REJECT));
+        expectedModel.addApplication(new Application(BENSON, new Job("Janitor"), Application.Status.REJECT));
         CommandResult expectedResult = new CommandResult(String.format(
                 AddApplicationCommand.MESSAGE_SUCCESS, BENSON.getName(), BENSON.getEmail()), BENSON);
 
@@ -71,12 +72,12 @@ public class AddApplicationCommandTest {
 
     @Test
     public void execute_duplicateApplication_throwsCommandException() {
-        model.addApplication(new Application(ALICE, "Janitor", Application.Status.PENDING));
+        model.addApplication(new Application(ALICE, new Job("Janitor"), Application.Status.PENDING));
         AddApplicationCommand command = new AddApplicationCommand(
                 INDEX_FIRST_PERSON, "Engineer", Application.Status.ACCEPT);
 
         assertCommandFailure(command, model, AddApplicationCommand.MESSAGE_DUPLICATE_APPLICATION);
-        assertEquals("Janitor", model.getApplication(ALICE).orElseThrow().getJobDescription());
+        assertEquals(new Job("Janitor"), model.getApplication(ALICE).orElseThrow().getJob());
     }
 
     @Test

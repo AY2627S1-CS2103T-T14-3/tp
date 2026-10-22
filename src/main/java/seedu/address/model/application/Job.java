@@ -16,13 +16,13 @@ public class Job {
     private static final Pattern OPTION_LIKE_TOKEN_PATTERN =
             Pattern.compile("(?<!\\S)-[a-z]+(?:-[a-z]+)*(?=\\s|$)");
 
-    private final String description;
+    public final String value;
 
     /** Creates a job with the given description. */
     public Job(String description) {
         requireNonNull(description);
         checkArgument(isValidDescription(description), MESSAGE_CONSTRAINTS);
-        this.description = description.strip();
+        this.value = description.strip();
     }
 
     /** Returns true if the job description is valid. */
@@ -32,23 +32,19 @@ public class Job {
                 && !OPTION_LIKE_TOKEN_PATTERN.matcher(description).find();
     }
 
-    public String getDescription() {
-        return description;
-    }
-
     @Override
     public boolean equals(Object other) {
         return other == this || other instanceof Job otherJob
-                && description.equals(otherJob.description);
+                && value.equals(otherJob.value);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(description);
+        return Objects.hash(value);
     }
 
     @Override
     public String toString() {
-        return description;
+        return value;
     }
 }

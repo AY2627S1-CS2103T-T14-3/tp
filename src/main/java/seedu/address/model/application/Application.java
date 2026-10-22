@@ -1,10 +1,8 @@
 package seedu.address.model.application;
 
 import static java.util.Objects.requireNonNull;
-import static seedu.address.commons.util.AppUtil.checkArgument;
 
 import java.util.Objects;
-import java.util.regex.Pattern;
 
 import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.model.person.Person;
@@ -17,15 +15,8 @@ import seedu.address.model.person.Person;
  */
 public class Application {
 
-    public static final String MESSAGE_JOB_DESCRIPTION_CONSTRAINTS =
-            "Job descriptions should not be blank or contain option-like parameters.";
-
-    /** Matches an option-like token using the same whitespace boundaries as {@code ArgumentTokenizer}. */
-    private static final Pattern OPTION_LIKE_TOKEN_PATTERN =
-            Pattern.compile("(?<!\\S)-[a-z]+(?:-[a-z]+)*(?=\\s|$)");
-
     private final Person applicant;
-    private final String jobDescription;
+    private final Job job;
     private final Status status;
 
     /**
@@ -35,30 +26,22 @@ public class Application {
      * @param jobDescription the job the applicant is applying for.
      * @param status the application's status.
      */
-    public Application(Person applicant, String jobDescription, Status status) {
+    public Application(Person applicant, Job job, Status status) {
         requireNonNull(applicant);
-        requireNonNull(jobDescription);
+        requireNonNull(job);
         requireNonNull(status);
-        checkArgument(isValidJobDescription(jobDescription), MESSAGE_JOB_DESCRIPTION_CONSTRAINTS);
 
         this.applicant = applicant;
-        this.jobDescription = jobDescription.strip();
+        this.job = job;
         this.status = status;
-    }
-
-    /** Returns true if the job description is valid. */
-    public static boolean isValidJobDescription(String jobDescription) {
-        return jobDescription != null
-                && !jobDescription.isBlank()
-                && !OPTION_LIKE_TOKEN_PATTERN.matcher(jobDescription).find();
     }
 
     public Person getApplicant() {
         return applicant;
     }
 
-    public String getJobDescription() {
-        return jobDescription;
+    public Job getJob() {
+        return job;
     }
 
     public Status getStatus() {
@@ -87,20 +70,20 @@ public class Application {
             return false;
         }
         return applicant.equals(otherApplication.applicant)
-                && jobDescription.equals(otherApplication.jobDescription)
+                && job.equals(otherApplication.job)
                 && status == otherApplication.status;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(applicant, jobDescription, status);
+        return Objects.hash(applicant, job, status);
     }
 
     @Override
     public String toString() {
         return new ToStringBuilder(this)
                 .add("applicant", applicant)
-                .add("jobDescription", jobDescription)
+                .add("job", job)
                 .add("status", status)
                 .toString();
     }

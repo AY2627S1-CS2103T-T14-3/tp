@@ -16,7 +16,7 @@ public class JobTest {
     public void constructor_validDescription_success() {
         Job job = new Job("Janitor");
 
-        assertEquals("Janitor", job.getDescription());
+        assertEquals("Janitor", job.toString());
         assertEquals("Janitor", job.toString());
     }
 
@@ -24,7 +24,7 @@ public class JobTest {
     public void constructor_descriptionWithWhitespace_trimsDescription() {
         Job job = new Job("  Janitor  ");
 
-        assertEquals("Janitor", job.getDescription());
+        assertEquals("Janitor", job.toString());
     }
 
     @Test
