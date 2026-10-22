@@ -23,7 +23,7 @@ public class Messages {
      * Returns an error message indicating the duplicate prefixes.
      */
     public static String getErrorMessageForDuplicateOptions(Option... duplicateOptions) {
-        assert duplicateOptions.length > 0;
+        assert duplicateOptions.length > 0 : "There should be at least one duplicate options";
 
         Set<String> duplicateFields =
                 Stream.of(duplicateOptions).map(Option::toString).collect(Collectors.toSet());

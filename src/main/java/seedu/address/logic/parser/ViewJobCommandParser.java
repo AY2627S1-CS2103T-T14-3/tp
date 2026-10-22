@@ -27,7 +27,7 @@ public class ViewJobCommandParser implements Parser<ViewJobCommand> {
 
         ArgumentMultimap values;
         try {
-            values = ArgumentTokenizer.tokenizeOptions(args, false, OPTION_FILTER);
+            values = ArgumentTokenizer.tokenizeOptions(args, ArgumentTokenizer.NO_PREAMBLE, OPTION_FILTER);
         } catch (ParseException pe) {
             throw new ParseException(
                     String.format(MESSAGE_INVALID_COMMAND_FORMAT, ViewJobCommand.MESSAGE_USAGE), pe);

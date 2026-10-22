@@ -25,7 +25,8 @@ public class AddJobCommandParser implements Parser<AddJobCommand> {
         requireNonNull(args);
         ArgumentMultimap values;
         try {
-            values = ArgumentTokenizer.tokenizeOptions(args, false, OPTION_JOB_REQ);
+            values = ArgumentTokenizer.tokenizeOptions(args,
+                    ArgumentTokenizer.NO_PREAMBLE, OPTION_JOB_REQ);
         } catch (ParseException pe) {
             throw new ParseException(
                     String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddJobCommand.MESSAGE_USAGE), pe);

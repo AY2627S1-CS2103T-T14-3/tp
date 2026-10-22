@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.logic.Messages.MESSAGE_DUPLICATE_FIELDS;
-import static seedu.address.logic.parser.ArgumentTokenizer.MESSAGE_INVALID_COMMAND_OPTIONS;
+import static seedu.address.logic.parser.ArgumentTokenizer.*;
 
 import org.junit.jupiter.api.Test;
 
@@ -44,12 +44,12 @@ public class ArgumentTokenizerTest {
     public void tokenizeOptions_shortAndLongAliases_valuesCanonicalized() throws ParseException {
         ArgumentMultimap shortOptions = ArgumentTokenizer.tokenizeOptions(
                 " -n John Doe -e john@example.com",
-                false,
+                NO_PREAMBLE,
                 nameOption,
                 emailOption);
         ArgumentMultimap longOptions = ArgumentTokenizer.tokenizeOptions(
                 " -name John Doe -email john@example.com",
-                false,
+                HAS_PREAMBLE,
                 nameOption,
                 emailOption);
 
@@ -64,7 +64,7 @@ public class ArgumentTokenizerTest {
     public void tokenizeOptions_optionalOptionMayBeAbsent() throws ParseException {
         ArgumentMultimap options = ArgumentTokenizer.tokenizeOptions(
                 "-n John Doe",
-                false,
+                NO_PREAMBLE,
                 nameOption,
                 unusedOption);
 
@@ -76,7 +76,7 @@ public class ArgumentTokenizerTest {
     public void tokenizeOptions_flagOption_presentWithoutValue() throws ParseException {
         ArgumentMultimap options = ArgumentTokenizer.tokenizeOptions(
                 "-t -n John Doe",
-                false,
+                NO_PREAMBLE,
                 testFlag,
                 nameOption);
 
@@ -140,20 +140,20 @@ public class ArgumentTokenizerTest {
         Option emailWithConflictingAlias = Option.required("-e", "-name");
 
         assertThrows(IllegalArgumentException.class, () ->
-                ArgumentTokenizer.tokenizeOptions("", false, name, emailWithConflictingAlias));
+                ArgumentTokenizer.tokenizeOptions("", NO_PREAMBLE, name, emailWithConflictingAlias));
         assertThrows(IllegalArgumentException.class, () ->
-                ArgumentTokenizer.tokenizeOptions("", false, name, name));
+                ArgumentTokenizer.tokenizeOptions("", NO_PREAMBLE, name, name));
     }
 
     private void assertMalformedOptions(String argsString, Option... options) {
         ParseException exception = assertThrows(ParseException.class, () ->
-                ArgumentTokenizer.tokenizeOptions(argsString, false, options));
+                ArgumentTokenizer.tokenizeOptions(argsString, NO_PREAMBLE, options));
         assertEquals(MESSAGE_INVALID_COMMAND_OPTIONS, exception.getMessage());
     }
 
     private void assertMultipleOptions(String argsString, String multipleOptions, Option... options) {
         ParseException exception = assertThrows(ParseException.class, () ->
-                ArgumentTokenizer.tokenizeOptions(argsString, false, options));
+                ArgumentTokenizer.tokenizeOptions(argsString, NO_PREAMBLE, options));
         assertEquals(MESSAGE_DUPLICATE_FIELDS + multipleOptions, exception.getMessage());
     }
 

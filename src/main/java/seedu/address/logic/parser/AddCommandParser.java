@@ -29,7 +29,7 @@ public class AddCommandParser implements Parser<AddCommand> {
         ArgumentMultimap argMultimap;
         try {
             argMultimap = ArgumentTokenizer.tokenizeOptions(args,
-                    false, OPTION_NAME_REQ, OPTION_PHONE_REQ, OPTION_EMAIL_REQ);
+                    ArgumentTokenizer.NO_PREAMBLE, OPTION_NAME_REQ, OPTION_PHONE_REQ, OPTION_EMAIL_REQ);
         } catch (ParseException pe) {
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddCommand.MESSAGE_USAGE), pe);
         }

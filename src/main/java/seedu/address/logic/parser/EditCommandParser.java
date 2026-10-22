@@ -24,7 +24,8 @@ public class EditCommandParser implements Parser<EditCommand> {
     public EditCommand parse(String args) throws ParseException {
         requireNonNull(args);
         ArgumentMultimap argMultimap =
-                ArgumentTokenizer.tokenizeOptions(args, true, OPTION_NAME_OPT, OPTION_PHONE_OPT, OPTION_EMAIL_OPT);
+                ArgumentTokenizer.tokenizeOptions(args,
+                        ArgumentTokenizer.HAS_PREAMBLE, OPTION_NAME_OPT, OPTION_PHONE_OPT, OPTION_EMAIL_OPT);
 
         Index index;
 

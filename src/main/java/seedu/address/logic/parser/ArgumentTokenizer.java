@@ -28,6 +28,8 @@ import seedu.address.logic.parser.exceptions.ParseException;
 public class ArgumentTokenizer {
 
     public static final String MESSAGE_INVALID_COMMAND_OPTIONS = "Unable to parse command options.";
+    public static final boolean HAS_PREAMBLE = true;
+    public static final boolean NO_PREAMBLE = false;
 
     /** A whitespace-delimited token which looks like an option under the command grammar. */
     private static final Pattern OPTION_TOKEN = Pattern.compile("(?<!\\S)(-[a-z]+(?:-[a-z]+)*)(?=\\s|$)");
@@ -141,7 +143,7 @@ public class ArgumentTokenizer {
         return new ParseException(MESSAGE_INVALID_COMMAND_OPTIONS);
     }
     private static ParseException multipleOptions(Set<Option> errorOptions) {
-        assert !errorOptions.isEmpty();
+        assert !errorOptions.isEmpty() : "there should be at least one error option";
 
         Set<String> duplicateFields =
                 errorOptions.stream().map(Option::toString).collect(Collectors.toSet());
