@@ -15,8 +15,6 @@ import org.junit.jupiter.api.Test;
 
 import seedu.address.logic.commands.AddApplicationCommand;
 import seedu.address.logic.commands.AddCommand;
-import seedu.address.logic.commands.ApplicantsCommand;
-import seedu.address.logic.commands.ApplicationsCommand;
 import seedu.address.logic.commands.AddJobCommand;
 import seedu.address.logic.commands.ByeCommand;
 import seedu.address.logic.commands.ClearCommand;
@@ -26,6 +24,8 @@ import seedu.address.logic.commands.FindCommand;
 import seedu.address.logic.commands.HelpCommand;
 import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.commands.SetApplicationStatusCommand;
+import seedu.address.logic.commands.ViewApplicantCommand;
+import seedu.address.logic.commands.ViewApplicationCommand;
 import seedu.address.logic.commands.ViewCommand;
 import seedu.address.logic.commands.ViewJobCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
@@ -76,8 +76,8 @@ public class AddressBookParserTest {
 
     @Test
     public void parseCommand_sidebarViewToggles() throws Exception {
-        assertTrue(parser.parseCommand(ApplicantsCommand.COMMAND_WORD) instanceof ApplicantsCommand);
-        assertTrue(parser.parseCommand(ApplicationsCommand.COMMAND_WORD) instanceof ApplicationsCommand);
+        assertTrue(parser.parseCommand(ViewApplicantCommand.COMMAND_WORD) instanceof ViewApplicantCommand);
+        assertTrue(parser.parseCommand(ViewApplicationCommand.COMMAND_WORD) instanceof ViewApplicationCommand);
     }
 
     @Test

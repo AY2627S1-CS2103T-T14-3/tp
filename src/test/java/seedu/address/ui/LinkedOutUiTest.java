@@ -94,11 +94,11 @@ public class LinkedOutUiTest {
             ToggleButton applicantsTab = (ToggleButton) window.getRoot().getScene().lookup("#applicantsTab");
             ToggleButton applicationsTab = (ToggleButton) window.getRoot().getScene().lookup("#applicationsTab");
 
-            command(window, "applications");
+            command(window, "viewp");
             assertFalse(applicantsTab.isSelected());
             assertTrue(applicationsTab.isSelected());
 
-            command(window, "applicants");
+            command(window, "viewa");
             assertTrue(applicantsTab.isSelected());
             assertFalse(applicationsTab.isSelected());
         });
