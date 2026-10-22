@@ -1,6 +1,8 @@
 #!/bin/sh
 
-# Validates the mechanical commit-message rules from the project Git conventions.
+# Checks commit-message formatting as listed under "Automated and manual checks" in:
+# .agents/skills/seedu-git-standard/references/rules.md
+# Imperative wording, body necessity, and explanation quality require manual review.
 set -eu
 
 if [ "$#" -ne 1 ]; then

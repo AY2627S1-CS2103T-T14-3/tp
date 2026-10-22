@@ -32,6 +32,22 @@ Source: [SE-EDU Git conventions](https://se-education.org/guides/conventions/git
 - Avoid words such as `currently` and `originally` when describing the present situation because that timing is implied.
 - Optionally use `Let's` to introduce the section describing the change.
 
+## Automated and manual checks
+
+See [Setting Up](../../../../docs/SettingUp.md#before-writing-code) to enable the shared hook in each clone.
+
+After removing comment lines and normalizing whitespace with `git stripspace --strip-comments`, `.githooks/commit-msg` enforces:
+
+- A non-empty message.
+- A maximum of 72 characters per line, including the subject.
+- A capital first letter in the subject after an optional scope or category prefix.
+- No period at the end of the subject.
+- A blank line between the subject and any body.
+
+It warns when the subject exceeds the preferred 50 characters; subjects of up to 72 characters are accepted.
+
+Review the remaining rules manually, including imperative wording, whether a change needs a body, the quality of the WHAT and WHY explanation, and whether the commit is focused. Branch naming also requires manual review.
+
 ## Branch names
 
 - Use a meaningful kebab-case name made from relevant keywords, such as `refactor-ui-tests`.
