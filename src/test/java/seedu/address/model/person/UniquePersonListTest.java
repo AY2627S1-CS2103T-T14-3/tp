@@ -56,6 +56,44 @@ public class UniquePersonListTest {
     }
 
     @Test
+    public void add_sameEmailDifferentName_throwsDuplicatePersonException() {
+        uniquePersonList.add(ALICE);
+        Person duplicate = new PersonBuilder(BOB).withEmail(ALICE.getEmail().value).build();
+
+        assertThrows(DuplicatePersonException.class, () -> uniquePersonList.add(duplicate));
+        assertEquals(List.of(ALICE), uniquePersonList.asUnmodifiableObservableList());
+    }
+
+    @Test
+    public void setPerson_unchangedNameWithDuplicateEmail_throwsDuplicatePersonException() {
+        uniquePersonList.add(ALICE);
+        uniquePersonList.add(BOB);
+        Person editedAlice = new PersonBuilder(ALICE).withEmail(BOB.getEmail().value).build();
+
+        assertThrows(DuplicatePersonException.class, () -> uniquePersonList.setPerson(ALICE, editedAlice));
+        assertEquals(List.of(ALICE, BOB), uniquePersonList.asUnmodifiableObservableList());
+    }
+
+    @Test
+    public void setPerson_unchangedEmailWithDuplicateName_throwsDuplicatePersonException() {
+        uniquePersonList.add(ALICE);
+        uniquePersonList.add(BOB);
+        Person editedAlice = new PersonBuilder(ALICE).withName(BOB.getName().fullName).build();
+
+        assertThrows(DuplicatePersonException.class, () -> uniquePersonList.setPerson(ALICE, editedAlice));
+        assertEquals(List.of(ALICE, BOB), uniquePersonList.asUnmodifiableObservableList());
+    }
+
+    @Test
+    public void setPersons_sameEmailDifferentNames_throwsDuplicatePersonException() {
+        uniquePersonList.add(ALICE);
+        Person duplicate = new PersonBuilder(BOB).withEmail(ALICE.getEmail().value).build();
+
+        assertThrows(DuplicatePersonException.class, () -> uniquePersonList.setPersons(List.of(ALICE, duplicate)));
+        assertEquals(List.of(ALICE), uniquePersonList.asUnmodifiableObservableList());
+    }
+
+    @Test
     public void setPerson_nullTargetPerson_throwsNullPointerException() {
         assertThrows(NullPointerException.class, () -> uniquePersonList.setPerson(null, ALICE));
     }

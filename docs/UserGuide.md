@@ -76,6 +76,10 @@ Format: `help`
 
 Adds a person to the address book.
 
+Each applicant must have a unique name and a unique email address. Adding or editing an applicant
+to use another applicant's name or email is rejected. Comparisons are case-sensitive.
+Saved data containing duplicate names or emails is treated as invalid; correct the duplicates before loading it.
+
 Format: `add -n NAME -p PHONE_NUMBER -e EMAIL`
 
 Each option also accepts a long alias:

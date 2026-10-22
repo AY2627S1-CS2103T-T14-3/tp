@@ -22,7 +22,7 @@ public class AddCommand extends Command {
             + "-e johnd@example.com";
 
     public static final String MESSAGE_SUCCESS = "New person added: %1$s";
-    public static final String MESSAGE_DUPLICATE_PERSON = "This person already exists in the address book.";
+    public static final String MESSAGE_DUPLICATE_PERSON = "An applicant with this name or email already exists.";
 
     private final Person toAdd;
 
