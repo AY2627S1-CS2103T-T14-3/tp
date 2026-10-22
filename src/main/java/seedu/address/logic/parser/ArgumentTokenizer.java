@@ -1,5 +1,7 @@
 package seedu.address.logic.parser;
 
+import static seedu.address.logic.Messages.MESSAGE_DUPLICATE_FIELDS;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -12,6 +14,7 @@ import java.util.regex.Pattern;
 
 import seedu.address.logic.parser.Option.Kind;
 import seedu.address.logic.parser.exceptions.ParseException;
+
 
 /**
  * Tokenizes arguments string of the form: {@code preamble <option> value <option> value ...}<br>
@@ -57,11 +60,12 @@ public class ArgumentTokenizer {
 
         ArgumentMultimap result = new ArgumentMultimap();
         Set<Option> seenOptions = new HashSet<>();
+        Set<Option> dupeOptions = new HashSet<>();
         for (int i = 0; i < occurrences.size(); i++) {
             OptionOccurrence occurrence = occurrences.get(i);
             Option option = occurrence.option();
             if (!seenOptions.add(option)) {
-                throw malformedOptions();
+                dupeOptions.add(option);
             }
 
             int valueEnd = i + 1 < occurrences.size()
@@ -69,10 +73,14 @@ public class ArgumentTokenizer {
                     : argsString.length();
             String value = argsString.substring(occurrence.endPosition(), valueEnd).trim();
             if ((option.getKind() == Kind.FLAG && !value.isEmpty())
-                    || (option.getKind() != Kind.FLAG && value.isEmpty())) {
+                    || (option != Option.OPTION_EMPTY && option.getKind() != Kind.FLAG && value.isEmpty())) {
                 throw malformedOptions();
             }
             result.put(option, value);
+        }
+
+        if (!dupeOptions.isEmpty()) {
+            throw multipleOptions(dupeOptions);
         }
 
         boolean missingRequiredOption = Arrays.stream(options)
@@ -124,15 +132,16 @@ public class ArgumentTokenizer {
     private static List<OptionOccurrence> addPositionalPreamble(String argsString, List<OptionOccurrence> occurrences)
             throws ParseException {
         int firstOptionStart = occurrences.isEmpty() ? argsString.length() : occurrences.getFirst().startPosition();
-        if (argsString.substring(0, firstOptionStart).trim().isEmpty()) {
-            throw malformedOptions();
-        }
         occurrences.addFirst(new OptionOccurrence(Option.OPTION_EMPTY, 0, 0));
         return occurrences;
     }
 
     private static ParseException malformedOptions() {
         return new ParseException(MESSAGE_INVALID_COMMAND_OPTIONS);
+    }
+    private static ParseException multipleOptions(Set<Option> errorOptions) {
+        return new ParseException(MESSAGE_DUPLICATE_FIELDS
+                + errorOptions.stream().map(Option::toString).reduce("", (e, x) -> String.join(" ", e, x)).trim());
     }
 
     private record OptionOccurrence(Option option, int startPosition, int endPosition) { }

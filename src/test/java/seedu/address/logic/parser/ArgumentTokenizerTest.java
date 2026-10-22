@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static seedu.address.logic.Messages.MESSAGE_DUPLICATE_FIELDS;
 import static seedu.address.logic.parser.ArgumentTokenizer.MESSAGE_INVALID_COMMAND_OPTIONS;
 
 import org.junit.jupiter.api.Test;
@@ -85,8 +86,7 @@ public class ArgumentTokenizerTest {
 
     @Test
     public void tokenizeOptions_duplicateMixedAliases_throwsParseException() {
-        assertMalformedOptions("-n John -name Jane",
-                nameOption);
+        assertMultipleOptions("-n John -name Jane", "-n", nameOption);
     }
 
     @Test
@@ -149,6 +149,12 @@ public class ArgumentTokenizerTest {
         ParseException exception = assertThrows(ParseException.class, () ->
                 ArgumentTokenizer.tokenizeOptions(argsString, false, options));
         assertEquals(MESSAGE_INVALID_COMMAND_OPTIONS, exception.getMessage());
+    }
+
+    private void assertMultipleOptions(String argsString, String multipleOptions, Option... options) {
+        ParseException exception = assertThrows(ParseException.class, () ->
+                ArgumentTokenizer.tokenizeOptions(argsString, false, options));
+        assertEquals(MESSAGE_DUPLICATE_FIELDS + multipleOptions, exception.getMessage());
     }
 
 }
