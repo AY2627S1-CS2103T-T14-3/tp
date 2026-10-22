@@ -55,15 +55,38 @@ public class ArgumentTokenizer {
      * @throws ParseException if the input or option configuration is malformed
      */
     public static ArgumentMultimap tokenizeOptions(String argsString, Option... options) throws ParseException {
+        ArgumentMultimap result = tokenizeOptionsWithPreamble(argsString, options);
+        if (!result.getPreamble().isEmpty()) {
+            throw malformedOptions();
+        }
+        return result;
+    }
+
+    /**
+     * Tokenizes hyphen-prefixed options while preserving leading positional text as the preamble.
+     * The caller is responsible for validating the preamble, such as parsing it as an index.
+     * Options follow the same alias, value, duplicate, and required-option rules as {@link #tokenizeOptions}.
+     *
+     * @param argsString command arguments containing a preamble followed by configured options
+     * @param options required, optional, and flag-only option specifications
+     * @return the preamble and parsed options, keyed by their canonical prefixes
+     * @throws ParseException if the options are malformed
+     */
+    public static ArgumentMultimap tokenizeOptionsWithPreamble(String argsString, Option... options)
+            throws ParseException {
         if (argsString == null || options == null) {
             throw new NullPointerException("Arguments and options must not be null");
         }
 
         Map<String, Option> optionsByAlias = buildAliasMap(options);
         List<OptionOccurrence> occurrences = findOptionOccurrences(argsString, optionsByAlias);
-        validateNoPositionalPreamble(argsString, occurrences);
 
         ArgumentMultimap result = new ArgumentMultimap();
+        int firstOptionStart = occurrences.isEmpty() ? argsString.length() : occurrences.getFirst().startPosition();
+        String preamble = argsString.substring(0, firstOptionStart).trim();
+        if (!preamble.isEmpty()) {
+            result.put(new Prefix(""), preamble);
+        }
         Set<Prefix> seenPrefixes = new HashSet<>();
         for (int i = 0; i < occurrences.size(); i++) {
             OptionOccurrence occurrence = occurrences.get(i);
@@ -119,14 +142,6 @@ public class ArgumentTokenizer {
             occurrences.add(new OptionOccurrence(option, matcher.start(), matcher.end()));
         }
         return occurrences;
-    }
-
-    private static void validateNoPositionalPreamble(String argsString, List<OptionOccurrence> occurrences)
-            throws ParseException {
-        int firstOptionStart = occurrences.isEmpty() ? argsString.length() : occurrences.getFirst().startPosition();
-        if (!argsString.substring(0, firstOptionStart).trim().isEmpty()) {
-            throw malformedOptions();
-        }
     }
 
     private static ParseException malformedOptions() {

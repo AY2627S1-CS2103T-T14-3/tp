@@ -173,6 +173,49 @@ public class ArgumentTokenizerTest {
     }
 
     @Test
+    public void tokenizeOptionsWithPreamble_leadingIndexAndAliases_preserved() throws ParseException {
+        ArgumentMultimap options = ArgumentTokenizer.tokenizeOptionsWithPreamble(
+                " \t2 \t-email john@example.com -n John Doe ",
+                Option.optional(nameOption, "-n", "-name"),
+                Option.optional(emailOption, "-e", "-email"));
+
+        assertPreamblePresent(options, "2");
+        assertArgumentPresent(options, nameOption, "John Doe");
+        assertArgumentPresent(options, emailOption, "john@example.com");
+        assertArgumentAbsent(options, new Prefix("-email"));
+    }
+
+    @Test
+    public void tokenizeOptionsWithPreamble_noOptions_allTakenAsPreamble() throws ParseException {
+        ArgumentMultimap options = ArgumentTokenizer.tokenizeOptionsWithPreamble(
+                " \t1 extra text \t", Option.optional(nameOption, "-n", "-name"));
+
+        assertPreamblePresent(options, "1 extra text");
+        assertArgumentAbsent(options, nameOption);
+    }
+
+    @Test
+    public void tokenizeOptionsWithPreamble_noPreamble_preambleEmpty() throws ParseException {
+        ArgumentMultimap options = ArgumentTokenizer.tokenizeOptionsWithPreamble(
+                "-n John Doe", Option.optional(nameOption, "-n", "-name"));
+        assertPreambleEmpty(options);
+        assertArgumentPresent(options, nameOption, "John Doe");
+
+        options = ArgumentTokenizer.tokenizeOptionsWithPreamble(" \t", Option.optional(nameOption, "-n"));
+        assertPreambleEmpty(options);
+        assertArgumentAbsent(options, nameOption);
+    }
+
+    @Test
+    public void tokenizeOptionsWithPreamble_malformedOptions_throwsParseException() {
+        for (String args : new String[] {"1 -n John -name Jane", "1 -n", "1 -unknown value", "1"}) {
+            ParseException exception = assertThrows(ParseException.class, () ->
+                    ArgumentTokenizer.tokenizeOptionsWithPreamble(args, Option.required(nameOption, "-n", "-name")));
+            assertEquals(MESSAGE_INVALID_COMMAND_OPTIONS, exception.getMessage());
+        }
+    }
+
+    @Test
     public void tokenizeOptions_optionalOptionMayBeAbsent() throws ParseException {
         ArgumentMultimap options = ArgumentTokenizer.tokenizeOptions(
                 "-n John Doe",
