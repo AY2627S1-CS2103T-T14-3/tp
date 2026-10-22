@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
  */
 public final class Option {
 
+    static final Option OPTION_EMPTY = new Option();
     private static final Pattern ALIAS_PATTERN = Pattern.compile("-[a-z]+(?:-[a-z]+)*");
 
     /** The ways in which an option may be used. */
@@ -21,15 +22,16 @@ public final class Option {
         FLAG
     }
 
-    private final Prefix prefix;
     private final Kind kind;
     private final List<String> aliases;
 
-    private Option(Prefix prefix, Kind kind, String... aliases) {
-        this.prefix = requireNonNull(prefix);
+    private Option(Kind kind, String... aliases) {
         this.kind = requireNonNull(kind);
         if (aliases == null) {
             throw new NullPointerException("Option aliases must not be null");
+        }
+        if (aliases.length == 0) {
+            throw new IllegalArgumentException("There must be at least one option aliases");
         }
 
         Set<String> uniqueAliases = new LinkedHashSet<>();
@@ -44,23 +46,24 @@ public final class Option {
         this.aliases = List.copyOf(uniqueAliases);
     }
 
+    private Option() {
+        this.kind = Kind.REQUIRED;
+        this.aliases = List.of("");
+    }
+
     /** Creates an option which must be present and have a value. */
-    public static Option required(Prefix prefix, String... aliases) {
-        return new Option(prefix, Kind.REQUIRED, aliases);
+    public static Option required(String... aliases) {
+        return new Option(Kind.REQUIRED, aliases);
     }
 
     /** Creates an option which may be omitted, but must have a value when present. */
-    public static Option optional(Prefix prefix, String... aliases) {
-        return new Option(prefix, Kind.OPTIONAL, aliases);
+    public static Option optional(String... aliases) {
+        return new Option(Kind.OPTIONAL, aliases);
     }
 
     /** Creates an option which takes no value. */
-    public static Option flag(Prefix prefix, String... aliases) {
-        return new Option(prefix, Kind.FLAG, aliases);
-    }
-
-    public Prefix getPrefix() {
-        return prefix;
+    public static Option flag(String... aliases) {
+        return new Option(Kind.FLAG, aliases);
     }
 
     public Kind getKind() {
@@ -69,5 +72,10 @@ public final class Option {
 
     public List<String> getAliases() {
         return aliases;
+    }
+
+    @Override
+    public String toString() {
+        return getAliases().getFirst();
     }
 }

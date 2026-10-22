@@ -1,7 +1,7 @@
 package seedu.address.logic.parser;
 
 import static java.util.Objects.requireNonNull;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_STATUS;
+import static seedu.address.logic.parser.CliSyntax.OPTION_STATUS_REQ;
 
 import seedu.address.commons.core.index.Index;
 import seedu.address.logic.commands.SetApplicationStatusCommand;
@@ -12,8 +12,6 @@ import seedu.address.model.application.Application;
  * Parses input arguments and creates a new SetApplicationStatusCommand object
  */
 public class SetApplicationStatusCommandParser implements Parser<SetApplicationStatusCommand> {
-
-    private static final Option STATUS_OPTION = Option.required(PREFIX_STATUS, "-s", "-status");
 
     /**
      * Parses the given {@code String} of arguments in the context of the SetApplicationStatusCommand
@@ -57,7 +55,7 @@ public class SetApplicationStatusCommandParser implements Parser<SetApplicationS
     private Application.Status parseStatus(String args, String optionArgs) throws ParseException {
         ArgumentMultimap values = parseOptions(args, optionArgs);
         try {
-            return Application.Status.fromValue(values.getValue(PREFIX_STATUS).orElseThrow());
+            return Application.Status.fromValue(values.getValue(OPTION_STATUS_REQ).orElseThrow());
         } catch (IllegalArgumentException exception) {
             throw new ParseException(SetApplicationStatusCommand.MESSAGE_INVALID_STATUS);
         }
@@ -72,7 +70,7 @@ public class SetApplicationStatusCommandParser implements Parser<SetApplicationS
      */
     private ArgumentMultimap parseOptions(String args, String optionArgs) throws ParseException {
         try {
-            return ArgumentTokenizer.tokenizeOptions(optionArgs, STATUS_OPTION);
+            return ArgumentTokenizer.tokenizeOptions(optionArgs, ArgumentTokenizer.NO_PREAMBLE, OPTION_STATUS_REQ);
         } catch (ParseException pe) {
             throw unrecognized(args);
         }

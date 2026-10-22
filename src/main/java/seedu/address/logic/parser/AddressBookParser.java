@@ -8,6 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import seedu.address.commons.core.LogsCenter;
+import seedu.address.logic.commands.AddApplicationCommand;
 import seedu.address.logic.commands.AddCommand;
 import seedu.address.logic.commands.AddJobCommand;
 import seedu.address.logic.commands.ByeCommand;
@@ -56,7 +57,8 @@ public class AddressBookParser {
         logger.fine("Command word: " + commandWord + "; Arguments: " + arguments);
 
         return switch (commandWord) {
-            case AddCommand.COMMAND_WORD -> parseAddCommand(arguments);
+            case AddCommand.COMMAND_WORD -> new AddCommandParser().parse(arguments);
+            case AddApplicationCommand.COMMAND_WORD -> new AddApplicationCommandParser().parse(arguments);
             case AddJobCommand.COMMAND_WORD -> new AddJobCommandParser().parse(arguments);
             case DeleteCommand.COMMAND_WORD -> new DeleteCommandParser().parse(arguments);
             case DeleteJobCommand.COMMAND_WORD -> new DeleteJobCommandParser().parse(arguments);
@@ -74,19 +76,4 @@ public class AddressBookParser {
             }
         };
     }
-
-    /**
-     * Parses the given {@code String} of arguments in the context of the AddCommand
-     * and returns an AddCommand or AddApplicationCommand object for execution.
-     * @param arguments arguments string following the add command word
-     * @return an AddCommand or AddApplicationCommand object for execution
-     * @throws ParseException if the user input does not conform to the expected format
-     */
-    private Command parseAddCommand(String arguments) throws ParseException {
-        if (AddApplicationCommandParser.isApplicationCommand(arguments)) {
-            return new AddApplicationCommandParser().parse(arguments);
-        }
-        return new AddCommandParser().parse(arguments);
-    }
-
 }

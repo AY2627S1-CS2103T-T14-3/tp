@@ -2,7 +2,7 @@ package seedu.address.logic.parser;
 
 import static java.util.Objects.requireNonNull;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_FILTER;
+import static seedu.address.logic.parser.CliSyntax.OPTION_FILTER;
 
 import seedu.address.logic.commands.ViewJobCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
@@ -11,8 +11,6 @@ import seedu.address.logic.parser.exceptions.ParseException;
  * Parses input arguments and creates a new ViewJobCommand object.
  */
 public class ViewJobCommandParser implements Parser<ViewJobCommand> {
-
-    private static final Option FILTER_OPTION = Option.optional(PREFIX_FILTER, "-f", "-filter");
 
     /**
      * Parses the given arguments into a command that shows every job, or the jobs matching {@code -f}.
@@ -29,13 +27,13 @@ public class ViewJobCommandParser implements Parser<ViewJobCommand> {
 
         ArgumentMultimap values;
         try {
-            values = ArgumentTokenizer.tokenizeOptions(args, FILTER_OPTION);
+            values = ArgumentTokenizer.tokenizeOptions(args, ArgumentTokenizer.NO_PREAMBLE, OPTION_FILTER);
         } catch (ParseException pe) {
             throw new ParseException(
                     String.format(MESSAGE_INVALID_COMMAND_FORMAT, ViewJobCommand.MESSAGE_USAGE), pe);
         }
 
-        String keyword = values.getValue(PREFIX_FILTER).orElse("");
+        String keyword = values.getValue(OPTION_FILTER).orElse("");
         if (keyword.isBlank()) {
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, ViewJobCommand.MESSAGE_USAGE));
         }

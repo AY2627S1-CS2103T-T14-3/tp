@@ -17,6 +17,8 @@ import seedu.address.model.person.Person;
  */
 public class AddApplicationCommand extends Command {
 
+    public static final String COMMAND_WORD = "addp";
+
     public static final String MESSAGE_SUCCESS = "New application for %1$s (email %2$s) has been created!\n"
             + "Applicant's details have been displayed below.";
 
@@ -32,11 +34,11 @@ public class AddApplicationCommand extends Command {
     public static final String MESSAGE_INVALID_STATUS = "Invalid status. Please choose a status from "
             + "\"accept\", \"reject\", or \"pending\".\n"
             + "Please note that the input is case-sensitive.\n"
-            + "Example: add -p 1 -j Janitor -s accept";
+            + "Example: addp 1 -j Janitor -s accept";
 
     public static final String MESSAGE_UNRECOGNIZED = "Unable to recognize the command %1$s.\n"
             + "Please follow the format: add -p <index> -j <job_desc> [-s <status>].\n"
-            + "Example: add -p 2 -j ClaudeGPT Expert -s accept";
+            + "Example: addp 2 -j ClaudeGPT Expert -s accept";
 
     private final Index targetIndex;
     private final String jobDescription;

@@ -5,15 +5,19 @@ package seedu.address.logic.parser;
  */
 public class CliSyntax {
 
-    /* Prefix definitions */
-    public static final Prefix PREFIX_NAME = new Prefix("n/");
-    public static final Prefix PREFIX_PHONE = new Prefix("p/");
-    public static final Prefix PREFIX_EMAIL = new Prefix("e/");
-
     /* Option definitions */
-    public static final Prefix PREFIX_APPLICANT = new Prefix("-p");
-    public static final Prefix PREFIX_JOB = new Prefix("-j");
-    public static final Prefix PREFIX_STATUS = new Prefix("-s");
-    public static final Prefix PREFIX_FILTER = new Prefix("-f");
+    public static final Option OPTION_NAME_REQ = Option.required("-n", "-name");
+    public static final Option OPTION_PHONE_REQ = Option.required("-p", "-phone");
+    public static final Option OPTION_EMAIL_REQ = Option.required("-e", "-email");
+    public static final Option OPTION_JOB_REQ = Option.required("-j", "-job");
+    public static final Option OPTION_STATUS_REQ = Option.required("-s", "-status");
 
+    public static final Option OPTION_NAME_OPT = Option.optional("-n", "-name");
+    public static final Option OPTION_PHONE_OPT = Option.optional("-p", "-phone");
+    public static final Option OPTION_EMAIL_OPT = Option.optional("-e", "-email");
+    public static final Option OPTION_STATUS_OPT = Option.optional("-s", "-status");
+
+    public static final Option OPTION_EMPTY = Option.OPTION_EMPTY;
+
+    public static final Option OPTION_FILTER = Option.optional("-f", "-filter");
 }
