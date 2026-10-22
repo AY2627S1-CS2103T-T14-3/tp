@@ -23,7 +23,8 @@ public class JsonSerializableAddressBookTest {
     private static final Path TYPICAL_PERSONS_FILE = TEST_DATA_FOLDER.resolve("typicalPersonsAddressBook.json");
     private static final Path INVALID_PERSON_FILE = TEST_DATA_FOLDER.resolve("invalidPersonAddressBook.json");
     private static final Path DUPLICATE_PERSON_FILE = TEST_DATA_FOLDER.resolve("duplicatePersonAddressBook.json");
-    private static final Path INVALID_APPLICATION_FILE = TEST_DATA_FOLDER.resolve("invalidApplicationAddressBook.json");
+    private static final Path INVALID_APPLICATION_FILE =
+            TEST_DATA_FOLDER.resolve("invalidApplicationAddressBook.json");
     private static final Path DUPLICATE_APPLICATION_FILE =
             TEST_DATA_FOLDER.resolve("duplicateApplicationAddressBook.json");
     private static final Path MISSING_APPLICANT_FILE = TEST_DATA_FOLDER.resolve("missingApplicantAddressBook.json");
@@ -108,6 +109,16 @@ public class JsonSerializableAddressBookTest {
                 JsonSerializableAddressBook.class).get();
         assertThrows(IllegalValueException.class, JsonAdaptedApplication.MESSAGE_UNKNOWN_APPLICANT,
                 dataFromFile::toModelType);
+    }
+
+    @Test
+    public void toModelType_sameEmailDifferentNames_throwsIllegalValueException() {
+        JsonSerializableAddressBook data = new JsonSerializableAddressBook(List.of(
+                new JsonAdaptedPerson("Alice", "91234567", "shared@example.com"),
+                new JsonAdaptedPerson("Bob", "98765432", "shared@example.com")), List.of(), List.of());
+
+        assertThrows(IllegalValueException.class, JsonSerializableAddressBook.MESSAGE_DUPLICATE_PERSON,
+                data::toModelType);
     }
 
     @Test

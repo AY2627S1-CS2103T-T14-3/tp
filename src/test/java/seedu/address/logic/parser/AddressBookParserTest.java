@@ -91,10 +91,10 @@ public class AddressBookParserTest {
     public void parseCommand_addApplication() throws Exception {
         AddApplicationCommand expected = new AddApplicationCommand(
                 INDEX_FIRST_PERSON, "Janitor", Application.Status.PENDING);
-        assertEquals(expected, parser.parseCommand("add -p 1 -j Janitor"));
-        assertEquals(expected, parser.parseCommand("  add   -application   1   -job   Janitor  "));
+        assertEquals(expected, parser.parseCommand("addp 1 -j Janitor"));
+        assertEquals(expected, parser.parseCommand("  addp   1   -job   Janitor  "));
         assertThrows(ParseException.class, MESSAGE_INVALID_STATUS, () ->
-                parser.parseCommand("add -p 1 -j Janitor -s ACCEPT"));
+                parser.parseCommand("addp 1 -j Janitor -s ACCEPT"));
     }
 
     @Test

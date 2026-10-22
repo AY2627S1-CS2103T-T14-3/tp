@@ -58,6 +58,15 @@ public class Person {
     }
 
     /**
+     * Returns true if the other person has the same name or email.
+     * Names and emails must each be unique across applicants.
+     */
+    public boolean hasSameNameOrEmail(Person otherPerson) {
+        return otherPerson != null
+                && (name.equals(otherPerson.name) || email.equals(otherPerson.email));
+    }
+
+    /**
      * Returns true if both persons have the same identity and data fields.
      * This defines a stronger notion of equality between two persons.
      */

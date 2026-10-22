@@ -1,9 +1,9 @@
 package seedu.address.logic.parser;
 
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_EMAIL;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
+import static seedu.address.logic.parser.CliSyntax.OPTION_EMAIL_REQ;
+import static seedu.address.logic.parser.CliSyntax.OPTION_NAME_REQ;
+import static seedu.address.logic.parser.CliSyntax.OPTION_PHONE_REQ;
 
 import seedu.address.logic.commands.AddCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
@@ -17,10 +17,6 @@ import seedu.address.model.person.Phone;
  */
 public class AddCommandParser implements Parser<AddCommand> {
 
-    private static final Option OPTION_NAME = Option.required(PREFIX_NAME, "-n", "-name");
-    private static final Option OPTION_PHONE = Option.required(PREFIX_PHONE, "-p", "-phone");
-    private static final Option OPTION_EMAIL = Option.required(PREFIX_EMAIL, "-e", "-email");
-
     /**
      * Parses the required person details from short or long option aliases.
      *
@@ -33,14 +29,14 @@ public class AddCommandParser implements Parser<AddCommand> {
         ArgumentMultimap argMultimap;
         try {
             argMultimap = ArgumentTokenizer.tokenizeOptions(args,
-                    OPTION_NAME, OPTION_PHONE, OPTION_EMAIL);
+                    ArgumentTokenizer.NO_PREAMBLE, OPTION_NAME_REQ, OPTION_PHONE_REQ, OPTION_EMAIL_REQ);
         } catch (ParseException pe) {
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddCommand.MESSAGE_USAGE), pe);
         }
 
-        Name name = ParserUtil.parseName(argMultimap.getValue(PREFIX_NAME).get());
-        Phone phone = ParserUtil.parsePhone(argMultimap.getValue(PREFIX_PHONE).get());
-        Email email = ParserUtil.parseEmail(argMultimap.getValue(PREFIX_EMAIL).get());
+        Name name = ParserUtil.parseName(argMultimap.getValue(OPTION_NAME_REQ).get());
+        Phone phone = ParserUtil.parsePhone(argMultimap.getValue(OPTION_PHONE_REQ).get());
+        Email email = ParserUtil.parseEmail(argMultimap.getValue(OPTION_EMAIL_REQ).get());
 
         Person person = new Person(name, phone, email);
 
