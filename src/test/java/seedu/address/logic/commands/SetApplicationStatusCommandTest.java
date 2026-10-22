@@ -19,6 +19,7 @@ import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
 import seedu.address.model.application.Application;
+import seedu.address.model.application.Job;
 
 public class SetApplicationStatusCommandTest {
 
@@ -26,25 +27,25 @@ public class SetApplicationStatusCommandTest {
 
     @Test
     public void execute_existingApplication_updatesStatusAndKeepsJob() {
-        model.addApplication(new Application(ALICE, "Janitor", Application.Status.PENDING));
+        model.addApplication(new Application(ALICE, new Job("Janitor"), Application.Status.PENDING));
         SetApplicationStatusCommand command = new SetApplicationStatusCommand(
                 INDEX_FIRST_PERSON, Application.Status.ACCEPT);
 
         Model expectedModel = new ModelManager(getTypicalAddressBook(), new UserPrefs());
-        expectedModel.addApplication(new Application(ALICE, "Janitor", Application.Status.ACCEPT));
+        expectedModel.addApplication(new Application(ALICE, new Job("Janitor"), Application.Status.ACCEPT));
         CommandResult expectedResult = new CommandResult(String.format(
                 SetApplicationStatusCommand.MESSAGE_SUCCESS, ALICE.getName(), ALICE.getEmail(),
                 Application.Status.ACCEPT), ALICE);
 
         assertCommandSuccess(command, model, expectedResult, expectedModel);
         Application updated = model.getApplication(ALICE).orElseThrow();
-        assertEquals("Janitor", updated.getJobDescription());
+        assertEquals(new Job("Janitor"), updated.getJob());
         assertEquals(Application.Status.ACCEPT, updated.getStatus());
     }
 
     @Test
     public void execute_sameStatus_succeeds() {
-        Application application = new Application(ALICE, "Janitor", Application.Status.PENDING);
+        Application application = new Application(ALICE, new Job("Janitor"), Application.Status.PENDING);
         model.addApplication(application);
         SetApplicationStatusCommand command = new SetApplicationStatusCommand(
                 INDEX_FIRST_PERSON, Application.Status.PENDING);
@@ -60,14 +61,14 @@ public class SetApplicationStatusCommandTest {
 
     @Test
     public void execute_filteredList_usesDisplayedIndexAndKeepsFilter() {
-        model.addApplication(new Application(BENSON, "Janitor", Application.Status.PENDING));
+        model.addApplication(new Application(BENSON, new Job("Janitor"), Application.Status.PENDING));
         showPersonAtIndex(model, INDEX_SECOND_PERSON);
         SetApplicationStatusCommand command = new SetApplicationStatusCommand(
                 INDEX_FIRST_PERSON, Application.Status.REJECT);
 
         Model expectedModel = new ModelManager(getTypicalAddressBook(), new UserPrefs());
         showPersonAtIndex(expectedModel, INDEX_SECOND_PERSON);
-        expectedModel.addApplication(new Application(BENSON, "Janitor", Application.Status.REJECT));
+        expectedModel.addApplication(new Application(BENSON, new Job("Janitor"), Application.Status.REJECT));
         CommandResult expectedResult = new CommandResult(String.format(
                 SetApplicationStatusCommand.MESSAGE_SUCCESS, BENSON.getName(), BENSON.getEmail(),
                 Application.Status.REJECT), BENSON);

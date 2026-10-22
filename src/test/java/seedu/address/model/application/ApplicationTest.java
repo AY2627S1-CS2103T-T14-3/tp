@@ -17,29 +17,30 @@ public class ApplicationTest {
 
     @Test
     public void constructor_validApplication_success() {
-        Application application = new Application(ALICE, "Janitor", Application.Status.PENDING);
+        Application application = new Application(ALICE, new Job("Janitor"), Application.Status.PENDING);
 
         assertEquals(ALICE, application.getApplicant());
-        assertEquals("Janitor", application.getJobDescription());
+        assertEquals(new Job("Janitor"), application.getJob());
         assertEquals(Application.Status.PENDING, application.getStatus());
     }
 
     @Test
     public void constructor_trimsJobDescription_success() {
-        Application application = new Application(ALICE, "  Janitor  ", Application.Status.ACCEPT);
+        Application application = new Application(ALICE, new Job("  Janitor  "), Application.Status.ACCEPT);
 
-        assertEquals("Janitor", application.getJobDescription());
+        assertEquals(new Job("Janitor"), application.getJob());
     }
 
     @Test
     public void constructor_invalidValues_throwsException() {
-        assertThrows(NullPointerException.class, () -> new Application(null, "Janitor", Application.Status.PENDING));
+        assertThrows(NullPointerException.class, () -> new Application(null,
+                new Job("Janitor"), Application.Status.PENDING));
         assertThrows(NullPointerException.class, () -> new Application(ALICE, null, Application.Status.PENDING));
-        assertThrows(NullPointerException.class, () -> new Application(ALICE, "Janitor", null));
+        assertThrows(NullPointerException.class, () -> new Application(ALICE, new Job("Janitor"), null));
         assertThrows(IllegalArgumentException.class, ()
-                -> new Application(ALICE, "   ", Application.Status.PENDING));
+                -> new Application(ALICE, new Job("   "), Application.Status.PENDING));
         assertThrows(IllegalArgumentException.class, ()
-                -> new Application(ALICE, "ClaudeGPT -s accept", Application.Status.PENDING));
+                -> new Application(ALICE, new Job("ClaudeGPT -s accept"), Application.Status.PENDING));
     }
 
     @Test
@@ -52,7 +53,7 @@ public class ApplicationTest {
                 "Janitor\n-s\naccept");
 
         invalidDescriptions.forEach(description -> assertThrows(IllegalArgumentException.class, ()
-                -> new Application(ALICE, description, Application.Status.PENDING)));
+                -> new Application(ALICE, new Job(description), Application.Status.PENDING)));
     }
 
     @Test
@@ -65,8 +66,8 @@ public class ApplicationTest {
 
     @Test
     public void equals_sameValues_success() {
-        Application first = new Application(ALICE, "Janitor", Application.Status.PENDING);
-        Application second = new Application(ALICE, "Janitor", Application.Status.PENDING);
+        Application first = new Application(ALICE, new Job("Janitor"), Application.Status.PENDING);
+        Application second = new Application(ALICE, new Job("Janitor"), Application.Status.PENDING);
 
         assertEquals(first, second);
         assertEquals(first.hashCode(), second.hashCode());
@@ -74,11 +75,11 @@ public class ApplicationTest {
 
     @Test
     public void equals_differentValues_failure() {
-        Application alicePending = new Application(ALICE, "Janitor", Application.Status.PENDING);
-        Application aliceAccept = new Application(ALICE, "Janitor", Application.Status.ACCEPT);
-        Application aliceReject = new Application(ALICE, "Janitor", Application.Status.REJECT);
-        Application aliceNotJanitor = new Application(ALICE, "Not Janitor", Application.Status.PENDING);
-        Application bobPending = new Application(BOB, "Janitor", Application.Status.PENDING);
+        Application alicePending = new Application(ALICE, new Job("Janitor"), Application.Status.PENDING);
+        Application aliceAccept = new Application(ALICE, new Job("Janitor"), Application.Status.ACCEPT);
+        Application aliceReject = new Application(ALICE, new Job("Janitor"), Application.Status.REJECT);
+        Application aliceNotJanitor = new Application(ALICE, new Job("Not Janitor"), Application.Status.PENDING);
+        Application bobPending = new Application(BOB, new Job("Janitor"), Application.Status.PENDING);
 
         assertFalse(alicePending.equals(aliceAccept));
         assertFalse(alicePending.equals(aliceReject));
@@ -89,11 +90,11 @@ public class ApplicationTest {
 
     @Test
     public void isForSameApplicant_variousApplicants_returnsExpectedResult() {
-        Application aliceApplication = new Application(ALICE, "Janitor", Application.Status.PENDING);
+        Application aliceApplication = new Application(ALICE, new Job("Janitor"), Application.Status.PENDING);
         Application sameApplicantApplication = new Application(
                 new PersonBuilder(ALICE).withPhone("91234567").build(),
-                "Engineer", Application.Status.ACCEPT);
-        Application bobApplication = new Application(BOB, "Janitor", Application.Status.PENDING);
+                new Job("Engineer"), Application.Status.ACCEPT);
+        Application bobApplication = new Application(BOB, new Job("Janitor"), Application.Status.PENDING);
 
         assertTrue(aliceApplication.isForSameApplicant(aliceApplication));
         assertTrue(aliceApplication.isForSameApplicant(sameApplicantApplication));

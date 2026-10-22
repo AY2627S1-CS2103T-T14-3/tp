@@ -83,7 +83,7 @@ public class ApplicantDetailPanel extends UiPart<Region> {
         }
 
         applicationStatus.getStyleClass().add("detail-value");
-        applicationStatus.setText(application.getJobDescription());
+        applicationStatus.setText(application.getJob().toString());
         applicationStatusBadge.setVisible(true);
         applicationStatusBadge.setManaged(true);
         Application.Status status = application.getStatus();
