@@ -2,7 +2,6 @@ package seedu.address.logic.parser;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.logic.parser.ArgumentTokenizer.MESSAGE_INVALID_COMMAND_OPTIONS;
@@ -13,9 +12,9 @@ import seedu.address.logic.parser.exceptions.ParseException;
 
 public class ArgumentTokenizerTest {
 
-    private final Option unknownPrefix = Option.required("--u");
     private final Option nameOption = Option.required("-n", "-name");
     private final Option emailOption = Option.required("-e", "-email");
+    private final Option unusedOption = Option.optional("-u", "-unused");
     private final Option testFlag = Option.flag("-t");
 
     /**
@@ -41,17 +40,6 @@ public class ArgumentTokenizerTest {
     }
 
     @Test
-    public void equalsMethod() {
-        Prefix aaa = new Prefix("aaa");
-
-        assertEquals(aaa, aaa);
-        assertEquals(aaa, new Prefix("aaa"));
-
-        assertNotEquals(aaa, "aaa");
-        assertNotEquals(aaa, new Prefix("aab"));
-    }
-
-    @Test
     public void tokenizeOptions_shortAndLongAliases_valuesCanonicalized() throws ParseException {
         ArgumentMultimap shortOptions = ArgumentTokenizer.tokenizeOptions(
                 " -n John Doe -e john@example.com",
@@ -66,7 +54,7 @@ public class ArgumentTokenizerTest {
         assertArgumentPresent(shortOptions, emailOption, "john@example.com");
         assertArgumentPresent(longOptions, nameOption, "John Doe");
         assertArgumentPresent(longOptions, emailOption, "john@example.com");
-        assertArgumentAbsent(longOptions, unknownPrefix);
+        assertArgumentAbsent(longOptions, testFlag);
     }
 
     @Test
@@ -74,10 +62,10 @@ public class ArgumentTokenizerTest {
         ArgumentMultimap options = ArgumentTokenizer.tokenizeOptions(
                 "-n John Doe",
                 nameOption,
-                emailOption);
+                unusedOption);
 
         assertArgumentPresent(options, nameOption, "John Doe");
-        assertArgumentAbsent(options, emailOption);
+        assertArgumentAbsent(options, unusedOption);
     }
 
     @Test

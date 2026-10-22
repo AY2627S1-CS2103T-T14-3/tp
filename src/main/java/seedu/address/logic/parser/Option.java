@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
  */
 public final class Option {
 
+    static final Option OPTION_EMPTY = new Option();
     private static final Pattern ALIAS_PATTERN = Pattern.compile("-[a-z]+(?:-[a-z]+)*");
 
     /** The ways in which an option may be used. */
@@ -43,6 +44,11 @@ public final class Option {
             throw new IllegalArgumentException("An option must have at least one alias");
         }
         this.aliases = List.copyOf(uniqueAliases);
+    }
+
+    private Option() {
+        this.kind = Kind.REQUIRED;
+        this.aliases = List.of("");
     }
 
     /** Creates an option which must be present and have a value. */
