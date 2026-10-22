@@ -14,19 +14,9 @@ import seedu.address.logic.parser.exceptions.ParseException;
 public class ArgumentTokenizerTest {
 
     private final Option unknownPrefix = Option.required("--u");
-    private final Option pSlash = Option.required("p/");
-    private final Option hatQ = Option.required("^Q");
     private final Option nameOption = Option.required("-n", "-name");
     private final Option emailOption = Option.required("-e", "-email");
     private final Option testFlag = Option.flag("-t");
-
-    private void assertPreamblePresent(ArgumentMultimap argMultimap, String expectedPreamble) {
-        assertEquals(expectedPreamble, argMultimap.getPreamble());
-    }
-
-    private void assertPreambleEmpty(ArgumentMultimap argMultimap) {
-        assertTrue(argMultimap.getPreamble().isEmpty());
-    }
 
     /**
      * Asserts all the arguments in {@code argMultimap} with {@code prefix} match the {@code expectedValues}

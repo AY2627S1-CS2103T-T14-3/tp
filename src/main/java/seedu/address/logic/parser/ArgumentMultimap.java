@@ -1,5 +1,7 @@
 package seedu.address.logic.parser;
 
+import static seedu.address.logic.parser.CliSyntax.OPTION_EMPTY;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,7 +12,6 @@ import java.util.stream.Stream;
 import seedu.address.logic.Messages;
 import seedu.address.logic.parser.exceptions.ParseException;
 
-import static seedu.address.logic.parser.CliSyntax.OPTION_EMPTY;
 
 /**
  * Stores mapping of options to their respective arguments.
