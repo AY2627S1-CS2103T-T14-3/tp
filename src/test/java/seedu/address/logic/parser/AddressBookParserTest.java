@@ -15,6 +15,8 @@ import org.junit.jupiter.api.Test;
 
 import seedu.address.logic.commands.AddApplicationCommand;
 import seedu.address.logic.commands.AddCommand;
+import seedu.address.logic.commands.ApplicantsCommand;
+import seedu.address.logic.commands.ApplicationsCommand;
 import seedu.address.logic.commands.ByeCommand;
 import seedu.address.logic.commands.ClearCommand;
 import seedu.address.logic.commands.DeleteCommand;
@@ -66,6 +68,12 @@ public class AddressBookParserTest {
         String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT, ViewCommand.MESSAGE_USAGE);
         assertThrows(ParseException.class, expectedMessage, () -> parser.parseCommand("view"));
         assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> parser.parseCommand("View 1"));
+    }
+
+    @Test
+    public void parseCommand_sidebarViewToggles() throws Exception {
+        assertTrue(parser.parseCommand(ApplicantsCommand.COMMAND_WORD) instanceof ApplicantsCommand);
+        assertTrue(parser.parseCommand(ApplicationsCommand.COMMAND_WORD) instanceof ApplicationsCommand);
     }
 
     @Test

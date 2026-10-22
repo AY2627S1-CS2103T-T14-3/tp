@@ -30,6 +30,21 @@ public class CommandResultTest {
     }
 
     @Test
+    public void constructor_withSidebarView_requestsViewChange() {
+        CommandResult result = new CommandResult("feedback", CommandResult.SidebarView.APPLICATIONS);
+        assertEquals(CommandResult.SidebarView.APPLICATIONS, result.getSidebarView().orElseThrow());
+        assertTrue(result.getPersonToView().isEmpty());
+    }
+
+    @Test
+    public void equals_differentSidebarViews_areDifferent() {
+        CommandResult applicants = new CommandResult("feedback", CommandResult.SidebarView.APPLICANTS);
+        CommandResult applications = new CommandResult("feedback", CommandResult.SidebarView.APPLICATIONS);
+        assertNotEquals(applicants, applications);
+        assertNotEquals(applicants.hashCode(), applications.hashCode());
+    }
+
+    @Test
     public void constructor_nullArguments_throwsNullPointerException() {
         assertThrows(NullPointerException.class, () -> new CommandResult("feedback", (Person) null));
         assertThrows(NullPointerException.class, () -> new CommandResult(null, ALICE));

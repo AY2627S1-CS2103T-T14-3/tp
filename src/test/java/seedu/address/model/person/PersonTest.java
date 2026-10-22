@@ -42,6 +42,11 @@ public class PersonTest {
     }
 
     @Test
+    public void getDisplayName_returnsFullName() {
+        assertEquals(ALICE.getName().fullName, ALICE.getDisplayName());
+    }
+
+    @Test
     public void equals() {
         // same values -> returns true
         Person aliceCopy = new PersonBuilder(ALICE).build();

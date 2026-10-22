@@ -7,6 +7,8 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
@@ -47,12 +49,19 @@
               <StackPane fx:id="applicantDetailPlaceholder" VBox.vgrow="ALWAYS" />
             </VBox>
             <VBox spacing="12" minWidth="280" styleClass="panel,applicant-list-panel">
-              <HBox alignment="CENTER_LEFT" spacing="10">
-                <Label text="Applicants" styleClass="section-title" HBox.hgrow="ALWAYS" maxWidth="Infinity" />
-                <Label fx:id="applicantCount" styleClass="count-badge" />
+              <fx:define><ToggleGroup fx:id="sidebarViewToggleGroup" /></fx:define>
+              <HBox alignment="CENTER_LEFT" spacing="8">
+                <ToggleButton fx:id="applicantsTab" text="Applicants" styleClass="view-tab" selected="true" toggleGroup="$sidebarViewToggleGroup" />
+                <ToggleButton fx:id="applicationsTab" text="Applications" styleClass="view-tab" toggleGroup="$sidebarViewToggleGroup" />
+                <Label fx:id="applicantCount" styleClass="count-badge" HBox.hgrow="ALWAYS" />
               </HBox>
-              <Label text="Select an applicant to view their details." styleClass="muted-label" wrapText="true" />
-              <StackPane fx:id="personListPanelPlaceholder" VBox.vgrow="ALWAYS" />
+              <StackPane fx:id="applicantViewPlaceholder" VBox.vgrow="ALWAYS">
+                <VBox spacing="12">
+                  <Label text="Select an applicant to view their details." styleClass="muted-label" wrapText="true" />
+                  <StackPane fx:id="personListPanelPlaceholder" VBox.vgrow="ALWAYS" />
+                </VBox>
+              </StackPane>
+              <StackPane fx:id="applicationViewPlaceholder" VBox.vgrow="ALWAYS" visible="false" managed="false" />
             </VBox>
           </items>
         </SplitPane>

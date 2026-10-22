@@ -10,6 +10,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputControl;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
@@ -39,6 +40,7 @@ public class MainWindow extends UiPart<Stage> {
 
     // Independent Ui parts residing in this Ui container
     private PersonListPanel personListPanel;
+    private ApplicationListPanel applicationListPanel;
     private ResultDisplay resultDisplay;
     private HelpWindow helpWindow;
 
@@ -47,6 +49,18 @@ public class MainWindow extends UiPart<Stage> {
 
     @FXML
     private Label applicantCount;
+
+    @FXML
+    private ToggleButton applicantsTab;
+
+    @FXML
+    private ToggleButton applicationsTab;
+
+    @FXML
+    private StackPane applicantViewPlaceholder;
+
+    @FXML
+    private StackPane applicationViewPlaceholder;
 
     @FXML
     private StackPane commandBoxPlaceholder;
@@ -127,6 +141,10 @@ public class MainWindow extends UiPart<Stage> {
     void fillInnerParts() {
         personListPanel = new PersonListPanel(logic.getFilteredPersonList());
         personListPanelPlaceholder.getChildren().add(personListPanel.getRoot());
+        applicationListPanel = new ApplicationListPanel(logic.getFilteredPersonList(), logic.getApplicationList());
+        applicationViewPlaceholder.getChildren().add(applicationListPanel.getRoot());
+        applicantsTab.setOnAction(event -> showApplicantView());
+        applicationsTab.setOnAction(event -> showApplicationView());
 
         ApplicantDetailPanel detailPanel = new ApplicantDetailPanel();
         applicantDetailPlaceholder.getChildren().add(detailPanel.getRoot());
@@ -136,9 +154,12 @@ public class MainWindow extends UiPart<Stage> {
                 showSelectedApplicant(detailPanel));
         showSelectedApplicant(detailPanel);
         applicantCount.textProperty().bind(Bindings.createStringBinding(() -> {
-            int count = logic.getFilteredPersonList().size();
-            return count + (count == 1 ? " applicant" : " applicants");
-        }, logic.getFilteredPersonList()));
+            boolean showingApplications = applicationsTab.isSelected();
+            int count = showingApplications ? logic.getApplicationList().size()
+                    : logic.getFilteredPersonList().size();
+            String noun = showingApplications ? " application" : " applicant";
+            return count + noun + (count == 1 ? "" : "s");
+        }, logic.getFilteredPersonList(), logic.getApplicationList(), applicationsTab.selectedProperty()));
 
         resultDisplay = new ResultDisplay();
         resultDisplayPlaceholder.getChildren().add(resultDisplay.getRoot());
@@ -149,6 +170,20 @@ public class MainWindow extends UiPart<Stage> {
 
         CommandBox commandBox = new CommandBox(this::executeCommand);
         commandBoxPlaceholder.getChildren().add(commandBox.getRoot());
+    }
+
+    private void showApplicantView() {
+        applicantViewPlaceholder.setVisible(true);
+        applicantViewPlaceholder.setManaged(true);
+        applicationViewPlaceholder.setVisible(false);
+        applicationViewPlaceholder.setManaged(false);
+    }
+
+    private void showApplicationView() {
+        applicantViewPlaceholder.setVisible(false);
+        applicantViewPlaceholder.setManaged(false);
+        applicationViewPlaceholder.setVisible(true);
+        applicationViewPlaceholder.setManaged(true);
     }
 
     /**
@@ -222,6 +257,13 @@ public class MainWindow extends UiPart<Stage> {
             logger.info("Result: " + commandResult.getFeedbackToUser());
             resultDisplay.setFeedbackToUser(commandResult.getFeedbackToUser());
             commandResult.getPersonToView().ifPresent(personListPanel::selectPerson);
+            commandResult.getSidebarView().ifPresent(view -> {
+                if (view == CommandResult.SidebarView.APPLICANTS) {
+                    applicantsTab.fire();
+                } else {
+                    applicationsTab.fire();
+                }
+            });
 
             if (commandResult.isShowHelp()) {
                 handleHelp();

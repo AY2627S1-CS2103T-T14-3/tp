@@ -12,6 +12,10 @@ import seedu.address.model.person.Person;
  * Represents the result of a command execution.
  */
 public class CommandResult {
+    /**
+     * Represents the tabs of the sidebar.
+     */
+    public enum SidebarView { APPLICANTS, APPLICATIONS }
 
     private final String feedbackToUser;
 
@@ -23,6 +27,15 @@ public class CommandResult {
 
     /** The applicant to select in the UI, or null if the selection should remain unchanged. */
     private final Person personToView;
+    private final SidebarView sidebarView;
+
+    /**
+     * Constructs a {@code CommandResult} with the specified {@code feedbackToUser},
+     * and other fields set to their default value.
+     */
+    public CommandResult(String feedbackToUser) {
+        this(feedbackToUser, false, false);
+    }
 
     /**
      * Constructs a {@code CommandResult} with the specified fields.
@@ -35,10 +48,16 @@ public class CommandResult {
      * Constructs a {@code CommandResult} with an optional applicant selection.
      */
     private CommandResult(String feedbackToUser, boolean showHelp, boolean exit, Person personToView) {
+        this(feedbackToUser, showHelp, exit, personToView, null);
+    }
+
+    private CommandResult(String feedbackToUser, boolean showHelp, boolean exit,
+                          Person personToView, SidebarView sidebarView) {
         this.feedbackToUser = requireNonNull(feedbackToUser);
         this.showHelp = showHelp;
         this.exit = exit;
         this.personToView = personToView;
+        this.sidebarView = sidebarView;
     }
 
     /**
@@ -48,12 +67,12 @@ public class CommandResult {
         this(feedbackToUser, false, false, requireNonNull(personToView));
     }
 
-    /**
-     * Constructs a {@code CommandResult} with the specified {@code feedbackToUser},
-     * and other fields set to their default value.
-     */
-    public CommandResult(String feedbackToUser) {
-        this(feedbackToUser, false, false);
+    public CommandResult(String feedbackToUser, SidebarView sidebarView) {
+        this(feedbackToUser, false, false, null, requireNonNull(sidebarView));
+    }
+
+    public Optional<SidebarView> getSidebarView() {
+        return Optional.ofNullable(sidebarView);
     }
 
     public String getFeedbackToUser() {
@@ -86,12 +105,13 @@ public class CommandResult {
         return feedbackToUser.equals(otherCommandResult.feedbackToUser)
                 && showHelp == otherCommandResult.showHelp
                 && exit == otherCommandResult.exit
-                && Objects.equals(personToView, otherCommandResult.personToView);
+                && Objects.equals(personToView, otherCommandResult.personToView)
+                && sidebarView == otherCommandResult.sidebarView;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(feedbackToUser, showHelp, exit, personToView);
+        return Objects.hash(feedbackToUser, showHelp, exit, personToView, sidebarView);
     }
 
     @Override

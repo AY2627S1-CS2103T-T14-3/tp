@@ -57,6 +57,21 @@ public class Application {
         return applicant;
     }
 
+    /** Returns the applicant's display name. */
+    public String getApplicantName() {
+        return applicant.getDisplayName();
+    }
+
+    /** Returns whether this application belongs to the supplied applicant. */
+    public boolean isForApplicant(Person person) {
+        return applicant.isSamePerson(person);
+    }
+
+    /** Returns the display value of this application's status. */
+    public String getStatusValue() {
+        return status.getValue();
+    }
+
     public String getJobDescription() {
         return jobDescription;
     }

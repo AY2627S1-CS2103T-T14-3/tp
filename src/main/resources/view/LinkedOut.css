@@ -92,6 +92,15 @@
     -fx-padding: 5 9;
     -fx-font-size: 11px;
 }
+.view-tab {
+    -fx-background-color: transparent;
+    -fx-text-fill: #64748b;
+    -fx-padding: 7 10;
+    -fx-font-weight: bold;
+}
+.view-tab:selected { -fx-background-color: #e7efff; -fx-text-fill: #1749ad; }
+.application-card { -fx-background-color: #f8faff; -fx-background-radius: 9; -fx-border-color: #e6edf7; -fx-border-radius: 9; -fx-padding: 12 10; }
+.application-job { -fx-text-fill: #475569; -fx-font-size: 12px; }
 .applicant-list-panel { -fx-padding: 18 14; }
 .list-view { -fx-background-color: transparent; -fx-padding: 0; }
 .list-view .virtual-flow { -fx-background-color: transparent; }

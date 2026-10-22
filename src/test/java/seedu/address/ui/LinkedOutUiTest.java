@@ -29,6 +29,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.stage.Stage;
 import seedu.address.logic.LogicManager;
 import seedu.address.logic.commands.AddApplicationCommand;
@@ -83,6 +84,22 @@ public class LinkedOutUiTest {
             Person selected = (Person) applicants.getSelectionModel().getSelectedItem();
             assertEquals(selected.getName().fullName, label(window, "applicantName").getText());
             assertApplication(window, "No application recorded.", null);
+        });
+    }
+
+    @Test
+    public void sidebarCommands_switchBetweenApplicantAndApplicationTabs() throws Exception {
+        withWindow(window -> {
+            ToggleButton applicantsTab = (ToggleButton) window.getRoot().getScene().lookup("#applicantsTab");
+            ToggleButton applicationsTab = (ToggleButton) window.getRoot().getScene().lookup("#applicationsTab");
+
+            command(window, "applications");
+            assertFalse(applicantsTab.isSelected());
+            assertTrue(applicationsTab.isSelected());
+
+            command(window, "applicants");
+            assertTrue(applicantsTab.isSelected());
+            assertFalse(applicationsTab.isSelected());
         });
     }
 
