@@ -2,6 +2,7 @@ package seedu.address.model.util;
 
 import seedu.address.model.AddressBook;
 import seedu.address.model.ReadOnlyAddressBook;
+import seedu.address.model.application.Job;
 import seedu.address.model.person.Email;
 import seedu.address.model.person.Name;
 import seedu.address.model.person.Person;
@@ -22,10 +23,21 @@ public class SampleDataUtil {
         };
     }
 
+    public static Job[] getSampleJobs() {
+        return new Job[] {
+            new Job("Software Engineer Intern"),
+            new Job("Data Analyst"),
+            new Job("Product Designer")
+        };
+    }
+
     public static ReadOnlyAddressBook getSampleAddressBook() {
         AddressBook sampleAb = new AddressBook();
         for (Person samplePerson : getSamplePersons()) {
             sampleAb.addPerson(samplePerson);
+        }
+        for (Job sampleJob : getSampleJobs()) {
+            sampleAb.addJob(sampleJob);
         }
         return sampleAb;
     }

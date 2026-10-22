@@ -19,4 +19,5 @@ public class CliSyntax {
 
     public static final Option OPTION_EMPTY = Option.OPTION_EMPTY;
 
+    public static final Option OPTION_FILTER = Option.optional("-f", "-filter");
 }

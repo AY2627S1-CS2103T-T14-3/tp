@@ -220,6 +220,55 @@ Examples:
 * `set 1 -s accept` marks the first displayed applicant's application as accepted.
 * `set 2 -status reject` marks the second displayed applicant's application as rejected.
 
+### Adding a job: `addj`
+
+Adds an open role to the job list. The list on the right switches from applicants to jobs, and the new role is selected.
+
+Format: `addj -j JOB_DESCRIPTION`
+
+* `JOB_DESCRIPTION` is the role name. It cannot be blank and cannot contain another option, such as `-s`.
+* Alias: `-job` for `-j`.
+* A role that is already in the list cannot be added again. Matching ignores surrounding spaces and is otherwise case-sensitive.
+* Adding a role does not create an application. Use `add -p` to record an applicant's application for a role.
+
+Examples:
+
+* `addj -j Software Engineer Intern` adds that role and shows it in the job list.
+* `addj -job Data Analyst` adds a Data Analyst role.
+
+### Viewing jobs: `viewj`
+
+Shows open roles. The list on the right switches to jobs, and the detail panel shows the selected role.
+
+Format: `viewj [-f KEYWORD]`
+
+* Without `-f`, every job is shown.
+* `-f KEYWORD` shows roles whose description contains `KEYWORD`. Matching ignores case and does not need a full word, so `jan` matches `Janitor`.
+* Alias: `-filter` for `-f`.
+* The command word is case-sensitive. `Viewj` is not recognised.
+* `deletej` uses the index in the list currently displayed, including a filtered list.
+* Other commands, such as `list` and `view`, switch the list back to applicants.
+
+Examples:
+
+* `viewj` lists every job. An empty list shows "No jobs to display."
+* `viewj -f jan` lists roles such as Janitor.
+
+### Deleting a job: `deletej`
+
+Deletes the role at the displayed index. The list stays on jobs.
+
+Format: `deletej INDEX`
+
+* `INDEX` is the positive integer shown beside a job in the job list currently displayed. After `viewj -f jan`, index 1 is the first matching job.
+* Deleting a role does not delete applicants or their applications.
+* An empty list, a missing index, or an index past the end of the list produces an error and leaves the jobs unchanged.
+
+Examples:
+
+* `deletej 1` deletes the first job.
+* `viewj` followed by `deletej 2` deletes the second job.
+
 ### Saving the data
 
 AddressBook automatically saves data after every command. You do not need to save manually.

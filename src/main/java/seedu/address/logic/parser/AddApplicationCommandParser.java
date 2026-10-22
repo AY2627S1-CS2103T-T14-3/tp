@@ -9,6 +9,7 @@ import seedu.address.logic.commands.AddApplicationCommand;
 import seedu.address.logic.commands.AddCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.application.Application;
+import seedu.address.model.application.Job;
 
 /**
  * Parses input arguments and creates a new AddApplicationCommand object
@@ -29,7 +30,7 @@ public class AddApplicationCommandParser implements Parser<AddApplicationCommand
 
         Index index = parseIndex(args, values);
         String jobDescription = values.getValue(OPTION_JOB_REQ).orElseThrow();
-        if (!Application.isValidJobDescription(jobDescription)) {
+        if (!Job.isValidDescription(jobDescription)) {
             throw unrecognized(args);
         }
 
