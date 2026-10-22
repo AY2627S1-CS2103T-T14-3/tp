@@ -42,6 +42,15 @@ public class PersonTest {
     }
 
     @Test
+    public void hasSameNameOrEmail() {
+        assertTrue(ALICE.hasSameNameOrEmail(ALICE));
+        assertFalse(ALICE.hasSameNameOrEmail(null));
+        assertTrue(ALICE.hasSameNameOrEmail(new PersonBuilder(BOB).withName(ALICE.getName().fullName).build()));
+        assertTrue(ALICE.hasSameNameOrEmail(new PersonBuilder(BOB).withEmail(ALICE.getEmail().value).build()));
+        assertFalse(ALICE.hasSameNameOrEmail(BOB));
+    }
+
+    @Test
     public void equals() {
         // same values -> returns true
         Person aliceCopy = new PersonBuilder(ALICE).build();
