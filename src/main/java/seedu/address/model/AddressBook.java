@@ -161,6 +161,7 @@ public class AddressBook implements ReadOnlyAddressBook {
      * @param job job to add
      */
     public void addJob(Job job) {
+        assert job != null : "job must not be null";
         jobs.add(job);
     }
 
@@ -170,6 +171,8 @@ public class AddressBook implements ReadOnlyAddressBook {
      * @param key job to remove
      */
     public void removeJob(Job key) {
+        assert key != null : "key must not be null";
+        assert jobs.contains(key) : "job must exist in the address book";
         jobs.remove(key);
     }
 
@@ -179,6 +182,9 @@ public class AddressBook implements ReadOnlyAddressBook {
      * @param jobs jobs to store
      */
     public void setJobs(List<Job> jobs) {
+        assert jobs != null : "jobs must not be null";
+        assert jobs.stream().allMatch(Objects::nonNull) : "jobs must not contain null";
+        assert jobs.stream().distinct().count() == jobs.size() : "jobs must not contain duplicates";
         this.jobs.setJobs(jobs);
     }
 
