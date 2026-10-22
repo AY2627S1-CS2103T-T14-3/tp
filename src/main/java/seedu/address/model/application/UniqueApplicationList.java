@@ -71,7 +71,7 @@ public class UniqueApplicationList implements Iterable<Application> {
         get(target).ifPresent(application -> {
             int index = internalList.indexOf(application);
             internalList.set(index, new Application(
-                    editedPerson, application.getJobDescription(), application.getStatus()));
+                    editedPerson, application.getJob(), application.getStatus()));
         });
     }
 

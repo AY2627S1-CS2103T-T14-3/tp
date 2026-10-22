@@ -37,7 +37,7 @@ public class ApplicationListPanel extends UiPart<Region> {
                     Label applicant = new Label(applicantIndex + ". "
                             + application.getApplicantName());
                     applicant.getStyleClass().add("list-name");
-                    Label job = new Label(application.getJobDescription());
+                    Label job = new Label(application.getJob().toString());
                     job.getStyleClass().add("application-job");
                     Label status = new Label(application.getStatusValue());
                     status.getStyleClass().addAll("status-badge", "status-" + application.getStatusValue());

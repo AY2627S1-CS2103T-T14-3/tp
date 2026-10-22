@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import seedu.address.model.application.Application;
+import seedu.address.model.application.Job;
 import seedu.address.model.application.exceptions.ApplicationNotFoundException;
 import seedu.address.model.application.exceptions.DuplicateApplicationException;
 import seedu.address.model.person.Person;
@@ -95,7 +96,7 @@ public class AddressBookTest {
     @Test
     public void addApplication_newApplicant_success() {
         addressBook.addPerson(ALICE);
-        Application application = new Application(ALICE, "Janitor", Application.Status.PENDING);
+        Application application = new Application(ALICE, new Job("Janitor"), Application.Status.PENDING);
         addressBook.addApplication(application);
 
         assertTrue(addressBook.hasApplication(ALICE));
@@ -105,9 +106,9 @@ public class AddressBookTest {
     @Test
     public void addApplication_duplicateApplicant_throwsDuplicateApplicationException() {
         addressBook.addPerson(ALICE);
-        addressBook.addApplication(new Application(ALICE, "Janitor", Application.Status.PENDING));
+        addressBook.addApplication(new Application(ALICE, new Job("Janitor"), Application.Status.PENDING));
         Application duplicate = new Application(
-                new PersonBuilder(ALICE).withPhone("91234567").build(), "Engineer", Application.Status.ACCEPT);
+                new PersonBuilder(ALICE).withPhone("91234567").build(), new Job("Engineer"), Application.Status.ACCEPT);
 
         assertThrows(DuplicateApplicationException.class, () -> addressBook.addApplication(duplicate));
     }
@@ -115,10 +116,10 @@ public class AddressBookTest {
     @Test
     public void setApplication_existingApplication_updatesStatusAndKeepsJob() {
         addressBook.addPerson(ALICE);
-        Application original = new Application(ALICE, "Janitor", Application.Status.PENDING);
+        Application original = new Application(ALICE, new Job("Janitor"), Application.Status.PENDING);
         addressBook.addApplication(original);
 
-        Application updated = new Application(ALICE, "Janitor", Application.Status.ACCEPT);
+        Application updated = new Application(ALICE, new Job("Janitor"), Application.Status.ACCEPT);
         addressBook.setApplication(original, updated);
 
         assertEquals(updated, addressBook.getApplication(ALICE).orElseThrow());
@@ -126,8 +127,8 @@ public class AddressBookTest {
 
     @Test
     public void setApplication_missingApplication_throwsApplicationNotFoundException() {
-        Application original = new Application(ALICE, "Janitor", Application.Status.PENDING);
-        Application updated = new Application(ALICE, "Janitor", Application.Status.ACCEPT);
+        Application original = new Application(ALICE, new Job("Janitor"), Application.Status.PENDING);
+        Application updated = new Application(ALICE, new Job("Janitor"), Application.Status.ACCEPT);
 
         assertThrows(ApplicationNotFoundException.class, () -> addressBook.setApplication(original, updated));
     }
@@ -135,14 +136,14 @@ public class AddressBookTest {
     @Test
     public void setPerson_applicantWithApplication_updatesStoredApplicant() {
         addressBook.addPerson(ALICE);
-        addressBook.addApplication(new Application(ALICE, "Janitor", Application.Status.PENDING));
+        addressBook.addApplication(new Application(ALICE, new Job("Janitor"), Application.Status.PENDING));
         Person editedAlice = new PersonBuilder(ALICE).withPhone("91234567").build();
 
         addressBook.setPerson(ALICE, editedAlice);
 
         Application updated = addressBook.getApplication(editedAlice).orElseThrow();
         assertEquals(editedAlice, updated.getApplicant());
-        assertEquals("Janitor", updated.getJobDescription());
+        assertEquals(new Job("Janitor"), updated.getJob());
         assertEquals(Application.Status.PENDING, updated.getStatus());
     }
 
@@ -150,8 +151,8 @@ public class AddressBookTest {
     public void removePerson_applicantWithApplication_removesApplication() {
         addressBook.addPerson(ALICE);
         addressBook.addPerson(BOB);
-        addressBook.addApplication(new Application(ALICE, "Janitor", Application.Status.PENDING));
-        addressBook.addApplication(new Application(BOB, "Engineer", Application.Status.ACCEPT));
+        addressBook.addApplication(new Application(ALICE, new Job("Janitor"), Application.Status.PENDING));
+        addressBook.addApplication(new Application(BOB, new Job("Engineer"), Application.Status.ACCEPT));
 
         addressBook.removePerson(ALICE);
 
@@ -163,7 +164,7 @@ public class AddressBookTest {
     public void resetData_withApplications_copiesApplications() {
         AddressBook original = new AddressBook();
         original.addPerson(ALICE);
-        original.addApplication(new Application(ALICE, "Janitor", Application.Status.ACCEPT));
+        original.addApplication(new Application(ALICE, new Job("Janitor"), Application.Status.ACCEPT));
 
         addressBook.resetData(original);
 
