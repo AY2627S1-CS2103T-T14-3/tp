@@ -68,7 +68,7 @@ public class SetApplicationStatusCommand extends Command {
         Application existing = model.getApplication(applicant)
                 .orElseThrow(() -> new CommandException(MESSAGE_MISSING_APPLICATION));
         Application updated = new Application(
-                existing.getApplicant(), existing.getJobDescription(), status);
+                existing.getApplicant(), existing.getJob(), status);
         model.setApplication(existing, updated);
         return new CommandResult(String.format(
                 MESSAGE_SUCCESS, applicant.getName(), applicant.getEmail(), status), applicant);

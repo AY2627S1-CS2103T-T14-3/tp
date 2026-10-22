@@ -12,6 +12,7 @@ public class CliSyntax {
     public static final Prefix PREFIX_APPLICANT = new Prefix("-p");
     public static final Prefix PREFIX_JOB = new Prefix("-j");
     public static final Prefix PREFIX_STATUS = new Prefix("-s");
+    public static final Prefix PREFIX_FILTER = new Prefix("-f");
 
     /* Long aliases for person options */
     public static final Prefix PREFIX_NAME_LONG = new Prefix("-name");

@@ -15,17 +15,21 @@ import org.junit.jupiter.api.Test;
 
 import seedu.address.logic.commands.AddApplicationCommand;
 import seedu.address.logic.commands.AddCommand;
+import seedu.address.logic.commands.AddJobCommand;
 import seedu.address.logic.commands.ByeCommand;
 import seedu.address.logic.commands.ClearCommand;
 import seedu.address.logic.commands.DeleteCommand;
+import seedu.address.logic.commands.DeleteJobCommand;
 import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.FindCommand;
 import seedu.address.logic.commands.HelpCommand;
 import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.commands.SetApplicationStatusCommand;
 import seedu.address.logic.commands.ViewCommand;
+import seedu.address.logic.commands.ViewJobCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.application.Application;
+import seedu.address.model.application.Job;
 import seedu.address.model.person.NameContainsKeywordsPredicate;
 import seedu.address.model.person.Person;
 import seedu.address.testutil.EditPersonDescriptorBuilder;
@@ -106,6 +110,19 @@ public class AddressBookParserTest {
     public void parseCommand_clear() throws Exception {
         assertTrue(parser.parseCommand(ClearCommand.COMMAND_WORD) instanceof ClearCommand);
         assertTrue(parser.parseCommand(ClearCommand.COMMAND_WORD + " 3") instanceof ClearCommand);
+    }
+
+    @Test
+    public void parseCommand_jobCommands() throws Exception {
+        Job job = new Job("Software Engineer");
+        assertEquals(new AddJobCommand(job), parser.parseCommand("addj -j Software Engineer"));
+        assertEquals(new AddJobCommand(job), parser.parseCommand("  addj   -job   Software Engineer  "));
+        assertEquals(new DeleteJobCommand(INDEX_FIRST_PERSON), parser.parseCommand("deletej 1"));
+        assertEquals(new ViewJobCommand(), parser.parseCommand("viewj"));
+        assertEquals(new ViewJobCommand("jan"), parser.parseCommand("viewj -f jan"));
+        assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> parser.parseCommand("Addj -j Engineer"));
+        assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> parser.parseCommand("Viewj"));
+        assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> parser.parseCommand("Deletej 1"));
     }
 
     @Test

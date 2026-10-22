@@ -137,6 +137,14 @@ per applicant. `add -p` creates an application for an applicant in the displayed
 status of an existing application without changing its job. Deleting an applicant also
 deletes that applicant's application, and editing an applicant updates the person stored on the application.
 
+`AddressBook` also keeps a separate `UniqueJobList` of open roles. A job is identified by its description:
+duplicate descriptions are rejected, surrounding spaces are ignored, and other differences in case are kept.
+`addj` adds a role and shows the full job list. `viewj` lists every role, and `viewj -f KEYWORD` limits that list to roles whose description contains `KEYWORD`, ignoring case. `deletej` removes the role at the displayed index, which follows the current filter.
+Those three commands ask the UI to show the job list and the selected role's detail panel. The panel shows
+that role only. It does not list applicants by comparing the role text with application job descriptions.
+Other successful commands show the applicant list again. Deleting a job does not delete applications, and
+adding an application does not add a job to this list. Jobs are stored in the same JSON address book under `jobs`.
+
 <div markdown="span" class="alert alert-info">:information_source: **Note:** The alternative, arguably more object-oriented, design below keeps a unique list of tags in `AddressBook`, and each `Person` references tags from that list. This lets `AddressBook` maintain one `Tag` object per unique tag instead of each `Person` holding its own `Tag` objects.<br>
 
 <img src="images/BetterModelClassDiagram.png" width="450" />
@@ -472,7 +480,8 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 * **Mainstream OS**: Windows, Linux, Unix, or macOS
 * **Applicant**: A person registered in LinkedOut with a name and email address, whose job application can be tracked.
 * **Application**: A record of an applicant's application for a job, containing a job description and an application status. An applicant can have at most one application.
-* **Job description**: The text describing the job an applicant is applying for, stored as part of their application.
+* **Job**: An open role stored in the job list, identified by its description. It is separate from an applicant's application.
+* **Job description**: The text describing a job. On an application, it records the role that applicant applied for. In the job list, it is the role's identity.
 * **Application status**: The recorded outcome of an application: `accept` (accepted), `reject` (rejected), or `pending` (awaiting a decision). These values are case-sensitive.
 * **Applicant index**: The number used in commands to identify an applicant in the applicant list, starting from 1.
 

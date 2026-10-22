@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="detail-scroll"
+            xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+  <content>
+    <VBox spacing="12" styleClass="panel,detail-panel">
+      <Label text="Job details" styleClass="section-title" />
+      <HBox alignment="CENTER_LEFT" spacing="14">
+        <Label fx:id="initials" text="?" styleClass="avatar,job-avatar" />
+        <VBox spacing="6" HBox.hgrow="ALWAYS">
+          <HBox alignment="CENTER_LEFT" spacing="8">
+            <Label fx:id="jobName" styleClass="applicant-name" wrapText="true" HBox.hgrow="ALWAYS"
+                   maxWidth="Infinity" />
+            <Label fx:id="openBadge" text="Open" styleClass="status-badge,status-open" />
+          </HBox>
+          <Label fx:id="selectionHint" styleClass="muted-label" wrapText="true" />
+        </VBox>
+      </HBox>
+      <Separator />
+      <VBox spacing="8" fx:id="roleDetails" styleClass="application-section">
+        <Label text="DESCRIPTION" styleClass="field-heading" />
+        <Label fx:id="jobDescription" styleClass="detail-value" wrapText="true" />
+      </VBox>
+    </VBox>
+  </content>
+</ScrollPane>

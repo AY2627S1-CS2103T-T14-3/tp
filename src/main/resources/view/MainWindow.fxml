@@ -39,7 +39,8 @@
             <VBox spacing="16" minWidth="450" styleClass="left-column">
               <VBox spacing="10" styleClass="panel,console-panel">
                 <Label text="Command console" styleClass="section-title" />
-                <Label text="Find and manage applicants using commands." styleClass="muted-label" />
+                <Label fx:id="consoleHint" text="Find and manage applicants using commands."
+                       styleClass="muted-label" wrapText="true" />
                 <StackPane fx:id="commandBoxPlaceholder" />
                 <Label text="Command feedback" styleClass="field-heading" />
                 <StackPane fx:id="resultDisplayPlaceholder" minHeight="65" prefHeight="80" maxHeight="80" />
@@ -48,10 +49,12 @@
             </VBox>
             <VBox spacing="12" minWidth="280" styleClass="panel,applicant-list-panel">
               <HBox alignment="CENTER_LEFT" spacing="10">
-                <Label text="Applicants" styleClass="section-title" HBox.hgrow="ALWAYS" maxWidth="Infinity" />
+                <Label fx:id="listTitle" text="Applicants" styleClass="section-title"
+                       HBox.hgrow="ALWAYS" maxWidth="Infinity" />
                 <Label fx:id="applicantCount" styleClass="count-badge" />
               </HBox>
-              <Label text="Select an applicant to view their details." styleClass="muted-label" wrapText="true" />
+              <Label fx:id="listHint" text="Select an applicant to view their details."
+                     styleClass="muted-label" wrapText="true" />
               <StackPane fx:id="personListPanelPlaceholder" VBox.vgrow="ALWAYS" />
             </VBox>
           </items>

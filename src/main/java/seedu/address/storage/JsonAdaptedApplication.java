@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.model.AddressBook;
 import seedu.address.model.application.Application;
+import seedu.address.model.application.Job;
 import seedu.address.model.person.Person;
 
 /**
@@ -43,7 +44,7 @@ class JsonAdaptedApplication {
      */
     public JsonAdaptedApplication(Application source) {
         name = source.getApplicant().getName().fullName;
-        jobDescription = source.getJobDescription();
+        jobDescription = source.getJob().toString();
         status = source.getStatus().getValue();
     }
 
@@ -59,9 +60,6 @@ class JsonAdaptedApplication {
         }
         if (jobDescription == null) {
             throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, "job description"));
-        }
-        if (!Application.isValidJobDescription(jobDescription)) {
-            throw new IllegalValueException(Application.MESSAGE_JOB_DESCRIPTION_CONSTRAINTS);
         }
         if (status == null) {
             throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, "status"));
@@ -79,6 +77,13 @@ class JsonAdaptedApplication {
                 .findFirst()
                 .orElseThrow(() -> new IllegalValueException(MESSAGE_UNKNOWN_APPLICANT));
 
-        return new Application(applicant, jobDescription, modelStatus);
+        final Job modelJob;
+        try {
+            modelJob = new Job(jobDescription);
+        } catch (IllegalArgumentException exception) {
+            throw new IllegalValueException(Job.MESSAGE_CONSTRAINTS);
+        }
+
+        return new Application(applicant, modelJob, modelStatus);
     }
 }
