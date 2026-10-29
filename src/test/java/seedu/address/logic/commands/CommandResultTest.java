@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static seedu.address.testutil.TypicalPersons.ALICE;
-import static seedu.address.testutil.TypicalPersons.BENSON;
+import static seedu.address.testutil.TypicalApplicants.ALICE;
+import static seedu.address.testutil.TypicalApplicants.BENSON;
 
 import org.junit.jupiter.api.Test;
 
@@ -16,15 +16,15 @@ import seedu.address.testutil.ApplicantBuilder;
 public class CommandResultTest {
     @Test
     public void constructor_withoutApplicant_doesNotRequestSelection() {
-        assertTrue(new CommandResult("feedback").getPersonToView().isEmpty());
-        assertTrue(new CommandResult("feedback", true, false).getPersonToView().isEmpty());
-        assertTrue(new CommandResult("feedback", false, true).getPersonToView().isEmpty());
+        assertTrue(new CommandResult("feedback").getApplicantToView().isEmpty());
+        assertTrue(new CommandResult("feedback", true, false).getApplicantToView().isEmpty());
+        assertTrue(new CommandResult("feedback", false, true).getApplicantToView().isEmpty());
     }
 
     @Test
     public void constructor_withApplicant_requestsSelection() {
         CommandResult commandResult = new CommandResult("feedback", ALICE);
-        assertEquals(ALICE, commandResult.getPersonToView().orElseThrow());
+        assertEquals(ALICE, commandResult.getApplicantToView().orElseThrow());
         assertFalse(commandResult.isShowHelp());
         assertFalse(commandResult.isExit());
     }

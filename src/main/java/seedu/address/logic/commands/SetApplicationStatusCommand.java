@@ -55,7 +55,7 @@ public class SetApplicationStatusCommand extends Command {
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
-        List<Applicant> lastShownList = model.getFilteredPersonList();
+        List<Applicant> lastShownList = model.getFilteredApplicantList();
 
         if (lastShownList.isEmpty()) {
             throw new CommandException(MESSAGE_EMPTY_LIST);

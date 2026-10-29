@@ -5,9 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_EMAIL_BOB;
 import static seedu.address.testutil.Assert.assertThrows;
-import static seedu.address.testutil.TypicalPersons.ALICE;
-import static seedu.address.testutil.TypicalPersons.BOB;
-import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
+import static seedu.address.testutil.TypicalApplicants.ALICE;
+import static seedu.address.testutil.TypicalApplicants.BOB;
+import static seedu.address.testutil.TypicalApplicants.getTypicalAddressBook;
 
 import java.util.Collection;
 import java.util.List;
@@ -31,7 +31,7 @@ public class AddressBookTest {
 
     @Test
     public void constructor() {
-        assertEquals(List.of(), addressBook.getPersonList());
+        assertEquals(List.of(), addressBook.getApplicantList());
         assertEquals(List.of(), addressBook.getApplicationList());
         assertEquals(List.of(), addressBook.getJobList());
     }
@@ -49,7 +49,7 @@ public class AddressBookTest {
     }
 
     @Test
-    public void resetData_withDuplicatePersons_throwsDuplicatePersonException() {
+    public void resetData_withDuplicateApplicants_throwsDuplicateApplicantException() {
         // Two applicants with the same identity fields
         Applicant editedAlice = new ApplicantBuilder(ALICE).withEmail(VALID_EMAIL_BOB)
                 .build();
@@ -60,37 +60,37 @@ public class AddressBookTest {
     }
 
     @Test
-    public void hasPerson_nullPerson_throwsNullPointerException() {
-        assertThrows(NullPointerException.class, () -> addressBook.hasPerson(null));
+    public void hasApplicant_nullApplicant_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> addressBook.hasApplicant(null));
     }
 
     @Test
-    public void hasPerson_personNotInAddressBook_returnsFalse() {
-        assertFalse(addressBook.hasPerson(ALICE));
+    public void hasApplicant_applicantNotInAddressBook_returnsFalse() {
+        assertFalse(addressBook.hasApplicant(ALICE));
     }
 
     @Test
-    public void hasPerson_personInAddressBook_returnsTrue() {
-        addressBook.addPerson(ALICE);
-        assertTrue(addressBook.hasPerson(ALICE));
+    public void hasApplicant_applicantInAddressBook_returnsTrue() {
+        addressBook.addApplicant(ALICE);
+        assertTrue(addressBook.hasApplicant(ALICE));
     }
 
     @Test
-    public void hasPerson_personWithSameIdentityFieldsInAddressBook_returnsTrue() {
-        addressBook.addPerson(ALICE);
+    public void hasApplicant_applicantWithSameIdentityFieldsInAddressBook_returnsTrue() {
+        addressBook.addApplicant(ALICE);
         Applicant editedAlice = new ApplicantBuilder(ALICE).withEmail(VALID_EMAIL_BOB)
                 .build();
-        assertTrue(addressBook.hasPerson(editedAlice));
+        assertTrue(addressBook.hasApplicant(editedAlice));
     }
 
     @Test
-    public void getPersonList_modifyList_throwsUnsupportedOperationException() {
-        assertThrows(UnsupportedOperationException.class, () -> addressBook.getPersonList().remove(0));
+    public void getApplicantList_modifyList_throwsUnsupportedOperationException() {
+        assertThrows(UnsupportedOperationException.class, () -> addressBook.getApplicantList().remove(0));
     }
 
     @Test
     public void toStringMethod() {
-        String expected = AddressBook.class.getCanonicalName() + "{applicants=" + addressBook.getPersonList()
+        String expected = AddressBook.class.getCanonicalName() + "{applicants=" + addressBook.getApplicantList()
                 + ", applications=" + addressBook.getApplicationList()
                 + ", jobs=" + addressBook.getJobList() + "}";
         assertEquals(expected, addressBook.toString());
@@ -98,7 +98,7 @@ public class AddressBookTest {
 
     @Test
     public void addApplication_newApplicant_success() {
-        addressBook.addPerson(ALICE);
+        addressBook.addApplicant(ALICE);
         Application application = new Application(ALICE, new Job("Janitor"), Application.Status.PENDING);
         addressBook.addApplication(application);
 
@@ -108,17 +108,18 @@ public class AddressBookTest {
 
     @Test
     public void addApplication_duplicateApplicant_throwsDuplicateApplicationException() {
-        addressBook.addPerson(ALICE);
+        addressBook.addApplicant(ALICE);
         addressBook.addApplication(new Application(ALICE, new Job("Janitor"), Application.Status.PENDING));
         Application duplicate = new Application(
-                new ApplicantBuilder(ALICE).withPhone("91234567").build(), new Job("Engineer"), Application.Status.ACCEPT);
+                new ApplicantBuilder(ALICE).withPhone("91234567").build(), new Job("Engineer"),
+                Application.Status.ACCEPT);
 
         assertThrows(DuplicateApplicationException.class, () -> addressBook.addApplication(duplicate));
     }
 
     @Test
     public void setApplication_existingApplication_updatesStatusAndKeepsJob() {
-        addressBook.addPerson(ALICE);
+        addressBook.addApplicant(ALICE);
         Application original = new Application(ALICE, new Job("Janitor"), Application.Status.PENDING);
         addressBook.addApplication(original);
 
@@ -137,12 +138,12 @@ public class AddressBookTest {
     }
 
     @Test
-    public void setPerson_applicantWithApplication_updatesStoredApplicant() {
-        addressBook.addPerson(ALICE);
+    public void setApplicant_applicantWithApplication_updatesStoredApplicant() {
+        addressBook.addApplicant(ALICE);
         addressBook.addApplication(new Application(ALICE, new Job("Janitor"), Application.Status.PENDING));
         Applicant editedAlice = new ApplicantBuilder(ALICE).withPhone("91234567").build();
 
-        addressBook.setPerson(ALICE, editedAlice);
+        addressBook.setApplicant(ALICE, editedAlice);
 
         Application updated = addressBook.getApplication(editedAlice).orElseThrow();
         assertEquals(editedAlice, updated.getApplicant());
@@ -151,13 +152,13 @@ public class AddressBookTest {
     }
 
     @Test
-    public void removePerson_applicantWithApplication_removesApplication() {
-        addressBook.addPerson(ALICE);
-        addressBook.addPerson(BOB);
+    public void removeApplicant_applicantWithApplication_removesApplication() {
+        addressBook.addApplicant(ALICE);
+        addressBook.addApplicant(BOB);
         addressBook.addApplication(new Application(ALICE, new Job("Janitor"), Application.Status.PENDING));
         addressBook.addApplication(new Application(BOB, new Job("Engineer"), Application.Status.ACCEPT));
 
-        addressBook.removePerson(ALICE);
+        addressBook.removeApplicant(ALICE);
 
         assertFalse(addressBook.hasApplication(ALICE));
         assertTrue(addressBook.hasApplication(BOB));
@@ -166,7 +167,7 @@ public class AddressBookTest {
     @Test
     public void resetData_withApplications_copiesApplications() {
         AddressBook original = new AddressBook();
-        original.addPerson(ALICE);
+        original.addApplicant(ALICE);
         original.addApplication(new Application(ALICE, new Job("Janitor"), Application.Status.ACCEPT));
 
         addressBook.resetData(original);
@@ -215,7 +216,7 @@ public class AddressBookTest {
         }
 
         @Override
-        public ObservableList<Applicant> getPersonList() {
+        public ObservableList<Applicant> getApplicantList() {
             return applicants;
         }
 

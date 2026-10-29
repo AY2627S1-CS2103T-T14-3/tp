@@ -7,19 +7,19 @@ import static seedu.address.logic.commands.CommandTestUtil.VALID_PHONE_AMY;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
 import static seedu.address.testutil.Assert.assertThrows;
-import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
-import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND_PERSON;
+import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_APPLICANT;
+import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND_APPLICANT;
 
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
 import seedu.address.logic.commands.EditCommand;
-import seedu.address.logic.commands.EditCommand.EditPersonDescriptor;
+import seedu.address.logic.commands.EditCommand.EditApplicantDescriptor;
 import seedu.address.model.applicant.Email;
 import seedu.address.model.applicant.Name;
 import seedu.address.model.applicant.Phone;
-import seedu.address.testutil.EditPersonDescriptorBuilder;
+import seedu.address.testutil.EditApplicantDescriptorBuilder;
 
 public class EditCommandParserTest {
 
@@ -38,37 +38,37 @@ public class EditCommandParserTest {
 
     @Test
     public void parse_allFieldsSpecified_success() {
-        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withName(VALID_NAME_AMY)
+        EditApplicantDescriptor descriptor = new EditApplicantDescriptorBuilder().withName(VALID_NAME_AMY)
                 .withPhone(VALID_PHONE_AMY).withEmail(VALID_EMAIL_AMY).build();
         assertParseSuccess(parser, " 2" + NAME_OPTION + PHONE_OPTION + EMAIL_OPTION,
-                new EditCommand(INDEX_SECOND_PERSON, descriptor));
+                new EditCommand(INDEX_SECOND_APPLICANT, descriptor));
     }
 
     @Test
     public void parse_someFieldsSpecified_success() {
-        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withName(VALID_NAME_AMY)
+        EditApplicantDescriptor descriptor = new EditApplicantDescriptorBuilder().withName(VALID_NAME_AMY)
                 .withEmail(VALID_EMAIL_AMY).build();
         assertParseSuccess(parser, " 1" + NAME_OPTION + EMAIL_OPTION,
-                new EditCommand(INDEX_FIRST_PERSON, descriptor));
+                new EditCommand(INDEX_FIRST_APPLICANT, descriptor));
     }
 
     @Test
     public void parse_oneFieldSpecified_success() {
-        EditPersonDescriptor nameOnly = new EditPersonDescriptorBuilder().withName(VALID_NAME_AMY).build();
-        assertParseSuccess(parser, " 1" + NAME_OPTION, new EditCommand(INDEX_FIRST_PERSON, nameOnly));
+        EditApplicantDescriptor nameOnly = new EditApplicantDescriptorBuilder().withName(VALID_NAME_AMY).build();
+        assertParseSuccess(parser, " 1" + NAME_OPTION, new EditCommand(INDEX_FIRST_APPLICANT, nameOnly));
 
-        EditPersonDescriptor phoneOnly = new EditPersonDescriptorBuilder().withPhone(VALID_PHONE_AMY).build();
-        assertParseSuccess(parser, " 1" + PHONE_OPTION, new EditCommand(INDEX_FIRST_PERSON, phoneOnly));
+        EditApplicantDescriptor phoneOnly = new EditApplicantDescriptorBuilder().withPhone(VALID_PHONE_AMY).build();
+        assertParseSuccess(parser, " 1" + PHONE_OPTION, new EditCommand(INDEX_FIRST_APPLICANT, phoneOnly));
 
-        EditPersonDescriptor emailOnly = new EditPersonDescriptorBuilder().withEmail(VALID_EMAIL_AMY).build();
-        assertParseSuccess(parser, " 1" + EMAIL_OPTION, new EditCommand(INDEX_FIRST_PERSON, emailOnly));
+        EditApplicantDescriptor emailOnly = new EditApplicantDescriptorBuilder().withEmail(VALID_EMAIL_AMY).build();
+        assertParseSuccess(parser, " 1" + EMAIL_OPTION, new EditCommand(INDEX_FIRST_APPLICANT, emailOnly));
     }
 
     @Test
     public void parse_longAndMixedAliasesInAnyOrder_success() {
-        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withName(VALID_NAME_AMY)
+        EditApplicantDescriptor descriptor = new EditApplicantDescriptorBuilder().withName(VALID_NAME_AMY)
                 .withPhone(VALID_PHONE_AMY).withEmail(VALID_EMAIL_AMY).build();
-        EditCommand expected = new EditCommand(INDEX_FIRST_PERSON, descriptor);
+        EditCommand expected = new EditCommand(INDEX_FIRST_APPLICANT, descriptor);
         assertParseSuccess(parser, " 1 -email " + VALID_EMAIL_AMY + " -phone " + VALID_PHONE_AMY
                 + " -name " + VALID_NAME_AMY, expected);
         assertParseSuccess(parser, " 1" + EMAIL_OPTION + " -name " + VALID_NAME_AMY + PHONE_OPTION, expected);
@@ -78,16 +78,17 @@ public class EditCommandParserTest {
 
     @Test
     public void parse_extraWhitespace_success() {
-        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withName(VALID_NAME_AMY)
+        EditApplicantDescriptor descriptor = new EditApplicantDescriptorBuilder().withName(VALID_NAME_AMY)
                 .withPhone(VALID_PHONE_AMY).build();
         assertParseSuccess(parser, " \t1 \t-n\t" + VALID_NAME_AMY + " \t-p\t" + VALID_PHONE_AMY + " \t",
-                new EditCommand(INDEX_FIRST_PERSON, descriptor));
+                new EditCommand(INDEX_FIRST_APPLICANT, descriptor));
     }
 
     @Test
     public void parse_hyphenInsideValue_success() {
-        EditPersonDescriptor descriptor = new EditPersonDescriptorBuilder().withEmail("amy-bee@example.com").build();
-        assertParseSuccess(parser, " 1 -e amy-bee@example.com", new EditCommand(INDEX_FIRST_PERSON, descriptor));
+        EditApplicantDescriptor descriptor = new EditApplicantDescriptorBuilder()
+                .withEmail("amy-bee@example.com").build();
+        assertParseSuccess(parser, " 1 -e amy-bee@example.com", new EditCommand(INDEX_FIRST_APPLICANT, descriptor));
     }
 
     @Test

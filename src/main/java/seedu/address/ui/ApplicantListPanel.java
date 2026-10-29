@@ -38,7 +38,7 @@ public class ApplicantListPanel extends UiPart<Region> {
                         updateLastSelectedIndex(current.intValue()));
 
         applicantList.addListener((ListChangeListener<Applicant>) change ->
-                handlePersonListChange(change, applicantList));
+                handleApplicantListChange(change, applicantList));
 
         applicantListView.getSelectionModel().selectFirst();
     }
@@ -53,7 +53,7 @@ public class ApplicantListPanel extends UiPart<Region> {
         return selectedIndex >= 0;
     }
 
-    private void handlePersonListChange(ListChangeListener.Change<? extends Applicant> change,
+    private void handleApplicantListChange(ListChangeListener.Change<? extends Applicant> change,
                                          ObservableList<Applicant> applicantList) {
         assert change != null : "List change must not be null";
         assert applicantList != null : "Applicant list must not be null";
@@ -90,14 +90,14 @@ public class ApplicantListPanel extends UiPart<Region> {
     }
 
     /** The applicant currently selected by mouse or keyboard. */
-    public ReadOnlyObjectProperty<Applicant> selectedPersonProperty() {
+    public ReadOnlyObjectProperty<Applicant> selectedApplicantProperty() {
         return applicantListView.getSelectionModel().selectedItemProperty();
     }
 
     /**
      * Selects an applicant in the displayed list and scrolls to make them visible.
      */
-    public void selectPerson(Applicant applicant) {
+    public void selectApplicant(Applicant applicant) {
         applicantListView.getSelectionModel().select(applicant);
         applicantListView.scrollTo(applicant);
     }

@@ -12,7 +12,7 @@ import seedu.address.model.applicant.Phone;
  * Contains utility methods for populating {@code AddressBook} with sample data.
  */
 public class SampleDataUtil {
-    public static Applicant[] getSamplePersons() {
+    public static Applicant[] getSampleApplicants() {
         return new Applicant[] {
             new Applicant(new Name("Alex Yeoh"), new Phone("87438807"), new Email("alexyeoh@example.com")),
             new Applicant(new Name("Bernice Yu"), new Phone("99272758"), new Email("berniceyu@example.com")),
@@ -33,8 +33,8 @@ public class SampleDataUtil {
 
     public static ReadOnlyAddressBook getSampleAddressBook() {
         AddressBook sampleAb = new AddressBook();
-        for (Applicant sampleApplicant : getSamplePersons()) {
-            sampleAb.addPerson(sampleApplicant);
+        for (Applicant sampleApplicant : getSampleApplicants()) {
+            sampleAb.addApplicant(sampleApplicant);
         }
         for (Job sampleJob : getSampleJobs()) {
             sampleAb.addJob(sampleJob);

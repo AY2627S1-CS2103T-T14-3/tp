@@ -72,8 +72,8 @@ class JsonAdaptedApplication {
             throw new IllegalValueException(MESSAGE_INVALID_STATUS);
         }
 
-        Applicant applicant = addressBook.getPersonList().stream()
-                .filter(person -> person.getName().fullName.equals(name))
+        Applicant applicant = addressBook.getApplicantList().stream()
+                .filter(existingApplicant -> existingApplicant.getName().fullName.equals(name))
                 .findFirst()
                 .orElseThrow(() -> new IllegalValueException(MESSAGE_UNKNOWN_APPLICANT));
 

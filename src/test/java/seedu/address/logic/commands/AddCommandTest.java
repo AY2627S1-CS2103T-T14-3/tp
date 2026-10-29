@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.testutil.Assert.assertThrows;
-import static seedu.address.testutil.TypicalPersons.ALICE;
+import static seedu.address.testutil.TypicalApplicants.ALICE;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,38 +32,39 @@ import seedu.address.testutil.ApplicantBuilder;
 public class AddCommandTest {
 
     @Test
-    public void constructor_nullPerson_throwsNullPointerException() {
+    public void constructor_nullApplicant_throwsNullPointerException() {
         assertThrows(NullPointerException.class, () -> new AddCommand(null));
     }
 
     @Test
-    public void execute_personAcceptedByModel_addSuccessful() throws Exception {
-        ModelStubAcceptingPersonAdded modelStub = new ModelStubAcceptingPersonAdded();
+    public void execute_applicantAcceptedByModel_addSuccessful() throws Exception {
+        ModelStubAcceptingApplicantAdded modelStub = new ModelStubAcceptingApplicantAdded();
         Applicant validApplicant = new ApplicantBuilder().build();
 
         CommandResult commandResult = new AddCommand(validApplicant).execute(modelStub);
 
         assertEquals(String.format(AddCommand.MESSAGE_SUCCESS, Messages.format(validApplicant)),
                 commandResult.getFeedbackToUser());
-        assertEquals(List.of(validApplicant), modelStub.personsAdded);
+        assertEquals(List.of(validApplicant), modelStub.applicantsAdded);
     }
 
     @Test
-    public void execute_duplicatePerson_throwsCommandException() {
+    public void execute_duplicateApplicant_throwsCommandException() {
         Applicant validApplicant = new ApplicantBuilder().build();
         AddCommand addCommand = new AddCommand(validApplicant);
-        ModelStub modelStub = new ModelStubWithPerson(validApplicant);
+        ModelStub modelStub = new ModelStubWithApplicant(validApplicant);
 
-        assertThrows(CommandException.class, AddCommand.MESSAGE_DUPLICATE_PERSON, () -> addCommand.execute(modelStub));
+        assertThrows(CommandException.class, AddCommand.MESSAGE_DUPLICATE_APPLICANT,
+                () -> addCommand.execute(modelStub));
     }
 
     @Test
     public void execute_sameEmailDifferentName_throwsCommandException() {
         Model model = new ModelManager(new AddressBook(), new UserPrefs());
-        model.addPerson(ALICE);
+        model.addApplicant(ALICE);
         Applicant duplicate = new ApplicantBuilder(ALICE).withName("Different Applicant").build();
 
-        CommandTestUtil.assertCommandFailure(new AddCommand(duplicate), model, AddCommand.MESSAGE_DUPLICATE_PERSON);
+        CommandTestUtil.assertCommandFailure(new AddCommand(duplicate), model, AddCommand.MESSAGE_DUPLICATE_APPLICANT);
     }
 
     @Test
@@ -117,7 +118,7 @@ public class AddCommandTest {
         }
 
         @Override
-        public void addPerson(Applicant applicant) {
+        public void addApplicant(Applicant applicant) {
             throw new AssertionError("This method should not be called.");
         }
 
@@ -132,17 +133,17 @@ public class AddCommandTest {
         }
 
         @Override
-        public boolean hasPerson(Applicant applicant) {
+        public boolean hasApplicant(Applicant applicant) {
             throw new AssertionError("This method should not be called.");
         }
 
         @Override
-        public void deletePerson(Applicant target) {
+        public void deleteApplicant(Applicant target) {
             throw new AssertionError("This method should not be called.");
         }
 
         @Override
-        public void setPerson(Applicant target, Applicant editedApplicant) {
+        public void setApplicant(Applicant target, Applicant editedApplicant) {
             throw new AssertionError("This method should not be called.");
         }
 
@@ -202,12 +203,12 @@ public class AddCommandTest {
         }
 
         @Override
-        public ObservableList<Applicant> getFilteredPersonList() {
+        public ObservableList<Applicant> getFilteredApplicantList() {
             throw new AssertionError("This method should not be called.");
         }
 
         @Override
-        public void updateFilteredPersonList(Predicate<Applicant> predicate) {
+        public void updateFilteredApplicantList(Predicate<Applicant> predicate) {
             throw new AssertionError("This method should not be called.");
         }
     }
@@ -215,16 +216,16 @@ public class AddCommandTest {
     /**
      * A Model stub that contains a single applicant.
      */
-    private class ModelStubWithPerson extends ModelStub {
+    private class ModelStubWithApplicant extends ModelStub {
         private final Applicant applicant;
 
-        ModelStubWithPerson(Applicant applicant) {
+        ModelStubWithApplicant(Applicant applicant) {
             requireNonNull(applicant);
             this.applicant = applicant;
         }
 
         @Override
-        public boolean hasPerson(Applicant applicant) {
+        public boolean hasApplicant(Applicant applicant) {
             requireNonNull(applicant);
             return this.applicant.hasSameNameOrEmail(applicant);
         }
@@ -233,19 +234,19 @@ public class AddCommandTest {
     /**
      * A Model stub that always accepts the applicant being added.
      */
-    private class ModelStubAcceptingPersonAdded extends ModelStub {
-        final ArrayList<Applicant> personsAdded = new ArrayList<>();
+    private class ModelStubAcceptingApplicantAdded extends ModelStub {
+        final ArrayList<Applicant> applicantsAdded = new ArrayList<>();
 
         @Override
-        public boolean hasPerson(Applicant applicant) {
+        public boolean hasApplicant(Applicant applicant) {
             requireNonNull(applicant);
-            return personsAdded.stream().anyMatch(applicant::hasSameNameOrEmail);
+            return applicantsAdded.stream().anyMatch(applicant::hasSameNameOrEmail);
         }
 
         @Override
-        public void addPerson(Applicant applicant) {
+        public void addApplicant(Applicant applicant) {
             requireNonNull(applicant);
-            personsAdded.add(applicant);
+            applicantsAdded.add(applicant);
         }
 
         @Override

@@ -22,7 +22,7 @@ public class AddCommand extends Command {
             + "-e johnd@example.com";
 
     public static final String MESSAGE_SUCCESS = "New applicant added: %1$s";
-    public static final String MESSAGE_DUPLICATE_PERSON = "An applicant with this name or email already exists.";
+    public static final String MESSAGE_DUPLICATE_APPLICANT = "An applicant with this name or email already exists.";
 
     private final Applicant toAdd;
 
@@ -38,11 +38,11 @@ public class AddCommand extends Command {
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
 
-        if (model.hasPerson(toAdd)) {
-            throw new CommandException(MESSAGE_DUPLICATE_PERSON);
+        if (model.hasApplicant(toAdd)) {
+            throw new CommandException(MESSAGE_DUPLICATE_APPLICANT);
         }
 
-        model.addPerson(toAdd);
+        model.addApplicant(toAdd);
         return new CommandResult(String.format(MESSAGE_SUCCESS, Messages.format(toAdd)));
     }
 

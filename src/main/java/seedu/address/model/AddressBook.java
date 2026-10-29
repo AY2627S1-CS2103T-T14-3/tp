@@ -28,7 +28,7 @@ public class AddressBook implements ReadOnlyAddressBook {
     public AddressBook() {}
 
     /**
-     * Creates an AddressBook using the Persons in the {@code toBeCopied}
+     * Creates an AddressBook using the Applicants in the {@code toBeCopied}
      */
     public AddressBook(ReadOnlyAddressBook toBeCopied) {
         this();
@@ -51,7 +51,7 @@ public class AddressBook implements ReadOnlyAddressBook {
     public void resetData(ReadOnlyAddressBook newData) {
         requireNonNull(newData);
 
-        setApplicants(newData.getPersonList());
+        setApplicants(newData.getApplicantList());
         setApplications(newData.getApplicationList());
         setJobs(newData.getJobList());
     }
@@ -61,7 +61,7 @@ public class AddressBook implements ReadOnlyAddressBook {
     /**
      * Returns true if a applicant with the same name or email as {@code applicant} exists in the address book.
      */
-    public boolean hasPerson(Applicant applicant) {
+    public boolean hasApplicant(Applicant applicant) {
         requireNonNull(applicant);
         return applicants.contains(applicant);
     }
@@ -70,7 +70,7 @@ public class AddressBook implements ReadOnlyAddressBook {
      * Adds a applicant to the address book.
      * The applicant must not already exist in the address book.
      */
-    public void addPerson(Applicant p) {
+    public void addApplicant(Applicant p) {
         applicants.add(p);
     }
 
@@ -79,7 +79,7 @@ public class AddressBook implements ReadOnlyAddressBook {
      * {@code target} must exist in the address book.
      * The name and email of {@code editedApplicant} must not match another existing applicant in the address book.
      */
-    public void setPerson(Applicant target, Applicant editedApplicant) {
+    public void setApplicant(Applicant target, Applicant editedApplicant) {
         requireNonNull(editedApplicant);
 
         applicants.setApplicant(target, editedApplicant);
@@ -92,7 +92,7 @@ public class AddressBook implements ReadOnlyAddressBook {
      * Also removes that applicant's application, if one exists.
      * @param key applicant to remove
      */
-    public void removePerson(Applicant key) {
+    public void removeApplicant(Applicant key) {
         applicants.remove(key);
         applications.remove(key);
     }
@@ -200,7 +200,7 @@ public class AddressBook implements ReadOnlyAddressBook {
     }
 
     @Override
-    public ObservableList<Applicant> getPersonList() {
+    public ObservableList<Applicant> getApplicantList() {
         return applicants.asUnmodifiableObservableList();
     }
 

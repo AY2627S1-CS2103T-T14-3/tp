@@ -6,8 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_EMAIL_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_NAME_BOB;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_PHONE_BOB;
-import static seedu.address.testutil.TypicalPersons.ALICE;
-import static seedu.address.testutil.TypicalPersons.BOB;
+import static seedu.address.testutil.TypicalApplicants.ALICE;
+import static seedu.address.testutil.TypicalApplicants.BOB;
 
 import org.junit.jupiter.api.Test;
 
@@ -24,7 +24,8 @@ public class ApplicantTest {
         assertFalse(ALICE.isSameApplicant(null));
 
         // same name, all other attributes different -> returns true
-        Applicant editedAlice = new ApplicantBuilder(ALICE).withPhone(VALID_PHONE_BOB).withEmail(VALID_EMAIL_BOB).build();
+        Applicant editedAlice = new ApplicantBuilder(ALICE).withPhone(VALID_PHONE_BOB)
+                .withEmail(VALID_EMAIL_BOB).build();
         assertTrue(ALICE.isSameApplicant(editedAlice));
 
         // different name, all other attributes same -> returns false
@@ -83,7 +84,8 @@ public class ApplicantTest {
 
     @Test
     public void toStringMethod() {
-        String expected = Applicant.class.getCanonicalName() + "{name=" + ALICE.getName() + ", phone=" + ALICE.getPhone()
+        String expected = Applicant.class.getCanonicalName() + "{name=" + ALICE.getName()
+                + ", phone=" + ALICE.getPhone()
                 + ", email=" + ALICE.getEmail() + "}";
         assertEquals(expected, ALICE.toString());
     }

@@ -36,7 +36,7 @@ public class ModelManager implements Model {
 
         this.addressBook = new AddressBook(addressBook);
         this.userPrefs = new UserPrefs(userPrefs);
-        filteredApplicants = new FilteredList<>(this.addressBook.getPersonList());
+        filteredApplicants = new FilteredList<>(this.addressBook.getApplicantList());
         filteredJobs = new FilteredList<>(this.addressBook.getJobList());
     }
 
@@ -75,27 +75,27 @@ public class ModelManager implements Model {
     }
 
     @Override
-    public boolean hasPerson(Applicant applicant) {
+    public boolean hasApplicant(Applicant applicant) {
         requireNonNull(applicant);
-        return addressBook.hasPerson(applicant);
+        return addressBook.hasApplicant(applicant);
     }
 
     @Override
-    public void deletePerson(Applicant target) {
-        addressBook.removePerson(target);
+    public void deleteApplicant(Applicant target) {
+        addressBook.removeApplicant(target);
     }
 
     @Override
-    public void addPerson(Applicant applicant) {
-        addressBook.addPerson(applicant);
-        updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
+    public void addApplicant(Applicant applicant) {
+        addressBook.addApplicant(applicant);
+        updateFilteredApplicantList(PREDICATE_SHOW_ALL_APPLICANTS);
     }
 
     @Override
-    public void setPerson(Applicant target, Applicant editedApplicant) {
+    public void setApplicant(Applicant target, Applicant editedApplicant) {
         requireAllNonNull(target, editedApplicant);
 
-        addressBook.setPerson(target, editedApplicant);
+        addressBook.setApplicant(target, editedApplicant);
     }
 
     @Override
@@ -169,12 +169,12 @@ public class ModelManager implements Model {
      * {@code addressBook}
      */
     @Override
-    public ObservableList<Applicant> getFilteredPersonList() {
+    public ObservableList<Applicant> getFilteredApplicantList() {
         return filteredApplicants;
     }
 
     @Override
-    public void updateFilteredPersonList(Predicate<Applicant> predicate) {
+    public void updateFilteredApplicantList(Predicate<Applicant> predicate) {
         requireNonNull(predicate);
         filteredApplicants.setPredicate(predicate);
     }

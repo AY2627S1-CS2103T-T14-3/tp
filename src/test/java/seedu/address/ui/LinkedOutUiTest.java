@@ -7,10 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
-import static seedu.address.testutil.TypicalPersons.ALICE;
-import static seedu.address.testutil.TypicalPersons.BENSON;
-import static seedu.address.testutil.TypicalPersons.DANIEL;
-import static seedu.address.testutil.TypicalPersons.GEORGE;
+import static seedu.address.testutil.TypicalApplicants.ALICE;
+import static seedu.address.testutil.TypicalApplicants.BENSON;
+import static seedu.address.testutil.TypicalApplicants.DANIEL;
+import static seedu.address.testutil.TypicalApplicants.GEORGE;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -44,7 +44,7 @@ import seedu.address.storage.JsonAddressBookStorage;
 import seedu.address.storage.JsonUserPrefsStorage;
 import seedu.address.storage.StorageManager;
 import seedu.address.testutil.ApplicantBuilder;
-import seedu.address.testutil.TypicalPersons;
+import seedu.address.testutil.TypicalApplicants;
 
 /** Integration checks for applicant selection and the existing command workflow. */
 public class LinkedOutUiTest {
@@ -71,7 +71,7 @@ public class LinkedOutUiTest {
             assertEquals("Alice Pauline", label(window, "applicantName").getText());
             applicants.getSelectionModel().select(1);
             assertEquals("Benson Meier", label(window, "applicantName").getText());
-            model.setPerson(BENSON, new ApplicantBuilder(BENSON).withName("Benson Updated").build());
+            model.setApplicant(BENSON, new ApplicantBuilder(BENSON).withName("Benson Updated").build());
             assertEquals("Benson Updated", label(window, "applicantName").getText());
 
             command(window, "find Alice");
@@ -91,7 +91,7 @@ public class LinkedOutUiTest {
     @Test
     public void updateApplicant_selectedFirstApplicant_applicantNameUpdated() throws Exception {
         withWindow((window, model) -> {
-            model.setPerson(ALICE, new ApplicantBuilder(ALICE).withName("Alice Updated").build());
+            model.setApplicant(ALICE, new ApplicantBuilder(ALICE).withName("Alice Updated").build());
             assertApplicantName(window, "Alice Updated");
         });
     }
@@ -100,7 +100,7 @@ public class LinkedOutUiTest {
     public void updateApplicant_selectedSecondApplicant_applicantNameUpdated() throws Exception {
         withWindow((window, model) -> {
             selectApplicant(window, 1);
-            model.setPerson(BENSON, new ApplicantBuilder(BENSON).withName("Benson Updated").build());
+            model.setApplicant(BENSON, new ApplicantBuilder(BENSON).withName("Benson Updated").build());
             assertApplicantName(window, "Benson Updated");
         });
     }
@@ -109,7 +109,7 @@ public class LinkedOutUiTest {
     public void updateApplicant_unselectedFirstApplicant_applicantNameUnchanged() throws Exception {
         withWindow((window, model) -> {
             selectApplicant(window, 1);
-            model.setPerson(ALICE, new ApplicantBuilder(ALICE).withName("Alice Updated").build());
+            model.setApplicant(ALICE, new ApplicantBuilder(ALICE).withName("Alice Updated").build());
             assertApplicantName(window, "Benson Meier");
         });
     }
@@ -117,7 +117,7 @@ public class LinkedOutUiTest {
     @Test
     public void updateApplicant_unselectedSecondApplicant_applicantNameUnchanged() throws Exception {
         withWindow((window, model) -> {
-            model.setPerson(BENSON, new ApplicantBuilder(BENSON).withName("Benson Updated").build());
+            model.setApplicant(BENSON, new ApplicantBuilder(BENSON).withName("Benson Updated").build());
             assertApplicantName(window, "Alice Pauline");
         });
     }
@@ -125,7 +125,7 @@ public class LinkedOutUiTest {
     @Test
     public void editCommand_invalidSyntax_preservesApplicantsAndShowsError() throws Exception {
         withWindow((window, model) -> {
-            List<Applicant> expectedApplicants = List.copyOf(model.getAddressBook().getPersonList());
+            List<Applicant> expectedApplicants = List.copyOf(model.getAddressBook().getApplicantList());
             command(window, "find Meier");
             command(window, "view 2");
             TextField input = (TextField) window.getRoot().getScene().lookup("#commandTextField");
@@ -139,8 +139,8 @@ public class LinkedOutUiTest {
                 assertTrue(input.getStyleClass().contains(CommandBox.ERROR_STYLE_CLASS));
                 assertEquals(String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditCommand.MESSAGE_USAGE),
                         feedback(window));
-                assertEquals(expectedApplicants, model.getAddressBook().getPersonList());
-                assertEquals(List.of(BENSON, DANIEL), model.getFilteredPersonList());
+                assertEquals(expectedApplicants, model.getAddressBook().getApplicantList());
+                assertEquals(List.of(BENSON, DANIEL), model.getFilteredApplicantList());
                 assertApplicantDetails(window, DANIEL);
                 assertEquals("2 applicants", label(window, "applicantCount").getText());
             }
@@ -408,7 +408,7 @@ public class LinkedOutUiTest {
     }
 
     private MainWindow createWindow() {
-        return createWindow(new ModelManager(TypicalPersons.getTypicalAddressBook(), new UserPrefs()));
+        return createWindow(new ModelManager(TypicalApplicants.getTypicalAddressBook(), new UserPrefs()));
     }
 
     private MainWindow createWindow(Model model) {
@@ -429,7 +429,7 @@ public class LinkedOutUiTest {
 
     private void withWindow(BiConsumer<MainWindow, Model> action) throws Exception {
         onFxThread(() -> {
-            Model model = new ModelManager(TypicalPersons.getTypicalAddressBook(), new UserPrefs());
+            Model model = new ModelManager(TypicalApplicants.getTypicalAddressBook(), new UserPrefs());
             MainWindow window = createWindow(model);
             try {
                 assertEquals("LinkedOut", window.getRoot().getTitle());
@@ -467,7 +467,7 @@ public class LinkedOutUiTest {
     }
 
     private void assertApplicantDetails(MainWindow window, Applicant applicant) {
-        assertEquals(applicant, window.getPersonListPanel().selectedPersonProperty().get());
+        assertEquals(applicant, window.getApplicantListPanel().selectedApplicantProperty().get());
         assertEquals(applicant.getName().fullName, label(window, "applicantName").getText());
         Node contactDetails = window.getRoot().getScene().lookup("#contactDetails");
         assertEquals(applicant.getEmail().value, ((Label) contactDetails.lookup("#email")).getText());

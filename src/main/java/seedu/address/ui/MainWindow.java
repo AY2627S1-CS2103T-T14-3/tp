@@ -141,21 +141,21 @@ public class MainWindow extends UiPart<Stage> {
      * Fills up all the placeholders of this window.
      */
     void fillInnerParts() {
-        applicantListPanel = new ApplicantListPanel(logic.getFilteredPersonList());
+        applicantListPanel = new ApplicantListPanel(logic.getFilteredApplicantList());
         jobListPanel = new JobListPanel(logic.getFilteredJobList());
         applicantListPanelPlaceholder.getChildren().add(applicantListPanel.getRoot());
 
         applicantDetailPanel = new ApplicantDetailPanel();
         jobDetailPanel = new JobDetailPanel();
         applicantDetailPlaceholder.getChildren().add(applicantDetailPanel.getRoot());
-        applicantListPanel.selectedPersonProperty().addListener((observable, previous, selected) ->
+        applicantListPanel.selectedApplicantProperty().addListener((observable, previous, selected) ->
                 showSelectedApplicant());
         jobListPanel.selectedJobProperty().addListener((observable, previous, selected) ->
                 showSelectedJob());
         logic.getApplicationList().addListener((ListChangeListener<Application>) change ->
                 showSelectedApplicant());
         showSelectedApplicant();
-        bindCount(logic.getFilteredPersonList(), "applicant", "applicants");
+        bindCount(logic.getFilteredApplicantList(), "applicant", "applicants");
 
         resultDisplay = new ResultDisplay();
         resultDisplayPlaceholder.getChildren().add(resultDisplay.getRoot());
@@ -208,7 +208,7 @@ public class MainWindow extends UiPart<Stage> {
         primaryStage.hide();
     }
 
-    public ApplicantListPanel getPersonListPanel() {
+    public ApplicantListPanel getApplicantListPanel() {
         return applicantListPanel;
     }
 
@@ -216,7 +216,7 @@ public class MainWindow extends UiPart<Stage> {
      * Shows the selected applicant and that applicant's application, if one has been recorded.
      */
     private void showSelectedApplicant() {
-        Applicant selected = applicantListPanel.selectedPersonProperty().get();
+        Applicant selected = applicantListPanel.selectedApplicantProperty().get();
         Application application = null;
         if (selected != null) {
             application = logic.getApplicationList().stream()
@@ -247,7 +247,7 @@ public class MainWindow extends UiPart<Stage> {
         consoleHint.setText(APPLICANT_HINT);
         applicantListPanelPlaceholder.getChildren().setAll(applicantListPanel.getRoot());
         applicantDetailPlaceholder.getChildren().setAll(applicantDetailPanel.getRoot());
-        bindCount(logic.getFilteredPersonList(), "applicant", "applicants");
+        bindCount(logic.getFilteredApplicantList(), "applicant", "applicants");
         showSelectedApplicant();
     }
 
@@ -298,7 +298,7 @@ public class MainWindow extends UiPart<Stage> {
                 commandResult.getJobToView().ifPresent(jobListPanel::selectJob);
             } else {
                 showApplicantView();
-                commandResult.getPersonToView().ifPresent(applicantListPanel::selectPerson);
+                commandResult.getApplicantToView().ifPresent(applicantListPanel::selectApplicant);
             }
 
             if (commandResult.isShowHelp()) {

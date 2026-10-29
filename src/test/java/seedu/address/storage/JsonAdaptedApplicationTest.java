@@ -3,7 +3,7 @@ package seedu.address.storage;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_JOB_AMY;
 import static seedu.address.testutil.Assert.assertThrows;
-import static seedu.address.testutil.TypicalPersons.ALICE;
+import static seedu.address.testutil.TypicalApplicants.ALICE;
 
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +18,7 @@ public class JsonAdaptedApplicationTest {
     private static final AddressBook ADDRESS_BOOK = new AddressBook();
 
     static {
-        ADDRESS_BOOK.addPerson(ALICE);
+        ADDRESS_BOOK.addApplicant(ALICE);
     }
 
     @Test

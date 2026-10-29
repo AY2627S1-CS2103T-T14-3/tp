@@ -12,7 +12,7 @@ import seedu.address.model.applicant.exceptions.ApplicantNotFoundException;
 import seedu.address.model.applicant.exceptions.DuplicateApplicantException;
 
 /**
- * A list of persons that enforces uniqueness between its elements and does not allow nulls.
+ * A list of applicants that enforces uniqueness between its elements and does not allow nulls.
  * Each applicant's name and email must be unique, as checked by {@code Applicant#hasSameNameOrEmail(Applicant)}.
  * However, the removal of a applicant uses Applicant#equals(Object) so
  * as to ensure that the applicant with exactly the same fields will be removed.
@@ -91,7 +91,7 @@ public class UniqueApplicantList implements Iterable<Applicant> {
      */
     public void setApplicants(List<Applicant> applicants) {
         requireAllNonNull(applicants);
-        if (!personsAreUnique(applicants)) {
+        if (!applicantsAreUnique(applicants)) {
             throw new DuplicateApplicantException();
         }
 
@@ -137,7 +137,7 @@ public class UniqueApplicantList implements Iterable<Applicant> {
     /**
      * Returns true if {@code applicants} contains only unique applicants.
      */
-    private boolean personsAreUnique(List<Applicant> applicants) {
+    private boolean applicantsAreUnique(List<Applicant> applicants) {
         for (int i = 0; i < applicants.size() - 1; i++) {
             for (int j = i + 1; j < applicants.size(); j++) {
                 if (applicants.get(i).hasSameNameOrEmail(applicants.get(j))) {

@@ -4,7 +4,7 @@ import static java.util.Objects.requireNonNull;
 import static seedu.address.logic.parser.CliSyntax.OPTION_EMAIL_OPT;
 import static seedu.address.logic.parser.CliSyntax.OPTION_NAME_OPT;
 import static seedu.address.logic.parser.CliSyntax.OPTION_PHONE_OPT;
-import static seedu.address.model.Model.PREDICATE_SHOW_ALL_PERSONS;
+import static seedu.address.model.Model.PREDICATE_SHOW_ALL_APPLICANTS;
 
 import java.util.List;
 import java.util.Objects;
@@ -41,59 +41,60 @@ public class EditCommand extends Command {
             + OPTION_PHONE_OPT + " 91234567 "
             + OPTION_EMAIL_OPT + " johndoe@example.com";
 
-    public static final String MESSAGE_EDIT_PERSON_SUCCESS = "Edited applicant: %1$s";
+    public static final String MESSAGE_EDIT_APPLICANT_SUCCESS = "Edited applicant: %1$s";
     public static final String MESSAGE_NOT_EDITED = "At least one field to edit must be provided.";
-    public static final String MESSAGE_DUPLICATE_PERSON = "An applicant with this name or email already exists.";
+    public static final String MESSAGE_DUPLICATE_APPLICANT = "An applicant with this name or email already exists.";
 
     private final Index index;
-    private final EditPersonDescriptor editPersonDescriptor;
+    private final EditApplicantDescriptor editApplicantDescriptor;
 
     /**
      * @param index of the applicant in the filtered applicant list to edit
-     * @param editPersonDescriptor details to edit the applicant with
+     * @param editApplicantDescriptor details to edit the applicant with
      */
-    public EditCommand(Index index, EditPersonDescriptor editPersonDescriptor) {
+    public EditCommand(Index index, EditApplicantDescriptor editApplicantDescriptor) {
         requireNonNull(index);
-        requireNonNull(editPersonDescriptor);
+        requireNonNull(editApplicantDescriptor);
 
         this.index = index;
-        this.editPersonDescriptor = new EditPersonDescriptor(editPersonDescriptor);
+        this.editApplicantDescriptor = new EditApplicantDescriptor(editApplicantDescriptor);
     }
 
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
-        List<Applicant> lastShownList = model.getFilteredPersonList();
+        List<Applicant> lastShownList = model.getFilteredApplicantList();
 
         if (index.getZeroBased() >= lastShownList.size()) {
-            throw new CommandException(Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
+            throw new CommandException(Messages.MESSAGE_INVALID_APPLICANT_DISPLAYED_INDEX);
         }
 
         Applicant applicantToEdit = lastShownList.get(index.getZeroBased());
-        Applicant editedApplicant = createEditedPerson(applicantToEdit, editPersonDescriptor);
+        Applicant editedApplicant = createEditedApplicant(applicantToEdit, editApplicantDescriptor);
 
-        boolean hasDuplicate = model.getAddressBook().getPersonList().stream()
-                .filter(person -> !person.equals(applicantToEdit))
+        boolean hasDuplicate = model.getAddressBook().getApplicantList().stream()
+                .filter(applicant -> !applicant.equals(applicantToEdit))
                 .anyMatch(editedApplicant::hasSameNameOrEmail);
         if (hasDuplicate) {
-            throw new CommandException(MESSAGE_DUPLICATE_PERSON);
+            throw new CommandException(MESSAGE_DUPLICATE_APPLICANT);
         }
 
-        model.setPerson(applicantToEdit, editedApplicant);
-        model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
-        return new CommandResult(String.format(MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(editedApplicant)));
+        model.setApplicant(applicantToEdit, editedApplicant);
+        model.updateFilteredApplicantList(PREDICATE_SHOW_ALL_APPLICANTS);
+        return new CommandResult(String.format(MESSAGE_EDIT_APPLICANT_SUCCESS, Messages.format(editedApplicant)));
     }
 
     /**
      * Creates and returns a {@code Applicant} with the details of {@code applicantToEdit}
-     * edited with {@code editPersonDescriptor}.
+     * edited with {@code editApplicantDescriptor}.
      */
-    private static Applicant createEditedPerson(Applicant applicantToEdit, EditPersonDescriptor editPersonDescriptor) {
+    private static Applicant createEditedApplicant(Applicant applicantToEdit,
+                                                   EditApplicantDescriptor editApplicantDescriptor) {
         assert applicantToEdit != null;
 
-        Name updatedName = editPersonDescriptor.getName().orElse(applicantToEdit.getName());
-        Phone updatedPhone = editPersonDescriptor.getPhone().orElse(applicantToEdit.getPhone());
-        Email updatedEmail = editPersonDescriptor.getEmail().orElse(applicantToEdit.getEmail());
+        Name updatedName = editApplicantDescriptor.getName().orElse(applicantToEdit.getName());
+        Phone updatedPhone = editApplicantDescriptor.getPhone().orElse(applicantToEdit.getPhone());
+        Email updatedEmail = editApplicantDescriptor.getEmail().orElse(applicantToEdit.getEmail());
 
         return new Applicant(updatedName, updatedPhone, updatedEmail);
     }
@@ -110,14 +111,14 @@ public class EditCommand extends Command {
         }
 
         return index.equals(otherEditCommand.index)
-                && editPersonDescriptor.equals(otherEditCommand.editPersonDescriptor);
+                && editApplicantDescriptor.equals(otherEditCommand.editApplicantDescriptor);
     }
 
     @Override
     public String toString() {
         return new ToStringBuilder(this)
                 .add("index", index)
-                .add("editPersonDescriptor", editPersonDescriptor)
+                .add("editApplicantDescriptor", editApplicantDescriptor)
                 .toString();
     }
 
@@ -125,17 +126,17 @@ public class EditCommand extends Command {
      * Stores the details to edit the applicant with. Each non-empty field value will replace the
      * corresponding field value of the applicant.
      */
-    public static class EditPersonDescriptor {
+    public static class EditApplicantDescriptor {
         private Name name;
         private Phone phone;
         private Email email;
 
-        public EditPersonDescriptor() {}
+        public EditApplicantDescriptor() {}
 
         /**
          * Copy constructor.
          */
-        public EditPersonDescriptor(EditPersonDescriptor toCopy) {
+        public EditApplicantDescriptor(EditApplicantDescriptor toCopy) {
             setName(toCopy.name);
             setPhone(toCopy.phone);
             setEmail(toCopy.email);
@@ -179,13 +180,13 @@ public class EditCommand extends Command {
             }
 
             // instanceof handles nulls
-            if (!(other instanceof EditPersonDescriptor otherEditPersonDescriptor)) {
+            if (!(other instanceof EditApplicantDescriptor otherEditApplicantDescriptor)) {
                 return false;
             }
 
-            return Objects.equals(name, otherEditPersonDescriptor.name)
-                    && Objects.equals(phone, otherEditPersonDescriptor.phone)
-                    && Objects.equals(email, otherEditPersonDescriptor.email);
+            return Objects.equals(name, otherEditApplicantDescriptor.name)
+                    && Objects.equals(phone, otherEditApplicantDescriptor.phone)
+                    && Objects.equals(email, otherEditApplicantDescriptor.email);
         }
 
         @Override

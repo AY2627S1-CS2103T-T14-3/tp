@@ -96,7 +96,7 @@ public class CommandResult {
         return exit;
     }
 
-    public Optional<Applicant> getPersonToView() {
+    public Optional<Applicant> getApplicantToView() {
         return Optional.ofNullable(applicantToView);
     }
 

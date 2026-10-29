@@ -17,7 +17,7 @@ import seedu.address.model.applicant.Applicant;
 /**
  * A utility class containing a list of {@code Applicant} objects to be used in tests.
  */
-public class TypicalPersons {
+public class TypicalApplicants {
 
     public static final Applicant ALICE = new ApplicantBuilder().withName("Alice Pauline")
             .withPhone("94351253").withEmail("alice@example.com").build();
@@ -48,20 +48,20 @@ public class TypicalPersons {
 
     public static final String KEYWORD_MATCHING_MEIER = "Meier"; // A keyword that matches MEIER
 
-    private TypicalPersons() {} // prevents instantiation
+    private TypicalApplicants() {} // prevents instantiation
 
     /**
-     * Returns an {@code AddressBook} with all the typical persons.
+     * Returns an {@code AddressBook} with all the typical applicants.
      */
     public static AddressBook getTypicalAddressBook() {
         AddressBook ab = new AddressBook();
-        for (Applicant applicant : getTypicalPersons()) {
-            ab.addPerson(applicant);
+        for (Applicant applicant : getTypicalApplicants()) {
+            ab.addApplicant(applicant);
         }
         return ab;
     }
 
-    public static List<Applicant> getTypicalPersons() {
+    public static List<Applicant> getTypicalApplicants() {
         return new ArrayList<>(Arrays.asList(ALICE, BENSON, CARL, DANIEL, ELLE, FIONA, GEORGE));
     }
 }
