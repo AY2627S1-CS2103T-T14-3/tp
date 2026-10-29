@@ -2,6 +2,7 @@ package seedu.address.storage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static seedu.address.testutil.Assert.assertThrows;
+import static seedu.address.testutil.TypicalJobs.JANITOR;
 import static seedu.address.testutil.TypicalPersons.ALICE;
 
 import java.nio.file.Path;
@@ -49,12 +50,13 @@ public class JsonSerializableAddressBookTest {
     public void toModelType_applicationRoundTrip_success() throws Exception {
         AddressBook original = new AddressBook();
         original.addPerson(ALICE);
-        original.addApplication(new Application(ALICE, new Job("Janitor"), Application.Status.ACCEPT));
+        original.addJob(JANITOR);
+        original.addApplication(new Application(ALICE, JANITOR, Application.Status.ACCEPT));
 
         AddressBook loaded = new JsonSerializableAddressBook(original).toModelType();
 
         assertEquals(original, loaded);
-        assertEquals(new Job("Janitor"), loaded.getApplication(ALICE).orElseThrow().getJob());
+        assertEquals(JANITOR, loaded.getApplication(ALICE).orElseThrow().getJob());
         assertEquals(Application.Status.ACCEPT, loaded.getApplication(ALICE).orElseThrow().getStatus());
     }
 
@@ -84,7 +86,8 @@ public class JsonSerializableAddressBookTest {
         JsonSerializableAddressBook dataFromFile = JsonUtil.readJsonFile(
                 TEST_DATA_FOLDER.resolve("invalidJobAddressBook.json"),
                 JsonSerializableAddressBook.class).get();
-        assertThrows(IllegalValueException.class, Job.MESSAGE_CONSTRAINTS, dataFromFile::toModelType);
+        assertThrows(IllegalValueException.class, JsonAdaptedJob.MISSING_ROLE_MESSAGE_FORMAT,
+                dataFromFile::toModelType);
     }
 
     @Test
