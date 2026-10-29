@@ -38,11 +38,11 @@ import seedu.address.logic.commands.ViewCommand;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
-import seedu.address.model.person.Person;
+import seedu.address.model.applicant.Applicant;
 import seedu.address.storage.JsonAddressBookStorage;
 import seedu.address.storage.JsonUserPrefsStorage;
 import seedu.address.storage.StorageManager;
-import seedu.address.testutil.PersonBuilder;
+import seedu.address.testutil.ApplicantBuilder;
 import seedu.address.testutil.TypicalPersons;
 
 /** Integration checks for applicant selection and the existing command workflow. */
@@ -70,7 +70,7 @@ public class LinkedOutUiTest {
             assertEquals("Alice Pauline", label(window, "applicantName").getText());
             applicants.getSelectionModel().select(1);
             assertEquals("Benson Meier", label(window, "applicantName").getText());
-            model.setPerson(BENSON, new PersonBuilder(BENSON).withName("Benson Updated").build());
+            model.setPerson(BENSON, new ApplicantBuilder(BENSON).withName("Benson Updated").build());
             assertEquals("Benson Updated", label(window, "applicantName").getText());
 
             command(window, "find Alice");
@@ -81,7 +81,7 @@ public class LinkedOutUiTest {
             assertEquals("0 applicants", label(window, "applicantCount").getText());
             command(window, "list");
             assertNotNull(applicants.getSelectionModel().getSelectedItem());
-            Person selected = (Person) applicants.getSelectionModel().getSelectedItem();
+            Applicant selected = (Applicant) applicants.getSelectionModel().getSelectedItem();
             assertEquals(selected.getName().fullName, label(window, "applicantName").getText());
             assertApplication(window, "No application recorded.", null);
         });
@@ -90,7 +90,7 @@ public class LinkedOutUiTest {
     @Test
     public void updateApplicant_selectedFirstApplicant_applicantNameUpdated() throws Exception {
         withWindow((window, model) -> {
-            model.setPerson(ALICE, new PersonBuilder(ALICE).withName("Alice Updated").build());
+            model.setPerson(ALICE, new ApplicantBuilder(ALICE).withName("Alice Updated").build());
             assertApplicantName(window, "Alice Updated");
         });
     }
@@ -99,7 +99,7 @@ public class LinkedOutUiTest {
     public void updateApplicant_selectedSecondApplicant_applicantNameUpdated() throws Exception {
         withWindow((window, model) -> {
             selectApplicant(window, 1);
-            model.setPerson(BENSON, new PersonBuilder(BENSON).withName("Benson Updated").build());
+            model.setPerson(BENSON, new ApplicantBuilder(BENSON).withName("Benson Updated").build());
             assertApplicantName(window, "Benson Updated");
         });
     }
@@ -108,7 +108,7 @@ public class LinkedOutUiTest {
     public void updateApplicant_unselectedFirstApplicant_applicantNameUnchanged() throws Exception {
         withWindow((window, model) -> {
             selectApplicant(window, 1);
-            model.setPerson(ALICE, new PersonBuilder(ALICE).withName("Alice Updated").build());
+            model.setPerson(ALICE, new ApplicantBuilder(ALICE).withName("Alice Updated").build());
             assertApplicantName(window, "Benson Meier");
         });
     }
@@ -116,7 +116,7 @@ public class LinkedOutUiTest {
     @Test
     public void updateApplicant_unselectedSecondApplicant_applicantNameUnchanged() throws Exception {
         withWindow((window, model) -> {
-            model.setPerson(BENSON, new PersonBuilder(BENSON).withName("Benson Updated").build());
+            model.setPerson(BENSON, new ApplicantBuilder(BENSON).withName("Benson Updated").build());
             assertApplicantName(window, "Alice Pauline");
         });
     }
@@ -124,7 +124,7 @@ public class LinkedOutUiTest {
     @Test
     public void editCommand_unsupported_preservesApplicantsAndShowsError() throws Exception {
         withWindow((window, model) -> {
-            List<Person> expectedPersons = List.copyOf(model.getAddressBook().getPersonList());
+            List<Applicant> expectedApplicants = List.copyOf(model.getAddressBook().getPersonList());
             command(window, "find Meier");
             command(window, "view 2");
             TextField input = (TextField) window.getRoot().getScene().lookup("#commandTextField");
@@ -137,7 +137,7 @@ public class LinkedOutUiTest {
                 assertEquals(editCommand, input.getText());
                 assertTrue(input.getStyleClass().contains(CommandBox.ERROR_STYLE_CLASS));
                 assertEquals(MESSAGE_UNKNOWN_COMMAND, feedback(window));
-                assertEquals(expectedPersons, model.getAddressBook().getPersonList());
+                assertEquals(expectedApplicants, model.getAddressBook().getPersonList());
                 assertEquals(List.of(BENSON, DANIEL), model.getFilteredPersonList());
                 assertApplicantDetails(window, DANIEL);
                 assertEquals("2 applicants", label(window, "applicantCount").getText());
@@ -464,12 +464,12 @@ public class LinkedOutUiTest {
         return label;
     }
 
-    private void assertApplicantDetails(MainWindow window, Person person) {
-        assertEquals(person, window.getPersonListPanel().selectedPersonProperty().get());
-        assertEquals(person.getName().fullName, label(window, "applicantName").getText());
+    private void assertApplicantDetails(MainWindow window, Applicant applicant) {
+        assertEquals(applicant, window.getPersonListPanel().selectedPersonProperty().get());
+        assertEquals(applicant.getName().fullName, label(window, "applicantName").getText());
         Node contactDetails = window.getRoot().getScene().lookup("#contactDetails");
-        assertEquals(person.getEmail().value, ((Label) contactDetails.lookup("#email")).getText());
-        assertEquals(person.getPhone().value, ((Label) contactDetails.lookup("#phone")).getText());
+        assertEquals(applicant.getEmail().value, ((Label) contactDetails.lookup("#email")).getText());
+        assertEquals(applicant.getPhone().value, ((Label) contactDetails.lookup("#phone")).getText());
     }
 
     private String feedback(MainWindow window) {

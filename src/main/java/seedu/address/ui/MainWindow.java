@@ -21,8 +21,8 @@ import seedu.address.logic.Logic;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.model.applicant.Applicant;
 import seedu.address.model.application.Application;
-import seedu.address.model.person.Person;
 
 /**
  * The Main Window. Provides the basic application layout containing
@@ -41,7 +41,7 @@ public class MainWindow extends UiPart<Stage> {
     private Path dataFilePath;
 
     // Independent Ui parts residing in this Ui container
-    private PersonListPanel personListPanel;
+    private ApplicantListPanel applicantListPanel;
     private JobListPanel jobListPanel;
     private ApplicantDetailPanel applicantDetailPanel;
     private JobDetailPanel jobDetailPanel;
@@ -71,7 +71,7 @@ public class MainWindow extends UiPart<Stage> {
     private MenuItem helpMenuItem;
 
     @FXML
-    private StackPane personListPanelPlaceholder;
+    private StackPane applicantListPanelPlaceholder;
 
     @FXML
     private StackPane resultDisplayPlaceholder;
@@ -141,14 +141,14 @@ public class MainWindow extends UiPart<Stage> {
      * Fills up all the placeholders of this window.
      */
     void fillInnerParts() {
-        personListPanel = new PersonListPanel(logic.getFilteredPersonList());
+        applicantListPanel = new ApplicantListPanel(logic.getFilteredPersonList());
         jobListPanel = new JobListPanel(logic.getFilteredJobList());
-        personListPanelPlaceholder.getChildren().add(personListPanel.getRoot());
+        applicantListPanelPlaceholder.getChildren().add(applicantListPanel.getRoot());
 
         applicantDetailPanel = new ApplicantDetailPanel();
         jobDetailPanel = new JobDetailPanel();
         applicantDetailPlaceholder.getChildren().add(applicantDetailPanel.getRoot());
-        personListPanel.selectedPersonProperty().addListener((observable, previous, selected) ->
+        applicantListPanel.selectedPersonProperty().addListener((observable, previous, selected) ->
                 showSelectedApplicant());
         jobListPanel.selectedJobProperty().addListener((observable, previous, selected) ->
                 showSelectedJob());
@@ -208,19 +208,19 @@ public class MainWindow extends UiPart<Stage> {
         primaryStage.hide();
     }
 
-    public PersonListPanel getPersonListPanel() {
-        return personListPanel;
+    public ApplicantListPanel getPersonListPanel() {
+        return applicantListPanel;
     }
 
     /**
      * Shows the selected applicant and that applicant's application, if one has been recorded.
      */
     private void showSelectedApplicant() {
-        Person selected = personListPanel.selectedPersonProperty().get();
+        Applicant selected = applicantListPanel.selectedPersonProperty().get();
         Application application = null;
         if (selected != null) {
             application = logic.getApplicationList().stream()
-                    .filter(existing -> existing.getApplicant().isSamePerson(selected))
+                    .filter(existing -> existing.getApplicant().isSameApplicant(selected))
                     .findFirst()
                     .orElse(null);
         }
@@ -245,7 +245,7 @@ public class MainWindow extends UiPart<Stage> {
         listTitle.setText("Applicants");
         listHint.setText("Select an applicant to view their details.");
         consoleHint.setText(APPLICANT_HINT);
-        personListPanelPlaceholder.getChildren().setAll(personListPanel.getRoot());
+        applicantListPanelPlaceholder.getChildren().setAll(applicantListPanel.getRoot());
         applicantDetailPlaceholder.getChildren().setAll(applicantDetailPanel.getRoot());
         bindCount(logic.getFilteredPersonList(), "applicant", "applicants");
         showSelectedApplicant();
@@ -263,7 +263,7 @@ public class MainWindow extends UiPart<Stage> {
         listTitle.setText("Jobs");
         listHint.setText("Select a job to view its details.");
         consoleHint.setText(JOB_HINT);
-        personListPanelPlaceholder.getChildren().setAll(jobListPanel.getRoot());
+        applicantListPanelPlaceholder.getChildren().setAll(jobListPanel.getRoot());
         applicantDetailPlaceholder.getChildren().setAll(jobDetailPanel.getRoot());
         bindCount(logic.getFilteredJobList(), "job", "jobs");
         showSelectedJob();
@@ -298,7 +298,7 @@ public class MainWindow extends UiPart<Stage> {
                 commandResult.getJobToView().ifPresent(jobListPanel::selectJob);
             } else {
                 showApplicantView();
-                commandResult.getPersonToView().ifPresent(personListPanel::selectPerson);
+                commandResult.getPersonToView().ifPresent(applicantListPanel::selectPerson);
             }
 
             if (commandResult.isShowHelp()) {

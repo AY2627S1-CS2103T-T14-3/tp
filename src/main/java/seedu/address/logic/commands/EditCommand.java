@@ -16,20 +16,20 @@ import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.logic.Messages;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
-import seedu.address.model.person.Email;
-import seedu.address.model.person.Name;
-import seedu.address.model.person.Person;
-import seedu.address.model.person.Phone;
+import seedu.address.model.applicant.Applicant;
+import seedu.address.model.applicant.Email;
+import seedu.address.model.applicant.Name;
+import seedu.address.model.applicant.Phone;
 
 /**
- * Edits the details of an existing person in the address book.
+ * Edits the details of an existing applicant in the address book.
  */
 public class EditCommand extends Command {
 
     public static final String COMMAND_WORD = "edit";
 
-    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Edits the details of the person identified "
-            + "by the index number used in the displayed person list. "
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Edits the details of the applicant identified "
+            + "by the index number used in the displayed applicant list. "
             + "Existing values will be overwritten by the input values.\n"
             + "Parameters: INDEX (must be a positive integer) "
             + "[" + OPTION_NAME_REQ + "NAME] "
@@ -39,7 +39,7 @@ public class EditCommand extends Command {
             + OPTION_PHONE_REQ + "91234567 "
             + OPTION_EMAIL_REQ + "johndoe@example.com";
 
-    public static final String MESSAGE_EDIT_PERSON_SUCCESS = "Edited person: %1$s";
+    public static final String MESSAGE_EDIT_PERSON_SUCCESS = "Edited applicant: %1$s";
     public static final String MESSAGE_NOT_EDITED = "At least one field to edit must be provided.";
     public static final String MESSAGE_DUPLICATE_PERSON = "An applicant with this name or email already exists.";
 
@@ -47,8 +47,8 @@ public class EditCommand extends Command {
     private final EditPersonDescriptor editPersonDescriptor;
 
     /**
-     * @param index of the person in the filtered person list to edit
-     * @param editPersonDescriptor details to edit the person with
+     * @param index of the applicant in the filtered applicant list to edit
+     * @param editPersonDescriptor details to edit the applicant with
      */
     public EditCommand(Index index, EditPersonDescriptor editPersonDescriptor) {
         requireNonNull(index);
@@ -61,39 +61,39 @@ public class EditCommand extends Command {
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
-        List<Person> lastShownList = model.getFilteredPersonList();
+        List<Applicant> lastShownList = model.getFilteredPersonList();
 
         if (index.getZeroBased() >= lastShownList.size()) {
             throw new CommandException(Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
         }
 
-        Person personToEdit = lastShownList.get(index.getZeroBased());
-        Person editedPerson = createEditedPerson(personToEdit, editPersonDescriptor);
+        Applicant applicantToEdit = lastShownList.get(index.getZeroBased());
+        Applicant editedApplicant = createEditedPerson(applicantToEdit, editPersonDescriptor);
 
         boolean hasDuplicate = model.getAddressBook().getPersonList().stream()
-                .filter(person -> !person.equals(personToEdit))
-                .anyMatch(editedPerson::hasSameNameOrEmail);
+                .filter(person -> !person.equals(applicantToEdit))
+                .anyMatch(editedApplicant::hasSameNameOrEmail);
         if (hasDuplicate) {
             throw new CommandException(MESSAGE_DUPLICATE_PERSON);
         }
 
-        model.setPerson(personToEdit, editedPerson);
+        model.setPerson(applicantToEdit, editedApplicant);
         model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
-        return new CommandResult(String.format(MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(editedPerson)));
+        return new CommandResult(String.format(MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(editedApplicant)));
     }
 
     /**
-     * Creates and returns a {@code Person} with the details of {@code personToEdit}
+     * Creates and returns a {@code Applicant} with the details of {@code applicantToEdit}
      * edited with {@code editPersonDescriptor}.
      */
-    private static Person createEditedPerson(Person personToEdit, EditPersonDescriptor editPersonDescriptor) {
-        assert personToEdit != null;
+    private static Applicant createEditedPerson(Applicant applicantToEdit, EditPersonDescriptor editPersonDescriptor) {
+        assert applicantToEdit != null;
 
-        Name updatedName = editPersonDescriptor.getName().orElse(personToEdit.getName());
-        Phone updatedPhone = editPersonDescriptor.getPhone().orElse(personToEdit.getPhone());
-        Email updatedEmail = editPersonDescriptor.getEmail().orElse(personToEdit.getEmail());
+        Name updatedName = editPersonDescriptor.getName().orElse(applicantToEdit.getName());
+        Phone updatedPhone = editPersonDescriptor.getPhone().orElse(applicantToEdit.getPhone());
+        Email updatedEmail = editPersonDescriptor.getEmail().orElse(applicantToEdit.getEmail());
 
-        return new Person(updatedName, updatedPhone, updatedEmail);
+        return new Applicant(updatedName, updatedPhone, updatedEmail);
     }
 
     @Override
@@ -120,8 +120,8 @@ public class EditCommand extends Command {
     }
 
     /**
-     * Stores the details to edit the person with. Each non-empty field value will replace the
-     * corresponding field value of the person.
+     * Stores the details to edit the applicant with. Each non-empty field value will replace the
+     * corresponding field value of the applicant.
      */
     public static class EditPersonDescriptor {
         private Name name;

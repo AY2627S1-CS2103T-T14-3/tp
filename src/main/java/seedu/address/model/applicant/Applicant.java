@@ -1,4 +1,4 @@
-package seedu.address.model.person;
+package seedu.address.model.applicant;
 
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
@@ -7,10 +7,10 @@ import java.util.Objects;
 import seedu.address.commons.util.ToStringBuilder;
 
 /**
- * Represents a Person in the address book.
+ * Represents an Applicant in the address book.
  * Guarantees: details are present and not null, field values are validated, immutable.
  */
-public class Person {
+public class Applicant {
 
     // Identity fields
     private final Name name;
@@ -20,7 +20,7 @@ public class Person {
     /**
      * Every field must be present and not null.
      */
-    public Person(Name name, Phone phone, Email email) {
+    public Applicant(Name name, Phone phone, Email email) {
         requireAllNonNull(name, phone, email);
         this.name = name;
         this.phone = phone;
@@ -40,30 +40,30 @@ public class Person {
     }
 
     /**
-     * Returns true if both persons have the same name.
-     * This defines a weaker notion of equality between two persons.
+     * Returns true if both applicants have the same name.
+     * This defines a weaker notion of equality between two applicants.
      */
-    public boolean isSamePerson(Person otherPerson) {
-        if (otherPerson == this) {
+    public boolean isSameApplicant(Applicant otherApplicant) {
+        if (otherApplicant == this) {
             return true;
         }
 
-        return otherPerson != null
-                && otherPerson.getName().equals(getName());
+        return otherApplicant != null
+                && otherApplicant.getName().equals(getName());
     }
 
     /**
-     * Returns true if the other person has the same name or email.
+     * Returns true if the other applicant has the same name or email.
      * Names and emails must each be unique across applicants.
      */
-    public boolean hasSameNameOrEmail(Person otherPerson) {
-        return otherPerson != null
-                && (name.equals(otherPerson.name) || email.equals(otherPerson.email));
+    public boolean hasSameNameOrEmail(Applicant otherApplicant) {
+        return otherApplicant != null
+                && (name.equals(otherApplicant.name) || email.equals(otherApplicant.email));
     }
 
     /**
-     * Returns true if both persons have the same identity and data fields.
-     * This defines a stronger notion of equality between two persons.
+     * Returns true if both applicants have the same identity and data fields.
+     * This defines a stronger notion of equality between two applicants.
      */
     @Override
     public boolean equals(Object other) {
@@ -72,13 +72,13 @@ public class Person {
         }
 
         // instanceof handles nulls
-        if (!(other instanceof Person otherPerson)) {
+        if (!(other instanceof Applicant otherApplicant)) {
             return false;
         }
 
-        return name.equals(otherPerson.name)
-                && phone.equals(otherPerson.phone)
-                && email.equals(otherPerson.email);
+        return name.equals(otherApplicant.name)
+                && phone.equals(otherApplicant.phone)
+                && email.equals(otherApplicant.email);
     }
 
     @Override

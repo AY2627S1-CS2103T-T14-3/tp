@@ -7,7 +7,7 @@ import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.model.AddressBook;
 import seedu.address.model.application.Application;
 import seedu.address.model.application.Job;
-import seedu.address.model.person.Person;
+import seedu.address.model.applicant.Applicant;
 
 /**
  * Jackson-friendly version of {@link Application}.
@@ -72,7 +72,7 @@ class JsonAdaptedApplication {
             throw new IllegalValueException(MESSAGE_INVALID_STATUS);
         }
 
-        Person applicant = addressBook.getPersonList().stream()
+        Applicant applicant = addressBook.getPersonList().stream()
                 .filter(person -> person.getName().fullName.equals(name))
                 .findFirst()
                 .orElseThrow(() -> new IllegalValueException(MESSAGE_UNKNOWN_APPLICANT));

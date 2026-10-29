@@ -102,7 +102,7 @@ How the `Logic` component works:
 
 1. When `Logic` is called upon to execute a command, the command is passed to an `AddressBookParser` object, which in turn creates a parser that matches the command (e.g., `DeleteCommandParser`) and uses it to parse the command.
 1. This results in a `Command` object (more precisely, an object of one of its subclasses e.g., `DeleteCommand`) which is executed by the `LogicManager`.
-1. The command can communicate with the `Model` when it is executed (e.g. to delete a person).<br>
+1. The command can communicate with the `Model` when it is executed (e.g. to delete a applicant).<br>
    Note that although this is shown as a single step in the diagram above for simplicity, the code can require several interactions between the command object and the `Model` to complete the operation.
 1. The result of the command execution is encapsulated as a `CommandResult` object which is returned from `Logic`.
 
@@ -132,10 +132,10 @@ represents one applicant’s job application. It contains a reference to the app
 immutable job description and application status. Applicant identity is determined using `Person#isSamePerson`, while
 `Application#equals` compares the complete applicant, job description, and status. Job descriptions must be non-blank
 and must not contain option-like tokens; statuses are restricted to the case-sensitive values `accept`, `reject`, and
-`pending`. `AddressBook` stores these applications separately from its person list and keeps at most one application
+`pending`. `AddressBook` stores these applications separately from its applicant list and keeps at most one application
 per applicant. `add -p` creates an application for an applicant in the displayed list, and `set` updates the
 status of an existing application without changing its job. Deleting an applicant also
-deletes that applicant's application, and editing an applicant updates the person stored on the application.
+deletes that applicant's application, and editing an applicant updates the applicant stored on the application.
 
 `AddressBook` also keeps a separate `UniqueJobList` of open roles. A job is identified by its description:
 duplicate descriptions are rejected, surrounding spaces are ignored, and other differences in case are kept.
@@ -191,11 +191,11 @@ Step 1. The user launches the application for the first time. The `VersionedAddr
 
 ![UndoRedoState0](images/UndoRedoState0.png)
 
-Step 2. The user executes `delete 5` command to delete the 5th person in the address book. The `delete` command calls `Model#commitAddressBook()`, causing the modified state of the address book after the `delete 5` command executes to be saved in the `addressBookStateList`, and the `currentStatePointer` is shifted to the newly inserted address book state.
+Step 2. The user executes `delete 5` command to delete the 5th applicant in the address book. The `delete` command calls `Model#commitAddressBook()`, causing the modified state of the address book after the `delete 5` command executes to be saved in the `addressBookStateList`, and the `currentStatePointer` is shifted to the newly inserted address book state.
 
 ![UndoRedoState1](images/UndoRedoState1.png)
 
-Step 3. The user executes `add n/David …​` to add a new person. The `add` command also calls `Model#commitAddressBook()`, causing another modified address book state to be saved into the `addressBookStateList`.
+Step 3. The user executes `add n/David …​` to add a new applicant. The `add` command also calls `Model#commitAddressBook()`, causing another modified address book state to be saved into the `addressBookStateList`.
 
 ![UndoRedoState2](images/UndoRedoState2.png)
 
@@ -203,7 +203,7 @@ Step 3. The user executes `add n/David …​` to add a new person. The `add` co
 
 </div>
 
-Step 4. The user now decides that adding the person was a mistake, and decides to undo that action by executing the `undo` command. The `undo` command will call `Model#undoAddressBook()`, which will shift the `currentStatePointer` once to the left, pointing it to the previous address book state, and restores the address book to that state.
+Step 4. The user now decides that adding the applicant was a mistake, and decides to undo that action by executing the `undo` command. The `undo` command will call `Model#undoAddressBook()`, which will shift the `currentStatePointer` once to the left, pointing it to the previous address book state, and restores the address book to that state.
 
 ![UndoRedoState3](images/UndoRedoState3.png)
 
@@ -252,7 +252,7 @@ The following activity diagram summarizes what happens when a user executes a ne
 
 * **Alternative 2:** Individual command knows how to undo/redo by
   itself.
-  * Pros: Will use less memory (e.g. for `delete`, just save the person being deleted).
+  * Pros: Will use less memory (e.g. for `delete`, just save the applicant being deleted).
   * Cons: We must ensure that the implementation of each individual command is correct.
 
 _{more aspects and alternatives to be added}_
@@ -478,7 +478,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 ### Glossary
 
 * **Mainstream OS**: Windows, Linux, Unix, or macOS
-* **Applicant**: A person registered in LinkedOut with a name and email address, whose job application can be tracked.
+* **Applicant**: A applicant registered in LinkedOut with a name and email address, whose job application can be tracked.
 * **Application**: A record of an applicant's application for a job, containing a job description and an application status. An applicant can have at most one application.
 * **Job**: An open role stored in the job list, identified by its description. It is separate from an applicant's application.
 * **Job description**: The text describing a job. On an application, it records the role that applicant applied for. In the job list, it is the role's identity.
@@ -514,17 +514,17 @@ testers are expected to do more *exploratory* testing.
 
 1. _{ more test cases …​ }_
 
-### Deleting a person
+### Deleting a applicant
 
-1. Deleting a person while all persons are being shown
+1. Deleting a applicant while all applicants are being shown
 
-   1. Prerequisites: List all persons using the `list` command, with multiple persons in the list.
+   1. Prerequisites: List all applicants using the `list` command, with multiple applicants in the list.
 
    1. Test case: `delete 1`<br>
       Expected: The first contact is deleted from the list. The status message shows the deleted contact's details.
 
    1. Test case: `delete 0`<br>
-      Expected: No person is deleted. The status message shows error details.
+      Expected: No applicant is deleted. The status message shows error details.
 
    1. Other incorrect delete commands to try: `delete`, `delete x`, `...` (where x is larger than the list size)<br>
       Expected: Similar to previous.

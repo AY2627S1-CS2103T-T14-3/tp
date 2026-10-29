@@ -1,10 +1,10 @@
 package seedu.address.testutil;
 
 import seedu.address.logic.commands.EditCommand.EditPersonDescriptor;
-import seedu.address.model.person.Email;
-import seedu.address.model.person.Name;
-import seedu.address.model.person.Person;
-import seedu.address.model.person.Phone;
+import seedu.address.model.applicant.Applicant;
+import seedu.address.model.applicant.Email;
+import seedu.address.model.applicant.Name;
+import seedu.address.model.applicant.Phone;
 
 /**
  * A utility class to help with building EditPersonDescriptor objects.
@@ -22,13 +22,13 @@ public class EditPersonDescriptorBuilder {
     }
 
     /**
-     * Returns an {@code EditPersonDescriptor} with fields containing {@code person}'s details
+     * Returns an {@code EditPersonDescriptor} with fields containing {@code applicant}'s details
      */
-    public EditPersonDescriptorBuilder(Person person) {
+    public EditPersonDescriptorBuilder(Applicant applicant) {
         descriptor = new EditPersonDescriptor();
-        descriptor.setName(person.getName());
-        descriptor.setPhone(person.getPhone());
-        descriptor.setEmail(person.getEmail());
+        descriptor.setName(applicant.getName());
+        descriptor.setPhone(applicant.getPhone());
+        descriptor.setEmail(applicant.getEmail());
     }
 
     /**

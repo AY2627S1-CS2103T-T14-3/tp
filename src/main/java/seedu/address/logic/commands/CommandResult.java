@@ -7,7 +7,7 @@ import java.util.Optional;
 
 import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.model.application.Job;
-import seedu.address.model.person.Person;
+import seedu.address.model.applicant.Applicant;
 
 /**
  * Represents the result of a command execution.
@@ -23,7 +23,7 @@ public class CommandResult {
     private final boolean exit;
 
     /** The applicant to select in the UI, or null if the selection should remain unchanged. */
-    private final Person personToView;
+    private final Applicant applicantToView;
 
     /** The job list should be shown instead of the applicant list. */
     private final boolean showJobs;
@@ -41,12 +41,12 @@ public class CommandResult {
     /**
      * Constructs a {@code CommandResult} with an optional applicant selection.
      */
-    private CommandResult(String feedbackToUser, boolean showHelp, boolean exit, Person personToView,
+    private CommandResult(String feedbackToUser, boolean showHelp, boolean exit, Applicant applicantToView,
             boolean showJobs, Job jobToView) {
         this.feedbackToUser = requireNonNull(feedbackToUser);
         this.showHelp = showHelp;
         this.exit = exit;
-        this.personToView = personToView;
+        this.applicantToView = applicantToView;
         this.showJobs = showJobs;
         this.jobToView = jobToView;
     }
@@ -54,8 +54,8 @@ public class CommandResult {
     /**
      * Constructs a {@code CommandResult} that selects the specified applicant in the UI.
      */
-    public CommandResult(String feedbackToUser, Person personToView) {
-        this(feedbackToUser, false, false, requireNonNull(personToView), false, null);
+    public CommandResult(String feedbackToUser, Applicant applicantToView) {
+        this(feedbackToUser, false, false, requireNonNull(applicantToView), false, null);
     }
 
     /**
@@ -96,8 +96,8 @@ public class CommandResult {
         return exit;
     }
 
-    public Optional<Person> getPersonToView() {
-        return Optional.ofNullable(personToView);
+    public Optional<Applicant> getPersonToView() {
+        return Optional.ofNullable(applicantToView);
     }
 
     /** Returns true if the job list should replace the applicant list. */
@@ -123,14 +123,14 @@ public class CommandResult {
         return feedbackToUser.equals(otherCommandResult.feedbackToUser)
                 && showHelp == otherCommandResult.showHelp
                 && exit == otherCommandResult.exit
-                && Objects.equals(personToView, otherCommandResult.personToView)
+                && Objects.equals(applicantToView, otherCommandResult.applicantToView)
                 && showJobs == otherCommandResult.showJobs
                 && Objects.equals(jobToView, otherCommandResult.jobToView);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(feedbackToUser, showHelp, exit, personToView, showJobs, jobToView);
+        return Objects.hash(feedbackToUser, showHelp, exit, applicantToView, showJobs, jobToView);
     }
 
     @Override
@@ -139,7 +139,7 @@ public class CommandResult {
                 .add("feedbackToUser", feedbackToUser)
                 .add("showHelp", showHelp)
                 .add("exit", exit)
-                .add("personToView", personToView)
+                .add("applicantToView", applicantToView)
                 .add("showJobs", showJobs)
                 .add("jobToView", jobToView)
                 .toString();

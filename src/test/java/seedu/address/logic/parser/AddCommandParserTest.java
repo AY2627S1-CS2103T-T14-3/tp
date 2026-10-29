@@ -14,14 +14,14 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import seedu.address.logic.commands.AddCommand;
-import seedu.address.model.person.Email;
-import seedu.address.model.person.Name;
-import seedu.address.model.person.Person;
-import seedu.address.model.person.Phone;
-import seedu.address.testutil.PersonBuilder;
+import seedu.address.model.applicant.Email;
+import seedu.address.model.applicant.Name;
+import seedu.address.model.applicant.Applicant;
+import seedu.address.model.applicant.Phone;
+import seedu.address.testutil.ApplicantBuilder;
 
 /**
- * Verifies add-command option parsing and person-field validation.
+ * Verifies add-command option parsing and applicant-field validation.
  */
 public class AddCommandParserTest {
     private static final String NAME_OPTION = " -n " + VALID_NAME_BOB;
@@ -61,9 +61,9 @@ public class AddCommandParserTest {
 
     @Test
     public void parse_hyphensInsideValues_success() {
-        Person expectedPerson = new PersonBuilder(BOB).withEmail("bob-choo@example.com").build();
+        Applicant expectedApplicant = new ApplicantBuilder(BOB).withEmail("bob-choo@example.com").build();
         String arguments = NAME_OPTION + PHONE_OPTION + " -e bob-choo@example.com";
-        assertParseSuccess(parser, arguments, new AddCommand(expectedPerson));
+        assertParseSuccess(parser, arguments, new AddCommand(expectedApplicant));
     }
 
     @Test
@@ -107,7 +107,7 @@ public class AddCommandParserTest {
         assertParseFailure(parser, NAME_OPTION + PHONE_OPTION + " -e bob!yahoo",
                 Email.MESSAGE_CONSTRAINTS);
 
-        // Report the first invalid field when multiple person details are invalid.
+        // Report the first invalid field when multiple applicant details are invalid.
         assertParseFailure(parser, " -n James& -p 911a" + EMAIL_OPTION,
                 Name.MESSAGE_CONSTRAINTS);
     }

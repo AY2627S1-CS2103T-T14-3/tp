@@ -7,14 +7,14 @@ import javafx.collections.ObservableList;
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.model.application.Application;
 import seedu.address.model.application.Job;
-import seedu.address.model.person.Person;
+import seedu.address.model.applicant.Applicant;
 
 /**
  * The API of the Model component.
  */
 public interface Model {
     /** {@code Predicate} that always evaluates to true */
-    Predicate<Person> PREDICATE_SHOW_ALL_PERSONS = unused -> true;
+    Predicate<Applicant> PREDICATE_SHOW_ALL_PERSONS = unused -> true;
 
     /** {@code Predicate} that always evaluates to true */
     Predicate<Job> PREDICATE_SHOW_ALL_JOBS = unused -> true;
@@ -43,35 +43,35 @@ public interface Model {
     ReadOnlyAddressBook getAddressBook();
 
     /**
-     * Returns true if a person with the same name or email as {@code person} exists in the address book.
+     * Returns true if a applicant with the same name or email as {@code applicant} exists in the address book.
      */
-    boolean hasPerson(Person person);
+    boolean hasPerson(Applicant applicant);
 
     /**
-     * Deletes the given person.
-     * The person must exist in the address book.
+     * Deletes the given applicant.
+     * The applicant must exist in the address book.
      */
-    void deletePerson(Person target);
+    void deletePerson(Applicant target);
 
     /**
-     * Adds the given person.
-     * {@code person} must not already exist in the address book.
+     * Adds the given applicant.
+     * {@code applicant} must not already exist in the address book.
      */
-    void addPerson(Person person);
+    void addPerson(Applicant applicant);
 
     /**
-     * Replaces the given person {@code target} with {@code editedPerson}.
+     * Replaces the given applicant {@code target} with {@code editedApplicant}.
      * {@code target} must exist in the address book.
-     * The person identity of {@code editedPerson} must not be the same as another existing person in the address book.
+     * The applicant identity of {@code editedApplicant} must not be the same as another existing applicant in the address book.
      */
-    void setPerson(Person target, Person editedPerson);
+    void setPerson(Applicant target, Applicant editedApplicant);
 
     /**
-     * Returns true if {@code person} already has an application.
-     * @param person applicant to check
-     * @return true if {@code person} already has an application
+     * Returns true if {@code applicant} already has an application.
+     * @param applicant applicant to check
+     * @return true if {@code applicant} already has an application
      */
-    boolean hasApplication(Person person);
+    boolean hasApplication(Applicant applicant);
 
     /**
      * Adds an application for an existing applicant who does not already have one.
@@ -88,11 +88,11 @@ public interface Model {
     void setApplication(Application target, Application editedApplication);
 
     /**
-     * Returns the application recorded for {@code person}, if any.
-     * @param person applicant whose application is requested
-     * @return the application recorded for {@code person}, if any
+     * Returns the application recorded for {@code applicant}, if any.
+     * @param applicant applicant whose application is requested
+     * @return the application recorded for {@code applicant}, if any
      */
-    Optional<Application> getApplication(Person person);
+    Optional<Application> getApplication(Applicant applicant);
 
     /** Returns an unmodifiable view of the applications */
     ObservableList<Application> getApplicationList();
@@ -138,12 +138,12 @@ public interface Model {
      */
     void updateFilteredJobList(Predicate<Job> predicate);
 
-    /** Returns an unmodifiable view of the filtered person list */
-    ObservableList<Person> getFilteredPersonList();
+    /** Returns an unmodifiable view of the filtered applicant list */
+    ObservableList<Applicant> getFilteredPersonList();
 
     /**
-     * Updates the filter of the filtered person list to filter by the given {@code predicate}.
+     * Updates the filter of the filtered applicant list to filter by the given {@code predicate}.
      * @throws NullPointerException if {@code predicate} is null.
      */
-    void updateFilteredPersonList(Predicate<Person> predicate);
+    void updateFilteredPersonList(Predicate<Applicant> predicate);
 }

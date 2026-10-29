@@ -21,9 +21,9 @@ import seedu.address.model.application.Job;
 import seedu.address.model.application.exceptions.ApplicationNotFoundException;
 import seedu.address.model.application.exceptions.DuplicateApplicationException;
 import seedu.address.model.application.exceptions.DuplicateJobException;
-import seedu.address.model.person.Person;
-import seedu.address.model.person.exceptions.DuplicatePersonException;
-import seedu.address.testutil.PersonBuilder;
+import seedu.address.model.applicant.Applicant;
+import seedu.address.model.applicant.exceptions.DuplicateApplicantException;
+import seedu.address.testutil.ApplicantBuilder;
 
 public class AddressBookTest {
 
@@ -50,13 +50,13 @@ public class AddressBookTest {
 
     @Test
     public void resetData_withDuplicatePersons_throwsDuplicatePersonException() {
-        // Two persons with the same identity fields
-        Person editedAlice = new PersonBuilder(ALICE).withEmail(VALID_EMAIL_BOB)
+        // Two applicants with the same identity fields
+        Applicant editedAlice = new ApplicantBuilder(ALICE).withEmail(VALID_EMAIL_BOB)
                 .build();
-        List<Person> newPersons = List.of(ALICE, editedAlice);
-        AddressBookStub newData = new AddressBookStub(newPersons);
+        List<Applicant> newApplicants = List.of(ALICE, editedAlice);
+        AddressBookStub newData = new AddressBookStub(newApplicants);
 
-        assertThrows(DuplicatePersonException.class, () -> addressBook.resetData(newData));
+        assertThrows(DuplicateApplicantException.class, () -> addressBook.resetData(newData));
     }
 
     @Test
@@ -78,7 +78,7 @@ public class AddressBookTest {
     @Test
     public void hasPerson_personWithSameIdentityFieldsInAddressBook_returnsTrue() {
         addressBook.addPerson(ALICE);
-        Person editedAlice = new PersonBuilder(ALICE).withEmail(VALID_EMAIL_BOB)
+        Applicant editedAlice = new ApplicantBuilder(ALICE).withEmail(VALID_EMAIL_BOB)
                 .build();
         assertTrue(addressBook.hasPerson(editedAlice));
     }
@@ -90,7 +90,7 @@ public class AddressBookTest {
 
     @Test
     public void toStringMethod() {
-        String expected = AddressBook.class.getCanonicalName() + "{persons=" + addressBook.getPersonList()
+        String expected = AddressBook.class.getCanonicalName() + "{applicants=" + addressBook.getPersonList()
                 + ", applications=" + addressBook.getApplicationList()
                 + ", jobs=" + addressBook.getJobList() + "}";
         assertEquals(expected, addressBook.toString());
@@ -111,7 +111,7 @@ public class AddressBookTest {
         addressBook.addPerson(ALICE);
         addressBook.addApplication(new Application(ALICE, new Job("Janitor"), Application.Status.PENDING));
         Application duplicate = new Application(
-                new PersonBuilder(ALICE).withPhone("91234567").build(), new Job("Engineer"), Application.Status.ACCEPT);
+                new ApplicantBuilder(ALICE).withPhone("91234567").build(), new Job("Engineer"), Application.Status.ACCEPT);
 
         assertThrows(DuplicateApplicationException.class, () -> addressBook.addApplication(duplicate));
     }
@@ -140,7 +140,7 @@ public class AddressBookTest {
     public void setPerson_applicantWithApplication_updatesStoredApplicant() {
         addressBook.addPerson(ALICE);
         addressBook.addApplication(new Application(ALICE, new Job("Janitor"), Application.Status.PENDING));
-        Person editedAlice = new PersonBuilder(ALICE).withPhone("91234567").build();
+        Applicant editedAlice = new ApplicantBuilder(ALICE).withPhone("91234567").build();
 
         addressBook.setPerson(ALICE, editedAlice);
 
@@ -205,18 +205,18 @@ public class AddressBookTest {
     }
 
     /**
-     * A stub ReadOnlyAddressBook whose persons list can violate interface constraints.
+     * A stub ReadOnlyAddressBook whose applicants list can violate interface constraints.
      */
     private static class AddressBookStub implements ReadOnlyAddressBook {
-        private final ObservableList<Person> persons = FXCollections.observableArrayList();
+        private final ObservableList<Applicant> applicants = FXCollections.observableArrayList();
 
-        AddressBookStub(Collection<Person> persons) {
-            this.persons.setAll(persons);
+        AddressBookStub(Collection<Applicant> applicants) {
+            this.applicants.setAll(applicants);
         }
 
         @Override
-        public ObservableList<Person> getPersonList() {
-            return persons;
+        public ObservableList<Applicant> getPersonList() {
+            return applicants;
         }
 
         @Override

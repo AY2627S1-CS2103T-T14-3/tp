@@ -10,7 +10,7 @@ import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 import seedu.address.model.application.Application;
 import seedu.address.model.application.Job;
-import seedu.address.model.person.Person;
+import seedu.address.model.applicant.Applicant;
 
 /**
  * Adds one job application to an applicant shown in the current list.
@@ -46,7 +46,7 @@ public class AddApplicationCommand extends Command {
 
     /**
      * Creates an AddApplicationCommand to add an application to the specified applicant.
-     * @param targetIndex of the applicant in the filtered person list to add an application to
+     * @param targetIndex of the applicant in the filtered applicant list to add an application to
      * @param jobDescription job the applicant is applying for
      * @param status status of the application
      */
@@ -59,7 +59,7 @@ public class AddApplicationCommand extends Command {
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
-        List<Person> lastShownList = model.getFilteredPersonList();
+        List<Applicant> lastShownList = model.getFilteredPersonList();
 
         if (lastShownList.isEmpty()) {
             throw new CommandException(MESSAGE_EMPTY_LIST);
@@ -68,7 +68,7 @@ public class AddApplicationCommand extends Command {
             throw new CommandException(String.format(MESSAGE_INVALID_INDEX, lastShownList.size()));
         }
 
-        Person applicant = lastShownList.get(targetIndex.getZeroBased());
+        Applicant applicant = lastShownList.get(targetIndex.getZeroBased());
         if (model.hasApplication(applicant)) {
             throw new CommandException(MESSAGE_DUPLICATE_APPLICATION);
         }

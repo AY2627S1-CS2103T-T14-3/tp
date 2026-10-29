@@ -72,9 +72,9 @@ Shows a message explaining how to access the help page.
 Format: `help`
 
 
-### Adding a person: `add`
+### Adding a applicant: `add`
 
-Adds a person to the address book.
+Adds a applicant to the address book.
 
 Each applicant must have a unique name and a unique email address. Adding or editing an applicant
 to use another applicant's name or email is rejected. Comparisons are case-sensitive.
@@ -102,29 +102,29 @@ Examples:
 * `add -n John Doe -p 98765432 -e johnd@example.com`
 * `add -name Betsy Crowe -email betsycrowe@example.com -phone 1234567`
 
-### Listing all persons: `list`
+### Listing all applicants: `list`
 
-Shows a list of all persons in the address book.
+Shows a list of all applicants in the address book.
 
 Format: `list`
 
-### Editing a person: `edit`
+### Editing a applicant: `edit`
 
-Edits an existing person in the address book.
+Edits an existing applicant in the address book.
 
 Format: `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL]`
 
-* Edits the person at the specified `INDEX`. The index refers to the index number shown in the displayed person list. The index **must be a positive integer** 1, 2, 3, …​
+* Edits the applicant at the specified `INDEX`. The index refers to the index number shown in the displayed applicant list. The index **must be a positive integer** 1, 2, 3, …​
 * At least one of the optional fields must be provided.
 * Existing values will be updated to the input values.
 
 Examples:
-*  `edit 1 p/91234567 e/johndoe@example.com` Edits the phone number and email address of the 1st person to be `91234567` and `johndoe@example.com` respectively.
-*  `edit 2 n/Betsy Crower` Edits the name of the 2nd person to be `Betsy Crower`.
+*  `edit 1 p/91234567 e/johndoe@example.com` Edits the phone number and email address of the 1st applicant to be `91234567` and `johndoe@example.com` respectively.
+*  `edit 2 n/Betsy Crower` Edits the name of the 2nd applicant to be `Betsy Crower`.
 
-### Locating persons by name: `find`
+### Locating applicants by name: `find`
 
-Finds persons whose names contain any of the given keywords.
+Finds applicants whose names contain any of the given keywords.
 
 Format: `find KEYWORD [MORE_KEYWORDS]`
 
@@ -139,19 +139,19 @@ Examples:
 * `find Alex` returns `Alex Yeoh`<br>
   ![result for 'find Alex'](images/findAlexResult.png)
 
-### Deleting a person: `delete`
+### Deleting a applicant: `delete`
 
-Deletes the specified person from the address book.
+Deletes the specified applicant from the address book.
 
 Format: `delete INDEX`
 
-* Deletes the person at the specified `INDEX`.
-* The index refers to the index number shown in the displayed person list.
+* Deletes the applicant at the specified `INDEX`.
+* The index refers to the index number shown in the displayed applicant list.
 * The index **must be a positive integer** 1, 2, 3, …​
 
 Examples:
-* `list` followed by `delete 2` deletes the 2nd person in the address book.
-* `find Betsy` followed by `delete 1` deletes the 1st person in the results of the `find` command.
+* `list` followed by `delete 2` deletes the 2nd applicant in the address book.
+* `find Betsy` followed by `delete 1` deletes the 1st applicant in the results of the `find` command.
 
 ### Clearing all entries: `clear`
 

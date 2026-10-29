@@ -10,8 +10,8 @@ import static seedu.address.testutil.TypicalPersons.BENSON;
 
 import org.junit.jupiter.api.Test;
 
-import seedu.address.model.person.Person;
-import seedu.address.testutil.PersonBuilder;
+import seedu.address.model.applicant.Applicant;
+import seedu.address.testutil.ApplicantBuilder;
 
 public class CommandResultTest {
     @Test
@@ -31,7 +31,7 @@ public class CommandResultTest {
 
     @Test
     public void constructor_nullArguments_throwsNullPointerException() {
-        assertThrows(NullPointerException.class, () -> new CommandResult("feedback", (Person) null));
+        assertThrows(NullPointerException.class, () -> new CommandResult("feedback", (Applicant) null));
         assertThrows(NullPointerException.class, () -> new CommandResult(null, ALICE));
     }
 
@@ -68,7 +68,7 @@ public class CommandResultTest {
         assertFalse(viewResult.equals(new CommandResult("feedback", BENSON)));
 
         // equal applicants -> returns true
-        assertTrue(viewResult.equals(new CommandResult("feedback", new PersonBuilder(ALICE).build())));
+        assertTrue(viewResult.equals(new CommandResult("feedback", new ApplicantBuilder(ALICE).build())));
     }
 
     @Test
@@ -90,7 +90,7 @@ public class CommandResultTest {
         // equal applicants -> returns same hashcode
         CommandResult viewResult = new CommandResult("feedback", ALICE);
         assertEquals(viewResult.hashCode(),
-                new CommandResult("feedback", new PersonBuilder(ALICE).build()).hashCode());
+                new CommandResult("feedback", new ApplicantBuilder(ALICE).build()).hashCode());
 
         // different applicant selections -> returns different hashcode
         assertNotEquals(commandResult.hashCode(), viewResult.hashCode());

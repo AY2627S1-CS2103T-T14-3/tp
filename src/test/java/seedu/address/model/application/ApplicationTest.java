@@ -11,7 +11,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import seedu.address.testutil.PersonBuilder;
+import seedu.address.testutil.ApplicantBuilder;
 
 public class ApplicationTest {
 
@@ -92,7 +92,7 @@ public class ApplicationTest {
     public void isForSameApplicant_variousApplicants_returnsExpectedResult() {
         Application aliceApplication = new Application(ALICE, new Job("Janitor"), Application.Status.PENDING);
         Application sameApplicantApplication = new Application(
-                new PersonBuilder(ALICE).withPhone("91234567").build(),
+                new ApplicantBuilder(ALICE).withPhone("91234567").build(),
                 new Job("Engineer"), Application.Status.ACCEPT);
         Application bobApplication = new Application(BOB, new Job("Janitor"), Application.Status.PENDING);
 

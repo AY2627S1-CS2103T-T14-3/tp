@@ -8,7 +8,7 @@ import seedu.address.commons.core.index.Index;
 import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
-import seedu.address.model.person.Person;
+import seedu.address.model.applicant.Applicant;
 
 /**
  * Selects an applicant and shows their details using their index in the displayed list.
@@ -39,7 +39,7 @@ public class ViewCommand extends Command {
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
-        List<Person> lastShownList = model.getFilteredPersonList();
+        List<Applicant> lastShownList = model.getFilteredPersonList();
 
         if (lastShownList.isEmpty()) {
             throw new CommandException(MESSAGE_EMPTY_LIST);
@@ -49,8 +49,8 @@ public class ViewCommand extends Command {
             throw new CommandException(String.format(MESSAGE_INVALID_INDEX, lastShownList.size()));
         }
 
-        Person personToView = lastShownList.get(targetIndex.getZeroBased());
-        return new CommandResult(String.format(MESSAGE_SUCCESS, personToView.getName()), personToView);
+        Applicant applicantToView = lastShownList.get(targetIndex.getZeroBased());
+        return new CommandResult(String.format(MESSAGE_SUCCESS, applicantToView.getName()), applicantToView);
     }
 
     @Override

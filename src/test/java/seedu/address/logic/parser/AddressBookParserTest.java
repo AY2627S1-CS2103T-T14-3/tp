@@ -29,10 +29,10 @@ import seedu.address.logic.commands.ViewJobCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.application.Application;
 import seedu.address.model.application.Job;
-import seedu.address.model.person.NameContainsKeywordsPredicate;
-import seedu.address.model.person.Person;
-import seedu.address.testutil.PersonBuilder;
-import seedu.address.testutil.PersonUtil;
+import seedu.address.model.applicant.Applicant;
+import seedu.address.model.applicant.NameContainsKeywordsPredicate;
+import seedu.address.testutil.ApplicantBuilder;
+import seedu.address.testutil.ApplicantUtil;
 
 public class AddressBookParserTest {
 
@@ -74,9 +74,9 @@ public class AddressBookParserTest {
 
     @Test
     public void parseCommand_add() throws Exception {
-        Person person = new PersonBuilder().build();
-        AddCommand command = (AddCommand) parser.parseCommand(PersonUtil.getAddCommand(person));
-        assertEquals(new AddCommand(person), command);
+        Applicant applicant = new ApplicantBuilder().build();
+        AddCommand command = (AddCommand) parser.parseCommand(ApplicantUtil.getAddCommand(applicant));
+        assertEquals(new AddCommand(applicant), command);
     }
 
     @Test

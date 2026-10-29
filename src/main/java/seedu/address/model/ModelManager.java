@@ -13,7 +13,7 @@ import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.LogsCenter;
 import seedu.address.model.application.Application;
 import seedu.address.model.application.Job;
-import seedu.address.model.person.Person;
+import seedu.address.model.applicant.Applicant;
 
 /**
  * Represents the in-memory model of the address book data.
@@ -23,7 +23,7 @@ public class ModelManager implements Model {
 
     private final AddressBook addressBook;
     private final UserPrefs userPrefs;
-    private final FilteredList<Person> filteredPersons;
+    private final FilteredList<Applicant> filteredApplicants;
     private final FilteredList<Job> filteredJobs;
 
     /**
@@ -36,7 +36,7 @@ public class ModelManager implements Model {
 
         this.addressBook = new AddressBook(addressBook);
         this.userPrefs = new UserPrefs(userPrefs);
-        filteredPersons = new FilteredList<>(this.addressBook.getPersonList());
+        filteredApplicants = new FilteredList<>(this.addressBook.getPersonList());
         filteredJobs = new FilteredList<>(this.addressBook.getJobList());
     }
 
@@ -75,33 +75,33 @@ public class ModelManager implements Model {
     }
 
     @Override
-    public boolean hasPerson(Person person) {
-        requireNonNull(person);
-        return addressBook.hasPerson(person);
+    public boolean hasPerson(Applicant applicant) {
+        requireNonNull(applicant);
+        return addressBook.hasPerson(applicant);
     }
 
     @Override
-    public void deletePerson(Person target) {
+    public void deletePerson(Applicant target) {
         addressBook.removePerson(target);
     }
 
     @Override
-    public void addPerson(Person person) {
-        addressBook.addPerson(person);
+    public void addPerson(Applicant applicant) {
+        addressBook.addPerson(applicant);
         updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
     }
 
     @Override
-    public void setPerson(Person target, Person editedPerson) {
-        requireAllNonNull(target, editedPerson);
+    public void setPerson(Applicant target, Applicant editedApplicant) {
+        requireAllNonNull(target, editedApplicant);
 
-        addressBook.setPerson(target, editedPerson);
+        addressBook.setPerson(target, editedApplicant);
     }
 
     @Override
-    public boolean hasApplication(Person person) {
-        requireNonNull(person);
-        return addressBook.hasApplication(person);
+    public boolean hasApplication(Applicant applicant) {
+        requireNonNull(applicant);
+        return addressBook.hasApplication(applicant);
     }
 
     @Override
@@ -117,9 +117,9 @@ public class ModelManager implements Model {
     }
 
     @Override
-    public Optional<Application> getApplication(Person person) {
-        requireNonNull(person);
-        return addressBook.getApplication(person);
+    public Optional<Application> getApplication(Applicant applicant) {
+        requireNonNull(applicant);
+        return addressBook.getApplication(applicant);
     }
 
     @Override
@@ -162,21 +162,21 @@ public class ModelManager implements Model {
         filteredJobs.setPredicate(predicate);
     }
 
-    //=========== Filtered Person List Accessors =============================================================
+    //=========== Filtered Applicant List Accessors =============================================================
 
     /**
-     * Returns an unmodifiable view of the list of {@code Person} backed by the internal list of
+     * Returns an unmodifiable view of the list of {@code Applicant} backed by the internal list of
      * {@code addressBook}
      */
     @Override
-    public ObservableList<Person> getFilteredPersonList() {
-        return filteredPersons;
+    public ObservableList<Applicant> getFilteredPersonList() {
+        return filteredApplicants;
     }
 
     @Override
-    public void updateFilteredPersonList(Predicate<Person> predicate) {
+    public void updateFilteredPersonList(Predicate<Applicant> predicate) {
         requireNonNull(predicate);
-        filteredPersons.setPredicate(predicate);
+        filteredApplicants.setPredicate(predicate);
     }
 
     @Override
@@ -192,7 +192,7 @@ public class ModelManager implements Model {
 
         return addressBook.equals(otherModelManager.addressBook)
                 && userPrefs.equals(otherModelManager.userPrefs)
-                && filteredPersons.equals(otherModelManager.filteredPersons)
+                && filteredApplicants.equals(otherModelManager.filteredApplicants)
                 && filteredJobs.equals(otherModelManager.filteredJobs);
     }
 

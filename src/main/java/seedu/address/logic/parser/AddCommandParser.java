@@ -7,22 +7,22 @@ import static seedu.address.logic.parser.CliSyntax.OPTION_PHONE_REQ;
 
 import seedu.address.logic.commands.AddCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
-import seedu.address.model.person.Email;
-import seedu.address.model.person.Name;
-import seedu.address.model.person.Person;
-import seedu.address.model.person.Phone;
+import seedu.address.model.applicant.Applicant;
+import seedu.address.model.applicant.Email;
+import seedu.address.model.applicant.Name;
+import seedu.address.model.applicant.Phone;
 
 /**
- * Parses hyphen-prefixed options and creates a command to add a person.
+ * Parses hyphen-prefixed options and creates a command to add a applicant.
  */
 public class AddCommandParser implements Parser<AddCommand> {
 
     /**
-     * Parses the required person details from short or long option aliases.
+     * Parses the required applicant details from short or long option aliases.
      *
      * @param args The options following the {@code add} command.
-     * @return A command that adds the parsed person.
-     * @throws ParseException If the options or person details are invalid.
+     * @return A command that adds the parsed applicant.
+     * @throws ParseException If the options or applicant details are invalid.
      */
     @Override
     public AddCommand parse(String args) throws ParseException {
@@ -38,8 +38,8 @@ public class AddCommandParser implements Parser<AddCommand> {
         Phone phone = ParserUtil.parsePhone(argMultimap.getValue(OPTION_PHONE_REQ).get());
         Email email = ParserUtil.parseEmail(argMultimap.getValue(OPTION_EMAIL_REQ).get());
 
-        Person person = new Person(name, phone, email);
+        Applicant applicant = new Applicant(name, phone, email);
 
-        return new AddCommand(person);
+        return new AddCommand(applicant);
     }
 }

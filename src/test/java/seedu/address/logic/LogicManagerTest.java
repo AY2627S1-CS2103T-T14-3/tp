@@ -23,12 +23,12 @@ import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.UserPrefs;
-import seedu.address.model.person.Person;
+import seedu.address.model.applicant.Applicant;
 import seedu.address.storage.JsonAddressBookStorage;
 import seedu.address.storage.JsonUserPrefsStorage;
 import seedu.address.storage.StorageManager;
-import seedu.address.testutil.PersonBuilder;
-import seedu.address.testutil.PersonUtil;
+import seedu.address.testutil.ApplicantBuilder;
+import seedu.address.testutil.ApplicantUtil;
 
 public class LogicManagerTest {
     private static final IOException DUMMY_IO_EXCEPTION = new IOException("dummy IO exception");
@@ -196,10 +196,10 @@ public class LogicManagerTest {
         logic = new LogicManager(model, storage);
 
         // Triggers the saveAddressBook method by executing an add command
-        String addCommand = PersonUtil.getAddCommand(AMY);
-        Person expectedPerson = new PersonBuilder(AMY).build();
+        String addCommand = ApplicantUtil.getAddCommand(AMY);
+        Applicant expectedApplicant = new ApplicantBuilder(AMY).build();
         ModelManager expectedModel = new ModelManager();
-        expectedModel.addPerson(expectedPerson);
+        expectedModel.addPerson(expectedApplicant);
         assertCommandFailure(addCommand, CommandException.class, expectedMessage, expectedModel);
     }
 }

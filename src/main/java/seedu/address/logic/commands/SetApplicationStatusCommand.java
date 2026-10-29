@@ -9,7 +9,7 @@ import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 import seedu.address.model.application.Application;
-import seedu.address.model.person.Person;
+import seedu.address.model.applicant.Applicant;
 
 /**
  * Updates the status of an existing application for an applicant shown in the current list.
@@ -44,7 +44,7 @@ public class SetApplicationStatusCommand extends Command {
 
     /**
      * Creates a SetApplicationStatusCommand to update the specified applicant's application status.
-     * @param targetIndex of the applicant in the filtered person list
+     * @param targetIndex of the applicant in the filtered applicant list
      * @param status status to record on the existing application
      */
     public SetApplicationStatusCommand(Index targetIndex, Application.Status status) {
@@ -55,7 +55,7 @@ public class SetApplicationStatusCommand extends Command {
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
-        List<Person> lastShownList = model.getFilteredPersonList();
+        List<Applicant> lastShownList = model.getFilteredPersonList();
 
         if (lastShownList.isEmpty()) {
             throw new CommandException(MESSAGE_EMPTY_LIST);
@@ -64,7 +64,7 @@ public class SetApplicationStatusCommand extends Command {
             throw new CommandException(String.format(MESSAGE_INVALID_INDEX, lastShownList.size()));
         }
 
-        Person applicant = lastShownList.get(targetIndex.getZeroBased());
+        Applicant applicant = lastShownList.get(targetIndex.getZeroBased());
         Application existing = model.getApplication(applicant)
                 .orElseThrow(() -> new CommandException(MESSAGE_MISSING_APPLICATION));
         Application updated = new Application(
