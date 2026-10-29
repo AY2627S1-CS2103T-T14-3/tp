@@ -13,7 +13,7 @@ import seedu.address.model.applicant.Name;
 import seedu.address.model.applicant.Phone;
 
 /**
- * Parses hyphen-prefixed options and creates a command to add a applicant.
+ * Parses hyphen-prefixed options and creates a command to add an applicant.
  */
 public class AddCommandParser implements Parser<AddCommand> {
 

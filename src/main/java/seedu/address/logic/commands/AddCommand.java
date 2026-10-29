@@ -15,7 +15,7 @@ public class AddCommand extends Command {
 
     public static final String COMMAND_WORD = "add";
 
-    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Adds a applicant to the address book. "
+    public static final String MESSAGE_USAGE = COMMAND_WORD + ": Adds an applicant to the address book. "
             + "Parameters: -n NAME -p PHONE -e EMAIL\n"
             + "Aliases: -name, -phone, -email\n"
             + "Example: " + COMMAND_WORD + " -n John Doe -p 98765432 "

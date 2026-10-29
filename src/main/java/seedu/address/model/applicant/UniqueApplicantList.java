@@ -14,7 +14,7 @@ import seedu.address.model.applicant.exceptions.DuplicateApplicantException;
 /**
  * A list of applicants that enforces uniqueness between its elements and does not allow nulls.
  * Each applicant's name and email must be unique, as checked by {@code Applicant#hasSameNameOrEmail(Applicant)}.
- * However, the removal of a applicant uses Applicant#equals(Object) so
+ * However, the removal of an applicant uses Applicant#equals(Object) so
  * as to ensure that the applicant with exactly the same fields will be removed.
  *
  * Supports a minimal set of list operations.
@@ -28,7 +28,7 @@ public class UniqueApplicantList implements Iterable<Applicant> {
             FXCollections.unmodifiableObservableList(internalList);
 
     /**
-     * Returns true if the list contains a applicant with the same name or email as the given argument.
+     * Returns true if the list contains an applicant with the same name or email as the given argument.
      */
     public boolean contains(Applicant toCheck) {
         requireNonNull(toCheck);
@@ -36,7 +36,7 @@ public class UniqueApplicantList implements Iterable<Applicant> {
     }
 
     /**
-     * Adds a applicant to the list.
+     * Adds an applicant to the list.
      * The applicant must not already exist in the list.
      */
     public void add(Applicant toAdd) {

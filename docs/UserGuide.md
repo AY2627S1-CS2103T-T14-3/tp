@@ -167,7 +167,6 @@ Format: `find KEYWORD [MORE_KEYWORDS]`
 * The search considers only names.
 * Only full words match; for example, `Han` does not match `Hans`.
 * Applicants matching at least one keyword are returned (an `OR` search); for example, `Hans Bo` returns `Hans Gruber` and `Bo Yang`.
-* Applicants matching at least one keyword are returned (an `OR` search); for example, `Hans Bo` returns `Hans Gruber` and `Bo Yang`.
 * The applicant list is shown, including when jobs or applications were visible.
 
 Examples:
