@@ -154,6 +154,10 @@ Examples:
 
 Deletes the specified person from the address book.
 
+The applicant and their application are removed together. Their former details remain visible in the
+detail panel, marked as deleted, until you select another applicant or run another successful applicant command.
+Opening Help, either with `help` or through the menu, preserves these deleted details.
+
 Format: `delete INDEX`
 
 * Deletes the person at the specified `INDEX`.
