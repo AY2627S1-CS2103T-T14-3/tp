@@ -243,18 +243,18 @@ Examples:
 
 Adds an open role to the job list. The list on the right switches from applicants to jobs, and the new role is selected.
 
-Format: `addj JOB_ROLE [-j JOB_DESCRIPTION]`
+Format: `addj -j JOB_ROLE [-d JOB_DESCRIPTION]`
 
 * `JOB_ROLE` is the role name. It cannot be blank.
 * `JOB_DESCRIPTION` is the description for the job. It is an optional field.
-* Alias: `-job` for `-j`.
+* Alias: `-job` for `-j`, and `-description`, `-desc` for `-d`.
 * A role that is already in the list cannot be added again. Matching ignores surrounding spaces and is otherwise case-sensitive.
 * Adding a role does not create an application. Use `addp` to record an applicant's application for a role.
 
 Examples:
 
-* `addj Software Engineer Intern` adds that role and shows it in the job list.
-* `addj Data Analyst -job Analyses the data` adds a Data Analyst role.
+* `addj -j Software Engineer Intern` adds that role and shows it in the job list.
+* `addj -job Data Analyst -desc Analyses the data` adds a Data Analyst role.
 
 ### Viewing jobs: `viewj`
 
