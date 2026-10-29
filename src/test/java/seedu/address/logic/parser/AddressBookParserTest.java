@@ -25,6 +25,8 @@ import seedu.address.logic.commands.FindCommand;
 import seedu.address.logic.commands.HelpCommand;
 import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.commands.SetApplicationStatusCommand;
+import seedu.address.logic.commands.ViewApplicantCommand;
+import seedu.address.logic.commands.ViewApplicationCommand;
 import seedu.address.logic.commands.ViewCommand;
 import seedu.address.logic.commands.ViewJobCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
@@ -72,6 +74,12 @@ public class AddressBookParserTest {
         String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT, ViewCommand.MESSAGE_USAGE);
         assertThrows(ParseException.class, expectedMessage, () -> parser.parseCommand("view"));
         assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> parser.parseCommand("View 1"));
+    }
+
+    @Test
+    public void parseCommand_sidebarViewToggles() throws Exception {
+        assertTrue(parser.parseCommand(ViewApplicantCommand.COMMAND_WORD) instanceof ViewApplicantCommand);
+        assertTrue(parser.parseCommand(ViewApplicationCommand.COMMAND_WORD) instanceof ViewApplicationCommand);
     }
 
     @Test

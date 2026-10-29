@@ -42,6 +42,11 @@ public class PersonTest {
     }
 
     @Test
+    public void getDisplayName_returnsFullName() {
+        assertEquals(ALICE.getName().fullName, ALICE.getDisplayName());
+    }
+
+    @Test
     public void hasSameNameOrEmail() {
         assertTrue(ALICE.hasSameNameOrEmail(ALICE));
         assertFalse(ALICE.hasSameNameOrEmail(null));

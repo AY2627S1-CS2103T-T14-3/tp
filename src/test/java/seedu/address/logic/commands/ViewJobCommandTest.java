@@ -24,7 +24,7 @@ public class ViewJobCommandTest {
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
 
         assertCommandSuccess(new ViewJobCommand(), model,
-                CommandResult.showJobs(ViewJobCommand.MESSAGE_SUCCESS), expectedModel);
+                new CommandResult(ViewJobCommand.MESSAGE_SUCCESS, ViewRequest.jobs()), expectedModel);
     }
 
     @Test
@@ -36,7 +36,7 @@ public class ViewJobCommandTest {
 
         String expectedMessage = String.format(ViewJobCommand.MESSAGE_JOBS_LISTED, 1);
         assertCommandSuccess(new ViewJobCommand("jan"), model,
-                CommandResult.showJobs(expectedMessage), expectedModel);
+                new CommandResult(expectedMessage, ViewRequest.jobs()), expectedModel);
         assertEquals(List.of(new Job("Janitor")), model.getFilteredJobList());
     }
 }
