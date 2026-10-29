@@ -174,14 +174,16 @@ public class AddressBook implements ReadOnlyAddressBook {
     }
 
     /**
-     * Removes {@code key} from this {@code AddressBook}.
+     * Removes {@code key} and all applications for it, keeping the applicants.
      * {@code key} must exist in the address book.
-     * @param key job to remove
+     *
+     * @param key job to remove.
      */
     public void removeJob(Job key) {
         assert key != null : "key must not be null";
         assert jobs.contains(key) : "job must exist in the address book";
         jobs.remove(key);
+        applications.removeForJob(key);
     }
 
     /**

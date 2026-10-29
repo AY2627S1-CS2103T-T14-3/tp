@@ -1,12 +1,17 @@
 package seedu.address.logic.commands;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandFailure;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandSuccess;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
 import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND_PERSON;
+import static seedu.address.testutil.TypicalPersons.ALICE;
+import static seedu.address.testutil.TypicalPersons.BENSON;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
+
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +20,7 @@ import seedu.address.commons.core.index.Index;
 import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
+import seedu.address.model.application.Application;
 import seedu.address.model.application.Job;
 
 public class DeleteJobCommandTest {
@@ -55,17 +61,24 @@ public class DeleteJobCommandTest {
 
     @Test
     public void execute_filteredList_deletesDisplayedJob() {
+        Application engineerApplication = new Application(ALICE, ENGINEER, Application.Status.PENDING);
+        model.addApplication(engineerApplication);
+        model.addApplication(new Application(BENSON, new Job("Data Analyst"), Application.Status.ACCEPT));
+        model.updateFilteredPersonList(person -> person.equals(ALICE));
         model.updateFilteredJobList(job -> job.toString().contains("Data"));
         DeleteJobCommand command = new DeleteJobCommand(INDEX_FIRST_PERSON);
         String expectedMessage = String.format(DeleteJobCommand.MESSAGE_DELETE_JOB_SUCCESS, ANALYST);
 
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
         expectedModel.updateFilteredJobList(job -> job.toString().contains("Data"));
+        expectedModel.updateFilteredPersonList(person -> person.equals(ALICE));
         expectedModel.deleteJob(ANALYST);
 
         assertCommandSuccess(command, model, CommandResult.showJobs(expectedMessage), expectedModel);
         assertTrue(model.hasJob(ENGINEER));
         assertFalse(model.hasJob(ANALYST));
+        assertEquals(List.of(engineerApplication), model.getApplicationList());
+        assertTrue(model.hasPerson(BENSON));
     }
 
     @Test

@@ -103,6 +103,16 @@ public class UniqueApplicationList implements Iterable<Application> {
     }
 
     /**
+     * Removes every application for {@code job}, comparing jobs by their descriptions.
+     *
+     * @param job job whose applications should be removed.
+     */
+    public void removeForJob(Job job) {
+        requireNonNull(job);
+        internalList.removeIf(application -> application.getJob().equals(job));
+    }
+
+    /**
      * Replaces the contents of this list with {@code replacement}.
      * @param replacement list of applications to copy
      */

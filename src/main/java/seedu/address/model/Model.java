@@ -120,7 +120,7 @@ public interface Model {
     void setJob(Job target, Job editedJob);
 
     /**
-     * Deletes the given job.
+     * Deletes the given job and all applications for it, keeping the applicants.
      * The job must exist in the address book.
      * @param target job to delete
      */
