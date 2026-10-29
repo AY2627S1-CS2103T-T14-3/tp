@@ -11,8 +11,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.Region;
+import seedu.address.model.applicant.Applicant;
 import seedu.address.model.application.Application;
-import seedu.address.model.person.Person;
 
 /**
  * Panel containing the list of applications.
@@ -20,7 +20,7 @@ import seedu.address.model.person.Person;
 public class ApplicationListPanel extends UiPart<Region> {
     private static final String FXML = "ApplicationListPanel.fxml";
 
-    private final ObservableList<Person> applicants;
+    private final ObservableList<Applicant> applicants;
     private final ObservableList<Application> applications;
     private final ObservableList<Application> displayedApplications = FXCollections.observableArrayList();
     private final ObservableList<Application> visibleApplications =
@@ -34,14 +34,14 @@ public class ApplicationListPanel extends UiPart<Region> {
      * @param applicants applicants whose indexes are shown on each application.
      * @param applications applications available to display.
      */
-    public ApplicationListPanel(ObservableList<Person> applicants, ObservableList<Application> applications) {
+    public ApplicationListPanel(ObservableList<Applicant> applicants, ObservableList<Application> applications) {
         super(FXML);
         this.applicants = applicants;
         this.applications = applications;
         applicationListView.setItems(displayedApplications);
         applicationListView.setCellFactory(listView -> new ApplicationListViewCell());
         applicationListView.setPlaceholder(new Label("No applications to display."));
-        applicants.addListener((ListChangeListener<Person>) change -> refreshApplications());
+        applicants.addListener((ListChangeListener<Applicant>) change -> refreshApplications());
         applications.addListener((ListChangeListener<Application>) change -> refreshApplications());
         refreshApplications();
     }

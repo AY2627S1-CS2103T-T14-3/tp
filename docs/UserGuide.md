@@ -98,7 +98,7 @@ Format: `help`
 
 ### Adding an applicant: `add`
 
-Adds an applicant with their contact details.
+Adds an applicant to the address book.
 
 Each applicant must have a unique name and a unique email address. Adding or editing an applicant
 to use another applicant's name or email is rejected. Comparisons are case-sensitive.
@@ -129,7 +129,7 @@ Examples:
 
 ### Listing all applicants: `list`
 
-Shows all applicants, clearing any applicant search filter.
+Shows a list of all applicants in the address book.
 
 Format: `list`
 
@@ -151,6 +151,7 @@ The command accepts no arguments.
 
 ### Editing an applicant: `edit`
 
+Edits an existing applicant in the address book.
 Edits an existing applicant's name, phone number, or email address.
 
 Format: `edit INDEX [-n NAME] [-p PHONE] [-e EMAIL]`
@@ -161,7 +162,7 @@ Name | `-n` | `-name`
 Phone | `-p` | `-phone`
 Email | `-e` | `-email`
 
-* `INDEX` is required and selects the applicant by their index in the displayed person list. It must appear before the options and **must be a positive integer** 1, 2, 3, …​
+* `INDEX` is required and selects the applicant by their index in the displayed applicant list. It must appear before the options and **must be a positive integer** 1, 2, 3, …​
 * At least one of name, phone, or email must be provided. Omitted fields keep their existing values.
 * Existing values will be updated to the input values.
 * Short and long aliases can be mixed, and options can appear in any order. Values containing spaces do not need quotation marks.
@@ -195,7 +196,7 @@ Examples:
 
 ### Deleting an applicant: `delete`
 
-Deletes the specified applicant.
+Deletes the specified applicant from the address book.
 
 The applicant and their application are removed together. Jobs remain in the job list. The applicant's former details
 remain visible in the detail panel, marked as deleted, until you select another applicant or run another successful
@@ -205,11 +206,11 @@ Opening Help, either with `help` or through the menu, preserves these deleted de
 Format: `delete INDEX`
 
 * Deletes the applicant at the specified `INDEX`.
-* The index refers to the index number shown in the displayed person list.
+* The index refers to the index number shown in the displayed applicant list.
 * The index **must be a positive integer** 1, 2, 3, …​
 
 Examples:
-* `list` followed by `delete 2` deletes the 2nd applicant in the full list.
+* `list` followed by `delete 2` deletes the 2nd applicant in the address book.
 * `find Betsy` followed by `delete 1` deletes the 1st applicant in the results of the `find` command.
 
 ### Clearing all entries: `clear`

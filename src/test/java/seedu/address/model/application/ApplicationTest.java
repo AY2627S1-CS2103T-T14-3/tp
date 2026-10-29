@@ -4,12 +4,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static seedu.address.testutil.TypicalPersons.ALICE;
-import static seedu.address.testutil.TypicalPersons.BOB;
+import static seedu.address.testutil.TypicalApplicants.ALICE;
+import static seedu.address.testutil.TypicalApplicants.BOB;
 
 import org.junit.jupiter.api.Test;
 
-import seedu.address.testutil.PersonBuilder;
+import seedu.address.testutil.ApplicantBuilder;
 
 public class ApplicationTest {
 
@@ -85,7 +85,7 @@ public class ApplicationTest {
     public void isForSameApplicant_variousApplicants_returnsExpectedResult() {
         Application aliceApplication = new Application(ALICE, new Job("Janitor"), Application.Status.PENDING);
         Application sameApplicantApplication = new Application(
-                new PersonBuilder(ALICE).withPhone("91234567").build(),
+                new ApplicantBuilder(ALICE).withPhone("91234567").build(),
                 new Job("Engineer"), Application.Status.ACCEPT);
         Application bobApplication = new Application(BOB, new Job("Janitor"), Application.Status.PENDING);
 

@@ -5,9 +5,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.model.AddressBook;
+import seedu.address.model.applicant.Applicant;
 import seedu.address.model.application.Application;
 import seedu.address.model.application.Job;
-import seedu.address.model.person.Person;
 
 /**
  * Jackson-friendly version of {@link Application}.
@@ -74,8 +74,8 @@ class JsonAdaptedApplication {
             throw new IllegalValueException(MESSAGE_INVALID_STATUS);
         }
 
-        Person applicant = addressBook.getPersonList().stream()
-                .filter(person -> person.getName().fullName.equals(name))
+        Applicant applicant = addressBook.getApplicantList().stream()
+                .filter(existingApplicant -> existingApplicant.getName().fullName.equals(name))
                 .findFirst()
                 .orElseThrow(() -> new IllegalValueException(MESSAGE_UNKNOWN_APPLICANT));
 

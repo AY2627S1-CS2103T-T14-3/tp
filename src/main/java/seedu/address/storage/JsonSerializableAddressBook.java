@@ -11,9 +11,9 @@ import com.fasterxml.jackson.annotation.JsonRootName;
 import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.model.AddressBook;
 import seedu.address.model.ReadOnlyAddressBook;
+import seedu.address.model.applicant.Applicant;
 import seedu.address.model.application.Application;
 import seedu.address.model.application.Job;
-import seedu.address.model.person.Person;
 
 /**
  * An Immutable AddressBook that is serializable to JSON format.
@@ -21,28 +21,28 @@ import seedu.address.model.person.Person;
 @JsonRootName(value = "addressbook")
 class JsonSerializableAddressBook {
 
-    public static final String MESSAGE_DUPLICATE_PERSON = "Persons list contains duplicate person(s).";
+    public static final String MESSAGE_DUPLICATE_APPLICANT = "Applicants list contains duplicate applicant(s).";
     public static final String MESSAGE_DUPLICATE_APPLICATION =
             "Applications list contains duplicate application(s).";
     public static final String MESSAGE_DUPLICATE_JOB = "Jobs list contains duplicate job(s).";
 
-    private final List<JsonAdaptedPerson> persons = new ArrayList<>();
+    private final List<JsonAdaptedApplicant> applicants = new ArrayList<>();
     private final List<JsonAdaptedApplication> applications = new ArrayList<>();
     private final List<JsonAdaptedJob> jobs = new ArrayList<>();
 
     /**
-     * Constructs a {@code JsonSerializableAddressBook} with the given persons, applications, and jobs.
+     * Constructs a {@code JsonSerializableAddressBook} with the given applicants, applications, and jobs.
      * {@code applications} may be null when loading a save file created before applications were stored.
      * {@code jobs} may be null when loading a save file created before jobs were stored.
-     * @param persons persons to store
+     * @param applicants applicants to store
      * @param applications applications to store, or null when the save file has none
      * @param jobs job descriptions to store, or null when the save file has none
      */
     @JsonCreator
-    public JsonSerializableAddressBook(@JsonProperty("persons") List<JsonAdaptedPerson> persons,
+    public JsonSerializableAddressBook(@JsonProperty("applicants") List<JsonAdaptedApplicant> applicants,
             @JsonProperty("applications") List<JsonAdaptedApplication> applications,
             @JsonProperty("jobs") List<JsonAdaptedJob> jobs) {
-        this.persons.addAll(persons);
+        this.applicants.addAll(applicants);
         if (applications != null) {
             this.applications.addAll(applications);
         }
@@ -57,7 +57,8 @@ class JsonSerializableAddressBook {
      * @param source future changes to this will not affect the created {@code JsonSerializableAddressBook}.
      */
     public JsonSerializableAddressBook(ReadOnlyAddressBook source) {
-        persons.addAll(source.getPersonList().stream().map(JsonAdaptedPerson::new).collect(Collectors.toList()));
+        applicants.addAll(source.getApplicantList().stream()
+                .map(JsonAdaptedApplicant::new).collect(Collectors.toList()));
         applications.addAll(source.getApplicationList().stream()
                 .map(JsonAdaptedApplication::new).collect(Collectors.toList()));
         jobs.addAll(source.getJobList().stream().map(JsonAdaptedJob::new).collect(Collectors.toList()));
@@ -70,12 +71,12 @@ class JsonSerializableAddressBook {
      */
     public AddressBook toModelType() throws IllegalValueException {
         AddressBook addressBook = new AddressBook();
-        for (JsonAdaptedPerson jsonAdaptedPerson : persons) {
-            Person person = jsonAdaptedPerson.toModelType();
-            if (addressBook.hasPerson(person)) {
-                throw new IllegalValueException(MESSAGE_DUPLICATE_PERSON);
+        for (JsonAdaptedApplicant jsonAdaptedApplicant : applicants) {
+            Applicant applicant = jsonAdaptedApplicant.toModelType();
+            if (addressBook.hasApplicant(applicant)) {
+                throw new IllegalValueException(MESSAGE_DUPLICATE_APPLICANT);
             }
-            addressBook.addPerson(person);
+            addressBook.addApplicant(applicant);
         }
         for (JsonAdaptedJob jsonAdaptedJob : jobs) {
             Job job = jsonAdaptedJob.toModelType(addressBook);

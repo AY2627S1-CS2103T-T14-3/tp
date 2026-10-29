@@ -5,14 +5,14 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static seedu.address.testutil.TypicalPersons.ALICE;
-import static seedu.address.testutil.TypicalPersons.BENSON;
+import static seedu.address.testutil.TypicalApplicants.ALICE;
+import static seedu.address.testutil.TypicalApplicants.BENSON;
 
 import org.junit.jupiter.api.Test;
 
 import seedu.address.model.application.Application;
 import seedu.address.model.application.Job;
-import seedu.address.testutil.PersonBuilder;
+import seedu.address.testutil.ApplicantBuilder;
 
 public class CommandResultTest {
     @Test
@@ -29,7 +29,7 @@ public class CommandResultTest {
         ApplicantSelection selection = (ApplicantSelection) request.getSelection().orElseThrow();
 
         assertEquals(ViewType.APPLICANTS, request.getViewType());
-        assertEquals(ALICE, selection.getPerson());
+        assertEquals(ALICE, selection.getApplicant());
         assertFalse(commandResult.isShowHelp());
         assertFalse(commandResult.isExit());
     }
@@ -91,7 +91,7 @@ public class CommandResultTest {
 
         // equal applicants -> returns true
         assertTrue(viewResult.equals(new CommandResult("feedback",
-                ViewRequest.applicant(new PersonBuilder(ALICE).build()))));
+                ViewRequest.applicant(new ApplicantBuilder(ALICE).build()))));
     }
 
     @Test
@@ -113,7 +113,7 @@ public class CommandResultTest {
         // equal applicants -> returns same hashcode
         CommandResult viewResult = new CommandResult("feedback", ViewRequest.applicant(ALICE));
         assertEquals(viewResult.hashCode(), new CommandResult("feedback",
-                ViewRequest.applicant(new PersonBuilder(ALICE).build())).hashCode());
+                ViewRequest.applicant(new ApplicantBuilder(ALICE).build())).hashCode());
 
         // different applicant selections -> returns different hashcode
         assertNotEquals(commandResult.hashCode(), viewResult.hashCode());

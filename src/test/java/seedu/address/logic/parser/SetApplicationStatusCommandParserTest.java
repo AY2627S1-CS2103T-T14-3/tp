@@ -4,7 +4,7 @@ import static seedu.address.logic.commands.SetApplicationStatusCommand.MESSAGE_I
 import static seedu.address.logic.commands.SetApplicationStatusCommand.MESSAGE_UNRECOGNIZED;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
-import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND_PERSON;
+import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND_APPLICANT;
 
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +18,7 @@ public class SetApplicationStatusCommandParserTest {
     @Test
     public void parse_allFields_returnsCommand() {
         SetApplicationStatusCommand expected = new SetApplicationStatusCommand(
-                INDEX_SECOND_PERSON, Application.Status.ACCEPT);
+                INDEX_SECOND_APPLICANT, Application.Status.ACCEPT);
         assertParseSuccess(parser, " 2 -s accept", expected);
         assertParseSuccess(parser, " 2 -status accept", expected);
     }

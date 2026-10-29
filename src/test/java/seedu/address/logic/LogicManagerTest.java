@@ -1,10 +1,10 @@
 package seedu.address.logic;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static seedu.address.logic.Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX;
+import static seedu.address.logic.Messages.MESSAGE_INVALID_APPLICANT_DISPLAYED_INDEX;
 import static seedu.address.logic.Messages.MESSAGE_UNKNOWN_COMMAND;
 import static seedu.address.testutil.Assert.assertThrows;
-import static seedu.address.testutil.TypicalPersons.AMY;
+import static seedu.address.testutil.TypicalApplicants.AMY;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
@@ -28,14 +28,14 @@ import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.UserPrefs;
+import seedu.address.model.applicant.Applicant;
 import seedu.address.model.application.Application;
 import seedu.address.model.application.Job;
-import seedu.address.model.person.Person;
 import seedu.address.storage.JsonAddressBookStorage;
 import seedu.address.storage.JsonUserPrefsStorage;
 import seedu.address.storage.StorageManager;
-import seedu.address.testutil.PersonBuilder;
-import seedu.address.testutil.PersonUtil;
+import seedu.address.testutil.ApplicantBuilder;
+import seedu.address.testutil.ApplicantUtil;
 
 public class LogicManagerTest {
     private static final IOException DUMMY_IO_EXCEPTION = new IOException("dummy IO exception");
@@ -65,7 +65,7 @@ public class LogicManagerTest {
     @Test
     public void execute_commandExecutionError_throwsCommandException() {
         String deleteCommand = "delete 9";
-        assertCommandException(deleteCommand, MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
+        assertCommandException(deleteCommand, MESSAGE_INVALID_APPLICANT_DISPLAYED_INDEX);
     }
 
     @Test
@@ -75,10 +75,10 @@ public class LogicManagerTest {
     }
 
     @Test
-    public void execute_addWithHyphenOptions_savesPerson() throws Exception {
+    public void execute_addWithHyphenOptions_savesApplicant() throws Exception {
         String addCommand = "add -n Amy Bee -p 11111111 -e amy@example.com";
         Model expectedModel = new ModelManager();
-        expectedModel.addPerson(AMY);
+        expectedModel.addApplicant(AMY);
 
         assertCommandSuccess(addCommand, String.format(AddCommand.MESSAGE_SUCCESS, Messages.format(AMY)),
                 expectedModel);
@@ -89,14 +89,16 @@ public class LogicManagerTest {
     }
 
     @Test
-    public void execute_editWithHyphenOptions_savesPersonAndPreservesPhone() throws Exception {
-        model.addPerson(AMY);
-        Person editedPerson = new PersonBuilder(AMY).withName("John Doe").withEmail("john@example.com").build();
+    public void execute_editWithHyphenOptions_savesApplicantAndPreservesPhone() throws Exception {
+        model.addApplicant(AMY);
+        Applicant editedApplicant = new ApplicantBuilder(AMY).withName("John Doe")
+                .withEmail("john@example.com").build();
         Model expectedModel = new ModelManager();
-        expectedModel.addPerson(editedPerson);
+        expectedModel.addApplicant(editedApplicant);
 
         assertCommandSuccess("edit 1 -n John Doe -e john@example.com",
-                String.format(EditCommand.MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(editedPerson)), expectedModel);
+                String.format(EditCommand.MESSAGE_EDIT_APPLICANT_SUCCESS, Messages.format(editedApplicant)),
+                expectedModel);
 
         JsonAddressBookStorage savedStorage =
                 new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
@@ -105,13 +107,14 @@ public class LogicManagerTest {
 
     @Test
     public void execute_editPhone_savesPhoneAndPreservesOtherFields() throws Exception {
-        model.addPerson(AMY);
-        Person editedPerson = new PersonBuilder(AMY).withPhone("91234567").build();
+        model.addApplicant(AMY);
+        Applicant editedApplicant = new ApplicantBuilder(AMY).withPhone("91234567").build();
         Model expectedModel = new ModelManager();
-        expectedModel.addPerson(editedPerson);
+        expectedModel.addApplicant(editedApplicant);
 
         assertCommandSuccess("edit 1 -p 91234567",
-                String.format(EditCommand.MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(editedPerson)), expectedModel);
+                String.format(EditCommand.MESSAGE_EDIT_APPLICANT_SUCCESS, Messages.format(editedApplicant)),
+                expectedModel);
 
         JsonAddressBookStorage savedStorage =
                 new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
@@ -127,7 +130,7 @@ public class LogicManagerTest {
         Job editedJob = new Job("Product Designer");
         CommandResult result = logic.execute("editj 1 -job Product Designer");
         Model expectedModel = new ModelManager();
-        expectedModel.addPerson(AMY);
+        expectedModel.addApplicant(AMY);
         expectedModel.addApplication(new Application(AMY, editedJob, Application.Status.PENDING));
         expectedModel.addJob(editedJob);
 
@@ -148,7 +151,7 @@ public class LogicManagerTest {
         CommandResult result = logic.execute("deletej 1");
 
         Model expectedModel = new ModelManager();
-        expectedModel.addPerson(AMY);
+        expectedModel.addApplicant(AMY);
         assertEquals(new CommandResult(String.format(
                 DeleteJobCommand.MESSAGE_DELETE_JOB_SUCCESS, "Software Engineer"), ViewRequest.jobs()), result);
         assertEquals(expectedModel, model);
@@ -167,7 +170,7 @@ public class LogicManagerTest {
         CommandResult result = logic.execute("deletep 1");
 
         Model expectedModel = new ModelManager();
-        expectedModel.addPerson(AMY);
+        expectedModel.addApplicant(AMY);
         expectedModel.addJob(new Job("Software Engineer"));
         assertEquals(new CommandResult(String.format(
                 DeleteApplicationCommand.MESSAGE_SUCCESS, AMY.getName(), AMY.getEmail()),
@@ -186,7 +189,7 @@ public class LogicManagerTest {
 
     @Test
     public void execute_bye_savesDataBeforeRequestingExit() throws Exception {
-        model.addPerson(AMY);
+        model.addApplicant(AMY);
 
         assertEquals(new CommandResult("", false, true), logic.execute("bye"));
 
@@ -197,7 +200,7 @@ public class LogicManagerTest {
 
     @Test
     public void execute_view_returnsApplicantWithoutChangingModel() throws Exception {
-        model.addPerson(AMY);
+        model.addApplicant(AMY);
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
 
         CommandResult result = logic.execute("view 1");
@@ -218,8 +221,8 @@ public class LogicManagerTest {
     }
 
     @Test
-    public void getFilteredPersonList_modifyList_throwsUnsupportedOperationException() {
-        assertThrows(UnsupportedOperationException.class, () -> logic.getFilteredPersonList().remove(0));
+    public void getFilteredApplicantList_modifyList_throwsUnsupportedOperationException() {
+        assertThrows(UnsupportedOperationException.class, () -> logic.getFilteredApplicantList().remove(0));
     }
 
     /**
@@ -299,10 +302,10 @@ public class LogicManagerTest {
         logic = new LogicManager(model, storage);
 
         // Triggers the saveAddressBook method by executing an add command
-        String addCommand = PersonUtil.getAddCommand(AMY);
-        Person expectedPerson = new PersonBuilder(AMY).build();
+        String addCommand = ApplicantUtil.getAddCommand(AMY);
+        Applicant expectedApplicant = new ApplicantBuilder(AMY).build();
         ModelManager expectedModel = new ModelManager();
-        expectedModel.addPerson(expectedPerson);
+        expectedModel.addApplicant(expectedApplicant);
         assertCommandFailure(addCommand, CommandException.class, expectedMessage, expectedModel);
     }
 }

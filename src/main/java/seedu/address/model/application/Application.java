@@ -5,28 +5,28 @@ import static java.util.Objects.requireNonNull;
 import java.util.Objects;
 
 import seedu.address.commons.util.ToStringBuilder;
-import seedu.address.model.person.Person;
+import seedu.address.model.applicant.Applicant;
 
 /**
  * Represents an application submitted by an applicant for a job.
  *
- * <p>An application owns its relationship with a {@link Person}; a {@code Person} does not contain application
+ * <p>An application owns its relationship with a {@link Applicant}; a {@code Applicant} does not contain application
  * data. Application values are immutable after construction.</p>
  */
 public class Application {
 
-    private final Person applicant;
+    private final Applicant applicant;
     private final Job job;
     private final Status status;
 
     /**
      * Creates an application.
      *
-     * @param applicant the person submitting the application.
+     * @param applicant the applicant submitting the application.
      * @param job the job the applicant is applying for.
      * @param status the application's status.
      */
-    public Application(Person applicant, Job job, Status status) {
+    public Application(Applicant applicant, Job job, Status status) {
         requireNonNull(applicant);
         requireNonNull(job);
         requireNonNull(status);
@@ -36,7 +36,7 @@ public class Application {
         this.status = status;
     }
 
-    public Person getApplicant() {
+    public Applicant getApplicant() {
         return applicant;
     }
 
@@ -46,8 +46,8 @@ public class Application {
     }
 
     /** Returns whether this application belongs to the supplied applicant. */
-    public boolean isForApplicant(Person person) {
-        return applicant.isSamePerson(person);
+    public boolean isForApplicant(Applicant applicant) {
+        return this.applicant.isSameApplicant(applicant);
     }
 
     /** Returns the display value of this application's status. */
@@ -72,7 +72,7 @@ public class Application {
         }
 
         return otherApplication != null
-                && otherApplication.getApplicant().isSamePerson(getApplicant());
+                && otherApplication.getApplicant().isSameApplicant(getApplicant());
     }
 
     @Override

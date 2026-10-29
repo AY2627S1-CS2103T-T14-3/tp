@@ -8,7 +8,7 @@
 
 LinkedOut is a desktop application for recruiters and HR administrators managing student hiring across multiple job openings. It brings applicant contacts, job roles, and application outcomes into one place, helping recruiters see where each application stands.
 
-Designed for people who prefer typing, LinkedOut pairs text commands with a graphical overview. It is a personal workspace for one recruiter, with records stored locally in editable JSON files.
+Designed for people who prefer typing, LinkedOut pairs text commands with a graphical overview. It is an individual workspace for one recruiter, with records stored locally in editable JSON files.
 
 ## What you can do
 

@@ -4,9 +4,9 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Optional;
 
+import seedu.address.model.applicant.Applicant;
 import seedu.address.model.application.Application;
 import seedu.address.model.application.Job;
-import seedu.address.model.person.Person;
 
 /** Describes a view to display and an optional item to select in that view. */
 public final class ViewRequest {
@@ -65,12 +65,12 @@ public final class ViewRequest {
     /**
      * Creates a request to display the applicants view and select an applicant.
      *
-     * @param person the applicant to select.
+     * @param applicant the applicant to select.
      * @return a request for the applicants view
      */
-    public static ViewRequest applicant(Person person) {
+    public static ViewRequest applicant(Applicant applicant) {
         return new ViewRequest(ViewType.APPLICANTS,
-                Optional.of(new ApplicantSelection(person)));
+                Optional.of(new ApplicantSelection(applicant)));
     }
 
     /** Creates a request to display the applications view without a selection. */
