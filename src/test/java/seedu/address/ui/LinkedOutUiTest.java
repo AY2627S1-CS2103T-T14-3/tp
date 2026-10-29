@@ -172,7 +172,7 @@ public class LinkedOutUiTest {
     public void deleteApplicant_lastApplicant_showsApplicationSnapshotUntilNextCommand() throws Exception {
         withWindow((window, model) -> {
             command(window, "find Alice");
-            command(window, "add -p 1 -j Engineer -s accept");
+            command(window, "addp 1 -j Engineer -s accept");
             command(window, "delete 1");
 
             assertApplicantName(window, "Alice Pauline");
@@ -230,7 +230,7 @@ public class LinkedOutUiTest {
     public void helpCommand_afterDeletingLastDisplayedApplicant_preservesApplicationSnapshot() throws Exception {
         withWindow(window -> {
             command(window, "find Alice");
-            command(window, "add -p 1 -j Engineer -s accept");
+            command(window, "addp 1 -j Engineer -s accept");
             command(window, "delete 1");
             assertApplicantName(window, "Alice Pauline");
             assertApplication(window, "Engineer", "Accepted");
@@ -436,6 +436,40 @@ public class LinkedOutUiTest {
             assertEquals(SetApplicationStatusCommand.MESSAGE_MISSING_APPLICATION, feedback(window));
             assertEquals(0, applicants.getSelectionModel().getSelectedIndex());
             assertApplication(window, "Janitor", "Pending");
+        });
+    }
+
+    @Test
+    public void editJob_filteredList_updatesDetailsAndSelectsRenamedJob() throws Exception {
+        withWindow(window -> {
+            command(window, "addj -j Software Engineer");
+            command(window, "addj -j Data Analyst");
+            command(window, "viewj -f data");
+            command(window, "editj 1 -job Product Designer");
+            pulse(window);
+
+            assertEquals("Jobs", label(window, "listTitle").getText());
+            assertEquals("2 jobs", label(window, "applicantCount").getText());
+            assertEquals("Product Designer", label(window, "jobName").getText());
+            assertEquals("Edited job: Product Designer", feedback(window));
+            ListView<?> jobs = (ListView<?>) window.getRoot().getScene().lookup("#jobListView");
+            assertEquals("Product Designer", jobs.getSelectionModel().getSelectedItem().toString());
+            assertEquals(1, jobs.getSelectionModel().getSelectedIndex());
+
+            TextField input = (TextField) window.getRoot().getScene().lookup("#commandTextField");
+            input.setText("editj 2 -j Software Engineer");
+            input.fireEvent(new ActionEvent());
+            pulse(window);
+            assertEquals("This job already exists in the job list.", feedback(window));
+            assertEquals("Product Designer", label(window, "jobName").getText());
+            assertEquals(1, jobs.getSelectionModel().getSelectedIndex());
+
+            command(window, "list");
+            command(window, "editj 1 -j Senior Software Engineer");
+            pulse(window);
+            assertEquals("Jobs", label(window, "listTitle").getText());
+            assertEquals("Senior Software Engineer", label(window, "jobName").getText());
+            assertEquals(0, jobs.getSelectionModel().getSelectedIndex());
         });
     }
 
