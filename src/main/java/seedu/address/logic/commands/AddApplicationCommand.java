@@ -37,7 +37,7 @@ public class AddApplicationCommand extends Command {
             + "Example: addp 1 -j Janitor -s accept";
 
     public static final String MESSAGE_UNRECOGNIZED = "Unable to recognize the command %1$s.\n"
-            + "Please follow the format: add -p <index> -j <job_desc> [-s <status>].\n"
+            + "Please follow the format: addp <index> -j <job_desc> [-s <status>].\n"
             + "Example: addp 2 -j ClaudeGPT Expert -s accept";
 
     private final Index targetIndex;

@@ -52,7 +52,7 @@ public class UniqueApplicantList implements Iterable<Applicant> {
      * {@code target} must exist in the list.
      * The name and email of {@code editedApplicant} must not match another existing applicant in the list.
      */
-    public void setPerson(Applicant target, Applicant editedApplicant) {
+    public void setApplicant(Applicant target, Applicant editedApplicant) {
         requireAllNonNull(target, editedApplicant);
 
         int index = internalList.indexOf(target);
@@ -80,7 +80,7 @@ public class UniqueApplicantList implements Iterable<Applicant> {
         }
     }
 
-    public void setPersons(UniqueApplicantList replacement) {
+    public void setApplicants(UniqueApplicantList replacement) {
         requireNonNull(replacement);
         internalList.setAll(replacement.internalList);
     }
@@ -89,7 +89,7 @@ public class UniqueApplicantList implements Iterable<Applicant> {
      * Replaces the contents of this list with {@code applicants}.
      * {@code applicants} must not contain duplicate applicants.
      */
-    public void setPersons(List<Applicant> applicants) {
+    public void setApplicants(List<Applicant> applicants) {
         requireAllNonNull(applicants);
         if (!personsAreUnique(applicants)) {
             throw new DuplicateApplicantException();

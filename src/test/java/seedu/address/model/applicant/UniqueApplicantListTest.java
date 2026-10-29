@@ -12,8 +12,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import seedu.address.model.applicant.exceptions.DuplicateApplicantException;
 import seedu.address.model.applicant.exceptions.ApplicantNotFoundException;
+import seedu.address.model.applicant.exceptions.DuplicateApplicantException;
 import seedu.address.testutil.ApplicantBuilder;
 
 public class UniqueApplicantListTest {
@@ -89,7 +89,8 @@ public class UniqueApplicantListTest {
         uniqueApplicantList.add(ALICE);
         Applicant duplicate = new ApplicantBuilder(BOB).withEmail(ALICE.getEmail().value).build();
 
-        assertThrows(DuplicateApplicantException.class, () -> uniqueApplicantList.setApplicants(List.of(ALICE, duplicate)));
+        assertThrows(DuplicateApplicantException.class, () ->
+                uniqueApplicantList.setApplicants(List.of(ALICE, duplicate)));
         assertEquals(List.of(ALICE), uniqueApplicantList.asUnmodifiableObservableList());
     }
 
@@ -150,7 +151,7 @@ public class UniqueApplicantListTest {
     }
 
     @Test
-    public void remove_ApplicantDoesNotExist_throwsApplicantNotFoundException() {
+    public void remove_applicantDoesNotExist_throwsApplicantNotFoundException() {
         assertThrows(ApplicantNotFoundException.class, () -> uniqueApplicantList.remove(ALICE));
     }
 
@@ -194,7 +195,8 @@ public class UniqueApplicantListTest {
     @Test
     public void setApplicants_listWithDuplicateApplicants_throwsDuplicateApplicantException() {
         List<Applicant> listWithDuplicateApplicants = List.of(ALICE, ALICE);
-        assertThrows(DuplicateApplicantException.class, () -> uniqueApplicantList.setApplicants(listWithDuplicateApplicants));
+        assertThrows(DuplicateApplicantException.class, () ->
+                uniqueApplicantList.setApplicants(listWithDuplicateApplicants));
     }
 
     @Test

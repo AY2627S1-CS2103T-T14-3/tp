@@ -42,7 +42,7 @@ public class AddressBook implements ReadOnlyAddressBook {
      * {@code applicants} must not contain duplicate applicants.
      */
     public void setApplicants(List<Applicant> applicants) {
-        this.applicants.setPersons(applicants);
+        this.applicants.setApplicants(applicants);
     }
 
     /**
@@ -82,7 +82,7 @@ public class AddressBook implements ReadOnlyAddressBook {
     public void setPerson(Applicant target, Applicant editedApplicant) {
         requireNonNull(editedApplicant);
 
-        applicants.setPerson(target, editedApplicant);
+        applicants.setApplicant(target, editedApplicant);
         applications.setApplicant(target, editedApplicant);
     }
 

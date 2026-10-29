@@ -55,7 +55,7 @@
               </HBox>
               <Label fx:id="listHint" text="Select an applicant to view their details."
                      styleClass="muted-label" wrapText="true" />
-              <StackPane fx:id="personListPanelPlaceholder" VBox.vgrow="ALWAYS" />
+              <StackPane fx:id="applicantListPanelPlaceholder" VBox.vgrow="ALWAYS" />
             </VBox>
           </items>
         </SplitPane>

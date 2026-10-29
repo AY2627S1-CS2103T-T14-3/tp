@@ -20,6 +20,7 @@ import seedu.address.logic.commands.ByeCommand;
 import seedu.address.logic.commands.ClearCommand;
 import seedu.address.logic.commands.DeleteCommand;
 import seedu.address.logic.commands.DeleteJobCommand;
+import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.FindCommand;
 import seedu.address.logic.commands.HelpCommand;
 import seedu.address.logic.commands.ListCommand;
@@ -27,12 +28,13 @@ import seedu.address.logic.commands.SetApplicationStatusCommand;
 import seedu.address.logic.commands.ViewCommand;
 import seedu.address.logic.commands.ViewJobCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
-import seedu.address.model.application.Application;
-import seedu.address.model.application.Job;
 import seedu.address.model.applicant.Applicant;
 import seedu.address.model.applicant.NameContainsKeywordsPredicate;
+import seedu.address.model.application.Application;
+import seedu.address.model.application.Job;
 import seedu.address.testutil.ApplicantBuilder;
 import seedu.address.testutil.ApplicantUtil;
+import seedu.address.testutil.EditPersonDescriptorBuilder;
 
 public class AddressBookParserTest {
 
@@ -131,11 +133,25 @@ public class AddressBookParserTest {
     }
 
     @Test
-    public void parseCommand_editCommand_throwsParseException() {
+    public void parseCommand_edit() throws Exception {
+        EditCommand expected = new EditCommand(INDEX_FIRST_PERSON,
+                new EditPersonDescriptorBuilder().withName("Updated Name").build());
+        assertEquals(expected, parser.parseCommand("edit 1 -n Updated Name"));
+        assertEquals(expected, parser.parseCommand(" \tedit 1 -name Updated Name \t"));
+        EditCommand phoneEdit = new EditCommand(INDEX_FIRST_PERSON,
+                new EditPersonDescriptorBuilder().withPhone("91234567").build());
+        assertEquals(phoneEdit, parser.parseCommand("edit 1 -p 91234567"));
+        assertEquals(phoneEdit, parser.parseCommand("edit 1 -phone 91234567"));
+    }
+
+    @Test
+    public void parseCommand_invalidEdit_throwsParseException() {
+        String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditCommand.MESSAGE_USAGE);
         for (String input : List.of("edit", "edit 1 n/Updated Name", " \tedit 1 p/91234567 \t",
-                "edit 1 -n Updated Name", "edit -applicant 1 -n Updated Name", "edit 0")) {
-            assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> parser.parseCommand(input));
+                "edit -p 1 -n Updated Name", "edit -applicant 1 -n Updated Name", "edit 0")) {
+            assertThrows(ParseException.class, expectedMessage, () -> parser.parseCommand(input));
         }
+        assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> parser.parseCommand("Edit 1 -n Name"));
     }
 
     @Test

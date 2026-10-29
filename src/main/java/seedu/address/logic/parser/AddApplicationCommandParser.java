@@ -6,7 +6,6 @@ import static seedu.address.logic.parser.CliSyntax.OPTION_STATUS_OPT;
 
 import seedu.address.commons.core.index.Index;
 import seedu.address.logic.commands.AddApplicationCommand;
-import seedu.address.logic.commands.AddCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.application.Application;
 import seedu.address.model.application.Job;
@@ -19,7 +18,8 @@ public class AddApplicationCommandParser implements Parser<AddApplicationCommand
     /**
      * Parses the given {@code String} of arguments in the context of the AddApplicationCommand
      * and returns an AddApplicationCommand object for execution.
-     * @param args arguments string of the form {@code -p INDEX -j JOB [-s STATUS]}
+     *
+     * @param args arguments string of the form {@code INDEX -j JOB [-s STATUS]}.
      * @return an AddApplicationCommand object for execution
      * @throws ParseException if the user input does not conform to the expected format
      */
@@ -40,14 +40,15 @@ public class AddApplicationCommandParser implements Parser<AddApplicationCommand
 
     /**
      * Tokenizes {@code args} as add-application options.
-     * @param args arguments string for the add-application command
+     *
+     * @param args arguments string for the add-application command.
      * @return tokenized option values
      * @throws ParseException if the user input does not conform to the expected format
      */
     private ArgumentMultimap parseOptions(String args) throws ParseException {
         try {
             return ArgumentTokenizer
-                    .tokenizeOptions(args, ArgumentTokenizer.HAS_PREAMBLE,OPTION_JOB_REQ, OPTION_STATUS_OPT);
+                    .tokenizeOptions(args, ArgumentTokenizer.HAS_PREAMBLE, OPTION_JOB_REQ, OPTION_STATUS_OPT);
         } catch (ParseException pe) {
             throw unrecognized(args);
         }
@@ -55,8 +56,9 @@ public class AddApplicationCommandParser implements Parser<AddApplicationCommand
 
     /**
      * Parses the applicant index from the tokenized options.
-     * @param args original arguments string, used in the error message
-     * @param values tokenized option values
+     *
+     * @param args original arguments string, used in the error message.
+     * @param values tokenized option values.
      * @return index of the applicant in the displayed list
      * @throws ParseException if the user input does not conform to the expected format
      */
@@ -70,7 +72,8 @@ public class AddApplicationCommandParser implements Parser<AddApplicationCommand
 
     /**
      * Parses the application status, or {@code pending} when status is omitted.
-     * @param values tokenized option values
+     *
+     * @param values tokenized option values.
      * @return application status
      * @throws ParseException if the status is not accept, reject, or pending
      */
@@ -87,11 +90,12 @@ public class AddApplicationCommandParser implements Parser<AddApplicationCommand
 
     /**
      * Returns a parse exception for an unrecognized add-application command.
-     * @param args original arguments string
+     *
+     * @param args original arguments string.
      * @return parse exception describing the expected command format
      */
     private static ParseException unrecognized(String args) {
-        String input = (AddCommand.COMMAND_WORD + args).trim().replaceAll("\\s+", " ");
+        String input = (AddApplicationCommand.COMMAND_WORD + args).trim().replaceAll("\\s+", " ");
         return new ParseException(String.format(AddApplicationCommand.MESSAGE_UNRECOGNIZED, input));
     }
 }

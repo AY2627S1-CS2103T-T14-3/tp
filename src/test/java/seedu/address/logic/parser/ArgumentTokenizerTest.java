@@ -5,7 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.logic.Messages.MESSAGE_DUPLICATE_FIELDS;
-import static seedu.address.logic.parser.ArgumentTokenizer.*;
+import static seedu.address.logic.parser.ArgumentTokenizer.HAS_PREAMBLE;
+import static seedu.address.logic.parser.ArgumentTokenizer.MESSAGE_INVALID_COMMAND_OPTIONS;
+import static seedu.address.logic.parser.ArgumentTokenizer.NO_PREAMBLE;
+
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -19,8 +23,8 @@ public class ArgumentTokenizerTest {
     private final Option testFlag = Option.flag("-t");
 
     /**
-     * Asserts all the arguments in {@code argMultimap} with {@code prefix} match the {@code expectedValues}
-     * and only the last value is returned upon calling {@code ArgumentMultimap#getValue(Prefix)}.
+     * Asserts all the arguments in {@code argMultimap} with {@code option} match the {@code expectedValues}
+     * and only the last value is returned upon calling {@code ArgumentMultimap#getValue(Option)}.
      */
     private void assertArgumentPresent(ArgumentMultimap argMultimap, Option option, String... expectedValues) {
 
@@ -58,6 +62,73 @@ public class ArgumentTokenizerTest {
         assertArgumentPresent(longOptions, nameOption, "John Doe");
         assertArgumentPresent(longOptions, emailOption, "john@example.com");
         assertArgumentAbsent(longOptions, testFlag);
+    }
+
+    @Test
+    public void tokenizeOptions_preambleAllowed_leadingIndexAndAliasesPreserved() throws ParseException {
+        ArgumentMultimap options = ArgumentTokenizer.tokenizeOptions(
+                " \t2 \t-email john@example.com -n John Doe ", HAS_PREAMBLE, nameOption, emailOption);
+
+        assertEquals("2", options.getPreamble());
+        assertArgumentPresent(options, nameOption, "John Doe");
+        assertArgumentPresent(options, emailOption, "john@example.com");
+    }
+
+    @Test
+    public void tokenizeOptions_preambleAllowed_noOptionsAllTakenAsPreamble() throws ParseException {
+        ArgumentMultimap options = ArgumentTokenizer.tokenizeOptions(" \t1 extra text \t", HAS_PREAMBLE, unusedOption);
+
+        assertEquals("1 extra text", options.getPreamble());
+        assertArgumentAbsent(options, unusedOption);
+    }
+
+    @Test
+    public void tokenizeOptions_preambleAllowed_noPreambleAccepted() throws ParseException {
+        ArgumentMultimap options = ArgumentTokenizer.tokenizeOptions("-n John Doe", HAS_PREAMBLE, nameOption);
+        assertEquals("", options.getPreamble());
+        assertArgumentPresent(options, nameOption, "John Doe");
+
+        options = ArgumentTokenizer.tokenizeOptions(" \t", HAS_PREAMBLE, unusedOption);
+        assertEquals("", options.getPreamble());
+        assertArgumentAbsent(options, unusedOption);
+    }
+
+    @Test
+    public void tokenizeOptions_preambleAllowed_malformedOptionsThrowParseException() {
+        for (String args : List.of("1 -n", "1 -unknown value", "1")) {
+            ParseException exception = assertThrows(ParseException.class, () ->
+                    ArgumentTokenizer.tokenizeOptions(args, HAS_PREAMBLE, nameOption));
+            assertEquals(MESSAGE_INVALID_COMMAND_OPTIONS, exception.getMessage());
+        }
+
+        ParseException exception = assertThrows(ParseException.class, () ->
+                ArgumentTokenizer.tokenizeOptions("1 -n John -name Jane", HAS_PREAMBLE, nameOption));
+        assertEquals(MESSAGE_DUPLICATE_FIELDS + "-n", exception.getMessage());
+    }
+
+    @Test
+    public void tokenizeOptions_preambleDisabled_rejectsPositionalText() throws ParseException {
+        ParseException exception = assertThrows(ParseException.class, () ->
+                ArgumentTokenizer.tokenizeOptions("1 -n John Doe", NO_PREAMBLE, nameOption));
+        assertEquals(MESSAGE_INVALID_COMMAND_OPTIONS, exception.getMessage());
+
+        ArgumentMultimap options = ArgumentTokenizer.tokenizeOptions("-name John Doe", NO_PREAMBLE, nameOption);
+        assertEquals("", options.getPreamble());
+        assertArgumentPresent(options, nameOption, "John Doe");
+    }
+
+    @Test
+    public void tokenizeOptions_preambleAllowed_flagAndRequiredOptionValidated() throws ParseException {
+        ArgumentMultimap options = ArgumentTokenizer.tokenizeOptions("2 -t -n John Doe",
+                HAS_PREAMBLE, testFlag, nameOption);
+        assertEquals("2", options.getPreamble());
+        assertTrue(options.contains(testFlag));
+        assertArgumentPresent(options, nameOption, "John Doe");
+
+        assertThrows(ParseException.class, () ->
+                ArgumentTokenizer.tokenizeOptions("2 -t unexpected -n John Doe", HAS_PREAMBLE, testFlag, nameOption));
+        assertThrows(ParseException.class, () ->
+                ArgumentTokenizer.tokenizeOptions("2 -t", HAS_PREAMBLE, testFlag, nameOption));
     }
 
     @Test
