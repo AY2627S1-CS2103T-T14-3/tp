@@ -39,6 +39,17 @@ If you plan to use IntelliJ IDEA (highly recommended):
    Optionally, follow the guide [_[se-edu/guides] Using Checkstyle_](https://se-education.org/guides/tutorials/checkstyle.html) to learn how to use Checkstyle in IDEA, for example to report problems _as_ you write code.
    </div>
 
+1. **Enable commit-message validation**
+
+   Git does not enable the repository's checked-in hooks automatically. From the repository root, run this once for each clone:
+
+   ```bash
+   git config --local core.hooksPath .githooks
+   ```
+
+   This configures the clone to use `.githooks/`, so `git commit` runs the shared commit-message validator.
+   The automated checks and rules requiring manual review are listed in `.agents/skills/seedu-git-standard/references/rules.md`.
+
 1. **Set up CI**
 
    This project includes GitHub Actions configuration files in `.github/workflows`. GitHub runs CI automatically for every push and pull request. No setup is required.

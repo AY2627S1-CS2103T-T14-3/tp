@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
-import static seedu.address.logic.Messages.MESSAGE_UNKNOWN_COMMAND;
+import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.testutil.TypicalPersons.ALICE;
 import static seedu.address.testutil.TypicalPersons.BENSON;
 import static seedu.address.testutil.TypicalPersons.DANIEL;
@@ -33,6 +33,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import seedu.address.logic.LogicManager;
 import seedu.address.logic.commands.AddApplicationCommand;
+import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.SetApplicationStatusCommand;
 import seedu.address.logic.commands.ViewCommand;
 import seedu.address.model.Model;
@@ -122,7 +123,7 @@ public class LinkedOutUiTest {
     }
 
     @Test
-    public void editCommand_unsupported_preservesApplicantsAndShowsError() throws Exception {
+    public void editCommand_invalidSyntax_preservesApplicantsAndShowsError() throws Exception {
         withWindow((window, model) -> {
             List<Person> expectedPersons = List.copyOf(model.getAddressBook().getPersonList());
             command(window, "find Meier");
@@ -136,7 +137,8 @@ public class LinkedOutUiTest {
 
                 assertEquals(editCommand, input.getText());
                 assertTrue(input.getStyleClass().contains(CommandBox.ERROR_STYLE_CLASS));
-                assertEquals(MESSAGE_UNKNOWN_COMMAND, feedback(window));
+                assertEquals(String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditCommand.MESSAGE_USAGE),
+                        feedback(window));
                 assertEquals(expectedPersons, model.getAddressBook().getPersonList());
                 assertEquals(List.of(BENSON, DANIEL), model.getFilteredPersonList());
                 assertApplicantDetails(window, DANIEL);
@@ -278,7 +280,7 @@ public class LinkedOutUiTest {
     @Test
     public void addApplication_validCommand_selectsApplicantAndShowsApplication() throws Exception {
         withWindow(window -> {
-            command(window, "add -application 2 -job Janitor -s accept");
+            command(window, "addp 2 -job Janitor -s accept");
             ListView<?> applicants = (ListView<?>) window.getRoot().getScene().lookup("#personListView");
             assertEquals(1, applicants.getSelectionModel().getSelectedIndex());
             assertApplicantDetails(window, BENSON);
@@ -293,20 +295,20 @@ public class LinkedOutUiTest {
     public void addApplication_duplicateAndInvalidStatus_preservesExistingApplication() throws Exception {
         withWindow(window -> {
             command(window, "find Meier");
-            command(window, "add -p 1 -j Janitor");
+            command(window, "addp 1 -j Janitor");
             ListView<?> applicants = (ListView<?>) window.getRoot().getScene().lookup("#personListView");
             TextField input = (TextField) window.getRoot().getScene().lookup("#commandTextField");
 
-            input.setText("add -p 1 -j Engineer -s ACCEPT");
+            input.setText("addp 1 -j Engineer -s ACCEPT");
             input.fireEvent(new ActionEvent());
-            assertEquals("add -p 1 -j Engineer -s ACCEPT", input.getText());
+            assertEquals("addp 1 -j Engineer -s ACCEPT", input.getText());
             assertTrue(input.getStyleClass().contains(CommandBox.ERROR_STYLE_CLASS));
             assertEquals(AddApplicationCommand.MESSAGE_INVALID_STATUS, feedback(window));
             assertEquals(List.of(BENSON, DANIEL), applicants.getItems());
             assertApplicantDetails(window, BENSON);
             assertApplication(window, "Janitor", "Pending");
 
-            input.setText("add -p 1 -j Engineer");
+            input.setText("addp 1 -j Engineer");
             input.fireEvent(new ActionEvent());
             assertEquals(AddApplicationCommand.MESSAGE_DUPLICATE_APPLICATION, feedback(window));
             assertApplication(window, "Janitor", "Pending");
@@ -317,7 +319,7 @@ public class LinkedOutUiTest {
     @Test
     public void setApplicationStatus_existingApplication_updatesDetailPanel() throws Exception {
         withWindow(window -> {
-            command(window, "add -p 2 -j Janitor");
+            command(window, "addp 2 -j Janitor");
             command(window, "set 2 -status accept");
             ListView<?> applicants = (ListView<?>) window.getRoot().getScene().lookup("#personListView");
             assertEquals(1, applicants.getSelectionModel().getSelectedIndex());
@@ -331,7 +333,7 @@ public class LinkedOutUiTest {
     @Test
     public void setApplicationStatus_invalidStatusAndMissingApplication_preservesApplication() throws Exception {
         withWindow(window -> {
-            command(window, "add -p 1 -j Janitor");
+            command(window, "addp 1 -j Janitor");
             ListView<?> applicants = (ListView<?>) window.getRoot().getScene().lookup("#personListView");
             TextField input = (TextField) window.getRoot().getScene().lookup("#commandTextField");
 
@@ -384,7 +386,7 @@ public class LinkedOutUiTest {
             assertEquals("Applicants", label(window, "listTitle").getText());
             assertEquals("Alice Pauline", label(window, "applicantName").getText());
 
-            command(window, "add -p 1 -j Janitor");
+            command(window, "addp 1 -j Janitor");
             command(window, "addj -j Janitor");
             pulse(window);
             assertEquals("Jobs", label(window, "listTitle").getText());

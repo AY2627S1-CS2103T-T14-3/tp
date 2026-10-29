@@ -20,8 +20,10 @@ import seedu.address.logic.Messages;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
+import seedu.address.model.ModelManager;
 import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.ReadOnlyUserPrefs;
+import seedu.address.model.UserPrefs;
 import seedu.address.model.application.Application;
 import seedu.address.model.application.Job;
 import seedu.address.model.person.Person;
@@ -53,6 +55,15 @@ public class AddCommandTest {
         ModelStub modelStub = new ModelStubWithPerson(validPerson);
 
         assertThrows(CommandException.class, AddCommand.MESSAGE_DUPLICATE_PERSON, () -> addCommand.execute(modelStub));
+    }
+
+    @Test
+    public void execute_sameEmailDifferentName_throwsCommandException() {
+        Model model = new ModelManager(new AddressBook(), new UserPrefs());
+        model.addPerson(ALICE);
+        Person duplicate = new PersonBuilder(ALICE).withName("Different Applicant").build();
+
+        CommandTestUtil.assertCommandFailure(new AddCommand(duplicate), model, AddCommand.MESSAGE_DUPLICATE_PERSON);
     }
 
     @Test
@@ -215,7 +226,7 @@ public class AddCommandTest {
         @Override
         public boolean hasPerson(Person person) {
             requireNonNull(person);
-            return this.person.isSamePerson(person);
+            return this.person.hasSameNameOrEmail(person);
         }
     }
 
@@ -228,7 +239,7 @@ public class AddCommandTest {
         @Override
         public boolean hasPerson(Person person) {
             requireNonNull(person);
-            return personsAdded.stream().anyMatch(person::isSamePerson);
+            return personsAdded.stream().anyMatch(person::hasSameNameOrEmail);
         }
 
         @Override

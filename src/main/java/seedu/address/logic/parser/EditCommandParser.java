@@ -2,12 +2,9 @@ package seedu.address.logic.parser;
 
 import static java.util.Objects.requireNonNull;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_EMAIL;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_EMAIL_LONG;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_NAME_LONG;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE;
-import static seedu.address.logic.parser.CliSyntax.PREFIX_PHONE_LONG;
+import static seedu.address.logic.parser.CliSyntax.OPTION_EMAIL_OPT;
+import static seedu.address.logic.parser.CliSyntax.OPTION_NAME_OPT;
+import static seedu.address.logic.parser.CliSyntax.OPTION_PHONE_OPT;
 
 import seedu.address.commons.core.index.Index;
 import seedu.address.logic.commands.EditCommand;
@@ -19,15 +16,9 @@ import seedu.address.logic.parser.exceptions.ParseException;
  */
 public class EditCommandParser implements Parser<EditCommand> {
 
-    private static final Option NAME_OPTION = Option.optional(
-            PREFIX_NAME, PREFIX_NAME.getPrefix(), PREFIX_NAME_LONG.getPrefix());
-    private static final Option PHONE_OPTION = Option.optional(
-            PREFIX_PHONE, PREFIX_PHONE.getPrefix(), PREFIX_PHONE_LONG.getPrefix());
-    private static final Option EMAIL_OPTION = Option.optional(
-            PREFIX_EMAIL, PREFIX_EMAIL.getPrefix(), PREFIX_EMAIL_LONG.getPrefix());
-
     /**
      * Parses a leading applicant index and at least one of name, phone, or email.
+     *
      * @throws ParseException if the user input does not conform to the expected format
      */
     @Override
@@ -37,7 +28,8 @@ public class EditCommandParser implements Parser<EditCommand> {
         Index index;
 
         try {
-            argMultimap = ArgumentTokenizer.tokenizeOptions(args, true, NAME_OPTION, PHONE_OPTION, EMAIL_OPTION);
+            argMultimap = ArgumentTokenizer.tokenizeOptions(args, ArgumentTokenizer.HAS_PREAMBLE,
+                    OPTION_NAME_OPT, OPTION_PHONE_OPT, OPTION_EMAIL_OPT);
             index = ParserUtil.parseIndex(argMultimap.getPreamble());
         } catch (ParseException pe) {
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditCommand.MESSAGE_USAGE), pe);
@@ -45,14 +37,14 @@ public class EditCommandParser implements Parser<EditCommand> {
 
         EditPersonDescriptor editPersonDescriptor = new EditPersonDescriptor();
 
-        if (argMultimap.getValue(PREFIX_NAME).isPresent()) {
-            editPersonDescriptor.setName(ParserUtil.parseName(argMultimap.getValue(PREFIX_NAME).get()));
+        if (argMultimap.getValue(OPTION_NAME_OPT).isPresent()) {
+            editPersonDescriptor.setName(ParserUtil.parseName(argMultimap.getValue(OPTION_NAME_OPT).get()));
         }
-        if (argMultimap.getValue(PREFIX_PHONE).isPresent()) {
-            editPersonDescriptor.setPhone(ParserUtil.parsePhone(argMultimap.getValue(PREFIX_PHONE).get()));
+        if (argMultimap.getValue(OPTION_PHONE_OPT).isPresent()) {
+            editPersonDescriptor.setPhone(ParserUtil.parsePhone(argMultimap.getValue(OPTION_PHONE_OPT).get()));
         }
-        if (argMultimap.getValue(PREFIX_EMAIL).isPresent()) {
-            editPersonDescriptor.setEmail(ParserUtil.parseEmail(argMultimap.getValue(PREFIX_EMAIL).get()));
+        if (argMultimap.getValue(OPTION_EMAIL_OPT).isPresent()) {
+            editPersonDescriptor.setEmail(ParserUtil.parseEmail(argMultimap.getValue(OPTION_EMAIL_OPT).get()));
         }
         if (!editPersonDescriptor.isAnyFieldEdited()) {
             throw new ParseException(EditCommand.MESSAGE_NOT_EDITED);

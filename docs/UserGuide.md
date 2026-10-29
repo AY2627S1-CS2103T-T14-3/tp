@@ -76,6 +76,10 @@ Format: `help`
 
 Adds a person to the address book.
 
+Each applicant must have a unique name and a unique email address. Adding or editing an applicant
+to use another applicant's name or email is rejected. Comparisons are case-sensitive.
+Saved data containing duplicate names or emails is treated as invalid; correct the duplicates before loading it.
+
 Format: `add -n NAME -p PHONE_NUMBER -e EMAIL`
 
 Each option also accepts a long alias:
@@ -193,25 +197,25 @@ Examples:
 * `view 1` selects the first applicant in the displayed list and shows their details.
 * `find Meier` followed by `view 2` shows the details of the second applicant in the search results.
 
-### Adding an application: `add -p`
+### Adding an application: `addp`
 
 Adds one job application to an applicant in the displayed list. Each applicant can have only one application.
 
-Format: `add -p INDEX -j JOB_DESCRIPTION [-s STATUS]`
+Format: `addp INDEX -j JOB_DESCRIPTION [-s STATUS]`
 
-* `INDEX` is the positive integer shown beside an applicant in the current list.
+* `INDEX` is the positive integer shown beside an applicant in the current list. It must appear before the options.
 * When the list is filtered, the index refers to that filtered list.
 * `JOB_DESCRIPTION` is the role the applicant is applying for. It cannot contain another option, such as `-s`.
 * `STATUS` is optional. When it is omitted, the status is `pending`.
 * Accepted statuses are `accept`, `reject`, and `pending`. The value is case-sensitive.
-* Aliases: `-application` for `-p`, `-job` for `-j`, and `-status` for `-s`.
+* Aliases: `-job` for `-j` and `-status` for `-s`.
 * A successful command selects that applicant and shows the job and status in the detail panel.
 * An applicant who already has an application cannot receive a second one.
 
 Examples:
 
-* `add -p 1 -j Janitor` adds a pending Janitor application for the first displayed applicant.
-* `add -application 2 -job ClaudeGPT Expert -s accept` adds an accepted application for the second displayed applicant.
+* `addp 1 -j Janitor` adds a pending Janitor application for the first displayed applicant.
+* `addp 2 -job ClaudeGPT Expert -s accept` adds an accepted application for the second displayed applicant.
 
 ### Updating an application status: `set`
 
@@ -240,7 +244,7 @@ Format: `addj -j JOB_DESCRIPTION`
 * `JOB_DESCRIPTION` is the role name. It cannot be blank and cannot contain another option, such as `-s`.
 * Alias: `-job` for `-j`.
 * A role that is already in the list cannot be added again. Matching ignores surrounding spaces and is otherwise case-sensitive.
-* Adding a role does not create an application. Use `add -p` to record an applicant's application for a role.
+* Adding a role does not create an application. Use `addp` to record an applicant's application for a role.
 
 Examples:
 
@@ -318,7 +322,7 @@ _Details coming soon ..._
 Action | Format, Examples
 --------|------------------
 **Add** | `add -n NAME -p PHONE_NUMBER -e EMAIL` <br> e.g., `add -n James Ho -p 22224444 -e jamesho@example.com`
-**Add application** | `add -p INDEX -j JOB_DESCRIPTION [-s STATUS]`<br> e.g., `add -p 1 -j Janitor -s pending`
+**Add application** | `addp INDEX -j JOB_DESCRIPTION [-s STATUS]`<br> e.g., `addp 1 -j Janitor -s pending`
 **Set application status** | `set INDEX -s STATUS`<br> e.g., `set 1 -s accept`
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
