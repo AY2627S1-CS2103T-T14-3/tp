@@ -7,8 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.testutil.TypicalPersons.ALICE;
 import static seedu.address.testutil.TypicalPersons.BOB;
 
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
 
 import seedu.address.testutil.PersonBuilder;
@@ -49,21 +47,6 @@ public class ApplicationTest {
         assertThrows(NullPointerException.class, () -> new Application(ALICE, new Job("Janitor"), null));
         assertThrows(IllegalArgumentException.class, ()
                 -> new Application(ALICE, new Job("   "), Application.Status.PENDING));
-        assertThrows(IllegalArgumentException.class, ()
-                -> new Application(ALICE, new Job("ClaudeGPT -s accept"), Application.Status.PENDING));
-    }
-
-    @Test
-    public void constructor_optionLikeJobDescription_throwsException() {
-        List<String> invalidDescriptions = List.of(
-                "-s accept",
-                "Janitor -s",
-                "Janitor -status accept",
-                "Janitor\t-s\taccept",
-                "Janitor\n-s\naccept");
-
-        invalidDescriptions.forEach(description -> assertThrows(IllegalArgumentException.class, ()
-                -> new Application(ALICE, new Job(description), Application.Status.PENDING)));
     }
 
     @Test

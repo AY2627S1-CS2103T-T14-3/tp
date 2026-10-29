@@ -230,11 +230,11 @@ Examples:
 
 Adds one job application to an applicant in the displayed list. Each applicant can have only one application.
 
-Format: `addp INDEX -j JOB_DESCRIPTION [-s STATUS]`
+Format: `addp INDEX -j JOB_ROLE [-s STATUS]`
 
 * `INDEX` is the positive integer shown beside an applicant in the current list. It must appear before the options.
 * When the list is filtered, the index refers to that filtered list.
-* `JOB_DESCRIPTION` is the role the applicant is applying for. It cannot contain another option, such as `-s`.
+* `JOB_ROLE` is the role the applicant is applying for. It cannot contain another option, such as `-s`.
 * `STATUS` is optional. When it is omitted, the status is `pending`.
 * Accepted statuses are `accept`, `reject`, and `pending`. The value is case-sensitive.
 * Aliases: `-job` for `-j` and `-status` for `-s`.
@@ -268,17 +268,18 @@ Examples:
 
 Adds an open role to the job list. The list on the right switches from applicants to jobs, and the new role is selected.
 
-Format: `addj -j JOB_DESCRIPTION`
+Format: `addj -j JOB_ROLE [-d JOB_DESCRIPTION]`
 
-* `JOB_DESCRIPTION` is the role name. It cannot be blank and cannot contain another option, such as `-s`.
-* Alias: `-job` for `-j`.
+* `JOB_ROLE` is the role name. It cannot be blank.
+* `JOB_DESCRIPTION` is the description for the job. It is an optional field.
+* Alias: `-job` for `-j`, and `-description`, `-desc` for `-d`.
 * A role that is already in the list cannot be added again. Matching ignores surrounding spaces and is otherwise case-sensitive.
 * Adding a role does not create an application. Use `addp` to record an applicant's application for a role.
 
 Examples:
 
 * `addj -j Software Engineer Intern` adds that role and shows it in the job list.
-* `addj -job Data Analyst` adds a Data Analyst role.
+* `addj -job Data Analyst -desc Analyses the data` adds a Data Analyst role.
 
 ### Editing a job: `editj`
 
@@ -369,7 +370,7 @@ _Details coming soon ..._
 Action | Format, Examples
 --------|------------------
 **Add** | `add -n NAME -p PHONE_NUMBER -e EMAIL` <br> e.g., `add -n James Ho -p 22224444 -e jamesho@example.com`
-**Add application** | `addp INDEX -j JOB_DESCRIPTION [-s STATUS]`<br> e.g., `addp 1 -j Janitor -s pending`
+**Add application** | `addp INDEX -j JOB_ROLE [-s STATUS]`<br> e.g., `addp 1 -j Janitor -s pending`
 **Set application status** | `set INDEX -s STATUS`<br> e.g., `set 1 -s accept`
 **Add job** | `addj -j JOB_DESCRIPTION`<br> e.g., `addj -j Software Engineer`
 **Edit job** | `editj INDEX -j JOB_DESCRIPTION`<br> e.g., `editj 1 -j Senior Software Engineer`

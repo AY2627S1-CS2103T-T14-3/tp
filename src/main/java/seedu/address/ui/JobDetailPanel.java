@@ -49,10 +49,10 @@ public class JobDetailPanel extends UiPart<Region> {
             return;
         }
 
-        jobName.setText(job.toString());
-        initials.setText(initialsOf(job.toString()));
+        jobName.setText(job.getJobRole());
+        initials.setText(initialsOf(job.getJobRole()));
         selectionHint.setText("Open role");
-        jobDescription.setText(job.toString());
+        jobDescription.setText(job.getJobDescription());
     }
 
     /**

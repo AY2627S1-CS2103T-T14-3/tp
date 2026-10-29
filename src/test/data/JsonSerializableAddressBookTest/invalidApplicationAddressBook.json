@@ -6,7 +6,10 @@
   } ],
   "applications" : [ {
     "name" : "Alice Pauline",
-    "jobDescription" : "Janitor",
+    "job" : {
+      "role" : "Janitor",
+      "description" : "fake"
+    },
     "status" : "ACCEPT"
   } ]
 }
