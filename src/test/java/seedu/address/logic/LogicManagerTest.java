@@ -16,6 +16,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import seedu.address.logic.commands.AddCommand;
 import seedu.address.logic.commands.CommandResult;
+import seedu.address.logic.commands.DeleteJobCommand;
 import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.EditJobCommand;
 import seedu.address.logic.commands.ListCommand;
@@ -134,6 +135,25 @@ public class LogicManagerTest {
         JsonAddressBookStorage savedStorage =
                 new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
         assertEquals(expectedModel.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
+    }
+
+    @Test
+    public void execute_deleteJob_savesCascadeAndKeepsApplicant() throws Exception {
+        logic.execute("add -n Amy Bee -p 11111111 -e amy@example.com");
+        logic.execute("addp 1 -j Software Engineer");
+        logic.execute("addj -j Software Engineer");
+
+        CommandResult result = logic.execute("deletej 1");
+
+        Model expectedModel = new ModelManager();
+        expectedModel.addPerson(AMY);
+        assertEquals(CommandResult.showJobs(String.format(
+                DeleteJobCommand.MESSAGE_DELETE_JOB_SUCCESS, "Software Engineer")), result);
+        assertEquals(expectedModel, model);
+        JsonAddressBookStorage savedStorage =
+                new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
+        ReadOnlyAddressBook reloaded = savedStorage.readAddressBook().orElseThrow();
+        assertEquals(expectedModel.getAddressBook(), reloaded);
     }
 
     @Test
