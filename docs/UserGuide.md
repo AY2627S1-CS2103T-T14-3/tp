@@ -3,7 +3,11 @@ layout: page
 title: User Guide
 ---
 
-AddressBook Level 3 (AB3) is a **desktop application for managing contacts, optimized for use through a Command Line Interface (CLI)** while retaining the benefits of a Graphical User Interface (GUI). If you type quickly, AB3 can help you manage contacts faster than traditional GUI applications.
+LinkedOut is a **desktop application for recruiters and HR administrators managing student applicants, job roles,
+and application outcomes**. Type commands to manage your records, then review them in applicant, application,
+and job lists with a detail panel for the selected record. Each applicant can have one application.
+
+LinkedOut is a personal workspace for one recruiter. Your records are stored locally on your computer.
 
 * Table of Contents
 {:toc}
@@ -12,33 +16,49 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 
 ## Quick start
 
-1. Ensure that Java `25` or later is installed on your computer.<br>
-   **Mac users:** Ensure you have the precise JDK version prescribed [here](https://se-education.org/guides/tutorials/javaInstallationMac.html).
+1. Install Java `25`. Open a terminal and run `java -version` to check that the version shown is `25`.<br>
+   **Mac users:** Follow the [Java installation instructions](https://se-education.org/guides/tutorials/javaInstallationMac.html) for your system.
 
-1. Download the latest `.jar` file from [here](https://github.com/se-edu/addressbook-level3/releases).
+1. Download `linkedout.jar` from the [LinkedOut releases page](https://github.com/AY2627S1-CS2103T-T14-3/tp/releases).
+   To build the latest source instead, see the [build instructions](DevOps.md#build-automation).
 
-1. Copy the file to the folder you want to use as the _home folder_ for your AddressBook.
+1. Copy the JAR file to an empty folder where you have permission to create files. This will be your
+   LinkedOut _home folder_, containing your records and preferences.
 
-1. Open a terminal, `cd` to the folder containing the JAR file, and run `java -jar addressbook.jar`.<br>
-   A GUI similar to the one below should appear in a few seconds. Note how the app contains some sample data.<br>
-   ![Ui](images/Ui.png)
+1. In the terminal, `cd` to that folder and run `java -jar "linkedout.jar"`.
+   If you renamed the file, use its actual name in the command. Launching from the terminal ensures that
+   LinkedOut uses the Java version you checked; double-clicking the JAR may use a different version or fail.
+
+   On first launch, LinkedOut shows six sample applicants and three sample jobs, with no applications recorded.
+   On subsequent launches, it loads your saved records.
+
+   ![LinkedOut on first launch, showing sample applicants and the selected applicant's details](images/Ui.png)
 
 1. Type a command in the command box and press Enter to execute it. For example, type **`help`** and press Enter to open the help window.<br>
    Some example commands you can try:
 
-   * `list` : Lists all contacts.
+   * `list` : Lists all applicants.
 
    * `viewa` : Shows the applicants view.
 
-   * `viewp` : Shows the applications view.
+   * `viewj` : Shows the jobs view.
 
-   * `add -n John Doe -p 98765432 -e johnd@example.com` : Adds a contact named `John Doe` to the Address Book.
+   * `view 1` : Shows the first displayed applicant's details.
 
-   * `delete 3` : Deletes the 3rd contact shown in the current list.
-
-   * `clear` : Deletes all contacts.
+   * `add -n John Doe -p 98765432 -e johnd@example.com` : Adds an applicant named `John Doe`.
 
    * `bye` : Exits the app.
+
+   To try the recruitment workflow with the sample data, run these commands in order:
+
+   ```text
+   list
+   addp 1 -j Software Engineer Intern
+   set 1 -s accept
+   viewp
+   ```
+
+   The first applicant now has an accepted application for the sample Software Engineer Intern job.
 
 1. Refer to the [Features](#features) section below for details of each command.
 
@@ -69,9 +89,9 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 
 ### Viewing help: `help`
 
-Shows a message explaining how to access the help page.
+Opens a help window containing the User Guide link and a button to copy it.
 
-![help message](images/helpMessage.png)
+![LinkedOut help window with the User Guide link](images/helpMessage.png)
 
 Format: `help`
 
@@ -195,7 +215,7 @@ Examples:
 
 ### Clearing all entries: `clear`
 
-Clears all entries from the address book.
+Deletes all applicants, applications, and jobs. This command takes effect immediately, with no confirmation.
 
 Format: `clear`
 
@@ -237,7 +257,7 @@ Format: `addp INDEX -j JOB_ROLE [-s STATUS]`
 * `INDEX` is the positive integer shown beside an applicant in the current list. It must appear before the options.
 * When the list is filtered, the index refers to that filtered list.
 * `JOB_ROLE` is the role the applicant is applying for. It cannot contain another option, such as `-s`.
-* The role must already exist in the job list. Use `addj` to create it before adding an application.
+* The role must already exist in the job list. Use `addj` to create it before adding an application. Matching is case-sensitive and ignores surrounding spaces; supply the role name, without its description.
 * `STATUS` is optional. When it is omitted, the status is `pending`.
 * Accepted statuses are `accept`, `reject`, and `pending`. The value is case-sensitive.
 * Aliases: `-job` for `-j` and `-status` for `-s`.
@@ -288,10 +308,10 @@ Adds an open role to the job list. The list on the right switches from applicant
 
 Format: `addj -j JOB_ROLE [-d JOB_DESCRIPTION]`
 
-* `JOB_ROLE` is the role name. It cannot be blank.
-* `JOB_DESCRIPTION` is the description for the job. It is an optional field.
+* `JOB_ROLE` is the role name. It cannot be blank. Surrounding spaces are removed from both the role and description; values containing spaces do not need quotation marks.
+* `JOB_DESCRIPTION` is optional. If omitted, it is stored and displayed as `No information ~`. If `-d` is supplied, its value must not be empty.
 * Alias: `-job` for `-j`, and `-description`, `-desc` for `-d`.
-* A role that is already in the list cannot be added again. Matching ignores surrounding spaces and is otherwise case-sensitive.
+* A role that is already in the list cannot be added again, even with a different description. Matching ignores surrounding spaces and is otherwise case-sensitive. Different roles may share a description.
 * Adding a role does not create an application. Use `addp` to record an applicant's application for a role.
 
 Examples:
@@ -307,9 +327,10 @@ Format: `editj INDEX -j JOB_ROLE`
 
 * `INDEX` is the positive integer shown beside a job in the current job list, including a filtered list.
 * `JOB_ROLE` is required and follows the same rules as `addj`. Alias: `-job` for `-j`.
+* `editj` accepts only the role option. It replaces the job with a new job whose description is `No information ~`, even when the role name is unchanged. An existing description is not preserved, and `-d`, `-desc`, and `-description` are not accepted by this command.
 * The new role cannot match another stored job. Matching ignores surrounding spaces and is otherwise case-sensitive. Keeping the current role is allowed.
 * The job keeps its position in the full list. Any job filter is cleared so the edited role remains visible.
-* Applications for the job are updated to reference the edited role. Their applicants and statuses are kept.
+* Applications for the job are updated to reference the replacement job, including its reset description. Their applicants and statuses are kept.
 * An empty list, an invalid index, a missing role, or a duplicate role produces an error and leaves the jobs unchanged.
 
 Examples:
@@ -324,7 +345,7 @@ Shows open roles. The list on the right switches to jobs, and the detail panel s
 Format: `viewj [-f KEYWORD]`
 
 * Without `-f`, every job is shown.
-* `-f KEYWORD` shows roles whose description contains `KEYWORD`. Matching ignores case and does not need a full word, so `jan` matches `Janitor`.
+* `-f KEYWORD` searches the combined text `ROLE : DESCRIPTION`. Matching ignores case and does not need a full word, so `jan` matches the role `Janitor`. Text found only in the description also matches. A multi-word keyword is matched as one substring.
 * Alias: `-filter` for `-f`.
 * The command word is case-sensitive. `Viewj` is not recognised.
 * `editj` and `deletej` use the index in the list currently displayed, including a filtered list.
@@ -334,6 +355,7 @@ Examples:
 
 * `viewj` lists every job. An empty list shows "No jobs to display."
 * `viewj -f jan` lists roles such as Janitor.
+* After `addj -j Research Assistant -d Analyse survey responses`, `viewj -f survey` includes that job because its description matches.
 
 ### Deleting a job: `deletej`
 
@@ -353,16 +375,35 @@ Examples:
 
 ### Saving the data
 
-AddressBook automatically saves data after every command. You do not need to save manually.
+LinkedOut automatically saves data after every successfully executed command. You do not need to save manually.
 
 ### Editing the data file
 
-AddressBook data is saved automatically as a JSON file `[JAR file location]/data/addressbook.json`. Advanced users are welcome to update data directly by editing that data file.
+LinkedOut saves records in `data/addressbook.json` relative to the folder from which you launch it.
+Following the quick start keeps this file in your LinkedOut home folder. Advanced users can edit this JSON file
+while the application is closed. Back it up before making changes.
 
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
-If your changes make the data file invalid, AddressBook starts with an empty address book at the next run. The invalid file remains on disk until you run a command (AddressBook saves after every command). Still, we recommend backing up the file before editing it.<br>
-Furthermore, certain edits can cause the AddressBook to behave in unexpected ways (e.g., if a value entered is outside of the acceptable range). Therefore, edit the data file only if you are confident that you can update it correctly.
+If your changes make the data file invalid, LinkedOut starts with empty lists on the next run.
+The invalid file remains on disk until a successfully executed command saves the in-memory records over it.
+Restore your backup before continuing if your records fail to load.<br>
+Values outside the accepted ranges can cause loading errors or unexpected behavior. Edit the file only if you
+are confident that you can update it correctly.
 </div>
+
+#### Job data format
+
+Each entry in `jobs` is an object with a non-blank `role` and a `description` string, for example
+`{"role": "Research Assistant", "description": "Analyse survey responses"}`. The description may be an empty
+string in the data file, but it must be present and cannot be `null`. Role names must be unique after removing
+surrounding spaces; comparisons are case-sensitive.
+
+Each application stores its job as an object with the same two fields. Its role must match an entry in `jobs`.
+When loading, the application uses the matching job from `jobs`, including that job's description.
+
+**Compatibility:** Older files with jobs stored as strings or without a `role` field are not automatically
+migrated. Back up the file before updating it. Convert each job to the object format above, including the `job`
+inside each application, and ensure every application refers to a role in `jobs`.
 
 ### Archiving data files `[coming in v2.0]`
 
@@ -373,7 +414,9 @@ _Details coming soon ..._
 ## FAQ
 
 **Q**: How do I transfer my data to another computer?<br>
-**A**: Install the app on the other computer and overwrite the data file it creates with the data file from your previous AddressBook home folder.
+**A**: Close LinkedOut on both computers. Copy `linkedout.jar` and `data/addressbook.json` from your LinkedOut
+home folder to the same layout in a writable folder on the other computer. Ensure Java `25` is installed there,
+then launch LinkedOut from that folder as described in the quick start.
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -404,6 +447,5 @@ Action | Format, Examples
 **View applicants** | `viewa`
 **View applications** | `viewp`
 **View applicant** | `view INDEX`<br> e.g., `view 1`
-**View jobs** | `viewj [-f KEYWORD]`<br> e.g., `viewj -f jan`
 **Help** | `help`
 **Bye** | `bye` or `exit`

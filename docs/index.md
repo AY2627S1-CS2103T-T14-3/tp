@@ -5,15 +5,18 @@ title: LinkedOut
 
 [![CI Status](https://github.com/AY2627S1-CS2103T-T14-3/tp/workflows/Java%20CI/badge.svg)](https://github.com/AY2627S1-CS2103T-T14-3/tp/actions)
 
-![Current contact-management interface](images/Ui.png)
+![LinkedOut applicant list and detail panel](images/Ui.png)
 
 **Keep track of the people behind every application.**
 
-LinkedOut is a desktop application in development for recruiters and HR administrators handling student applications across multiple job openings. Its recruitment workflow will bring together applicant contacts, hiring decisions, and the department contacts responsible for each role.
+LinkedOut is a desktop application for recruiters and HR administrators handling student applications across multiple job openings. Keep applicant contacts, job roles, and application outcomes together in one workspace.
 
 Text commands keep routine tasks quick, while a graphical interface provides an overview of your records. LinkedOut is designed as an individual workspace for one recruiter and stores data locally in editable JSON files.
 
-*The current build supports contact management. Applicant registration, application status tracking, and recruitment details are under development. The guides currently describe the AddressBook foundation.*
+* Add, find, edit, and delete applicants.
+* Manage job roles and their descriptions.
+* Record one application per applicant and update its status to pending, accepted, or rejected.
+* Review applicant, application, and job lists with details for the selected record.
 
 * To run the current application, start with the [_Quick Start_ section of the **User Guide**](UserGuide.html#quick-start).
 * To contribute, read the [**Developer Guide**](DeveloperGuide.html) and [**setup instructions**](SettingUp.html).
