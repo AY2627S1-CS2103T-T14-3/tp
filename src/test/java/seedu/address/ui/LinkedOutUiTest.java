@@ -171,6 +171,7 @@ public class LinkedOutUiTest {
     @Test
     public void deleteApplicant_lastApplicant_showsApplicationSnapshotUntilNextCommand() throws Exception {
         withWindow((window, model) -> {
+            command(window, "addj -job Engineer");
             command(window, "find Alice");
             command(window, "addp 1 -j Engineer -s accept");
             command(window, "delete 1");
@@ -229,6 +230,7 @@ public class LinkedOutUiTest {
     @Test
     public void helpCommand_afterDeletingLastDisplayedApplicant_preservesApplicationSnapshot() throws Exception {
         withWindow(window -> {
+            command(window, "addj -job Engineer");
             command(window, "find Alice");
             command(window, "addp 1 -j Engineer -s accept");
             command(window, "delete 1");
@@ -367,6 +369,7 @@ public class LinkedOutUiTest {
     @Test
     public void addApplication_validCommand_selectsApplicantAndShowsApplication() throws Exception {
         withWindow(window -> {
+            command(window, "addj -job Janitor");
             command(window, "addp 2 -job Janitor -s accept");
             ListView<?> applicants = (ListView<?>) window.getRoot().getScene().lookup("#personListView");
             assertEquals(1, applicants.getSelectionModel().getSelectedIndex());
@@ -381,6 +384,8 @@ public class LinkedOutUiTest {
     @Test
     public void addApplication_duplicateAndInvalidStatus_preservesExistingApplication() throws Exception {
         withWindow(window -> {
+            command(window, "addj -job Janitor");
+            command(window, "addj -job Engineer");
             command(window, "find Meier");
             command(window, "addp 1 -j Janitor");
             ListView<?> applicants = (ListView<?>) window.getRoot().getScene().lookup("#personListView");
@@ -406,6 +411,7 @@ public class LinkedOutUiTest {
     @Test
     public void setApplicationStatus_existingApplication_updatesDetailPanel() throws Exception {
         withWindow(window -> {
+            command(window, "addj -job Janitor");
             command(window, "addp 2 -j Janitor");
             command(window, "set 2 -status accept");
             ListView<?> applicants = (ListView<?>) window.getRoot().getScene().lookup("#personListView");
@@ -420,6 +426,7 @@ public class LinkedOutUiTest {
     @Test
     public void setApplicationStatus_invalidStatusAndMissingApplication_preservesApplication() throws Exception {
         withWindow(window -> {
+            command(window, "addj -job Janitor");
             command(window, "addp 1 -j Janitor");
             ListView<?> applicants = (ListView<?>) window.getRoot().getScene().lookup("#personListView");
             TextField input = (TextField) window.getRoot().getScene().lookup("#commandTextField");
@@ -473,12 +480,13 @@ public class LinkedOutUiTest {
             assertEquals("Applicants", label(window, "listTitle").getText());
             assertEquals("Alice Pauline", label(window, "applicantName").getText());
 
-            command(window, "addp 1 -j Janitor");
             command(window, "addj -j Janitor");
+            command(window, "addp 1 -j Janitor");
+            command(window, "addj -j Janitwo");
             pulse(window);
             assertEquals("Jobs", label(window, "listTitle").getText());
-            assertEquals("3 jobs", label(window, "applicantCount").getText());
-            assertEquals("Janitor", label(window, "jobName").getText());
+            assertEquals("4 jobs", label(window, "applicantCount").getText());
+            assertEquals("Janitwo", label(window, "jobName").getText());
             assertNull(window.getRoot().getScene().lookup("#applicantSummary"));
 
             command(window, "viewj");
@@ -487,7 +495,7 @@ public class LinkedOutUiTest {
 
             command(window, "deletej 1");
             assertEquals("Deleted job: Software Engineer", feedback(window));
-            assertEquals("2 jobs", label(window, "applicantCount").getText());
+            assertEquals("3 jobs", label(window, "applicantCount").getText());
             ListView<?> jobs = (ListView<?>) window.getRoot().getScene().lookup("#jobListView");
             assertEquals("Data Analyst : No information ~", jobs.getItems().get(0).toString());
             assertNotNull(jobs.getSelectionModel().getSelectedItem());

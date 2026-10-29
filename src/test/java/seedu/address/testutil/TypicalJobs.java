@@ -20,7 +20,7 @@ public class TypicalJobs {
     /**
      * Adds the jobs to an {@code AddressBook} with all the typical jobs.
      */
-    public static AddressBook addToAddressBook(AddressBook ab) {
+    public static AddressBook addJobsToAddressBook(AddressBook ab) {
         for (Job job : getTypicalJobs()) {
             ab.addJob(job);
         }

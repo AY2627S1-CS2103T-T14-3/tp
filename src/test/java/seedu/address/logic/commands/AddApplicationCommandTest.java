@@ -8,6 +8,8 @@ import static seedu.address.logic.commands.CommandTestUtil.assertCommandSuccess;
 import static seedu.address.logic.commands.CommandTestUtil.showPersonAtIndex;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
 import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND_PERSON;
+import static seedu.address.testutil.TypicalJobs.JANITOR;
+import static seedu.address.testutil.TypicalJobs.addJobsToAddressBook;
 import static seedu.address.testutil.TypicalPersons.ALICE;
 import static seedu.address.testutil.TypicalPersons.BENSON;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
@@ -23,15 +25,15 @@ import seedu.address.model.application.Job;
 
 public class AddApplicationCommandTest {
 
-    private final Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs());
+    private final Model model = new ModelManager(addJobsToAddressBook(getTypicalAddressBook()), new UserPrefs());
 
     @Test
     public void execute_newApplicationWithoutStatus_addsPendingApplication() {
-        Application application = new Application(ALICE, new Job("Janitor"), Application.Status.PENDING);
+        Application application = new Application(ALICE, JANITOR, Application.Status.PENDING);
         AddApplicationCommand command = new AddApplicationCommand(
                 INDEX_FIRST_PERSON, "Janitor", Application.Status.PENDING);
 
-        Model expectedModel = new ModelManager(getTypicalAddressBook(), new UserPrefs());
+        Model expectedModel = new ModelManager(addJobsToAddressBook(getTypicalAddressBook()), new UserPrefs());
         expectedModel.addApplication(application);
         CommandResult expectedResult = new CommandResult(String.format(
                 AddApplicationCommand.MESSAGE_SUCCESS, ALICE.getName(), ALICE.getEmail()), ALICE);
@@ -42,11 +44,12 @@ public class AddApplicationCommandTest {
 
     @Test
     public void execute_newApplicationWithStatus_addsRequestedStatus() {
-        Application application = new Application(BENSON, new Job("ClaudeGPT Expert"), Application.Status.ACCEPT);
-        AddApplicationCommand command = new AddApplicationCommand(
-                INDEX_SECOND_PERSON, "ClaudeGPT Expert", Application.Status.ACCEPT);
 
-        Model expectedModel = new ModelManager(getTypicalAddressBook(), new UserPrefs());
+        Application application = new Application(BENSON, JANITOR, Application.Status.ACCEPT);
+        AddApplicationCommand command = new AddApplicationCommand(
+                INDEX_SECOND_PERSON, "Janitor", Application.Status.ACCEPT);
+
+        Model expectedModel = new ModelManager(addJobsToAddressBook(getTypicalAddressBook()), new UserPrefs());
         expectedModel.addApplication(application);
         CommandResult expectedResult = new CommandResult(String.format(
                 AddApplicationCommand.MESSAGE_SUCCESS, BENSON.getName(), BENSON.getEmail()), BENSON);
@@ -60,7 +63,7 @@ public class AddApplicationCommandTest {
         AddApplicationCommand command = new AddApplicationCommand(
                 INDEX_FIRST_PERSON, "Janitor", Application.Status.REJECT);
 
-        Model expectedModel = new ModelManager(getTypicalAddressBook(), new UserPrefs());
+        Model expectedModel = new ModelManager(addJobsToAddressBook(getTypicalAddressBook()), new UserPrefs());
         showPersonAtIndex(expectedModel, INDEX_SECOND_PERSON);
         expectedModel.addApplication(new Application(BENSON, new Job("Janitor"), Application.Status.REJECT));
         CommandResult expectedResult = new CommandResult(String.format(
@@ -130,7 +133,7 @@ public class AddApplicationCommandTest {
                 INDEX_FIRST_PERSON, "Janitor", Application.Status.PENDING);
         String expected = AddApplicationCommand.class.getCanonicalName()
                 + "{targetIndex=" + INDEX_FIRST_PERSON
-                + ", jobDescription=Janitor, status=pending}";
+                + ", jobRole=Janitor, status=pending}";
         assertEquals(expected, command.toString());
     }
 }
