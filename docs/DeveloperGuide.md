@@ -133,9 +133,13 @@ immutable job description and application status. Applicant identity is determin
 `Application#equals` compares the complete applicant, job description, and status. Job descriptions must be non-blank
 and must not contain option-like tokens; statuses are restricted to the case-sensitive values `accept`, `reject`, and
 `pending`. `AddressBook` stores these applications separately from its person list and keeps at most one application
-per applicant. `add -p` creates an application for an applicant in the displayed list, and `set` updates the
+per applicant. `addp` creates an application for an applicant in the displayed list, and `set` updates the
 status of an existing application without changing its job. Deleting an applicant also
 deletes that applicant's application, and editing an applicant updates the person stored on the application.
+`deletep INDEX` removes only the displayed applicant's application through `Model#deleteApplication` and
+`AddressBook#removeApplication`, preserving the applicant, job, and applicant filter. It returns the applicant
+in `CommandResult` to select them and refresh their details. An applicant without an application produces an error.
+Deleting an applicant or application never removes a job.
 
 `AddressBook` also keeps a separate `UniqueJobList` of open roles. A job is identified by its description:
 duplicate descriptions are rejected, surrounding spaces are ignored, and other differences in case are kept.

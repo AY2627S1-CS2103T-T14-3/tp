@@ -222,6 +222,21 @@ Examples:
 * `addp 1 -j Janitor` adds a pending Janitor application for the first displayed applicant.
 * `addp 2 -job ClaudeGPT Expert -s accept` adds an accepted application for the second displayed applicant.
 
+### Deleting an application: `deletep`
+
+Deletes an applicant's application while keeping the applicant's contact details and the job in the job list.
+
+Format: `deletep INDEX`
+
+* `INDEX` is the positive integer shown beside an applicant in the current list, including a filtered list.
+* A successful command keeps the current applicant filter, selects the applicant, and shows their details with no application recorded.
+* An applicant who has no application produces an error; no records are changed.
+* You can use `addp` afterwards to record a new application for the applicant.
+
+Example:
+
+* `find Betsy` followed by `deletep 1` deletes the application of the first applicant in the search results.
+
 ### Updating an application status: `set`
 
 Changes the status of an application that already belongs to an applicant in the displayed list. The job description is left unchanged.
@@ -347,6 +362,7 @@ Action | Format, Examples
 --------|------------------
 **Add** | `add -n NAME -p PHONE_NUMBER -e EMAIL` <br> e.g., `add -n James Ho -p 22224444 -e jamesho@example.com`
 **Add application** | `addp INDEX -j JOB_DESCRIPTION [-s STATUS]`<br> e.g., `addp 1 -j Janitor -s pending`
+**Delete application** | `deletep INDEX`<br> e.g., `deletep 1`
 **Set application status** | `set INDEX -s STATUS`<br> e.g., `set 1 -s accept`
 **Add job** | `addj -j JOB_DESCRIPTION`<br> e.g., `addj -j Software Engineer`
 **Edit job** | `editj INDEX -j JOB_DESCRIPTION`<br> e.g., `editj 1 -j Senior Software Engineer`
