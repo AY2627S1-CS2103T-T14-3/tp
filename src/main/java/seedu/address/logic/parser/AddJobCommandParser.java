@@ -2,6 +2,7 @@ package seedu.address.logic.parser;
 
 import static java.util.Objects.requireNonNull;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
+import static seedu.address.logic.Messages.MESSAGE_INVALID_JOB_ROLE;
 import static seedu.address.logic.parser.CliSyntax.OPTION_JOB_OPT;
 
 import seedu.address.logic.commands.AddJobCommand;
@@ -34,7 +35,7 @@ public class AddJobCommandParser implements Parser<AddJobCommand> {
 
         String role = values.getPreamble().trim();
         if (!Job.isValidRole(role)) {
-            throw new ParseException(Job.MESSAGE_CONSTRAINTS);
+            throw new ParseException(MESSAGE_INVALID_JOB_ROLE);
         }
         // Job description is given
         if (values.getValue(OPTION_JOB_OPT).isPresent()) {

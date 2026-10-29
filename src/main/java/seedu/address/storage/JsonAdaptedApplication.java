@@ -17,6 +17,8 @@ class JsonAdaptedApplication {
     public static final String MISSING_FIELD_MESSAGE_FORMAT = "Application's %s field is missing!";
     public static final String MESSAGE_UNKNOWN_APPLICANT =
             "Application refers to an applicant that does not exist.";
+    public static final String MESSAGE_UNKNOWN_JOB =
+            "Application refers to a job that does not exist.";
     public static final String MESSAGE_INVALID_STATUS = "Invalid status. Please choose a status from "
             + "\"accept\", \"reject\", or \"pending\".";
 
@@ -77,13 +79,11 @@ class JsonAdaptedApplication {
                 .findFirst()
                 .orElseThrow(() -> new IllegalValueException(MESSAGE_UNKNOWN_APPLICANT));
 
-        final Job modelJob;
-        try {
-            modelJob = new Job(jobDescription);
-        } catch (IllegalArgumentException exception) {
-            throw new IllegalValueException(Job.MESSAGE_CONSTRAINTS);
-        }
+        Job job = addressBook.getJobList().stream()
+                .filter(j -> j.getJobRole().equals(jobDescription))
+                .findFirst()
+                .orElseThrow(() -> new IllegalValueException(MESSAGE_UNKNOWN_JOB));
 
-        return new Application(applicant, modelJob, modelStatus);
+        return new Application(applicant, job, modelStatus);
     }
 }

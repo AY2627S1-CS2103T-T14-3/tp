@@ -1,15 +1,12 @@
 package seedu.address.model.application;
 
 import static java.util.Objects.requireNonNull;
-import static seedu.address.commons.util.AppUtil.checkArgument;
 
 import java.util.Objects;
 
 /** Represents a job that an applicant is applying for. */
 public class Job {
 
-    public static final String MESSAGE_CONSTRAINTS =
-            "Job descriptions should not be blank or contain option-like parameters.";
     private static final String DEFAULT_DESC =
             "No information ~";
 
@@ -23,7 +20,6 @@ public class Job {
     /** Creates a job with the given description. */
     public Job(String role, String description) {
         requireNonNull(role);
-        checkArgument(isValidRole(role.strip()), MESSAGE_CONSTRAINTS);
         this.role = role.strip();
         this.description = description;
     }

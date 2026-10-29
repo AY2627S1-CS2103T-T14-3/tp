@@ -86,9 +86,6 @@ class JsonSerializableAddressBook {
         }
         for (JsonAdaptedJob jsonAdaptedJob : jobs) {
             Job job = jsonAdaptedJob.toModelType(addressBook);
-            if (!Job.isValidRole(job.getJobRole()) || !Job.isValidDescription(job.getJobDescription())) {
-                throw new IllegalValueException(Job.MESSAGE_CONSTRAINTS);
-            }
             if (addressBook.hasJob(job)) {
                 throw new IllegalValueException(MESSAGE_DUPLICATE_JOB);
             }

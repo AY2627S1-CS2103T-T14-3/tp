@@ -20,6 +20,8 @@ public class Messages {
     public static final String MESSAGE_DUPLICATE_FIELDS =
                 "Multiple values specified for the following single-valued field(s): ";
 
+    public static final String MESSAGE_INVALID_JOB_ROLE =
+            "Job roles should not be blank or contain option-like parameters.";
     /**
      * Returns an error message indicating the duplicate prefixes.
      */

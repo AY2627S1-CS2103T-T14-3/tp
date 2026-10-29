@@ -2,6 +2,7 @@ package seedu.address.storage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_JOB_AMY;
+import static seedu.address.storage.JsonAdaptedApplication.MESSAGE_UNKNOWN_JOB;
 import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalPersons.ALICE;
 
@@ -43,9 +44,9 @@ public class JsonAdaptedApplicationTest {
     @Test
     public void toModelType_invalidJob_throwsIllegalValueException() {
         JsonAdaptedApplication application = new JsonAdaptedApplication(
-                ALICE.getName().fullName, "Janitor -s accept", VALID_STATUS);
+                ALICE.getName().fullName, "Fake Job", VALID_STATUS);
 
-        assertThrows(IllegalValueException.class, Job.MESSAGE_CONSTRAINTS, () ->
+        assertThrows(IllegalValueException.class, MESSAGE_UNKNOWN_JOB, () ->
                 application.toModelType(ADDRESS_BOOK));
     }
 }

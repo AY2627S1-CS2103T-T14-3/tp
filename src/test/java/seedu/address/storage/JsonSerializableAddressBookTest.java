@@ -1,6 +1,7 @@
 package seedu.address.storage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static seedu.address.storage.JsonAdaptedApplication.MESSAGE_UNKNOWN_JOB;
 import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalPersons.ALICE;
 
@@ -84,7 +85,7 @@ public class JsonSerializableAddressBookTest {
         JsonSerializableAddressBook dataFromFile = JsonUtil.readJsonFile(
                 TEST_DATA_FOLDER.resolve("invalidJobAddressBook.json"),
                 JsonSerializableAddressBook.class).get();
-        assertThrows(IllegalValueException.class, Job.MESSAGE_CONSTRAINTS, dataFromFile::toModelType);
+        assertThrows(IllegalValueException.class, MESSAGE_UNKNOWN_JOB, dataFromFile::toModelType);
     }
 
     @Test
