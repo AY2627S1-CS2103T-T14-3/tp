@@ -147,8 +147,13 @@ After editing, the command clears the job filter and returns the edited job in `
 is visible and selected even if the new description no longer matches the previous filter.
 These four commands ask the UI to show the job list and the selected role's detail panel. The panel shows
 that role only. It does not list applicants by comparing the role text with application job descriptions.
-Other successful commands show the applicant list again. Deleting a job does not delete applications, and
-adding an application does not add a job to this list. Jobs are stored in the same JSON address book under `jobs`.
+Other successful commands show the applicant list again. Deleting a job cascades through `AddressBook#removeJob`
+to `UniqueApplicationList#removeForJob`, removing every application whose `Job#equals` matches the deleted role
+while keeping all applicants. Matching uses the exact, case-sensitive job description after trimming surrounding spaces,
+consistent with job identity. The cascade operates on all stored applications regardless of the current filters,
+so subsequent saves contain no applications for the deleted role. Adding an application does not add a job to this list.
+The JSON format is unchanged, including support for existing applications whose descriptions are not in the job list.
+Jobs are stored in the same JSON address book under `jobs`.
 
 <div markdown="span" class="alert alert-info">:information_source: **Note:** The alternative, arguably more object-oriented, design below keeps a unique list of tags in `AddressBook`, and each `Person` references tags from that list. This lets `AddressBook` maintain one `Tag` object per unique tag instead of each `Person` holding its own `Tag` objects.<br>
 

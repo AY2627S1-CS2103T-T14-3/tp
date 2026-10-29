@@ -154,8 +154,9 @@ Examples:
 
 Deletes the specified person from the address book.
 
-The applicant and their application are removed together. Their former details remain visible in the
-detail panel, marked as deleted, until you select another applicant or run another successful applicant command.
+The applicant and their application are removed together. Jobs remain in the job list. The applicant's former details
+remain visible in the detail panel, marked as deleted, until you select another applicant or run another successful
+applicant command.
 Opening Help, either with `help` or through the menu, preserves these deleted details.
 
 Format: `delete INDEX`
@@ -298,7 +299,8 @@ Deletes the role at the displayed index. The list stays on jobs.
 Format: `deletej INDEX`
 
 * `INDEX` is the positive integer shown beside a job in the job list currently displayed. After `viewj -f jan`, index 1 is the first matching job.
-* Deleting a role does not delete applicants or their applications.
+* Deleting a role also deletes all applications with the same job description. Applicants and their contact details are kept.
+* Job descriptions are matched exactly after trimming surrounding spaces; different letter cases identify different jobs.
 * An empty list, a missing index, or an index past the end of the list produces an error and leaves the jobs unchanged.
 
 Examples:
