@@ -553,7 +553,7 @@ public class LinkedOutUiTest {
             assertEquals("Jobs", label(window, "listTitle").getText());
 
             command(window, "deletej 1");
-            assertEquals("Deleted job: Software Engineer", feedback(window));
+            assertEquals("Deleted job and any associated applications: Software Engineer", feedback(window));
             assertEquals("2 jobs", label(window, "applicantCount").getText());
             ListView<?> jobs = (ListView<?>) window.getRoot().getScene().lookup("#jobListView");
             assertEquals("Data Analyst", jobs.getItems().get(0).toString());

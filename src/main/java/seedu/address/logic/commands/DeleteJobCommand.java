@@ -23,7 +23,7 @@ public class DeleteJobCommand extends Command {
             + "Parameters: INDEX (must be a positive integer)\n"
             + "Example: " + COMMAND_WORD + " 1";
 
-    public static final String MESSAGE_DELETE_JOB_SUCCESS = "Deleted job: %1$s";
+    public static final String MESSAGE_DELETE_JOB_SUCCESS = "Deleted job and any associated applications: %1$s";
     public static final String MESSAGE_EMPTY_LIST = "There are no jobs to delete.";
     public static final String MESSAGE_INVALID_INDEX =
             "Invalid job index. Please enter an integer from 1 to %1$d.";
