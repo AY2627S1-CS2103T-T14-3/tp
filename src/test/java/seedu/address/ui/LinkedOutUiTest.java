@@ -282,7 +282,7 @@ public class LinkedOutUiTest {
             ListView<?> applicants = (ListView<?>) window.getRoot().getScene().lookup("#personListView");
             assertEquals(1, applicants.getSelectionModel().getSelectedIndex());
             assertApplicantDetails(window, BENSON);
-            assertApplication(window, "Janitor", "Accepted");
+            assertApplication(window, "Janitor : No information ~", "Accepted");
             assertEquals(String.format(AddApplicationCommand.MESSAGE_SUCCESS, BENSON.getName(), BENSON.getEmail()),
                     feedback(window));
             assertEquals("7 applicants", label(window, "applicantCount").getText());
@@ -304,12 +304,12 @@ public class LinkedOutUiTest {
             assertEquals(AddApplicationCommand.MESSAGE_INVALID_STATUS, feedback(window));
             assertEquals(List.of(BENSON, DANIEL), applicants.getItems());
             assertApplicantDetails(window, BENSON);
-            assertApplication(window, "Janitor", "Pending");
+            assertApplication(window, "Janitor : No information ~", "Pending");
 
             input.setText("addp 1 -j Engineer");
             input.fireEvent(new ActionEvent());
             assertEquals(AddApplicationCommand.MESSAGE_DUPLICATE_APPLICATION, feedback(window));
-            assertApplication(window, "Janitor", "Pending");
+            assertApplication(window, "Janitor : No information ~", "Pending");
             assertEquals(List.of(BENSON, DANIEL), applicants.getItems());
         });
     }
@@ -322,7 +322,7 @@ public class LinkedOutUiTest {
             ListView<?> applicants = (ListView<?>) window.getRoot().getScene().lookup("#personListView");
             assertEquals(1, applicants.getSelectionModel().getSelectedIndex());
             assertApplicantDetails(window, BENSON);
-            assertApplication(window, "Janitor", "Accepted");
+            assertApplication(window, "Janitor : No information ~", "Accepted");
             assertEquals(String.format(SetApplicationStatusCommand.MESSAGE_SUCCESS,
                     BENSON.getName(), BENSON.getEmail(), "accept"), feedback(window));
         });
@@ -340,13 +340,13 @@ public class LinkedOutUiTest {
             assertEquals("set 1 -s ACCEPT", input.getText());
             assertTrue(input.getStyleClass().contains(CommandBox.ERROR_STYLE_CLASS));
             assertEquals(SetApplicationStatusCommand.MESSAGE_INVALID_STATUS, feedback(window));
-            assertApplication(window, "Janitor", "Pending");
+            assertApplication(window, "Janitor : No information ~", "Pending");
 
             input.setText("set 2 -s reject");
             input.fireEvent(new ActionEvent());
             assertEquals(SetApplicationStatusCommand.MESSAGE_MISSING_APPLICATION, feedback(window));
             assertEquals(0, applicants.getSelectionModel().getSelectedIndex());
-            assertApplication(window, "Janitor", "Pending");
+            assertApplication(window, "Janitor : No information ~", "Pending");
         });
     }
 
@@ -355,7 +355,7 @@ public class LinkedOutUiTest {
         withWindow(window -> {
             assertEquals("Applicants", label(window, "listTitle").getText());
 
-            command(window, "addj -j Software Engineer");
+            command(window, "addj Software Engineer");
             pulse(window);
             assertEquals("Jobs", label(window, "listTitle").getText());
             assertEquals("1 job", label(window, "applicantCount").getText());
@@ -364,7 +364,7 @@ public class LinkedOutUiTest {
             assertNull(window.getRoot().getScene().lookup("#applicantSummary"));
             assertEquals("New job added: Software Engineer", feedback(window));
 
-            command(window, "addj -job Data Analyst");
+            command(window, "addj Data Analyst");
             pulse(window);
             assertEquals("2 jobs", label(window, "applicantCount").getText());
             assertEquals("Data Analyst", label(window, "jobName").getText());
@@ -385,7 +385,7 @@ public class LinkedOutUiTest {
             assertEquals("Alice Pauline", label(window, "applicantName").getText());
 
             command(window, "addp 1 -j Janitor");
-            command(window, "addj -j Janitor");
+            command(window, "addj Janitor");
             pulse(window);
             assertEquals("Jobs", label(window, "listTitle").getText());
             assertEquals("3 jobs", label(window, "applicantCount").getText());
@@ -400,7 +400,7 @@ public class LinkedOutUiTest {
             assertEquals("Deleted job: Software Engineer", feedback(window));
             assertEquals("2 jobs", label(window, "applicantCount").getText());
             ListView<?> jobs = (ListView<?>) window.getRoot().getScene().lookup("#jobListView");
-            assertEquals("Data Analyst", jobs.getItems().get(0).toString());
+            assertEquals("Data Analyst : No information ~", jobs.getItems().get(0).toString());
             assertNotNull(jobs.getSelectionModel().getSelectedItem());
         });
     }

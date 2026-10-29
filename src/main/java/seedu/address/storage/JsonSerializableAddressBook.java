@@ -77,19 +77,19 @@ class JsonSerializableAddressBook {
             }
             addressBook.addPerson(person);
         }
-        for (JsonAdaptedApplication jsonAdaptedApplication : applications) {
-            Application application = jsonAdaptedApplication.toModelType(addressBook);
-            if (addressBook.hasApplication(application.getApplicant())) {
-                throw new IllegalValueException(MESSAGE_DUPLICATE_APPLICATION);
-            }
-            addressBook.addApplication(application);
-        }
         for (JsonAdaptedJob jsonAdaptedJob : jobs) {
             Job job = jsonAdaptedJob.toModelType(addressBook);
             if (addressBook.hasJob(job)) {
                 throw new IllegalValueException(MESSAGE_DUPLICATE_JOB);
             }
             addressBook.addJob(job);
+        }
+        for (JsonAdaptedApplication jsonAdaptedApplication : applications) {
+            Application application = jsonAdaptedApplication.toModelType(addressBook);
+            if (addressBook.hasApplication(application.getApplicant())) {
+                throw new IllegalValueException(MESSAGE_DUPLICATE_APPLICATION);
+            }
+            addressBook.addApplication(application);
         }
         return addressBook;
     }

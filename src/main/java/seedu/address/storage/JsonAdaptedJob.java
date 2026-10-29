@@ -12,7 +12,8 @@ import seedu.address.model.application.Job;
  */
 public class JsonAdaptedJob {
 
-    public static final String MISSING_FIELD_MESSAGE_FORMAT = "Job's %s field is missing!";
+    public static final String MISSING_ROLE_MESSAGE_FORMAT = "Job's role field is missing!";
+    public static final String MISSING_DESC_MESSAGE_FORMAT = "Job's description field is missing!";
 
     private final String role;
     private final String description;
@@ -45,11 +46,11 @@ public class JsonAdaptedJob {
      * @throws IllegalValueException if there were any data constraints violated in the adapted job.
      */
     public Job toModelType(AddressBook addressBook) throws IllegalValueException {
-        if (role == null) {
-            throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, "job role"));
+        if (!Job.isValidRole(role)) {
+            throw new IllegalValueException(MISSING_ROLE_MESSAGE_FORMAT);
         }
-        if (description == null) {
-            throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, "job description"));
+        if (!Job.isValidDescription(description)) {
+            throw new IllegalValueException(MISSING_DESC_MESSAGE_FORMAT);
         }
 
         return new Job(role, description);

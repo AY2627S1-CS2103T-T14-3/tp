@@ -23,20 +23,20 @@ class JsonAdaptedApplication {
             + "\"accept\", \"reject\", or \"pending\".";
 
     private final String name;
-    private final String jobDescription;
+    private final JsonAdaptedJob job;
     private final String status;
 
     /**
      * Constructs a {@code JsonAdaptedApplication} with the given application details.
      * @param name name of the applicant who owns the application
-     * @param jobDescription job the applicant is applying for
+     * @param job job the applicant is applying for
      * @param status application status
      */
     @JsonCreator
     public JsonAdaptedApplication(@JsonProperty("name") String name,
-            @JsonProperty("jobDescription") String jobDescription, @JsonProperty("status") String status) {
+            @JsonProperty("job") JsonAdaptedJob job, @JsonProperty("status") String status) {
         this.name = name;
-        this.jobDescription = jobDescription;
+        this.job = job;
         this.status = status;
     }
 
@@ -46,7 +46,7 @@ class JsonAdaptedApplication {
      */
     public JsonAdaptedApplication(Application source) {
         name = source.getApplicant().getName().fullName;
-        jobDescription = source.getJob().toString();
+        job = new JsonAdaptedJob(source.getJob());
         status = source.getStatus().getValue();
     }
 
@@ -60,8 +60,8 @@ class JsonAdaptedApplication {
         if (name == null) {
             throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, "name"));
         }
-        if (jobDescription == null) {
-            throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, "job description"));
+        if (job == null) {
+            throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, "job"));
         }
         if (status == null) {
             throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, "status"));
@@ -79,8 +79,9 @@ class JsonAdaptedApplication {
                 .findFirst()
                 .orElseThrow(() -> new IllegalValueException(MESSAGE_UNKNOWN_APPLICANT));
 
+        Job applicationJob = this.job.toModelType(addressBook);
         Job job = addressBook.getJobList().stream()
-                .filter(j -> j.getJobRole().equals(jobDescription))
+                .filter(j -> j.equals(applicationJob))
                 .findFirst()
                 .orElseThrow(() -> new IllegalValueException(MESSAGE_UNKNOWN_JOB));
 
