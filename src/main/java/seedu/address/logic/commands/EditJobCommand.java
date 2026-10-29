@@ -13,7 +13,7 @@ import seedu.address.model.Model;
 import seedu.address.model.application.Job;
 
 /**
- * Edits the description of a job identified using its displayed index.
+ * Replaces the role of a job identified using its displayed index and updates its applications.
  */
 public class EditJobCommand extends Command {
 
@@ -21,7 +21,7 @@ public class EditJobCommand extends Command {
 
     public static final String MESSAGE_USAGE = COMMAND_WORD
             + ": Edits the job identified by the index number used in the displayed job list.\n"
-            + "Parameters: INDEX (must be a positive integer) -j JOB_DESCRIPTION\n"
+            + "Parameters: INDEX (must be a positive integer) -j JOB_ROLE\n"
             + "Alias: -job for -j\n"
             + "Example: " + COMMAND_WORD + " 1 -j Software Engineer Intern";
 
@@ -62,7 +62,8 @@ public class EditJobCommand extends Command {
 
         model.setJob(jobToEdit, editedJob);
         model.updateFilteredJobList(PREDICATE_SHOW_ALL_JOBS);
-        return new CommandResult(String.format(MESSAGE_EDIT_JOB_SUCCESS, editedJob), editedJob);
+        return new CommandResult(String.format(MESSAGE_EDIT_JOB_SUCCESS, editedJob),
+                ViewRequest.job(editedJob));
     }
 
     @Override

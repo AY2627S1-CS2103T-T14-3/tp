@@ -173,11 +173,12 @@ public class AddressBook implements ReadOnlyAddressBook {
     }
 
     /**
-     * Replaces an existing job while preserving its position and leaving applications unchanged.
-     * The edited description must not match another stored job.
+     * Replaces an existing job while preserving its position and updating its applications to reference the edited job.
+     * The edited role must not match another stored job.
      */
     public void setJob(Job target, Job editedJob) {
         jobs.setJob(target, editedJob);
+        applications.setJob(target, editedJob);
     }
 
     /**

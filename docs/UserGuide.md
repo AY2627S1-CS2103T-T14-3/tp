@@ -28,6 +28,10 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
 
    * `list` : Lists all contacts.
 
+   * `viewa` : Shows the applicants view.
+
+   * `viewp` : Shows the applications view.
+
    * `add -n John Doe -p 98765432 -e johnd@example.com` : Adds a contact named `John Doe` to the Address Book.
 
    * `delete 3` : Deletes the 3rd contact shown in the current list.
@@ -94,6 +98,7 @@ Email | `-e` | `-email`
 * Short and long aliases can be mixed, and options can appear in any order.
 * Values containing spaces, such as a full name, do not need quotation marks.
 * Unknown options, repeated options (including different aliases for the same field), missing values, and text before the first option produce a format error with a usage hint.
+* The applicant list is shown and the new applicant is selected.
 * Standalone words such as `-unknown` are treated as options, even inside a value.
 * The legacy `add n/NAME p/PHONE_NUMBER e/EMAIL` format is no longer accepted.
 
@@ -107,6 +112,22 @@ Examples:
 Shows a list of all persons in the address book.
 
 Format: `list`
+
+### Viewing applicants: `viewa`
+
+Switches the list to the Applicants tab and displays the current applicant list.
+
+Format: `viewa`
+
+The command accepts no arguments.
+
+### Viewing applications: `viewp`
+
+Switches the list to the Applications tab. Each row shows the applicant's index and name, the job, and a status of Accepted, Rejected, or Pending. The index matches the applicant list, including a filtered list.
+
+Format: `viewp`
+
+The command accepts no arguments.
 
 ### Editing an applicant: `edit`
 
@@ -126,6 +147,7 @@ Email | `-e` | `-email`
 * Short and long aliases can be mixed, and options can appear in any order. Values containing spaces do not need quotation marks.
 * Unknown options, repeated options (including aliases for the same field), missing values, and extra positional text produce a format error.
 * The legacy `edit INDEX n/NAME p/PHONE e/EMAIL` format is no longer accepted.
+* The applicant list is shown with the edited applicant selected.
 
 Examples:
 
@@ -144,6 +166,7 @@ Format: `find KEYWORD [MORE_KEYWORDS]`
 * The search considers only names.
 * Only full words match; for example, `Han` does not match `Hans`.
 * Persons matching at least one keyword are returned (an `OR` search); for example, `Hans Bo` returns `Hans Gruber` and `Bo Yang`.
+* The applicant list is shown, including when jobs or applications were visible.
 
 Examples:
 * `find John` returns `john` and `John Doe`
@@ -174,6 +197,8 @@ Examples:
 Clears all entries from the address book.
 
 Format: `clear`
+
+The applicant list is shown. Details left on screen after a deletion are replaced by the empty detail panel.
 
 ### Exiting the program: `bye`
 
@@ -206,11 +231,12 @@ Examples:
 
 Adds one job application to an applicant in the displayed list. Each applicant can have only one application.
 
-Format: `addp INDEX -j JOB_DESCRIPTION [-s STATUS]`
+Format: `addp INDEX -j JOB_ROLE [-s STATUS]`
 
 * `INDEX` is the positive integer shown beside an applicant in the current list. It must appear before the options.
 * When the list is filtered, the index refers to that filtered list.
-* `JOB_DESCRIPTION` is the role the applicant is applying for. It cannot contain another option, such as `-s`.
+* `JOB_ROLE` is the role the applicant is applying for. It cannot contain another option, such as `-s`.
+* The role must already exist in the job list. Use `addj` to create it before adding an application.
 * `STATUS` is optional. When it is omitted, the status is `pending`.
 * Accepted statuses are `accept`, `reject`, and `pending`. The value is case-sensitive.
 * Aliases: `-job` for `-j` and `-status` for `-s`.
@@ -259,30 +285,31 @@ Examples:
 
 Adds an open role to the job list. The list on the right switches from applicants to jobs, and the new role is selected.
 
-Format: `addj -j JOB_DESCRIPTION`
+Format: `addj -j JOB_ROLE [-d JOB_DESCRIPTION]`
 
-* `JOB_DESCRIPTION` is the role name. It cannot be blank and cannot contain another option, such as `-s`.
-* Alias: `-job` for `-j`.
+* `JOB_ROLE` is the role name. It cannot be blank.
+* `JOB_DESCRIPTION` is the description for the job. It is an optional field.
+* Alias: `-job` for `-j`, and `-description`, `-desc` for `-d`.
 * A role that is already in the list cannot be added again. Matching ignores surrounding spaces and is otherwise case-sensitive.
 * Adding a role does not create an application. Use `addp` to record an applicant's application for a role.
 
 Examples:
 
 * `addj -j Software Engineer Intern` adds that role and shows it in the job list.
-* `addj -job Data Analyst` adds a Data Analyst role.
+* `addj -job Data Analyst -desc Analyses the data` adds a Data Analyst role.
 
 ### Editing a job: `editj`
 
-Replaces a job's description. The full job list is shown after a successful edit, with the edited role selected.
+Replaces a job's role. The full job list is shown after a successful edit, with the edited role selected.
 
-Format: `editj INDEX -j JOB_DESCRIPTION`
+Format: `editj INDEX -j JOB_ROLE`
 
 * `INDEX` is the positive integer shown beside a job in the current job list, including a filtered list.
-* `JOB_DESCRIPTION` is required and follows the same rules as `addj`. Alias: `-job` for `-j`.
-* The new description cannot match another stored job. Matching ignores surrounding spaces and is otherwise case-sensitive. Keeping the current description is allowed.
+* `JOB_ROLE` is required and follows the same rules as `addj`. Alias: `-job` for `-j`.
+* The new role cannot match another stored job. Matching ignores surrounding spaces and is otherwise case-sensitive. Keeping the current role is allowed.
 * The job keeps its position in the full list. Any job filter is cleared so the edited role remains visible.
-* Editing a job leaves applicants and their application descriptions unchanged.
-* An empty list, an invalid index, a missing description, or a duplicate description produces an error and leaves the jobs unchanged.
+* Applications for the job are updated to reference the edited role. Their applicants and statuses are kept.
+* An empty list, an invalid index, a missing role, or a duplicate role produces an error and leaves the jobs unchanged.
 
 Examples:
 
@@ -300,7 +327,7 @@ Format: `viewj [-f KEYWORD]`
 * Alias: `-filter` for `-f`.
 * The command word is case-sensitive. `Viewj` is not recognised.
 * `editj` and `deletej` use the index in the list currently displayed, including a filtered list.
-* Other commands, such as `list` and `view`, switch the list back to applicants.
+* `list`, `view`, `viewa`, `find`, `add`, `edit`, and `clear` switch the list back to applicants. `viewp` switches to applications.
 
 Examples:
 
@@ -314,8 +341,8 @@ Deletes the role at the displayed index. The list stays on jobs.
 Format: `deletej INDEX`
 
 * `INDEX` is the positive integer shown beside a job in the job list currently displayed. After `viewj -f jan`, index 1 is the first matching job.
-* Deleting a role also deletes all applications with the same job description. Applicants and their contact details are kept.
-* Job descriptions are matched exactly after trimming surrounding spaces; different letter cases identify different jobs.
+* Deleting a role also deletes all applications with the same job role. Applicants and their contact details are kept.
+* Job roles are matched exactly after trimming surrounding spaces; different letter cases identify different jobs.
 * An empty list, a missing index, or an index past the end of the list produces an error and leaves the jobs unchanged.
 
 Examples:
@@ -361,11 +388,11 @@ _Details coming soon ..._
 Action | Format, Examples
 --------|------------------
 **Add** | `add -n NAME -p PHONE_NUMBER -e EMAIL` <br> e.g., `add -n James Ho -p 22224444 -e jamesho@example.com`
-**Add application** | `addp INDEX -j JOB_DESCRIPTION [-s STATUS]`<br> e.g., `addp 1 -j Janitor -s pending`
+**Add application** | `addp INDEX -j JOB_ROLE [-s STATUS]`<br> e.g., `addp 1 -j Janitor -s pending`
 **Delete application** | `deletep INDEX`<br> e.g., `deletep 1`
 **Set application status** | `set INDEX -s STATUS`<br> e.g., `set 1 -s accept`
-**Add job** | `addj -j JOB_DESCRIPTION`<br> e.g., `addj -j Software Engineer`
-**Edit job** | `editj INDEX -j JOB_DESCRIPTION`<br> e.g., `editj 1 -j Senior Software Engineer`
+**Add job** | `addj -j JOB_ROLE [-d JOB_DESCRIPTION]`<br> e.g., `addj -j Software Engineer`
+**Edit job** | `editj INDEX -j JOB_ROLE`<br> e.g., `editj 1 -j Senior Software Engineer`
 **View jobs** | `viewj [-f KEYWORD]`<br> e.g., `viewj -f engineer`
 **Delete job** | `deletej INDEX`<br> e.g., `deletej 1`
 **Clear** | `clear`
@@ -373,6 +400,9 @@ Action | Format, Examples
 **Edit** | `edit INDEX [-n NAME] [-p PHONE] [-e EMAIL]`<br> e.g., `edit 1 -p 91234567 -e john@example.com`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
 **List** | `list`
-**View** | `view INDEX`<br> e.g., `view 1`
+**View applicants** | `viewa`
+**View applications** | `viewp`
+**View applicant** | `view INDEX`<br> e.g., `view 1`
+**View jobs** | `viewj [-f KEYWORD]`<br> e.g., `viewj -f jan`
 **Help** | `help`
 **Bye** | `bye` or `exit`

@@ -40,12 +40,13 @@ public class DeleteJobCommandTest {
     @Test
     public void execute_validIndex_success() {
         DeleteJobCommand command = new DeleteJobCommand(INDEX_FIRST_PERSON);
-        String expectedMessage = String.format(DeleteJobCommand.MESSAGE_DELETE_JOB_SUCCESS, ENGINEER);
+        String expectedMessage = String.format(DeleteJobCommand.MESSAGE_DELETE_JOB_SUCCESS, ENGINEER.getJobRole());
 
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
         expectedModel.deleteJob(ENGINEER);
 
-        assertCommandSuccess(command, model, CommandResult.showJobs(expectedMessage), expectedModel);
+        assertCommandSuccess(command, model,
+                new CommandResult(expectedMessage, ViewRequest.jobs()), expectedModel);
         assertFalse(model.hasJob(ENGINEER));
         assertTrue(model.hasJob(ANALYST));
     }
@@ -67,14 +68,15 @@ public class DeleteJobCommandTest {
         model.updateFilteredPersonList(person -> person.equals(ALICE));
         model.updateFilteredJobList(job -> job.toString().contains("Data"));
         DeleteJobCommand command = new DeleteJobCommand(INDEX_FIRST_PERSON);
-        String expectedMessage = String.format(DeleteJobCommand.MESSAGE_DELETE_JOB_SUCCESS, ANALYST);
+        String expectedMessage = String.format(DeleteJobCommand.MESSAGE_DELETE_JOB_SUCCESS, ANALYST.getJobRole());
 
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
         expectedModel.updateFilteredJobList(job -> job.toString().contains("Data"));
         expectedModel.updateFilteredPersonList(person -> person.equals(ALICE));
         expectedModel.deleteJob(ANALYST);
 
-        assertCommandSuccess(command, model, CommandResult.showJobs(expectedMessage), expectedModel);
+        assertCommandSuccess(command, model,
+                new CommandResult(expectedMessage, ViewRequest.jobs()), expectedModel);
         assertTrue(model.hasJob(ENGINEER));
         assertFalse(model.hasJob(ANALYST));
         assertEquals(List.of(engineerApplication), model.getApplicationList());

@@ -21,6 +21,7 @@ import seedu.address.logic.commands.DeleteJobCommand;
 import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.EditJobCommand;
 import seedu.address.logic.commands.ListCommand;
+import seedu.address.logic.commands.ViewRequest;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.Model;
@@ -118,20 +119,20 @@ public class LogicManagerTest {
     }
 
     @Test
-    public void execute_editJob_savesEditedJobAndPreservesApplication() throws Exception {
+    public void execute_editJob_savesEditedJobAndUpdatesApplicationReference() throws Exception {
         logic.execute("add -n Amy Bee -p 11111111 -e amy@example.com");
-        logic.execute("addp 1 -j Software Engineer");
         logic.execute("addj -j Software Engineer");
+        logic.execute("addp 1 -j Software Engineer");
 
         Job editedJob = new Job("Product Designer");
         CommandResult result = logic.execute("editj 1 -job Product Designer");
         Model expectedModel = new ModelManager();
         expectedModel.addPerson(AMY);
-        expectedModel.addApplication(new Application(AMY, new Job("Software Engineer"), Application.Status.PENDING));
+        expectedModel.addApplication(new Application(AMY, editedJob, Application.Status.PENDING));
         expectedModel.addJob(editedJob);
 
-        assertEquals(new CommandResult(String.format(EditJobCommand.MESSAGE_EDIT_JOB_SUCCESS, editedJob), editedJob),
-                result);
+        assertEquals(new CommandResult(String.format(EditJobCommand.MESSAGE_EDIT_JOB_SUCCESS, editedJob),
+                ViewRequest.job(editedJob)), result);
         assertEquals(expectedModel, model);
         JsonAddressBookStorage savedStorage =
                 new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
@@ -141,15 +142,15 @@ public class LogicManagerTest {
     @Test
     public void execute_deleteJob_savesCascadeAndKeepsApplicant() throws Exception {
         logic.execute("add -n Amy Bee -p 11111111 -e amy@example.com");
-        logic.execute("addp 1 -j Software Engineer");
         logic.execute("addj -j Software Engineer");
+        logic.execute("addp 1 -j Software Engineer");
 
         CommandResult result = logic.execute("deletej 1");
 
         Model expectedModel = new ModelManager();
         expectedModel.addPerson(AMY);
-        assertEquals(CommandResult.showJobs(String.format(
-                DeleteJobCommand.MESSAGE_DELETE_JOB_SUCCESS, "Software Engineer")), result);
+        assertEquals(new CommandResult(String.format(
+                DeleteJobCommand.MESSAGE_DELETE_JOB_SUCCESS, "Software Engineer"), ViewRequest.jobs()), result);
         assertEquals(expectedModel, model);
         JsonAddressBookStorage savedStorage =
                 new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
@@ -160,8 +161,8 @@ public class LogicManagerTest {
     @Test
     public void execute_deleteApplication_savesDeletionAndAllowsNewApplication() throws Exception {
         logic.execute("add -n Amy Bee -p 11111111 -e amy@example.com");
-        logic.execute("addp 1 -j Software Engineer");
         logic.execute("addj -j Software Engineer");
+        logic.execute("addp 1 -j Software Engineer");
 
         CommandResult result = logic.execute("deletep 1");
 
@@ -169,12 +170,15 @@ public class LogicManagerTest {
         expectedModel.addPerson(AMY);
         expectedModel.addJob(new Job("Software Engineer"));
         assertEquals(new CommandResult(String.format(
-                DeleteApplicationCommand.MESSAGE_SUCCESS, AMY.getName(), AMY.getEmail()), AMY), result);
+                DeleteApplicationCommand.MESSAGE_SUCCESS, AMY.getName(), AMY.getEmail()),
+                ViewRequest.applicant(AMY)), result);
         assertEquals(expectedModel, model);
         JsonAddressBookStorage savedStorage =
                 new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
         assertEquals(expectedModel.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
 
+        logic.execute("addj -j Product Designer");
+        expectedModel.addJob(new Job("Product Designer"));
         logic.execute("addp 1 -j Product Designer -s accept");
         expectedModel.addApplication(new Application(AMY, new Job("Product Designer"), Application.Status.ACCEPT));
         assertEquals(expectedModel.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
@@ -197,7 +201,7 @@ public class LogicManagerTest {
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
 
         CommandResult result = logic.execute("view 1");
-        assertEquals(new CommandResult("Viewing applicant: Amy Bee", AMY), result);
+        assertEquals(new CommandResult("Viewing applicant: Amy Bee", ViewRequest.applicant(AMY)), result);
         assertEquals(expectedModel, model);
     }
 

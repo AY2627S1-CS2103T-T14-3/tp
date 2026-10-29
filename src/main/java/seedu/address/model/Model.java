@@ -119,8 +119,8 @@ public interface Model {
 
     /**
      * Replaces {@code target} with {@code editedJob}, preserving its position in the job list.
-     * The target must exist, and the edited description must not match another stored job.
-     * Applicant applications remain unchanged.
+     * The target must exist, and the edited role must not match another stored job.
+     * Updates matching applications to reference the edited job, keeping applicants and statuses.
      */
     void setJob(Job target, Job editedJob);
 

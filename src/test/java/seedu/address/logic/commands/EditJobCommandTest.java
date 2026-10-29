@@ -9,6 +9,7 @@ import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
 import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND_PERSON;
 import static seedu.address.testutil.TypicalPersons.ALICE;
+import static seedu.address.testutil.TypicalPersons.BENSON;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
 
 import java.util.List;
@@ -24,7 +25,7 @@ import seedu.address.model.application.Application;
 import seedu.address.model.application.Job;
 
 /**
- * Checks job edits against displayed indices, uniqueness, and independent application data.
+ * Checks job edits against displayed indices, uniqueness, and application job references.
  */
 public class EditJobCommandTest {
 
@@ -48,17 +49,22 @@ public class EditJobCommandTest {
     }
 
     @Test
-    public void execute_validIndex_preservesOrderAndApplications() {
+    public void execute_validIndex_preservesOrderAndUpdatesApplicationJob() {
         Application application = new Application(ALICE, ENGINEER, Application.Status.ACCEPT);
         model.addApplication(application);
+        Application unrelatedApplication = new Application(BENSON, ANALYST, Application.Status.REJECT);
+        model.addApplication(unrelatedApplication);
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
         expectedModel.setJob(ENGINEER, DESIGNER);
 
         assertCommandSuccess(new EditJobCommand(INDEX_FIRST_PERSON, DESIGNER), model,
-                new CommandResult(String.format(EditJobCommand.MESSAGE_EDIT_JOB_SUCCESS, DESIGNER), DESIGNER),
+                new CommandResult(String.format(EditJobCommand.MESSAGE_EDIT_JOB_SUCCESS, DESIGNER),
+                        ViewRequest.job(DESIGNER)),
                 expectedModel);
         assertEquals(List.of(DESIGNER, ANALYST), model.getJobList());
-        assertEquals(application, model.getApplication(ALICE).orElseThrow());
+        assertEquals(new Application(ALICE, DESIGNER, Application.Status.ACCEPT),
+                model.getApplication(ALICE).orElseThrow());
+        assertEquals(unrelatedApplication, model.getApplication(BENSON).orElseThrow());
     }
 
     @Test
@@ -68,7 +74,8 @@ public class EditJobCommandTest {
         expectedModel.setJob(ANALYST, DESIGNER);
 
         assertCommandSuccess(new EditJobCommand(INDEX_FIRST_PERSON, DESIGNER), model,
-                new CommandResult(String.format(EditJobCommand.MESSAGE_EDIT_JOB_SUCCESS, DESIGNER), DESIGNER),
+                new CommandResult(String.format(EditJobCommand.MESSAGE_EDIT_JOB_SUCCESS, DESIGNER),
+                        ViewRequest.job(DESIGNER)),
                 expectedModel);
         assertEquals(List.of(ENGINEER, DESIGNER), model.getFilteredJobList());
     }
@@ -88,7 +95,8 @@ public class EditJobCommandTest {
         Job sameJob = new Job(" Software Engineer ");
 
         assertCommandSuccess(new EditJobCommand(INDEX_FIRST_PERSON, sameJob), model,
-                new CommandResult(String.format(EditJobCommand.MESSAGE_EDIT_JOB_SUCCESS, ENGINEER), ENGINEER),
+                new CommandResult(String.format(EditJobCommand.MESSAGE_EDIT_JOB_SUCCESS, ENGINEER),
+                        ViewRequest.job(ENGINEER)),
                 expectedModel);
     }
 

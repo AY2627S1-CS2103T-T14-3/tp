@@ -37,7 +37,8 @@ public class DeleteApplicationCommandTest {
         expectedModel.addJob(job);
         expectedModel.addApplication(otherApplication);
         CommandResult expectedResult = new CommandResult(String.format(
-                DeleteApplicationCommand.MESSAGE_SUCCESS, ALICE.getName(), ALICE.getEmail()), ALICE);
+                DeleteApplicationCommand.MESSAGE_SUCCESS, ALICE.getName(), ALICE.getEmail()),
+                ViewRequest.applicant(ALICE));
 
         assertCommandSuccess(new DeleteApplicationCommand(INDEX_FIRST_PERSON), model, expectedResult, expectedModel);
         assertFalse(model.hasApplication(ALICE));
@@ -59,7 +60,8 @@ public class DeleteApplicationCommandTest {
         expectedModel.addApplication(otherApplication);
         showPersonAtIndex(expectedModel, INDEX_SECOND_PERSON);
         CommandResult expectedResult = new CommandResult(String.format(
-                DeleteApplicationCommand.MESSAGE_SUCCESS, BENSON.getName(), BENSON.getEmail()), BENSON);
+                DeleteApplicationCommand.MESSAGE_SUCCESS, BENSON.getName(), BENSON.getEmail()),
+                ViewRequest.applicant(BENSON));
 
         assertCommandSuccess(new DeleteApplicationCommand(INDEX_FIRST_PERSON), model, expectedResult, expectedModel);
         assertEquals(1, model.getFilteredPersonList().size());

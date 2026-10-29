@@ -35,7 +35,7 @@ public class SetApplicationStatusCommandTest {
         expectedModel.addApplication(new Application(ALICE, new Job("Janitor"), Application.Status.ACCEPT));
         CommandResult expectedResult = new CommandResult(String.format(
                 SetApplicationStatusCommand.MESSAGE_SUCCESS, ALICE.getName(), ALICE.getEmail(),
-                Application.Status.ACCEPT), ALICE);
+                Application.Status.ACCEPT), ViewRequest.applicant(ALICE));
 
         assertCommandSuccess(command, model, expectedResult, expectedModel);
         Application updated = model.getApplication(ALICE).orElseThrow();
@@ -54,7 +54,7 @@ public class SetApplicationStatusCommandTest {
         expectedModel.addApplication(application);
         CommandResult expectedResult = new CommandResult(String.format(
                 SetApplicationStatusCommand.MESSAGE_SUCCESS, ALICE.getName(), ALICE.getEmail(),
-                Application.Status.PENDING), ALICE);
+                Application.Status.PENDING), ViewRequest.applicant(ALICE));
 
         assertCommandSuccess(command, model, expectedResult, expectedModel);
     }
@@ -71,7 +71,7 @@ public class SetApplicationStatusCommandTest {
         expectedModel.addApplication(new Application(BENSON, new Job("Janitor"), Application.Status.REJECT));
         CommandResult expectedResult = new CommandResult(String.format(
                 SetApplicationStatusCommand.MESSAGE_SUCCESS, BENSON.getName(), BENSON.getEmail(),
-                Application.Status.REJECT), BENSON);
+                Application.Status.REJECT), ViewRequest.applicant(BENSON));
 
         assertCommandSuccess(command, model, expectedResult, expectedModel);
         assertEquals(1, model.getFilteredPersonList().size());

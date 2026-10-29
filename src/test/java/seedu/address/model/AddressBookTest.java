@@ -207,6 +207,8 @@ public class AddressBookTest {
     public void addJob_duplicate_throwsDuplicateJobException() {
         addressBook.addJob(new Job("Software Engineer"));
         assertThrows(DuplicateJobException.class, () -> addressBook.addJob(new Job("Software Engineer")));
+        assertThrows(DuplicateJobException.class, () -> addressBook.addJob(
+                new Job("Software Engineer", "different descriptor")));
     }
 
     @Test
@@ -227,7 +229,7 @@ public class AddressBookTest {
         addressBook.addJob(otherJob);
         List<Person> applicants = addressBook.getPersonList();
         for (int i = 0; i < Application.Status.values().length; i++) {
-            addressBook.addApplication(new Application(applicants.get(i), new Job("Engineer"),
+            addressBook.addApplication(new Application(applicants.get(i), new Job("Engineer", "Different description"),
                     Application.Status.values()[i]));
         }
         Application otherApplication = new Application(applicants.getLast(), otherJob, Application.Status.PENDING);

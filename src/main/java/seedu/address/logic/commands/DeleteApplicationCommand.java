@@ -58,7 +58,8 @@ public class DeleteApplicationCommand extends Command {
         }
 
         model.deleteApplication(applicant);
-        return new CommandResult(String.format(MESSAGE_SUCCESS, applicant.getName(), applicant.getEmail()), applicant);
+        return new CommandResult(String.format(MESSAGE_SUCCESS, applicant.getName(), applicant.getEmail()),
+                ViewRequest.applicant(applicant));
     }
 
     @Override
