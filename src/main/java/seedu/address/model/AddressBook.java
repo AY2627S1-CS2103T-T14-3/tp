@@ -166,6 +166,14 @@ public class AddressBook implements ReadOnlyAddressBook {
     }
 
     /**
+     * Replaces an existing job while preserving its position and leaving applications unchanged.
+     * The edited description must not match another stored job.
+     */
+    public void setJob(Job target, Job editedJob) {
+        jobs.setJob(target, editedJob);
+    }
+
+    /**
      * Removes {@code key} from this {@code AddressBook}.
      * {@code key} must exist in the address book.
      * @param key job to remove

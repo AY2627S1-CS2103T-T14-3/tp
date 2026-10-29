@@ -275,6 +275,24 @@ Examples:
 * `addj -j Software Engineer Intern` adds that role and shows it in the job list.
 * `addj -job Data Analyst` adds a Data Analyst role.
 
+### Editing a job: `editj`
+
+Replaces a job's description. The full job list is shown after a successful edit, with the edited role selected.
+
+Format: `editj INDEX -j JOB_DESCRIPTION`
+
+* `INDEX` is the positive integer shown beside a job in the current job list, including a filtered list.
+* `JOB_DESCRIPTION` is required and follows the same rules as `addj`. Alias: `-job` for `-j`.
+* The new description cannot match another stored job. Matching ignores surrounding spaces and is otherwise case-sensitive. Keeping the current description is allowed.
+* The job keeps its position in the full list. Any job filter is cleared so the edited role remains visible.
+* Editing a job leaves applicants and their application descriptions unchanged.
+* An empty list, an invalid index, a missing description, or a duplicate description produces an error and leaves the jobs unchanged.
+
+Examples:
+
+* `viewj` followed by `editj 2 -j Senior Software Engineer` renames the second job.
+* `viewj -f data` followed by `editj 1 -job Product Analyst` renames the first matching job and shows all jobs again.
+
 ### Viewing jobs: `viewj`
 
 Shows open roles. The list on the right switches to jobs, and the detail panel shows the selected role.
@@ -285,7 +303,7 @@ Format: `viewj [-f KEYWORD]`
 * `-f KEYWORD` shows roles whose description contains `KEYWORD`. Matching ignores case and does not need a full word, so `jan` matches `Janitor`.
 * Alias: `-filter` for `-f`.
 * The command word is case-sensitive. `Viewj` is not recognised.
-* `deletej` uses the index in the list currently displayed, including a filtered list.
+* `editj` and `deletej` use the index in the list currently displayed, including a filtered list.
 * `list`, `view`, and `viewa` switch the list back to applicants. `viewp` switches to applications.
 
 Examples:
@@ -348,6 +366,10 @@ Action | Format, Examples
 **Add** | `add -n NAME -p PHONE_NUMBER -e EMAIL` <br> e.g., `add -n James Ho -p 22224444 -e jamesho@example.com`
 **Add application** | `addp INDEX -j JOB_DESCRIPTION [-s STATUS]`<br> e.g., `addp 1 -j Janitor -s pending`
 **Set application status** | `set INDEX -s STATUS`<br> e.g., `set 1 -s accept`
+**Add job** | `addj -j JOB_DESCRIPTION`<br> e.g., `addj -j Software Engineer`
+**Edit job** | `editj INDEX -j JOB_DESCRIPTION`<br> e.g., `editj 1 -j Senior Software Engineer`
+**View jobs** | `viewj [-f KEYWORD]`<br> e.g., `viewj -f engineer`
+**Delete job** | `deletej INDEX`<br> e.g., `deletej 1`
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
 **Edit** | `edit INDEX [-n NAME] [-p PHONE] [-e EMAIL]`<br> e.g., `edit 1 -p 91234567 -e john@example.com`

@@ -139,8 +139,13 @@ deletes that applicant's application, and editing an applicant updates the perso
 
 `AddressBook` also keeps a separate `UniqueJobList` of open roles. A job is identified by its description:
 duplicate descriptions are rejected, surrounding spaces are ignored, and other differences in case are kept.
-`viewa` switches the UI to the applicant list, while `viewp` switches it to the application list. `addj` adds a role and shows the full job list. `viewj` lists every role, and `viewj -f KEYWORD` limits that list to roles whose description contains `KEYWORD`, ignoring case. `deletej` removes the role at the displayed index, which follows the current filter.
-The job commands ask the UI to show the job list and the selected role's detail panel. The panel shows
+`addj` adds a role and shows the full job list. `viewj` lists every role, and `viewj -f KEYWORD` limits that list to roles whose description contains `KEYWORD`, ignoring case. `deletej` removes the role at the displayed index, which follows the current filter.
+`editj INDEX -j JOB_DESCRIPTION` replaces a role at its displayed index, rejecting a description that
+matches another stored job. `Model#setJob` delegates to `AddressBook#setJob` and `UniqueJobList#setJob`,
+which replaces the job at the same position and enforces uniqueness. Applications remain unchanged.
+After editing, the command clears the job filter and returns the edited job in `CommandResult` so it
+is visible and selected even if the new description no longer matches the previous filter.
+These four commands ask the UI to show the job list and the selected role's detail panel. The panel shows
 that role only. It does not list applicants by comparing the role text with application job descriptions.
 The `view` command selects an applicant from the currently displayed applicant list and shows the applicant's
 details. `list` and `viewa` show the applicant list. `viewp` shows each application with its applicant, job, and status. Deleting a job does not
