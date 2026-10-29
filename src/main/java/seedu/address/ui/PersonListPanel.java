@@ -102,6 +102,11 @@ public class PersonListPanel extends UiPart<Region> {
         personListView.scrollTo(person);
     }
 
+    /** Clears the list selection when displaying a deleted applicant. */
+    public void clearSelection() {
+        personListView.getSelectionModel().clearSelection();
+    }
+
     /**
      * Custom {@code ListCell} that displays the graphics of a {@code Person} using a {@code PersonCard}.
      */

@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
-import static seedu.address.logic.Messages.MESSAGE_UNKNOWN_COMMAND;
+import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.testutil.TypicalPersons.ALICE;
 import static seedu.address.testutil.TypicalPersons.BENSON;
 import static seedu.address.testutil.TypicalPersons.DANIEL;
@@ -33,6 +33,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import seedu.address.logic.LogicManager;
 import seedu.address.logic.commands.AddApplicationCommand;
+import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.SetApplicationStatusCommand;
 import seedu.address.logic.commands.ViewCommand;
 import seedu.address.model.Model;
@@ -77,7 +78,7 @@ public class LinkedOutUiTest {
             assertEquals("Alice Pauline", label(window, "applicantName").getText());
             assertEquals("1 applicant", label(window, "applicantCount").getText());
             command(window, "delete 1");
-            assertEquals("No applicant selected", label(window, "applicantName").getText());
+            assertEquals("Alice Pauline", label(window, "applicantName").getText());
             assertEquals("0 applicants", label(window, "applicantCount").getText());
             command(window, "list");
             assertNotNull(applicants.getSelectionModel().getSelectedItem());
@@ -122,7 +123,7 @@ public class LinkedOutUiTest {
     }
 
     @Test
-    public void editCommand_unsupported_preservesApplicantsAndShowsError() throws Exception {
+    public void editCommand_invalidSyntax_preservesApplicantsAndShowsError() throws Exception {
         withWindow((window, model) -> {
             List<Person> expectedPersons = List.copyOf(model.getAddressBook().getPersonList());
             command(window, "find Meier");
@@ -136,7 +137,8 @@ public class LinkedOutUiTest {
 
                 assertEquals(editCommand, input.getText());
                 assertTrue(input.getStyleClass().contains(CommandBox.ERROR_STYLE_CLASS));
-                assertEquals(MESSAGE_UNKNOWN_COMMAND, feedback(window));
+                assertEquals(String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditCommand.MESSAGE_USAGE),
+                        feedback(window));
                 assertEquals(expectedPersons, model.getAddressBook().getPersonList());
                 assertEquals(List.of(BENSON, DANIEL), model.getFilteredPersonList());
                 assertApplicantDetails(window, DANIEL);
@@ -146,18 +148,105 @@ public class LinkedOutUiTest {
     }
 
     @Test
-    public void deleteApplicant_selectedApplicant_applicantNameUpdated() throws Exception {
+    public void deleteApplicant_selectedApplicant_showsDeletedDetails() throws Exception {
         withWindow(window -> {
             command(window, "delete 1");
-            assertApplicantName(window, "Benson Meier");
+            assertApplicantName(window, "Alice Pauline");
+            assertEquals("Deleted applicant. These details are no longer stored.",
+                    label(window, "selectionHint").getText());
         });
     }
 
     @Test
-    public void deleteApplicant_unselectedApplicant_applicantNameUnchanged() throws Exception {
+    public void deleteApplicant_unselectedApplicant_showsDeletedDetails() throws Exception {
         withWindow(window -> {
             command(window, "delete 2");
+            assertApplicantName(window, "Benson Meier");
+            command(window, "view 1");
+            assertApplicantDetails(window, ALICE);
+            assertEquals("Applicant contact information", label(window, "selectionHint").getText());
+        });
+    }
+
+    @Test
+    public void deleteApplicant_lastApplicant_showsApplicationSnapshotUntilNextCommand() throws Exception {
+        withWindow((window, model) -> {
+            command(window, "find Alice");
+            command(window, "addp 1 -j Engineer -s accept");
+            command(window, "delete 1");
+
             assertApplicantName(window, "Alice Pauline");
+            assertEquals(ALICE.getEmail().value, label(window, "email").getText());
+            assertEquals(ALICE.getPhone().value, label(window, "phone").getText());
+            assertApplication(window, "Engineer", "No information ~", "Accepted");
+            assertEquals("0 applicants", label(window, "applicantCount").getText());
+            assertTrue(model.getApplicationList().isEmpty());
+            ListView<?> applicants = (ListView<?>) window.getRoot().getScene().lookup("#personListView");
+            assertNull(applicants.getSelectionModel().getSelectedItem());
+
+            command(window, "list");
+            assertApplicantDetails(window, BENSON);
+            assertApplication(window, "No application recorded.", null, null);
+        });
+    }
+
+    @Test
+    public void helpCommand_afterDeletion_preservesDeletedSnapshot() throws Exception {
+        withWindow(window -> {
+            command(window, "delete 1");
+            assertApplicantName(window, "Alice Pauline");
+            assertNull(window.getPersonListPanel().selectedPersonProperty().get());
+
+            command(window, "help");
+
+            assertApplicantName(window, "Alice Pauline");
+            assertEquals("Deleted applicant. These details are no longer stored.",
+                    label(window, "selectionHint").getText());
+            assertNull(window.getPersonListPanel().selectedPersonProperty().get());
+
+            command(window, "view 1");
+            assertApplicantDetails(window, BENSON);
+            assertEquals("Applicant contact information", label(window, "selectionHint").getText());
+        });
+    }
+
+    @Test
+    public void helpMenu_afterDeletion_preservesDeletedSnapshot() throws Exception {
+        withWindow(window -> {
+            command(window, "delete 1");
+            assertApplicantName(window, "Alice Pauline");
+            assertNull(window.getPersonListPanel().selectedPersonProperty().get());
+
+            window.handleHelp();
+
+            assertApplicantName(window, "Alice Pauline");
+            assertEquals("Deleted applicant. These details are no longer stored.",
+                    label(window, "selectionHint").getText());
+            assertNull(window.getPersonListPanel().selectedPersonProperty().get());
+        });
+    }
+
+    @Test
+    public void helpCommand_afterDeletingLastDisplayedApplicant_preservesApplicationSnapshot() throws Exception {
+        withWindow(window -> {
+            command(window, "find Alice");
+            command(window, "addp 1 -j Engineer -s accept");
+            command(window, "delete 1");
+            assertApplicantName(window, "Alice Pauline");
+            assertApplication(window, "Engineer", "No information ~", "Accepted");
+
+            command(window, "help");
+
+            assertApplicantName(window, "Alice Pauline");
+            assertApplication(window, "Engineer", "No information ~", "Accepted");
+            assertEquals("Deleted applicant. These details are no longer stored.",
+                    label(window, "selectionHint").getText());
+            assertNull(window.getPersonListPanel().selectedPersonProperty().get());
+            assertEquals("0 applicants", label(window, "applicantCount").getText());
+
+            command(window, "list");
+            assertApplicantDetails(window, BENSON);
+            assertApplication(window, "No application recorded.", null, null);
         });
     }
 

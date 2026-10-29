@@ -69,6 +69,17 @@ public class ApplicantDetailPanel extends UiPart<Region> {
     }
 
     /**
+     * Displays a deleted applicant's former details with an explicit deletion label.
+     *
+     * @param person the deleted applicant.
+     * @param application the former application, or null when none was recorded.
+     */
+    public void showDeletedApplicant(Person person, Application application) {
+        showApplicant(person, application);
+        selectionHint.setText("Deleted applicant. These details are no longer stored.");
+    }
+
+    /**
      * Shows the job and a status badge, or the empty message when {@code application} is null.
      * @param application application to display, or null when none is recorded
      */
