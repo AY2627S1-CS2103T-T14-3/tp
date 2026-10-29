@@ -5,12 +5,12 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandFailure;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandSuccess;
-import static seedu.address.logic.commands.CommandTestUtil.showPersonAtIndex;
-import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
-import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND_PERSON;
-import static seedu.address.testutil.TypicalPersons.ALICE;
-import static seedu.address.testutil.TypicalPersons.BENSON;
-import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
+import static seedu.address.logic.commands.CommandTestUtil.showApplicantAtIndex;
+import static seedu.address.testutil.TypicalApplicants.ALICE;
+import static seedu.address.testutil.TypicalApplicants.BENSON;
+import static seedu.address.testutil.TypicalApplicants.getTypicalAddressBook;
+import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_APPLICANT;
+import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND_APPLICANT;
 
 import org.junit.jupiter.api.Test;
 
@@ -40,9 +40,10 @@ public class DeleteApplicationCommandTest {
                 DeleteApplicationCommand.MESSAGE_SUCCESS, ALICE.getName(), ALICE.getEmail()),
                 ViewRequest.applicant(ALICE));
 
-        assertCommandSuccess(new DeleteApplicationCommand(INDEX_FIRST_PERSON), model, expectedResult, expectedModel);
+        assertCommandSuccess(new DeleteApplicationCommand(INDEX_FIRST_APPLICANT), model,
+                expectedResult, expectedModel);
         assertFalse(model.hasApplication(ALICE));
-        assertTrue(model.hasPerson(ALICE));
+        assertTrue(model.hasApplicant(ALICE));
         assertTrue(model.hasJob(job));
     }
 
@@ -53,29 +54,30 @@ public class DeleteApplicationCommandTest {
         Application otherApplication = new Application(ALICE, job, Application.Status.PENDING);
         model.addApplication(otherApplication);
         model.addApplication(new Application(BENSON, job, Application.Status.REJECT));
-        showPersonAtIndex(model, INDEX_SECOND_PERSON);
+        showApplicantAtIndex(model, INDEX_SECOND_APPLICANT);
 
         Model expectedModel = new ModelManager(getTypicalAddressBook(), new UserPrefs());
         expectedModel.addJob(job);
         expectedModel.addApplication(otherApplication);
-        showPersonAtIndex(expectedModel, INDEX_SECOND_PERSON);
+        showApplicantAtIndex(expectedModel, INDEX_SECOND_APPLICANT);
         CommandResult expectedResult = new CommandResult(String.format(
                 DeleteApplicationCommand.MESSAGE_SUCCESS, BENSON.getName(), BENSON.getEmail()),
                 ViewRequest.applicant(BENSON));
 
-        assertCommandSuccess(new DeleteApplicationCommand(INDEX_FIRST_PERSON), model, expectedResult, expectedModel);
-        assertEquals(1, model.getFilteredPersonList().size());
+        assertCommandSuccess(new DeleteApplicationCommand(INDEX_FIRST_APPLICANT), model,
+                expectedResult, expectedModel);
+        assertEquals(1, model.getFilteredApplicantList().size());
     }
 
     @Test
     public void execute_missingApplication_throwsCommandException() {
-        assertCommandFailure(new DeleteApplicationCommand(INDEX_FIRST_PERSON), model,
+        assertCommandFailure(new DeleteApplicationCommand(INDEX_FIRST_APPLICANT), model,
                 DeleteApplicationCommand.MESSAGE_MISSING_APPLICATION);
     }
 
     @Test
     public void execute_invalidIndexUnfilteredList_throwsCommandException() {
-        int listSize = model.getFilteredPersonList().size();
+        int listSize = model.getFilteredApplicantList().size();
         DeleteApplicationCommand command = new DeleteApplicationCommand(Index.fromOneBased(listSize + 1));
 
         assertCommandFailure(command, model, String.format(DeleteApplicationCommand.MESSAGE_INVALID_INDEX, listSize));
@@ -83,24 +85,24 @@ public class DeleteApplicationCommandTest {
 
     @Test
     public void execute_invalidIndexFilteredList_throwsCommandException() {
-        showPersonAtIndex(model, INDEX_FIRST_PERSON);
+        showApplicantAtIndex(model, INDEX_FIRST_APPLICANT);
 
-        assertCommandFailure(new DeleteApplicationCommand(INDEX_SECOND_PERSON), model,
+        assertCommandFailure(new DeleteApplicationCommand(INDEX_SECOND_APPLICANT), model,
                 String.format(DeleteApplicationCommand.MESSAGE_INVALID_INDEX, 1));
     }
 
     @Test
     public void execute_emptyList_throwsCommandException() {
-        assertCommandFailure(new DeleteApplicationCommand(INDEX_FIRST_PERSON), new ModelManager(),
+        assertCommandFailure(new DeleteApplicationCommand(INDEX_FIRST_APPLICANT), new ModelManager(),
                 DeleteApplicationCommand.MESSAGE_EMPTY_LIST);
     }
 
     @Test
     public void equals() {
-        DeleteApplicationCommand command = new DeleteApplicationCommand(INDEX_FIRST_PERSON);
+        DeleteApplicationCommand command = new DeleteApplicationCommand(INDEX_FIRST_APPLICANT);
         assertTrue(command.equals(command));
-        assertTrue(command.equals(new DeleteApplicationCommand(INDEX_FIRST_PERSON)));
-        assertFalse(command.equals(new DeleteApplicationCommand(INDEX_SECOND_PERSON)));
+        assertTrue(command.equals(new DeleteApplicationCommand(INDEX_FIRST_APPLICANT)));
+        assertFalse(command.equals(new DeleteApplicationCommand(INDEX_SECOND_APPLICANT)));
         assertFalse(command.equals(null));
         assertFalse(command.equals(new ListCommand()));
     }

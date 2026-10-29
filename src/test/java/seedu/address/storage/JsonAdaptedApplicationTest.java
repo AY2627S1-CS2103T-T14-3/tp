@@ -4,9 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_JOB_AMY;
 import static seedu.address.storage.JsonAdaptedApplication.MESSAGE_UNKNOWN_JOB;
 import static seedu.address.testutil.Assert.assertThrows;
+import static seedu.address.testutil.TypicalApplicants.ALICE;
 import static seedu.address.testutil.TypicalJobs.ENGINEER;
 import static seedu.address.testutil.TypicalJobs.JANITOR;
-import static seedu.address.testutil.TypicalPersons.ALICE;
 
 import org.junit.jupiter.api.Test;
 
@@ -21,7 +21,7 @@ public class JsonAdaptedApplicationTest {
     private static final AddressBook ADDRESS_BOOK = new AddressBook();
 
     static {
-        ADDRESS_BOOK.addPerson(ALICE);
+        ADDRESS_BOOK.addApplicant(ALICE);
         ADDRESS_BOOK.addJob(JANITOR);
     }
 

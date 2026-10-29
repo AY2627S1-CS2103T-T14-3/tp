@@ -28,8 +28,8 @@ import seedu.address.logic.commands.ViewSelection;
 import seedu.address.logic.commands.ViewType;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.model.applicant.Applicant;
 import seedu.address.model.application.Application;
-import seedu.address.model.person.Person;
 
 /** The main window containing the command console and list views. */
 public class MainWindow extends UiPart<Stage> {
@@ -46,8 +46,8 @@ public class MainWindow extends UiPart<Stage> {
     private Path dataFilePath;
     private ViewType currentView = ViewType.APPLICANTS;
 
-    // Independent Ui parts residing in this Ui container
-    private PersonListPanel personListPanel;
+    // Independent UI parts residing in this UI container.
+    private ApplicantListPanel applicantListPanel;
     private ApplicationListPanel applicationListPanel;
     private JobListPanel jobListPanel;
     private ApplicantDetailPanel applicantDetailPanel;
@@ -95,8 +95,11 @@ public class MainWindow extends UiPart<Stage> {
     private StackPane statusbarPlaceholder;
 
     /**
-     * Creates a {@code MainWindow} with the given {@code Stage}, {@code Logic},
-     * and the data file path to show in the status bar.
+     * Creates a {@code MainWindow} with the given stage, logic, and data file path.
+     *
+     * @param primaryStage stage used to display the application.
+     * @param logic application logic component.
+     * @param dataFilePath path to show in the status bar.
      */
     public MainWindow(Stage primaryStage, Logic logic, Path dataFilePath) {
         super(FXML, primaryStage);
@@ -122,10 +125,6 @@ public class MainWindow extends UiPart<Stage> {
     private void setAccelerator(MenuItem menuItem, KeyCombination keyCombination) {
         menuItem.setAccelerator(keyCombination);
 
-        /*
-         * TextInputControl consumes function-key events. Capture matching events before they
-         * reach the command box or result display so that F1 remains available there.
-         */
         getRoot().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (event.getTarget() instanceof TextInputControl && keyCombination.match(event)) {
                 menuItem.getOnAction().handle(new ActionEvent());
@@ -136,22 +135,22 @@ public class MainWindow extends UiPart<Stage> {
 
     /** Fills all placeholders of this window. */
     void fillInnerParts() {
-        personListPanel = new PersonListPanel(logic.getFilteredPersonList());
+        applicantListPanel = new ApplicantListPanel(logic.getFilteredApplicantList());
         applicationListPanel = new ApplicationListPanel(
-                logic.getFilteredPersonList(), logic.getApplicationList());
+                logic.getFilteredApplicantList(), logic.getApplicationList());
         jobListPanel = new JobListPanel(logic.getFilteredJobList());
 
         applicantDetailPanel = new ApplicantDetailPanel();
         jobDetailPanel = new JobDetailPanel();
 
-        viewListPlaceholder.getChildren().add(personListPanel.getRoot());
+        viewListPlaceholder.getChildren().add(applicantListPanel.getRoot());
         applicantDetailPlaceholder.getChildren().add(applicantDetailPanel.getRoot());
 
         applicantsTab.setOnAction(event -> showView(ViewType.APPLICANTS));
         applicationsTab.setOnAction(event -> showView(ViewType.APPLICATIONS));
         jobsTab.setOnAction(event -> showView(ViewType.JOBS));
 
-        personListPanel.selectedPersonProperty().addListener((observable, previous, selected) ->
+        applicantListPanel.selectedApplicantProperty().addListener((observable, previous, selected) ->
                 refreshSelectedDetails());
         applicationListPanel.selectedApplicationProperty()
                 .addListener((observable, previous, selected) -> refreshSelectedDetails());
@@ -190,9 +189,9 @@ public class MainWindow extends UiPart<Stage> {
         listTitle.setText("Applicants");
         listHint.setText("Select an applicant to view their details.");
         consoleHint.setText(APPLICANT_HINT);
-        viewListPlaceholder.getChildren().setAll(personListPanel.getRoot());
+        viewListPlaceholder.getChildren().setAll(applicantListPanel.getRoot());
         applicantDetailPlaceholder.getChildren().setAll(applicantDetailPanel.getRoot());
-        bindCount(logic.getFilteredPersonList(), "applicant", "applicants");
+        bindCount(logic.getFilteredApplicantList(), "applicant", "applicants");
     }
 
     private void showApplicationsView() {
@@ -232,11 +231,11 @@ public class MainWindow extends UiPart<Stage> {
     }
 
     private void showSelectedApplicant() {
-        Person selected = personListPanel.selectedPersonProperty().get();
+        Applicant selected = applicantListPanel.selectedApplicantProperty().get();
         Application application = null;
         if (selected != null) {
             application = logic.getApplicationList().stream()
-                    .filter(existing -> existing.getApplicant().isSamePerson(selected))
+                    .filter(existing -> existing.getApplicant().isSameApplicant(selected))
                     .findFirst()
                     .orElse(null);
         }
@@ -298,17 +297,14 @@ public class MainWindow extends UiPart<Stage> {
         primaryStage.hide();
     }
 
-    public PersonListPanel getPersonListPanel() {
-        return personListPanel;
+    public ApplicantListPanel getApplicantListPanel() {
+        return applicantListPanel;
     }
 
-    /**
-     * Shows the applicants tab and the details captured before deletion.
-     * The list selection is cleared first so another applicant is not highlighted.
-     */
+    /** Shows the applicants tab and details captured before deletion. */
     private void showDeletedApplicant(CommandResult.DeletedApplicant deleted) {
         showView(ViewType.APPLICANTS);
-        personListPanel.clearSelection();
+        applicantListPanel.clearSelection();
         applicantDetailPanel.showDeletedApplicant(deleted.applicant(), deleted.application());
     }
 
@@ -319,7 +315,7 @@ public class MainWindow extends UiPart<Stage> {
 
     private void selectViewItem(ViewSelection selection) {
         if (selection instanceof ApplicantSelection applicant) {
-            personListPanel.selectPerson(applicant.getPerson());
+            applicantListPanel.selectApplicant(applicant.getApplicant());
         } else if (selection instanceof ApplicationSelection application) {
             applicationListPanel.selectApplication(application.getApplication());
         } else if (selection instanceof JobSelection job) {

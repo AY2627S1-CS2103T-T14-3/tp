@@ -1,0 +1,11 @@
+{
+  "applicants": [ {
+    "name": "Valid Applicant",
+    "phone": "9482424",
+    "email": "hans@example.com"
+  }, {
+    "name": "Applicant With Invalid Phone Field",
+    "phone": "948asdf2424",
+    "email": "hans@example.com"
+  } ]
+}

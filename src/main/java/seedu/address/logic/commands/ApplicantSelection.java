@@ -4,23 +4,23 @@ import static java.util.Objects.requireNonNull;
 
 import java.util.Objects;
 
-import seedu.address.model.person.Person;
+import seedu.address.model.applicant.Applicant;
 
 /** Identifies an applicant to select in the applicants view. */
 public final class ApplicantSelection implements ViewSelection {
-    private final Person person;
+    private final Applicant applicant;
 
     /**
      * Creates a selection for the given applicant.
      *
-     * @param person the applicant to select.
+     * @param applicant the applicant to select.
      */
-    public ApplicantSelection(Person person) {
-        this.person = requireNonNull(person);
+    public ApplicantSelection(Applicant applicant) {
+        this.applicant = requireNonNull(applicant);
     }
 
-    public Person getPerson() {
-        return person;
+    public Applicant getApplicant() {
+        return applicant;
     }
 
     @Override
@@ -36,11 +36,11 @@ public final class ApplicantSelection implements ViewSelection {
         if (!(other instanceof ApplicantSelection otherSelection)) {
             return false;
         }
-        return person.equals(otherSelection.person);
+        return applicant.equals(otherSelection.applicant);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(person);
+        return Objects.hash(applicant);
     }
 }
