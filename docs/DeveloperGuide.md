@@ -2,6 +2,12 @@
 layout: page
 title: Developer Guide
 ---
+
+LinkedOut is a desktop recruitment tracker for one recruiter, built on AddressBook-Level3. It manages
+applicant contacts, job roles, and one application per applicant, with records stored locally as JSON.
+The code retains the `seedu.address` package and names such as `Person` and `AddressBook` from the foundation.
+In this guide, a `Person` represents an applicant; `AddressBook` holds applicants, applications, and jobs.
+
 * Table of Contents
 {:toc}
 
@@ -9,7 +15,10 @@ title: Developer Guide
 
 ## **Acknowledgements**
 
-* _{List the sources of reused or adapted ideas, code, documentation, and third-party libraries here, with links to the originals.}_
+* LinkedOut adapts the code and documentation of [AddressBook-Level3](https://github.com/se-edu/addressbook-level3),
+  created by the [SE-EDU initiative](https://se-education.org).
+* The application uses [JavaFX](https://openjfx.io/) for its UI, [Jackson](https://github.com/FasterXML/jackson)
+  for JSON storage, and [JUnit 5](https://github.com/junit-team/junit5) for testing.
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -646,16 +655,19 @@ testers are expected to do more *exploratory* testing.
 
 1. Initial launch
 
-   1. Download the JAR file and copy it into an empty folder.
+   1. Download or build `linkedout.jar` and copy it into an empty, writable folder.
 
-   1. Double-click the JAR file.<br>
-      Expected: The GUI opens with a set of sample contacts. The window size may not be optimal.
+   1. Open a terminal in that folder. Run `java -version` and verify that Java `25` is selected.
+
+   1. Run `java -jar "linkedout.jar"`.<br>
+      Expected: The LinkedOut window opens in the Applicants view with six sample applicants and the first
+      applicant's contact details. `viewj` shows three sample jobs; `viewp` shows no applications.
 
 1. Saving window preferences
 
-   1. Resize the window to an optimal size. Move the window to a different location. Close the window.
+   1. Resize the window and move it to a different location. Run `bye` to close it.
 
-   1. Relaunch the app by double-clicking the JAR file.<br>
+   1. Relaunch from the same folder using `java -jar "linkedout.jar"`.<br>
        Expected: The most recent window size and location are retained.
 
 1. _{ more test cases …​ }_

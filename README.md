@@ -2,26 +2,20 @@
 
 [![CI Status](https://github.com/AY2627S1-CS2103T-T14-3/tp/workflows/Java%20CI/badge.svg)](https://github.com/AY2627S1-CS2103T-T14-3/tp/actions)
 
-![Current contact-management interface](docs/images/Ui.png)
-
-*The current interface comes from the AddressBook foundation; the recruitment workflow is under development.*
+![LinkedOut applicant list and detail panel](docs/images/Ui.png)
 
 **Keep track of the people behind every application.**
 
-LinkedOut is a desktop application in development for recruiters and HR administrators managing student hiring across multiple job openings. It brings applicant contacts, application outcomes, and the people responsible for each role into one place, helping recruiters see where an application stands and whom to contact next.
+LinkedOut is a desktop application for recruiters and HR administrators managing student hiring across multiple job openings. It brings applicant contacts, job roles, and application outcomes into one place, helping recruiters see where each application stands.
 
 Designed for people who prefer typing, LinkedOut pairs text commands with a graphical overview. It is a personal workspace for one recruiter, with records stored locally in editable JSON files.
 
-## Project direction
+## What you can do
 
-Our initial recruitment workflow focuses on:
-
-- Registering applicants with their contact details and an application to a job opening.
-- Recording whether an application is pending, accepted, or rejected.
-- Reviewing the applicant list and opening an applicant's full details.
-- Showing the relevant job and department contacts alongside an application.
-
-The current code supports adding, finding, listing, and deleting contacts, with local JSON storage. Recruitment-specific commands and views are planned additions.
+- Add, find, edit, and delete applicants and their contact details.
+- Add, view, edit, and delete job roles.
+- Record one application per applicant and mark it pending, accepted, or rejected.
+- Switch between applicant, application, and job lists, with details for the selected record.
 
 ## Getting started
 
@@ -31,8 +25,6 @@ For project documentation, visit the [LinkedOut product website](https://AY2627S
 - [Developer Guide](docs/DeveloperGuide.md): architecture and implementation details.
 - [Setting Up](docs/SettingUp.md): development setup with JDK 25 and Gradle.
 - [About Us](docs/AboutUs.md): the team behind LinkedOut.
-
-The guides are being adapted alongside the application and currently describe the AddressBook foundation.
 
 ## Acknowledgements
 
