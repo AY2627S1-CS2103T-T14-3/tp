@@ -12,17 +12,21 @@ public class JobTest {
 
     @Test
     public void constructor_validRole_success() {
-        Job job = new Job("Janitor");
+        Job jobNoDescription = new Job("Janitor");
+        Job jobWithDescription = new Job("Janitor", "Cleaner Guy");
 
-        assertEquals("Janitor", job.toString());
-        assertEquals("Janitor", job.toString());
+        assertEquals("Janitor : No information ~", jobNoDescription.toString());
+        assertEquals("Janitor : Cleaner Guy", jobWithDescription.toString());
     }
 
     @Test
     public void constructor_roleWithWhitespace_trimsDescription() {
-        Job job = new Job("  Janitor  ");
+        Job jobNoDescription = new Job("    Janitor  \t");
+        Job jobWithDescription = new Job("\tJanitor  ", "\t\tCleaner Guy   ");
 
-        assertEquals("Janitor", job.toString());
+
+        assertEquals("Janitor : No information ~", jobNoDescription.toString());
+        assertEquals("Janitor : Cleaner Guy", jobWithDescription.toString());
     }
 
     @Test

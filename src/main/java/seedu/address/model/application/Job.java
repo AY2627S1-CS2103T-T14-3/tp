@@ -20,8 +20,12 @@ public class Job {
     /** Creates a job with the given description. */
     public Job(String role, String description) {
         requireNonNull(role);
+        if (!isValidRole(role) || !isValidDescription(description)) {
+            throw new IllegalArgumentException();
+        }
+
         this.role = role.strip();
-        this.description = description;
+        this.description = description.strip();
     }
 
     /** Returns true if the job role is valid. */
