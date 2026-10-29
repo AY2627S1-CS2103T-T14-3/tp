@@ -83,7 +83,7 @@ public class LinkedOutUiTest {
             assertNotNull(applicants.getSelectionModel().getSelectedItem());
             Person selected = (Person) applicants.getSelectionModel().getSelectedItem();
             assertEquals(selected.getName().fullName, label(window, "applicantName").getText());
-            assertApplication(window, "No application recorded.", null);
+            assertApplication(window, "No application recorded.", null, null);
         });
     }
 
@@ -282,7 +282,7 @@ public class LinkedOutUiTest {
             ListView<?> applicants = (ListView<?>) window.getRoot().getScene().lookup("#personListView");
             assertEquals(1, applicants.getSelectionModel().getSelectedIndex());
             assertApplicantDetails(window, BENSON);
-            assertApplication(window, "Janitor : No information ~", "Accepted");
+            assertApplication(window, "Janitor", "No information ~", "Accepted");
             assertEquals(String.format(AddApplicationCommand.MESSAGE_SUCCESS, BENSON.getName(), BENSON.getEmail()),
                     feedback(window));
             assertEquals("7 applicants", label(window, "applicantCount").getText());
@@ -304,12 +304,12 @@ public class LinkedOutUiTest {
             assertEquals(AddApplicationCommand.MESSAGE_INVALID_STATUS, feedback(window));
             assertEquals(List.of(BENSON, DANIEL), applicants.getItems());
             assertApplicantDetails(window, BENSON);
-            assertApplication(window, "Janitor : No information ~", "Pending");
+            assertApplication(window, "Janitor", "No information ~", "Pending");
 
             input.setText("addp 1 -j Engineer");
             input.fireEvent(new ActionEvent());
             assertEquals(AddApplicationCommand.MESSAGE_DUPLICATE_APPLICATION, feedback(window));
-            assertApplication(window, "Janitor : No information ~", "Pending");
+            assertApplication(window, "Janitor", "No information ~", "Pending");
             assertEquals(List.of(BENSON, DANIEL), applicants.getItems());
         });
     }
@@ -322,7 +322,7 @@ public class LinkedOutUiTest {
             ListView<?> applicants = (ListView<?>) window.getRoot().getScene().lookup("#personListView");
             assertEquals(1, applicants.getSelectionModel().getSelectedIndex());
             assertApplicantDetails(window, BENSON);
-            assertApplication(window, "Janitor : No information ~", "Accepted");
+            assertApplication(window, "Janitor", "No information ~", "Accepted");
             assertEquals(String.format(SetApplicationStatusCommand.MESSAGE_SUCCESS,
                     BENSON.getName(), BENSON.getEmail(), "accept"), feedback(window));
         });
@@ -340,13 +340,13 @@ public class LinkedOutUiTest {
             assertEquals("set 1 -s ACCEPT", input.getText());
             assertTrue(input.getStyleClass().contains(CommandBox.ERROR_STYLE_CLASS));
             assertEquals(SetApplicationStatusCommand.MESSAGE_INVALID_STATUS, feedback(window));
-            assertApplication(window, "Janitor : No information ~", "Pending");
+            assertApplication(window, "Janitor", "No information ~", "Pending");
 
             input.setText("set 2 -s reject");
             input.fireEvent(new ActionEvent());
             assertEquals(SetApplicationStatusCommand.MESSAGE_MISSING_APPLICATION, feedback(window));
             assertEquals(0, applicants.getSelectionModel().getSelectedIndex());
-            assertApplication(window, "Janitor : No information ~", "Pending");
+            assertApplication(window, "Janitor", "No information ~", "Pending");
         });
     }
 
@@ -447,13 +447,20 @@ public class LinkedOutUiTest {
         assertEquals(expectedName, label(window, "applicantName").getText());
     }
 
-    private void assertApplication(MainWindow window, String job, String status) {
-        assertEquals(job, label(window, "applicationStatus").getText());
+    private void assertApplication(MainWindow window, String jobRole, String jobDescription, String status) {
+        assertEquals(jobRole, label(window, "applicationStatus").getText());
+        Label jobDescLabel = label(window, "jobDesc");
         Label badge = label(window, "applicationStatusBadge");
-        if (status == null) {
+        if (jobDescription == null || status == null) {
+            assertNull(status);
+            assertNull(jobDescription);
+            assertFalse(jobDescLabel.isVisible());
             assertFalse(badge.isVisible());
             return;
         }
+
+        assertTrue(jobDescLabel.isVisible());
+        assertEquals(jobDescription, jobDescLabel.getText());
         assertTrue(badge.isVisible());
         assertEquals(status, badge.getText());
     }
