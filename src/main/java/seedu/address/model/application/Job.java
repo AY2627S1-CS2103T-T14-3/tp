@@ -4,47 +4,73 @@ import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.AppUtil.checkArgument;
 
 import java.util.Objects;
-import java.util.regex.Pattern;
 
 /** Represents a job that an applicant is applying for. */
 public class Job {
 
     public static final String MESSAGE_CONSTRAINTS =
             "Job descriptions should not be blank or contain option-like parameters.";
+    private static final String DEFAULT_DESC =
+            "No information ~";
 
-    /** Matches an option-like token using the same whitespace boundaries as {@code ArgumentTokenizer}. */
-    private static final Pattern OPTION_LIKE_TOKEN_PATTERN =
-            Pattern.compile("(?<!\\S)-[a-z]+(?:-[a-z]+)*(?=\\s|$)");
+    public final String role;
+    public final String description;
 
-    public final String value;
-
-    /** Creates a job with the given description. */
-    public Job(String description) {
-        requireNonNull(description);
-        checkArgument(isValidDescription(description), MESSAGE_CONSTRAINTS);
-        this.value = description.strip();
+    public Job(String role) {
+        this(role, DEFAULT_DESC);
     }
 
-    /** Returns true if the job description is valid. */
+    /** Creates a job with the given description. */
+    public Job(String role, String description) {
+        requireNonNull(role);
+        checkArgument(isValidRole(role.strip()), MESSAGE_CONSTRAINTS);
+        this.role = role.strip();
+        this.description = description;
+    }
+
+    /** Returns true if the job role is valid. */
+    public static boolean isValidRole(String role) {
+        return role != null
+                && !role.isBlank();
+    }
+
+    /** Returns true if the job role is valid. */
     public static boolean isValidDescription(String description) {
-        return description != null
-                && !description.isBlank()
-                && !OPTION_LIKE_TOKEN_PATTERN.matcher(description).find();
+        return description != null;
+    }
+
+    /**
+     * Returns the job role.
+     *
+     * @return Job Description for the job.
+     */
+    public String getJobRole() {
+        return this.role;
+    }
+
+    /**
+     * Returns the job description for this job role.
+     *
+     * @return Job Description for the job.
+     */
+    public String getJobDescription() {
+        return this.description;
     }
 
     @Override
     public boolean equals(Object other) {
         return other == this || other instanceof Job otherJob
-                && value.equals(otherJob.value);
+                && role.equals(otherJob.role)
+                && description.equals(otherJob.description);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(value);
+        return Objects.hash(role, description);
     }
 
     @Override
     public String toString() {
-        return value;
+        return role + " : " + description;
     }
 }

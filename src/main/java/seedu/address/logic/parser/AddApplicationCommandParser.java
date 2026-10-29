@@ -29,13 +29,13 @@ public class AddApplicationCommandParser implements Parser<AddApplicationCommand
         ArgumentMultimap values = parseOptions(args);
 
         Index index = parseIndex(args, values);
-        String jobDescription = values.getValue(OPTION_JOB_REQ).orElseThrow();
-        if (!Job.isValidDescription(jobDescription)) {
+        String jobRole = values.getValue(OPTION_JOB_REQ).orElseThrow();
+        if (!Job.isValidRole(jobRole)) {
             throw unrecognized(args);
         }
 
         Application.Status status = parseStatus(values);
-        return new AddApplicationCommand(index, jobDescription, status);
+        return new AddApplicationCommand(index, jobRole, status);
     }
 
     /**
@@ -47,7 +47,7 @@ public class AddApplicationCommandParser implements Parser<AddApplicationCommand
     private ArgumentMultimap parseOptions(String args) throws ParseException {
         try {
             return ArgumentTokenizer
-                    .tokenizeOptions(args, ArgumentTokenizer.HAS_PREAMBLE,OPTION_JOB_REQ, OPTION_STATUS_OPT);
+                    .tokenizeOptions(args, ArgumentTokenizer.HAS_PREAMBLE, OPTION_JOB_REQ, OPTION_STATUS_OPT);
         } catch (ParseException pe) {
             throw unrecognized(args);
         }

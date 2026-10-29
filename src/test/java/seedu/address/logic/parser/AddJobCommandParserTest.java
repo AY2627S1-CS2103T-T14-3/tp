@@ -15,9 +15,9 @@ public class AddJobCommandParserTest {
 
     @Test
     public void parse_validArgs_returnsAddJobCommand() {
-        assertParseSuccess(parser, " -j Software Engineer Intern",
+        assertParseSuccess(parser, " Software Engineer Intern",
                 new AddJobCommand(new Job("Software Engineer Intern")));
-        assertParseSuccess(parser, " -job Data Analyst",
+        assertParseSuccess(parser, " Data Analyst",
                 new AddJobCommand(new Job("Data Analyst")));
     }
 
