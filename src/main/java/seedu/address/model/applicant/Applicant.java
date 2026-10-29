@@ -31,6 +31,11 @@ public class Applicant {
         return name;
     }
 
+    /** Returns this person's display name. */
+    public String getDisplayName() {
+        return name.fullName;
+    }
+
     public Phone getPhone() {
         return phone;
     }

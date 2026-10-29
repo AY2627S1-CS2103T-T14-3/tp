@@ -23,6 +23,16 @@ public class ApplicationTest {
     }
 
     @Test
+    public void applicantDisplayMethods_returnApplicantDetails() {
+        Application application = new Application(ALICE, new Job("Janitor"), Application.Status.PENDING);
+
+        assertEquals(ALICE.getDisplayName(), application.getApplicantName());
+        assertEquals("pending", application.getStatusValue());
+        assertTrue(application.isForApplicant(ALICE));
+        assertFalse(application.isForApplicant(BOB));
+    }
+
+    @Test
     public void constructor_trimsJobDescription_success() {
         Application application = new Application(ALICE, new Job("  Janitor  "), Application.Status.ACCEPT);
 

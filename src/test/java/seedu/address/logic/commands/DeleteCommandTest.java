@@ -82,7 +82,7 @@ public class DeleteCommandTest {
                 result.getDeletedApplicant().orElseThrow());
         assertFalse(model.hasApplicant(applicant));
         assertTrue(model.getApplicationList().isEmpty());
-        assertTrue(result.getApplicantToView().isEmpty());
+        assertTrue(result.getViewRequest().isEmpty());
     }
 
     @Test

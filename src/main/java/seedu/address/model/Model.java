@@ -81,6 +81,11 @@ public interface Model {
     void addApplication(Application application);
 
     /**
+     * Deletes the application belonging to {@code applicant}, if one exists, keeping the applicant and job.
+     */
+    void deleteApplication(Applicant applicant);
+
+    /**
      * Replaces {@code target} with {@code editedApplication}.
      * {@code target} must already be recorded, and both applications must belong to the same applicant.
      * @param target application currently stored
@@ -115,13 +120,13 @@ public interface Model {
 
     /**
      * Replaces {@code target} with {@code editedJob}, preserving its position in the job list.
-     * The target must exist, and the edited description must not match another stored job.
-     * Applicant applications remain unchanged.
+     * The target must exist, and the edited role must not match another stored job.
+     * Updates matching applications to reference the edited job, keeping applicants and statuses.
      */
     void setJob(Job target, Job editedJob);
 
     /**
-     * Deletes the given job.
+     * Deletes the given job and all applications for it, keeping the applicants.
      * The job must exist in the address book.
      * @param target job to delete
      */

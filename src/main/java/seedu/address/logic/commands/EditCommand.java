@@ -82,7 +82,8 @@ public class EditCommand extends Command {
 
         model.setApplicant(applicantToEdit, editedApplicant);
         model.updateFilteredApplicantList(PREDICATE_SHOW_ALL_APPLICANTS);
-        return new CommandResult(String.format(MESSAGE_EDIT_APPLICANT_SUCCESS, Messages.format(editedApplicant)));
+        return new CommandResult(String.format(MESSAGE_EDIT_APPLICANT_SUCCESS, Messages.format(editedApplicant)),
+                ViewRequest.applicant(editedApplicant));
     }
 
     /**

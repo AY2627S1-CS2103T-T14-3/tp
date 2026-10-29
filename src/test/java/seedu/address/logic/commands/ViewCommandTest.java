@@ -26,7 +26,8 @@ public class ViewCommandTest {
     @Test
     public void execute_validIndexUnfilteredList_returnsApplicantWithoutChangingModel() {
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
-        CommandResult expectedResult = new CommandResult("Viewing applicant: Alice Pauline", ALICE);
+        CommandResult expectedResult = new CommandResult("Viewing applicant: Alice Pauline",
+                ViewRequest.applicant(ALICE));
         assertCommandSuccess(new ViewCommand(INDEX_FIRST_APPLICANT), model,
                 expectedResult, expectedModel);
     }
@@ -37,7 +38,8 @@ public class ViewCommandTest {
         showApplicantAtIndex(model, INDEX_SECOND_APPLICANT);
         showApplicantAtIndex(expectedModel, INDEX_SECOND_APPLICANT);
 
-        CommandResult expectedResult = new CommandResult("Viewing applicant: Benson Meier", BENSON);
+        CommandResult expectedResult = new CommandResult("Viewing applicant: Benson Meier",
+                ViewRequest.applicant(BENSON));
         assertCommandSuccess(new ViewCommand(INDEX_FIRST_APPLICANT), model,
                 expectedResult, expectedModel);
     }

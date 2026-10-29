@@ -46,7 +46,8 @@ public class EditCommandTest {
         Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs());
         expectedModel.setApplicant(model.getFilteredApplicantList().get(0), editedApplicant);
 
-        assertCommandSuccess(editCommand, model, expectedMessage, expectedModel);
+        assertCommandSuccess(editCommand, model,
+                new CommandResult(expectedMessage, ViewRequest.applicant(editedApplicant)), expectedModel);
     }
 
     @Test
@@ -67,7 +68,8 @@ public class EditCommandTest {
         Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs());
         expectedModel.setApplicant(lastApplicant, editedApplicant);
 
-        assertCommandSuccess(editCommand, model, expectedMessage, expectedModel);
+        assertCommandSuccess(editCommand, model,
+                new CommandResult(expectedMessage, ViewRequest.applicant(editedApplicant)), expectedModel);
     }
 
     @Test
@@ -80,7 +82,8 @@ public class EditCommandTest {
 
         Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs());
 
-        assertCommandSuccess(editCommand, model, expectedMessage, expectedModel);
+        assertCommandSuccess(editCommand, model,
+                new CommandResult(expectedMessage, ViewRequest.applicant(editedApplicant)), expectedModel);
     }
 
     @Test
@@ -98,7 +101,8 @@ public class EditCommandTest {
         Model expectedModel = new ModelManager(new AddressBook(model.getAddressBook()), new UserPrefs());
         expectedModel.setApplicant(model.getFilteredApplicantList().get(0), editedApplicant);
 
-        assertCommandSuccess(editCommand, model, expectedMessage, expectedModel);
+        assertCommandSuccess(editCommand, model,
+                new CommandResult(expectedMessage, ViewRequest.applicant(editedApplicant)), expectedModel);
     }
 
     @Test

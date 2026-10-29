@@ -111,6 +111,12 @@ public class ModelManager implements Model {
     }
 
     @Override
+    public void deleteApplication(Applicant applicant) {
+        requireNonNull(applicant);
+        addressBook.removeApplication(applicant);
+    }
+
+    @Override
     public void setApplication(Application target, Application editedApplication) {
         requireAllNonNull(target, editedApplication);
         addressBook.setApplication(target, editedApplication);

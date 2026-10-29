@@ -76,6 +76,19 @@ public class UniqueApplicationList implements Iterable<Application> {
     }
 
     /**
+     * Updates every application for {@code target} to reference {@code editedJob}, keeping applicants and statuses.
+     */
+    public void setJob(Job target, Job editedJob) {
+        requireAllNonNull(target, editedJob);
+        for (int i = 0; i < internalList.size(); i++) {
+            Application application = internalList.get(i);
+            if (application.getJob().equals(target)) {
+                internalList.set(i, new Application(application.getApplicant(), editedJob, application.getStatus()));
+            }
+        }
+    }
+
+    /**
      * Replaces {@code target} with {@code editedApplication}.
      * {@code target} must already be in the list, and both applications must belong to the same applicant.
      * @param target application currently stored
@@ -100,6 +113,16 @@ public class UniqueApplicationList implements Iterable<Application> {
     public void remove(Applicant applicant) {
         requireNonNull(applicant);
         get(applicant).ifPresent(internalList::remove);
+    }
+
+    /**
+     * Removes every application for {@code job}, comparing jobs by their roles.
+     *
+     * @param job job whose applications should be removed.
+     */
+    public void removeForJob(Job job) {
+        requireNonNull(job);
+        internalList.removeIf(application -> application.getJob().equals(job));
     }
 
     /**

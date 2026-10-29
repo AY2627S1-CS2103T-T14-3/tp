@@ -18,6 +18,7 @@ import seedu.address.logic.commands.AddCommand;
 import seedu.address.logic.commands.AddJobCommand;
 import seedu.address.logic.commands.ByeCommand;
 import seedu.address.logic.commands.ClearCommand;
+import seedu.address.logic.commands.DeleteApplicationCommand;
 import seedu.address.logic.commands.DeleteCommand;
 import seedu.address.logic.commands.DeleteJobCommand;
 import seedu.address.logic.commands.EditCommand;
@@ -26,6 +27,8 @@ import seedu.address.logic.commands.FindCommand;
 import seedu.address.logic.commands.HelpCommand;
 import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.commands.SetApplicationStatusCommand;
+import seedu.address.logic.commands.ViewApplicantCommand;
+import seedu.address.logic.commands.ViewApplicationCommand;
 import seedu.address.logic.commands.ViewCommand;
 import seedu.address.logic.commands.ViewJobCommand;
 import seedu.address.logic.parser.exceptions.ParseException;
@@ -73,6 +76,12 @@ public class AddressBookParserTest {
         String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT, ViewCommand.MESSAGE_USAGE);
         assertThrows(ParseException.class, expectedMessage, () -> parser.parseCommand("view"));
         assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> parser.parseCommand("View 1"));
+    }
+
+    @Test
+    public void parseCommand_sidebarViewToggles() throws Exception {
+        assertTrue(parser.parseCommand(ViewApplicantCommand.COMMAND_WORD) instanceof ViewApplicantCommand);
+        assertTrue(parser.parseCommand(ViewApplicationCommand.COMMAND_WORD) instanceof ViewApplicationCommand);
     }
 
     @Test
@@ -147,6 +156,17 @@ public class AddressBookParserTest {
         DeleteCommand command = (DeleteCommand) parser.parseCommand(
                 DeleteCommand.COMMAND_WORD + " " + INDEX_FIRST_APPLICANT.getOneBased());
         assertEquals(new DeleteCommand(INDEX_FIRST_APPLICANT), command);
+    }
+
+    @Test
+    public void parseCommand_deleteApplication() throws Exception {
+        DeleteApplicationCommand expected = new DeleteApplicationCommand(INDEX_FIRST_APPLICANT);
+        assertEquals(expected, parser.parseCommand("deletep 1"));
+        assertEquals(expected, parser.parseCommand("  deletep   1  "));
+        assertThrows(ParseException.class,
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteApplicationCommand.MESSAGE_USAGE), () ->
+                parser.parseCommand("deletep"));
+        assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> parser.parseCommand("Deletep 1"));
     }
 
     @Test

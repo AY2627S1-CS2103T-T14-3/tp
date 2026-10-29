@@ -7,6 +7,8 @@
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
@@ -48,14 +50,23 @@
               <StackPane fx:id="applicantDetailPlaceholder" VBox.vgrow="ALWAYS" />
             </VBox>
             <VBox spacing="12" minWidth="280" styleClass="panel,applicant-list-panel">
+              <fx:define><ToggleGroup fx:id="viewToggleGroup" /></fx:define>
               <HBox alignment="CENTER_LEFT" spacing="10">
                 <Label fx:id="listTitle" text="Applicants" styleClass="section-title"
                        HBox.hgrow="ALWAYS" maxWidth="Infinity" />
                 <Label fx:id="applicantCount" styleClass="count-badge" />
               </HBox>
+              <HBox alignment="CENTER_LEFT" spacing="8">
+                <ToggleButton fx:id="applicantsTab" text="Applicants" styleClass="view-tab"
+                              selected="true" toggleGroup="$viewToggleGroup" />
+                <ToggleButton fx:id="applicationsTab" text="Applications" styleClass="view-tab"
+                              toggleGroup="$viewToggleGroup" />
+                <ToggleButton fx:id="jobsTab" text="Jobs" styleClass="view-tab"
+                              toggleGroup="$viewToggleGroup" />
+              </HBox>
               <Label fx:id="listHint" text="Select an applicant to view their details."
                      styleClass="muted-label" wrapText="true" />
-              <StackPane fx:id="applicantListPanelPlaceholder" VBox.vgrow="ALWAYS" />
+              <StackPane fx:id="viewListPlaceholder" VBox.vgrow="ALWAYS" />
             </VBox>
           </items>
         </SplitPane>

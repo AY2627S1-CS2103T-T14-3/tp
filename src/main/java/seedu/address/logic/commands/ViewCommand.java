@@ -50,7 +50,8 @@ public class ViewCommand extends Command {
         }
 
         Applicant applicantToView = lastShownList.get(targetIndex.getZeroBased());
-        return new CommandResult(String.format(MESSAGE_SUCCESS, applicantToView.getName()), applicantToView);
+        return new CommandResult(String.format(MESSAGE_SUCCESS, applicantToView.getName()),
+                ViewRequest.applicant(applicantToView));
     }
 
     @Override

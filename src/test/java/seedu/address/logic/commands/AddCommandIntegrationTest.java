@@ -34,7 +34,8 @@ public class AddCommandIntegrationTest {
         expectedModel.addApplicant(validApplicant);
 
         assertCommandSuccess(new AddCommand(validApplicant), model,
-                String.format(AddCommand.MESSAGE_SUCCESS, Messages.format(validApplicant)),
+                new CommandResult(String.format(AddCommand.MESSAGE_SUCCESS, Messages.format(validApplicant)),
+                        ViewRequest.applicant(validApplicant)),
                 expectedModel);
     }
 

@@ -54,7 +54,7 @@ Use the [Google Java Style Guide](https://google.github.io/styleguide/javaguide.
 - Write comments in English using American spelling and avoid local slang.
 - Write descriptive Javadoc for every class and public method. Javadoc may be omitted for getters and setters, test classes and methods, and an override whose inherited documentation applies exactly.
 - Put `/**` on its own line for a normal Javadoc block and keep the block immediately adjacent to the declaration.
-- Begin the first sentence with a concise third-applicant verb such as `Returns`, `Sends`, `Adds`, or `Creates`.
+- Begin the first sentence with a concise third-person verb such as `Returns`, `Sends`, `Adds`, or `Creates`.
 - Align each `*`, put one space after it, and separate the description from block tags with a blank Javadoc line.
 - End every `@param` description with punctuation.
 - Include `@return` unless the return value is obvious from the description. Omit it for `void` methods.

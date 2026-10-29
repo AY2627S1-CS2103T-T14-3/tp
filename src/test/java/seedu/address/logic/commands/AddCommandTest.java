@@ -45,6 +45,7 @@ public class AddCommandTest {
 
         assertEquals(String.format(AddCommand.MESSAGE_SUCCESS, Messages.format(validApplicant)),
                 commandResult.getFeedbackToUser());
+        assertEquals(Optional.of(ViewRequest.applicant(validApplicant)), commandResult.getViewRequest());
         assertEquals(List.of(validApplicant), modelStub.applicantsAdded);
     }
 
@@ -154,6 +155,11 @@ public class AddCommandTest {
 
         @Override
         public void addApplication(Application application) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public void deleteApplication(Applicant applicant) {
             throw new AssertionError("This method should not be called.");
         }
 

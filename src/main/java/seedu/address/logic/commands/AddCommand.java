@@ -9,7 +9,7 @@ import seedu.address.model.Model;
 import seedu.address.model.applicant.Applicant;
 
 /**
- * Adds a applicant to the address book.
+ * Adds an applicant to the address book.
  */
 public class AddCommand extends Command {
 
@@ -43,7 +43,8 @@ public class AddCommand extends Command {
         }
 
         model.addApplicant(toAdd);
-        return new CommandResult(String.format(MESSAGE_SUCCESS, Messages.format(toAdd)));
+        return new CommandResult(String.format(MESSAGE_SUCCESS, Messages.format(toAdd)),
+                ViewRequest.applicant(toAdd));
     }
 
     @Override

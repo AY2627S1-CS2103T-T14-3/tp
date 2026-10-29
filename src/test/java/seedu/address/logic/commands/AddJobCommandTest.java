@@ -29,12 +29,13 @@ public class AddJobCommandTest {
     @Test
     public void execute_newJob_success() {
         AddJobCommand command = new AddJobCommand(ENGINEER);
-        String expectedMessage = String.format(AddJobCommand.MESSAGE_SUCCESS, ENGINEER.getJobRole());
+        String expectedMessage = String.format(AddJobCommand.MESSAGE_SUCCESS, ENGINEER);
 
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
         expectedModel.addJob(ENGINEER);
 
-        assertCommandSuccess(command, model, new CommandResult(expectedMessage, ENGINEER), expectedModel);
+        assertCommandSuccess(command, model,
+                new CommandResult(expectedMessage, ViewRequest.job(ENGINEER)), expectedModel);
         assertTrue(model.hasJob(ENGINEER));
     }
 

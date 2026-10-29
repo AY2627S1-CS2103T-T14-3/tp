@@ -137,6 +137,13 @@ public class AddressBook implements ReadOnlyAddressBook {
     }
 
     /**
+     * Removes the application belonging to {@code applicant}, if one exists, keeping the applicant and job.
+     */
+    public void removeApplication(Applicant applicant) {
+        applications.remove(applicant);
+    }
+
+    /**
      * Replaces the application list with {@code applications}.
      * {@code applications} must not contain more than one application per applicant.
      * @param applications applications to store
@@ -166,22 +173,26 @@ public class AddressBook implements ReadOnlyAddressBook {
     }
 
     /**
-     * Replaces an existing job while preserving its position and leaving applications unchanged.
-     * The edited description must not match another stored job.
+     * Replaces an existing job while preserving its position and updating its applications
+     * to reference the edited job.
+     * The edited role must not match another stored job.
      */
     public void setJob(Job target, Job editedJob) {
         jobs.setJob(target, editedJob);
+        applications.setJob(target, editedJob);
     }
 
     /**
-     * Removes {@code key} from this {@code AddressBook}.
+     * Removes {@code key} and all applications for it, keeping the applicants.
      * {@code key} must exist in the address book.
-     * @param key job to remove
+     *
+     * @param key job to remove.
      */
     public void removeJob(Job key) {
         assert key != null : "key must not be null";
         assert jobs.contains(key) : "job must exist in the address book";
         jobs.remove(key);
+        applications.removeForJob(key);
     }
 
     /**

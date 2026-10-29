@@ -40,10 +40,24 @@ public class Application {
         return applicant;
     }
 
-    public Job getJob() {
-        return job;
+    /** Returns the applicant's display name. */
+    public String getApplicantName() {
+        return applicant.getDisplayName();
     }
 
+    /** Returns whether this application belongs to the supplied applicant. */
+    public boolean isForApplicant(Applicant applicant) {
+        return this.applicant.isSameApplicant(applicant);
+    }
+
+    /** Returns the display value of this application's status. */
+    public String getStatusValue() {
+        return status.getValue();
+    }
+
+    /**
+     * Returns the status of the application.
+     */
     public Status getStatus() {
         return status;
     }
@@ -86,6 +100,10 @@ public class Application {
                 .add("job", job)
                 .add("status", status)
                 .toString();
+    }
+
+    public Job getJob() {
+        return job;
     }
 
     /**
