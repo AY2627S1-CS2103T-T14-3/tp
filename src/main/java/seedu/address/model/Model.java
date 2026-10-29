@@ -80,6 +80,11 @@ public interface Model {
     void addApplication(Application application);
 
     /**
+     * Deletes the application belonging to {@code applicant}, if one exists, keeping the applicant and job.
+     */
+    void deleteApplication(Person applicant);
+
+    /**
      * Replaces {@code target} with {@code editedApplication}.
      * {@code target} must already be recorded, and both applications must belong to the same applicant.
      * @param target application currently stored

@@ -137,6 +137,13 @@ public class AddressBook implements ReadOnlyAddressBook {
     }
 
     /**
+     * Removes the application belonging to {@code applicant}, if one exists, keeping the applicant and job.
+     */
+    public void removeApplication(Person applicant) {
+        applications.remove(applicant);
+    }
+
+    /**
      * Replaces the application list with {@code applications}.
      * {@code applications} must not contain more than one application per applicant.
      * @param applications applications to store

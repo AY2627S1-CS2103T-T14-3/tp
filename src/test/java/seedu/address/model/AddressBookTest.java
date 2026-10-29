@@ -167,6 +167,24 @@ public class AddressBookTest {
     }
 
     @Test
+    public void removeApplication_missingApplication_keepsApplicantAndJob() {
+        addressBook.addPerson(ALICE);
+        Job job = new Job("Janitor");
+        addressBook.addJob(job);
+
+        addressBook.removeApplication(ALICE);
+
+        assertEquals(List.of(ALICE), addressBook.getPersonList());
+        assertEquals(List.of(job), addressBook.getJobList());
+        assertTrue(addressBook.getApplicationList().isEmpty());
+    }
+
+    @Test
+    public void removeApplication_nullApplicant_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> addressBook.removeApplication(null));
+    }
+
+    @Test
     public void resetData_withApplications_copiesApplications() {
         AddressBook original = new AddressBook();
         original.addPerson(ALICE);
