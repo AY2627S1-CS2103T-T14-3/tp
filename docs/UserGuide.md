@@ -50,12 +50,12 @@ AddressBook Level 3 (AB3) is a **desktop application for managing contacts, opti
   For example, in `add -n NAME`, replace `NAME` with a value such as `John Doe`.
 
 * Items in square brackets are optional.<br>
-  For example, `edit INDEX [n/NAME] [p/PHONE]` can be used as `edit 1 n/John Doe p/98765432` or as `edit 1 n/John Doe`.
+  For example, `edit INDEX [-n NAME] [-p PHONE] [-e EMAIL]` can be used as `edit 1 -n John Doe -p 98765432` or as `edit 1 -n John Doe`.
 
-* Parameters can be in any order.<br>
+* Options can be in any order. A positional index must appear before the options.<br>
   For example, if the command specifies `-n NAME -p PHONE_NUMBER`, `-p PHONE_NUMBER -n NAME` is also acceptable.
 
-* `add` uses hyphen-prefixed options such as `-n NAME`. `edit` uses slash-prefixed fields such as `n/NAME`.
+* `add` and `edit` use hyphen-prefixed options such as `-n NAME`.
 
 * Extraneous parameters for `help`, `list`, and `clear` are ignored. `bye` and its alias `exit` reject extra parameters.<br>
   For example, `help 123` is interpreted as `help`.
@@ -108,19 +108,30 @@ Shows a list of all persons in the address book.
 
 Format: `list`
 
-### Editing a person: `edit`
+### Editing an applicant: `edit`
 
-Edits an existing person in the address book.
+Edits an existing applicant's name, phone number, or email address.
 
-Format: `edit INDEX [n/NAME] [p/PHONE] [e/EMAIL]`
+Format: `edit INDEX [-n NAME] [-p PHONE] [-e EMAIL]`
 
-* Edits the person at the specified `INDEX`. The index refers to the index number shown in the displayed person list. The index **must be a positive integer** 1, 2, 3, …​
-* At least one of the optional fields must be provided.
+Field | Short option | Long option
+------|--------------|------------
+Name | `-n` | `-name`
+Phone | `-p` | `-phone`
+Email | `-e` | `-email`
+
+* `INDEX` is required and selects the applicant by their index in the displayed person list. It must appear before the options and **must be a positive integer** 1, 2, 3, …​
+* At least one of name, phone, or email must be provided. Omitted fields keep their existing values.
 * Existing values will be updated to the input values.
+* Short and long aliases can be mixed, and options can appear in any order. Values containing spaces do not need quotation marks.
+* Unknown options, repeated options (including aliases for the same field), missing values, and extra positional text produce a format error.
+* The legacy `edit INDEX n/NAME p/PHONE e/EMAIL` format is no longer accepted.
 
 Examples:
-*  `edit 1 p/91234567 e/johndoe@example.com` Edits the phone number and email address of the 1st person to be `91234567` and `johndoe@example.com` respectively.
-*  `edit 2 n/Betsy Crower` Edits the name of the 2nd person to be `Betsy Crower`.
+
+* `edit 1 -n John Doe -e john@example.com` Edits the name and email address of the 1st applicant.
+* `edit 1 -p 91234567` Edits the phone number of the 1st applicant.
+* `edit 2 -name Betsy Crower` Edits the name of the 2nd applicant to be `Betsy Crower`.
 
 ### Locating persons by name: `find`
 
@@ -142,6 +153,10 @@ Examples:
 ### Deleting a person: `delete`
 
 Deletes the specified person from the address book.
+
+The applicant and their application are removed together. Their former details remain visible in the
+detail panel, marked as deleted, until you select another applicant or run another successful applicant command.
+Opening Help, either with `help` or through the menu, preserves these deleted details.
 
 Format: `delete INDEX`
 
@@ -186,25 +201,25 @@ Examples:
 * `view 1` selects the first applicant in the displayed list and shows their details.
 * `find Meier` followed by `view 2` shows the details of the second applicant in the search results.
 
-### Adding an application: `add -p`
+### Adding an application: `addp`
 
 Adds one job application to an applicant in the displayed list. Each applicant can have only one application.
 
-Format: `add -p INDEX -j JOB_DESCRIPTION [-s STATUS]`
+Format: `addp INDEX -j JOB_DESCRIPTION [-s STATUS]`
 
-* `INDEX` is the positive integer shown beside an applicant in the current list.
+* `INDEX` is the positive integer shown beside an applicant in the current list. It must appear before the options.
 * When the list is filtered, the index refers to that filtered list.
 * `JOB_DESCRIPTION` is the role the applicant is applying for. It cannot contain another option, such as `-s`.
 * `STATUS` is optional. When it is omitted, the status is `pending`.
 * Accepted statuses are `accept`, `reject`, and `pending`. The value is case-sensitive.
-* Aliases: `-application` for `-p`, `-job` for `-j`, and `-status` for `-s`.
+* Aliases: `-job` for `-j` and `-status` for `-s`.
 * A successful command selects that applicant and shows the job and status in the detail panel.
 * An applicant who already has an application cannot receive a second one.
 
 Examples:
 
-* `add -p 1 -j Janitor` adds a pending Janitor application for the first displayed applicant.
-* `add -application 2 -job ClaudeGPT Expert -s accept` adds an accepted application for the second displayed applicant.
+* `addp 1 -j Janitor` adds a pending Janitor application for the first displayed applicant.
+* `addp 2 -job ClaudeGPT Expert -s accept` adds an accepted application for the second displayed applicant.
 
 ### Updating an application status: `set`
 
@@ -233,7 +248,7 @@ Format: `addj -j JOB_DESCRIPTION`
 * `JOB_DESCRIPTION` is the role name. It cannot be blank and cannot contain another option, such as `-s`.
 * Alias: `-job` for `-j`.
 * A role that is already in the list cannot be added again. Matching ignores surrounding spaces and is otherwise case-sensitive.
-* Adding a role does not create an application. Use `add -p` to record an applicant's application for a role.
+* Adding a role does not create an application. Use `addp` to record an applicant's application for a role.
 
 Examples:
 
@@ -311,10 +326,11 @@ _Details coming soon ..._
 Action | Format, Examples
 --------|------------------
 **Add** | `add -n NAME -p PHONE_NUMBER -e EMAIL` <br> e.g., `add -n James Ho -p 22224444 -e jamesho@example.com`
-**Add application** | `add -p INDEX -j JOB_DESCRIPTION [-s STATUS]`<br> e.g., `add -p 1 -j Janitor -s pending`
+**Add application** | `addp INDEX -j JOB_DESCRIPTION [-s STATUS]`<br> e.g., `addp 1 -j Janitor -s pending`
 **Set application status** | `set INDEX -s STATUS`<br> e.g., `set 1 -s accept`
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
+**Edit** | `edit INDEX [-n NAME] [-p PHONE] [-e EMAIL]`<br> e.g., `edit 1 -p 91234567 -e john@example.com`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
 **List** | `list`
 **View** | `view INDEX`<br> e.g., `view 1`

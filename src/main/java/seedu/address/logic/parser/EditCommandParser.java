@@ -12,30 +12,28 @@ import seedu.address.logic.commands.EditCommand.EditPersonDescriptor;
 import seedu.address.logic.parser.exceptions.ParseException;
 
 /**
- * Parses input arguments and creates a new EditCommand object
+ * Parses an applicant index followed by name, phone, and email options into an EditCommand.
  */
 public class EditCommandParser implements Parser<EditCommand> {
 
     /**
-     * Parses the given {@code String} of arguments in the context of the EditCommand
-     * and returns an EditCommand object for execution.
+     * Parses a leading applicant index and at least one of name, phone, or email.
+     *
      * @throws ParseException if the user input does not conform to the expected format
      */
+    @Override
     public EditCommand parse(String args) throws ParseException {
         requireNonNull(args);
-        ArgumentMultimap argMultimap =
-                ArgumentTokenizer.tokenizeOptions(args,
-                        ArgumentTokenizer.HAS_PREAMBLE, OPTION_NAME_OPT, OPTION_PHONE_OPT, OPTION_EMAIL_OPT);
-
+        ArgumentMultimap argMultimap;
         Index index;
 
         try {
+            argMultimap = ArgumentTokenizer.tokenizeOptions(args, ArgumentTokenizer.HAS_PREAMBLE,
+                    OPTION_NAME_OPT, OPTION_PHONE_OPT, OPTION_EMAIL_OPT);
             index = ParserUtil.parseIndex(argMultimap.getPreamble());
         } catch (ParseException pe) {
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditCommand.MESSAGE_USAGE), pe);
         }
-
-        argMultimap.verifyNoDuplicateOptionsFor(OPTION_NAME_OPT, OPTION_PHONE_OPT, OPTION_EMAIL_OPT);
 
         EditPersonDescriptor editPersonDescriptor = new EditPersonDescriptor();
 

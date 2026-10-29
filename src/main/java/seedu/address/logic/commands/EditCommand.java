@@ -1,9 +1,9 @@
 package seedu.address.logic.commands;
 
 import static java.util.Objects.requireNonNull;
-import static seedu.address.logic.parser.CliSyntax.OPTION_EMAIL_REQ;
-import static seedu.address.logic.parser.CliSyntax.OPTION_NAME_REQ;
-import static seedu.address.logic.parser.CliSyntax.OPTION_PHONE_REQ;
+import static seedu.address.logic.parser.CliSyntax.OPTION_EMAIL_OPT;
+import static seedu.address.logic.parser.CliSyntax.OPTION_NAME_OPT;
+import static seedu.address.logic.parser.CliSyntax.OPTION_PHONE_OPT;
 import static seedu.address.model.Model.PREDICATE_SHOW_ALL_PERSONS;
 
 import java.util.List;
@@ -31,13 +31,16 @@ public class EditCommand extends Command {
     public static final String MESSAGE_USAGE = COMMAND_WORD + ": Edits the details of the person identified "
             + "by the index number used in the displayed person list. "
             + "Existing values will be overwritten by the input values.\n"
+            + "At least one of name, phone, or email must be provided.\n"
             + "Parameters: INDEX (must be a positive integer) "
-            + "[" + OPTION_NAME_REQ + "NAME] "
-            + "[" + OPTION_PHONE_REQ + "PHONE] "
-            + "[" + OPTION_EMAIL_REQ + "EMAIL]...\n"
+            + "[" + OPTION_NAME_OPT + " NAME] "
+            + "[" + OPTION_PHONE_OPT + " PHONE] "
+            + "[" + OPTION_EMAIL_OPT + " EMAIL]\n"
+            + "Aliases: " + OPTION_NAME_OPT.getAliases().getLast() + ", "
+            + OPTION_PHONE_OPT.getAliases().getLast() + ", " + OPTION_EMAIL_OPT.getAliases().getLast() + "\n"
             + "Example: " + COMMAND_WORD + " 1 "
-            + OPTION_PHONE_REQ + "91234567 "
-            + OPTION_EMAIL_REQ + "johndoe@example.com";
+            + OPTION_PHONE_OPT + " 91234567 "
+            + OPTION_EMAIL_OPT + " johndoe@example.com";
 
     public static final String MESSAGE_EDIT_PERSON_SUCCESS = "Edited person: %1$s";
     public static final String MESSAGE_NOT_EDITED = "At least one field to edit must be provided.";
