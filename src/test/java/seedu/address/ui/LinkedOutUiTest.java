@@ -444,7 +444,7 @@ public class LinkedOutUiTest {
         withWindow(window -> {
             assertEquals("Applicants", label(window, "listTitle").getText());
 
-            command(window, "addj Software Engineer");
+            command(window, "addj -j Software Engineer");
             pulse(window);
             assertEquals("Jobs", label(window, "listTitle").getText());
             assertEquals("1 job", label(window, "applicantCount").getText());
@@ -453,7 +453,7 @@ public class LinkedOutUiTest {
             assertNull(window.getRoot().getScene().lookup("#applicantSummary"));
             assertEquals("New job added: Software Engineer", feedback(window));
 
-            command(window, "addj Data Analyst");
+            command(window, "addj -j Data Analyst");
             pulse(window);
             assertEquals("2 jobs", label(window, "applicantCount").getText());
             assertEquals("Data Analyst", label(window, "jobName").getText());
@@ -474,7 +474,7 @@ public class LinkedOutUiTest {
             assertEquals("Alice Pauline", label(window, "applicantName").getText());
 
             command(window, "addp 1 -j Janitor");
-            command(window, "addj Janitor");
+            command(window, "addj -j Janitor");
             pulse(window);
             assertEquals("Jobs", label(window, "listTitle").getText());
             assertEquals("3 jobs", label(window, "applicantCount").getText());

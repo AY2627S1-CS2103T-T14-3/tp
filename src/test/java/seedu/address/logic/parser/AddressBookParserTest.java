@@ -115,8 +115,8 @@ public class AddressBookParserTest {
     @Test
     public void parseCommand_jobCommands() throws Exception {
         Job job = new Job("Software Engineer");
-        assertEquals(new AddJobCommand(job), parser.parseCommand("addj Software Engineer"));
-        assertEquals(new AddJobCommand(job), parser.parseCommand("  addj      Software Engineer  "));
+        assertEquals(new AddJobCommand(job), parser.parseCommand("addj -j Software Engineer"));
+        assertEquals(new AddJobCommand(job), parser.parseCommand("  addj  -j    Software Engineer  "));
         assertEquals(new DeleteJobCommand(INDEX_FIRST_PERSON), parser.parseCommand("deletej 1"));
         assertEquals(new ViewJobCommand(), parser.parseCommand("viewj"));
         assertEquals(new ViewJobCommand("jan"), parser.parseCommand("viewj -f jan"));
@@ -128,11 +128,11 @@ public class AddressBookParserTest {
     @Test
     public void parseCommand_addJobWithDescription() throws Exception {
         Job job = new Job("Software Engineer", "Some Description");
-        assertEquals(new AddJobCommand(job), parser.parseCommand("addj Software Engineer -j Some Description"));
+        assertEquals(new AddJobCommand(job), parser.parseCommand("addj -j Software Engineer -d Some Description"));
         assertEquals(new AddJobCommand(job),
-                parser.parseCommand("  addj      Software Engineer  -j\tSome Description"));
+                parser.parseCommand("  addj    -j  Software Engineer  -d\tSome Description"));
         assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () ->
-                parser.parseCommand("Addj Engineer -j Engineer"));
+                parser.parseCommand("Addj -j Engineer -d Engineer"));
     }
 
     @Test

@@ -186,6 +186,8 @@ public class AddressBookTest {
     public void addJob_duplicate_throwsDuplicateJobException() {
         addressBook.addJob(new Job("Software Engineer"));
         assertThrows(DuplicateJobException.class, () -> addressBook.addJob(new Job("Software Engineer")));
+        assertThrows(DuplicateJobException.class, () -> addressBook.addJob(
+                new Job("Software Engineer", "different descriptor")));
     }
 
     @Test

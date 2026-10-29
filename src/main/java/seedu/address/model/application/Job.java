@@ -60,8 +60,7 @@ public class Job {
     @Override
     public boolean equals(Object other) {
         return other == this || other instanceof Job otherJob
-                && role.equals(otherJob.role)
-                && description.equals(otherJob.description);
+                && role.equals(otherJob.role);
     }
 
     @Override
