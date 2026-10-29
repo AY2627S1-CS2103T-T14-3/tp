@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import seedu.address.logic.parser.Option;
+import seedu.address.model.application.Job;
 import seedu.address.model.person.Person;
 
 /**
@@ -45,6 +46,18 @@ public class Messages {
                 .append(person.getPhone())
                 .append("; Email: ")
                 .append(person.getEmail());
+        return builder.toString();
+    }
+
+    /**
+     * Formats the {@code person} for display to the user.
+     */
+    public static String format(Job job) {
+        final StringBuilder builder = new StringBuilder();
+        builder.append("\nRole: ")
+                .append(job.getJobRole())
+                .append("\nDescription: ")
+                .append(job.getJobDescription());
         return builder.toString();
     }
 

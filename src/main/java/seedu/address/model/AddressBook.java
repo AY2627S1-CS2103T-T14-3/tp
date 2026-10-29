@@ -170,6 +170,9 @@ public class AddressBook implements ReadOnlyAddressBook {
      * The edited description must not match another stored job.
      */
     public void setJob(Job target, Job editedJob) {
+        requireNonNull(editedJob);
+
+        applications.setJob(target, editedJob);
         jobs.setJob(target, editedJob);
     }
 

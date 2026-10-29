@@ -35,6 +35,7 @@ import seedu.address.model.application.Application;
 import seedu.address.model.application.Job;
 import seedu.address.model.person.NameContainsKeywordsPredicate;
 import seedu.address.model.person.Person;
+import seedu.address.testutil.EditJobDescriptorBuilder;
 import seedu.address.testutil.EditPersonDescriptorBuilder;
 import seedu.address.testutil.PersonBuilder;
 import seedu.address.testutil.PersonUtil;
@@ -127,8 +128,11 @@ public class AddressBookParserTest {
         assertEquals(new AddJobCommand(job), parser.parseCommand("addj -j Software Engineer"));
         assertEquals(new AddJobCommand(job), parser.parseCommand("  addj  -j    Software Engineer  "));
         assertEquals(new DeleteJobCommand(INDEX_FIRST_PERSON), parser.parseCommand("deletej 1"));
-        assertEquals(new EditJobCommand(INDEX_FIRST_PERSON, job), parser.parseCommand("editj 1 -j Software Engineer"));
-        assertEquals(new EditJobCommand(INDEX_FIRST_PERSON, job),
+        assertEquals(new EditJobCommand(INDEX_FIRST_PERSON,
+                        new EditJobDescriptorBuilder().withRole(job.getJobRole()).build()),
+                parser.parseCommand("editj 1 -j Software Engineer"));
+        assertEquals(new EditJobCommand(INDEX_FIRST_PERSON,
+                        new EditJobDescriptorBuilder().withRole(job.getJobRole()).build()),
                 parser.parseCommand("  editj   1   -job   Software Engineer  "));
         assertEquals(new ViewJobCommand(), parser.parseCommand("viewj"));
         assertEquals(new ViewJobCommand("jan"), parser.parseCommand("viewj -f jan"));

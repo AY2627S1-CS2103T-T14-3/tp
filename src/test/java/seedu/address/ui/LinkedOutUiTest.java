@@ -108,6 +108,8 @@ public class LinkedOutUiTest {
     @Test
     public void viewApplications_filteredApplicants_showsApplicantJobAndStatus() throws Exception {
         withWindow(window -> {
+            command(window, "addj -j Janitor");
+            command(window, "addj -j Analyst");
             command(window, "addp 1 -j Janitor -s accept");
             command(window, "addp 2 -j Analyst -s pending");
             command(window, "find Alice");
@@ -120,9 +122,9 @@ public class LinkedOutUiTest {
             assertEquals(1, applications.getItems().size());
             assertEquals("1. ", ((Label) applications.lookup("#id")).getText());
             assertEquals("Alice Pauline", ((Label) applications.lookup("#name")).getText());
-            assertEquals("Janitor", ((Label) applications.lookup("#job")).getText());
+            assertEquals("Janitor : No information ~", ((Label) applications.lookup("#job")).getText());
             assertEquals("Accepted", ((Label) applications.lookup("#statusBadge")).getText());
-            assertApplication(window, "Janitor", "Accepted");
+            assertApplication(window, "Janitor", "No information ~", "Accepted");
 
             command(window, "list");
             command(window, "viewp");
@@ -130,7 +132,7 @@ public class LinkedOutUiTest {
             assertEquals("2 applications", label(window, "applicantCount").getText());
             assertEquals(2, applications.getItems().size());
             assertEquals("Alice Pauline", ((Label) applications.lookup("#name")).getText());
-            assertEquals("Janitor", ((Label) applications.lookup("#job")).getText());
+            assertEquals("Janitor : No information ~", ((Label) applications.lookup("#job")).getText());
         });
     }
 
@@ -569,9 +571,9 @@ public class LinkedOutUiTest {
             assertEquals("Jobs", label(window, "listTitle").getText());
             assertEquals("2 jobs", label(window, "applicantCount").getText());
             assertEquals("Product Designer", label(window, "jobName").getText());
-            assertEquals("Edited job: Product Designer", feedback(window));
+            assertEquals("Edited job: \nRole: Product Designer\nDescription: No information ~", feedback(window));
             ListView<?> jobs = (ListView<?>) window.getRoot().getScene().lookup("#jobListView");
-            assertEquals("Product Designer", jobs.getSelectionModel().getSelectedItem().toString());
+            assertEquals("Product Designer : No information ~", jobs.getSelectionModel().getSelectedItem().toString());
             assertEquals(1, jobs.getSelectionModel().getSelectedIndex());
 
             TextField input = (TextField) window.getRoot().getScene().lookup("#commandTextField");

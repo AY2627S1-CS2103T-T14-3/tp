@@ -48,6 +48,18 @@ public class UniqueApplicationList implements Iterable<Application> {
     }
 
     /**
+     * Returns the application for {@code job}, if one exists.
+     * @param job job whose application is requested
+     * @return the application for {@code job}, if one exists
+     */
+    public Optional<Application> get(Job job) {
+        requireNonNull(job);
+        return internalList.stream()
+                .filter(application -> application.getJob().equals(job))
+                .findFirst();
+    }
+
+    /**
      * Adds an application to the list.
      * The applicant must not already have an application.
      * @param toAdd application to add
@@ -72,6 +84,21 @@ public class UniqueApplicationList implements Iterable<Application> {
             int index = internalList.indexOf(application);
             internalList.set(index, new Application(
                     editedPerson, application.getJob(), application.getStatus()));
+        });
+    }
+
+    /**
+     * Replaces the stored job {@code target} with {@code editedJob}, keeping the job and status.
+     * Does nothing when {@code target} has no application.
+     * @param target job currently stored on the application
+     * @param editedJob job to store instead
+     */
+    public void setJob(Job target, Job editedJob) {
+        requireAllNonNull(target, editedJob);
+        get(target).ifPresent(application -> {
+            int index = internalList.indexOf(application);
+            internalList.set(index, new Application(
+                    application.getApplicant(), editedJob, application.getStatus()));
         });
     }
 

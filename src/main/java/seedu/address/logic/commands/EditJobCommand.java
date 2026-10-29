@@ -11,6 +11,7 @@ import java.util.Optional;
 import seedu.address.commons.core.index.Index;
 import seedu.address.commons.util.CollectionUtil;
 import seedu.address.commons.util.ToStringBuilder;
+import seedu.address.logic.Messages;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 import seedu.address.model.application.Job;
@@ -68,7 +69,7 @@ public class EditJobCommand extends Command {
 
         model.setJob(jobToEdit, editedJob);
         model.updateFilteredJobList(PREDICATE_SHOW_ALL_JOBS);
-        return new CommandResult(String.format(MESSAGE_EDIT_JOB_SUCCESS, editJobDescriptor),
+        return new CommandResult(String.format(MESSAGE_EDIT_JOB_SUCCESS, Messages.format(editedJob)),
                 ViewRequest.job(editedJob));
     }
 
