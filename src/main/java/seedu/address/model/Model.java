@@ -5,16 +5,16 @@ import java.util.function.Predicate;
 
 import javafx.collections.ObservableList;
 import seedu.address.commons.core.GuiSettings;
+import seedu.address.model.applicant.Applicant;
 import seedu.address.model.application.Application;
 import seedu.address.model.application.Job;
-import seedu.address.model.person.Person;
 
 /**
  * The API of the Model component.
  */
 public interface Model {
     /** {@code Predicate} that always evaluates to true */
-    Predicate<Person> PREDICATE_SHOW_ALL_PERSONS = unused -> true;
+    Predicate<Applicant> PREDICATE_SHOW_ALL_APPLICANTS = unused -> true;
 
     /** {@code Predicate} that always evaluates to true */
     Predicate<Job> PREDICATE_SHOW_ALL_JOBS = unused -> true;
@@ -43,41 +43,47 @@ public interface Model {
     ReadOnlyAddressBook getAddressBook();
 
     /**
-     * Returns true if a person with the same name or email as {@code person} exists in the address book.
+     * Returns true if an applicant with the same name or email as {@code applicant} exists in the address book.
      */
-    boolean hasPerson(Person person);
+    boolean hasApplicant(Applicant applicant);
 
     /**
-     * Deletes the given person.
-     * The person must exist in the address book.
+     * Deletes the given applicant.
+     * The applicant must exist in the address book.
      */
-    void deletePerson(Person target);
+    void deleteApplicant(Applicant target);
 
     /**
-     * Adds the given person.
-     * {@code person} must not already exist in the address book.
+     * Adds the given applicant.
+     * {@code applicant} must not already exist in the address book.
      */
-    void addPerson(Person person);
+    void addApplicant(Applicant applicant);
 
     /**
-     * Replaces the given person {@code target} with {@code editedPerson}.
+     * Replaces the given applicant {@code target} with {@code editedApplicant}.
      * {@code target} must exist in the address book.
-     * The person identity of {@code editedPerson} must not be the same as another existing person in the address book.
+     * The applicant identity of {@code editedApplicant} must not be the same as another existing applicant
+     * in the address book.
      */
-    void setPerson(Person target, Person editedPerson);
+    void setApplicant(Applicant target, Applicant editedApplicant);
 
     /**
-     * Returns true if {@code person} already has an application.
-     * @param person applicant to check
-     * @return true if {@code person} already has an application
+     * Returns true if {@code applicant} already has an application.
+     * @param applicant applicant to check
+     * @return true if {@code applicant} already has an application
      */
-    boolean hasApplication(Person person);
+    boolean hasApplication(Applicant applicant);
 
     /**
      * Adds an application for an existing applicant who does not already have one.
      * @param application application to add
      */
     void addApplication(Application application);
+
+    /**
+     * Deletes the application belonging to {@code applicant}, if one exists, keeping the applicant and job.
+     */
+    void deleteApplication(Applicant applicant);
 
     /**
      * Replaces {@code target} with {@code editedApplication}.
@@ -88,11 +94,11 @@ public interface Model {
     void setApplication(Application target, Application editedApplication);
 
     /**
-     * Returns the application recorded for {@code person}, if any.
-     * @param person applicant whose application is requested
-     * @return the application recorded for {@code person}, if any
+     * Returns the application recorded for {@code applicant}, if any.
+     * @param applicant applicant whose application is requested
+     * @return the application recorded for {@code applicant}, if any
      */
-    Optional<Application> getApplication(Person person);
+    Optional<Application> getApplication(Applicant applicant);
 
     /** Returns an unmodifiable view of the applications */
     ObservableList<Application> getApplicationList();
@@ -114,13 +120,13 @@ public interface Model {
 
     /**
      * Replaces {@code target} with {@code editedJob}, preserving its position in the job list.
-     * The target must exist, and the edited description must not match another stored job.
-     * Applicant applications remain unchanged.
+     * The target must exist, and the edited role must not match another stored job.
+     * Updates matching applications to reference the edited job, keeping applicants and statuses.
      */
     void setJob(Job target, Job editedJob);
 
     /**
-     * Deletes the given job.
+     * Deletes the given job and all applications for it, keeping the applicants.
      * The job must exist in the address book.
      * @param target job to delete
      */
@@ -145,12 +151,12 @@ public interface Model {
      */
     void updateFilteredJobList(Predicate<Job> predicate);
 
-    /** Returns an unmodifiable view of the filtered person list */
-    ObservableList<Person> getFilteredPersonList();
+    /** Returns an unmodifiable view of the filtered applicant list */
+    ObservableList<Applicant> getFilteredApplicantList();
 
     /**
-     * Updates the filter of the filtered person list to filter by the given {@code predicate}.
+     * Updates the filter of the filtered applicant list to filter by the given {@code predicate}.
      * @throws NullPointerException if {@code predicate} is null.
      */
-    void updateFilteredPersonList(Predicate<Person> predicate);
+    void updateFilteredApplicantList(Predicate<Applicant> predicate);
 }

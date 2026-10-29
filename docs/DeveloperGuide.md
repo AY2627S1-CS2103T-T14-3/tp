@@ -2,6 +2,12 @@
 layout: page
 title: Developer Guide
 ---
+
+LinkedOut is a desktop recruitment tracker for one recruiter, built on AddressBook-Level3. It manages
+applicant contacts, job roles, and one application per applicant, with records stored locally as JSON.
+The code retains the `seedu.address` package and names such as `Person` and `AddressBook` from the foundation.
+In this guide, a `Person` represents an applicant; `AddressBook` holds applicants, applications, and jobs.
+
 * Table of Contents
 {:toc}
 
@@ -9,7 +15,10 @@ title: Developer Guide
 
 ## **Acknowledgements**
 
-* _{List the sources of reused or adapted ideas, code, documentation, and third-party libraries here, with links to the originals.}_
+* LinkedOut adapts the code and documentation of [AddressBook-Level3](https://github.com/se-edu/addressbook-level3),
+  created by the [SE-EDU initiative](https://se-education.org).
+* The application uses [JavaFX](https://openjfx.io/) for its UI, [Jackson](https://github.com/FasterXML/jackson)
+  for JSON storage, and [JUnit 5](https://github.com/junit-team/junit5) for testing.
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -72,7 +81,7 @@ The **API** of this component is specified in [`Ui.java`](https://github.com/se-
 
 ![Structure of the UI Component](images/UiClassDiagram.png)
 
-The UI consists of a `MainWindow` and its parts, such as `CommandBox`, `ResultDisplay`, `PersonListPanel`, and `StatusBarFooter`. All of these, including `MainWindow`, inherit from the abstract `UiPart` class, which captures common behavior among classes that represent visible GUI parts.
+The UI consists of a `MainWindow` and its parts, such as `CommandBox`, `ResultDisplay`, `ApplicantListPanel`, and `StatusBarFooter`. All of these, including `MainWindow`, inherit from the abstract `UiPart` class, which captures common behavior among classes that represent visible GUI parts.
 
 The `UI` component uses the JavaFX UI framework. The layouts of these UI parts are defined in matching `.fxml` files in `src/main/resources/view`. For example, [`MainWindow.fxml`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/resources/view/MainWindow.fxml) specifies the layout of [`MainWindow`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/ui/MainWindow.java).
 
@@ -81,7 +90,7 @@ The `UI` component,
 * executes user commands using the `Logic` component.
 * listens for changes to `Model` data so that the UI can be updated with the modified data.
 * keeps a reference to the `Logic` component, because the `UI` relies on the `Logic` to execute commands.
-* depends on some classes in the `Model` component because it displays `Person` objects from the model.
+* depends on some classes in the `Model` component because it displays `Applicant` objects from the model.
 
 ### Logic component
 
@@ -102,7 +111,7 @@ How the `Logic` component works:
 
 1. When `Logic` is called upon to execute a command, the command is passed to an `AddressBookParser` object, which in turn creates a parser that matches the command (e.g., `DeleteCommandParser`) and uses it to parse the command.
 1. This results in a `Command` object (more precisely, an object of one of its subclasses e.g., `DeleteCommand`) which is executed by the `LogicManager`.
-1. The command can communicate with the `Model` when it is executed (e.g. to delete a person).<br>
+1. The command can communicate with the `Model` when it is executed (e.g. to delete an applicant).<br>
    Note that although this is shown as a single step in the diagram above for simplicity, the code can require several interactions between the command object and the `Model` to complete the operation.
 1. The result of the command execution is encapsulated as a `CommandResult` object which is returned from `Logic`.
 
@@ -110,9 +119,15 @@ Here are the other classes in `Logic` (omitted from the class diagram above) tha
 
 <img src="images/ParserClasses.png" width="600"/>
 
+This partial diagram omits class members and generic type parameters. Dashed dependencies represent temporary use
+or access to static members: `CliSyntax` defines static `Option` constants. In contrast, `ArgumentMultimap` stores
+references to its `Option` keys, and each `Option` stores exactly one `Option.Kind`, so those links are associations.
+
 How the parsing works:
 * When called upon to parse a user command, the `AddressBookParser` class creates an `XYZCommandParser` (`XYZ` is a placeholder for the specific command name, e.g., `AddCommandParser`). The parser uses the other classes shown above to parse the user command and create an `XYZCommand` object (e.g., `AddCommand`). The `AddressBookParser` returns that object as a `Command` object.
 * All `XYZCommandParser` classes, such as `AddCommandParser` and `DeleteCommandParser`, implement the `Parser` interface so they can be treated similarly where appropriate, for example during testing.
+
+See [Command parsing and validation](#command-parsing-and-validation) for the option rules and a parsing walkthrough.
 
 ### Model component
 **API** : [`Model.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/model/Model.java)
@@ -122,29 +137,40 @@ How the parsing works:
 
 The `Model` component,
 
-* stores the address book data i.e., all `Person` objects (which are contained in a `UniquePersonList` object).
-* stores the `Person` objects selected by the current filter, such as search results, in a separate _filtered_ list. It exposes this list as an unmodifiable `ObservableList<Person>` that the UI can observe and bind to, so the UI updates when the list changes.
+* stores the address book data i.e., all `Applicant` objects (which are contained in a `UniqueApplicantList` object).
+* stores the `Applicant` objects selected by the current filter, such as search results, in a separate _filtered_ list. It exposes this list as an unmodifiable `ObservableList<Applicant>` that the UI can observe and bind to, so the UI updates when the list changes.
 * stores a `UserPrefs` object that represents the user’s preferences (currently, just the GUI settings). This is exposed to the outside as a `ReadOnlyUserPrefs` object.
 * does not depend on any of the other three components (as the `Model` represents data entities of the domain, they should make sense on their own without depending on other components)
 
 The `Application` model class in [`Application.java`](../src/main/java/seedu/address/model/application/Application.java)
-represents one applicant’s job application. It contains a reference to the applicant’s `Person`, together with an
-immutable job description and application status. Applicant identity is determined using `Person#isSamePerson`, while
-`Application#equals` compares the complete applicant, job description, and status. Job descriptions must be non-blank
-and must not contain option-like tokens; statuses are restricted to the case-sensitive values `accept`, `reject`, and
-`pending`. `AddressBook` stores these applications separately from its person list and keeps at most one application
-per applicant. `add -p` creates an application for an applicant in the displayed list, and `set` updates the
+represents one applicant’s job application. It contains a reference to the applicant’s `Applicant`, together with an
+immutable job and application status. Applicant identity is determined using `Applicant#isSameApplicant`, while
+`Application#equals` compares the complete applicant, job identity, and status. A job has a non-blank role and a
+separate description; statuses are restricted to the case-sensitive values `accept`, `reject`, and
+`pending`. `AddressBook` stores these applications separately from its applicant list and keeps at most one application
+per applicant. `addp` creates an application for an existing job and an applicant in the displayed list, and `set` updates the
 status of an existing application without changing its job. Deleting an applicant also
-deletes that applicant's application, and editing an applicant updates the person stored on the application.
+deletes that applicant's application, and editing an applicant updates the applicant stored on the application.
+`deletep INDEX` removes only the displayed applicant's application through `Model#deleteApplication` and
+`AddressBook#removeApplication`, preserving the applicant, job, and applicant filter. It returns the applicant
+in `ViewRequest.applicant` to select the applicants view and refresh their details. An applicant without an application
+produces an error.
+Deleting an applicant or application never removes a job.
 
-`AddressBook` also keeps a separate `UniqueJobList` of open roles. A job is identified by its description:
-duplicate descriptions are rejected, surrounding spaces are ignored, and other differences in case are kept.
-`addj` adds a role and shows the full job list. `viewj` lists every role, and `viewj -f KEYWORD` limits that list to roles whose description contains `KEYWORD`, ignoring case. `deletej` removes the role at the displayed index, which follows the current filter.
-`editj INDEX -j JOB_DESCRIPTION` replaces a role at its displayed index, rejecting a description that
+`AddressBook` also keeps a separate `UniqueJobList` of open roles. A job is identified by its role:
+duplicate roles are rejected, surrounding spaces are ignored, and other differences in case are kept.
+`addj` adds a role with an optional description and shows the full job list. `viewj` lists every role, and
+`viewj -f KEYWORD` filters the combined `ROLE : DESCRIPTION` text by a case-insensitive substring.
+`deletej` removes the role at the displayed index, which follows the current filter.
+`editj INDEX -j JOB_ROLE` replaces a role at its displayed index, rejecting a role that
 matches another stored job. `Model#setJob` delegates to `AddressBook#setJob` and `UniqueJobList#setJob`,
-which replaces the job at the same position and enforces uniqueness. Applications remain unchanged.
+which replaces the job at the same position and enforces uniqueness. `UniqueApplicationList#setJob` updates
+matching applications to reference the edited job, keeping their applicants and statuses. This prevents stale role
+references that the storage loader would reject.
+The parser constructs the replacement with `new Job(role)`, so editing resets the description to
+`No information ~`, including when the role is unchanged. Description options are not supported by `editj`.
 After editing, the command clears the job filter and returns the edited job in `CommandResult` so it
-is visible and selected even if the new description no longer matches the previous filter.
+is visible and selected even if the new role no longer matches the previous filter.
 These four commands ask the UI to show the job list and the selected role's detail panel. The panel shows
 that role only. It does not list applicants by comparing the role text with application job descriptions.
 The `view` command selects an applicant from the currently displayed applicant list and shows the applicant's
@@ -152,11 +178,16 @@ details. `list` and `viewa` show the applicant list. `viewp` shows each applicat
 `find`, `add`, `edit`, and `clear` also request the applicants view. `add` and `edit` select the changed applicant
 so the detail panel shows that person. `clear` replaces a deleted-applicant snapshot with the empty panel.
 `help` does not request a view, so that snapshot stays in place.
-Deleting a job does not
-delete applications, and
-adding an application does not add a job to this list. Jobs are stored in the same JSON address book under `jobs`.
 
-<div markdown="span" class="alert alert-info">:information_source: **Note:** The alternative, arguably more object-oriented, design below keeps a unique list of tags in `AddressBook`, and each `Person` references tags from that list. This lets `AddressBook` maintain one `Tag` object per unique tag instead of each `Person` holding its own `Tag` objects.<br>
+Deleting a job cascades through `AddressBook#removeJob`
+to `UniqueApplicationList#removeForJob`, removing every application whose `Job#equals` matches the deleted role
+while keeping all applicants. Matching uses the exact, case-sensitive job role after trimming surrounding spaces,
+consistent with job identity. The cascade operates on all stored applications regardless of the current filters,
+so subsequent saves contain no applications for the deleted role. Adding an application does not add a job to this list.
+This cascade does not change the JSON format introduced by the job model.
+Jobs are stored in the same JSON address book under `jobs`.
+
+<div markdown="span" class="alert alert-info">:information_source: **Note:** The alternative, arguably more object-oriented, design below keeps a unique list of tags in `AddressBook`, and each `Applicant` references tags from that list. This lets `AddressBook` maintain one `Tag` object per unique tag instead of each `Applicant` holding its own `Tag` objects.<br>
 
 <img src="images/BetterModelClassDiagram.png" width="450" />
 
@@ -174,6 +205,21 @@ The `Storage` component,
 * is implemented by `StorageManager`, which delegates the actual JSON file access to `JsonAddressBookStorage` and `JsonUserPrefsStorage` (one class per data file).
 * depends on some classes in the `Model` component (because the `Storage` component's job is to save/retrieve objects that belong to the `Model`)
 
+`JsonAdaptedJob` stores each job as an object containing `role` and `description`, both in the top-level `jobs`
+array and in each application's `job` field. `role` must be non-blank; `description` must be a non-null string,
+although an empty string is valid. `Job` strips surrounding whitespace from both fields. Duplicate jobs are
+rejected by role, independently of their descriptions.
+
+`JsonSerializableAddressBook#toModelType` loads persons, then jobs, then applications. A missing `jobs` or
+`applications` array is treated as empty. `JsonAdaptedApplication#toModelType` resolves the applicant by exact
+name and the job by role equality against those already loaded. It uses the stored job from `jobs`, so that
+job's description takes precedence over the description embedded in the application. Unknown applicants,
+unknown roles, and duplicate applications cause loading to fail.
+
+The job role/description format introduced in PR #130 has no automatic migration from the earlier string job
+format or from job objects without a role. Such files must be backed up and converted before loading; see
+[Job data format in the User Guide](UserGuide.md#job-data-format).
+
 ### Common classes
 
 Classes used by multiple components are in the `seedu.address.commons` package.
@@ -183,6 +229,103 @@ Classes used by multiple components are in the `seedu.address.commons` package.
 ## **Implementation**
 
 This section describes some noteworthy details on how certain features are implemented.
+
+### Job roles and descriptions
+
+`Job` is an immutable value object with separate `role` and `description` strings. `Job#equals` and
+`Job#hashCode` use only the stripped, case-sensitive role. Consequently, `UniqueJobList` rejects the same role
+with a different description, while allowing different roles to share a description. The single-argument
+constructor supplies the default description `No information ~`.
+
+`AddJobCommandParser` accepts a required role (`-j` or `-job`) and an optional description (`-d`, `-desc`, or
+`-description`). `EditJobCommandParser` accepts an index and a required role, then constructs a replacement
+using the single-argument constructor. This explains the current description reset described in the
+[User Guide](UserGuide.md#editing-a-job-editj).
+
+Despite its name, `JobDescriptionContainsKeywordPredicate` searches `Job#toString`, which returns
+`role + " : " + description`. It lowercases both that text and the keyword using `Locale.ROOT`, then calls
+`contains`. Thus filtering matches either field, including partial words, and treats a multi-word keyword as
+one substring. Filtering does not change job identity or the exact role lookup used by `addp`.
+
+### Command parsing and validation
+
+Commands with named options use `ArgumentTokenizer#tokenizeOptions` to share the rules for recognising options,
+resolving aliases, and rejecting malformed arguments. Each command parser supplies its own option definitions and
+then validates the extracted values. Commands that only take an index, such as `delete`, use `ParserUtil#parseIndex`
+directly instead.
+
+#### Parsing responsibilities
+
+The [parser class diagram](#logic-component) shows how these classes collaborate:
+
+| Class | Responsibility |
+| --- | --- |
+| `AddressBookParser` | Separates the command word from its arguments and dispatches to the matching command parser. |
+| `CliSyntax` | Defines shared `Option` objects, including short and long aliases. |
+| `Option` | Describes the accepted aliases and whether an option is required, optional, or a flag. |
+| `ArgumentTokenizer` | Recognises option tokens, maps aliases to their configured `Option`, and validates argument structure. |
+| `ArgumentMultimap` | Stores extracted strings under `Option` keys and exposes any positional preamble. |
+| `ParserUtil` | Converts extracted strings to validated values, such as an `Index`, `Name`, `Phone`, or `Email`. |
+| Command parser | Selects the options allowed for its command, applies command-specific rules, and constructs a `Command`. |
+
+`Option.Kind` determines how the tokenizer handles an option:
+
+| Kind | Rule |
+| --- | --- |
+| `REQUIRED` | The option must appear once with a non-empty value. |
+| `OPTIONAL` | The option may be omitted, but must have a non-empty value when present. |
+| `FLAG` | The option may be omitted and takes no value when present. |
+
+Flag support is provided by the tokenizer and covered by its tests; the shared options in `CliSyntax` use the
+required and optional kinds. The tokenizer trims surrounding whitespace from values and accepts options in any order.
+It recognises lowercase, hyphen-prefixed option tokens separated by whitespace, such as `-n`, `-name`, or `-job`.
+An embedded hyphen, such as the one in `alice-tan@example.com`, does not start an option.
+
+#### Example: adding an applicant
+
+Consider `add -name Alice -p 91234567 -email alice@example.com`:
+
+1. `AddressBookParser` recognises `add` and passes the remaining arguments to `AddCommandParser`.
+1. `AddCommandParser` calls `tokenizeOptions` with `NO_PREAMBLE` and the required name, phone, and email options
+   from `CliSyntax`.
+1. The tokenizer maps `-name`, `-p`, and `-email` to `OPTION_NAME_REQ`, `OPTION_PHONE_REQ`, and `OPTION_EMAIL_REQ`.
+   Each alias resolves to the same configured `Option` object as its short form. The resulting `ArgumentMultimap`
+   stores `Alice`, `91234567`, and `alice@example.com` under those keys.
+1. After the tokenizer checks that every required option is present with a value and no option is repeated,
+   `AddCommandParser` retrieves the strings and uses `ParserUtil` to validate the name, phone, and email.
+1. The parser constructs a `Person` and returns an `AddCommand`. Checking whether the applicant's name or email
+   conflicts with an existing record happens when the command executes against the model.
+
+For an indexed command such as `addp 1 -j Engineer`, `AddApplicationCommandParser` enables `HAS_PREAMBLE`.
+The tokenizer stores the leading `1` under the internal `Option.OPTION_EMPTY` key, which is exposed through
+`ArgumentMultimap#getPreamble`. Allowing a preamble does not require it to contain an index: the command parser
+must call `ParserUtil#parseIndex` to reject a missing, non-integer, or non-positive index. The command later checks
+whether the index exists in the filtered applicant list. The job option is required, while the omitted status
+defaults to `pending` in `AddApplicationCommandParser`.
+
+#### Validation and error handling
+
+The tokenizer rejects unknown option tokens, repeated options (including mixed aliases such as `-n` and `-name`),
+missing required options, empty option values, values supplied to flags, and positional text when `NO_PREAMBLE`
+is selected. `ArgumentMultimap` can hold multiple values for a key, but `tokenizeOptions` rejects duplicates before
+returning it to the command parser.
+
+Command parsers decide how to present these errors. For example, `AddCommandParser` wraps tokenizer errors in its
+command usage message, while an invalid phone or email produces the corresponding field constraint message.
+Additional rules stay in the command parser: `EditCommandParser` configures optional fields but separately requires
+at least one field to be supplied. Parsing failures throw `ParseException` before a command is executed.
+
+#### Design considerations
+
+* **Shared tokenizer with command-specific configuration:** Keeping alias resolution and structural checks in one
+  tokenizer gives commands consistent rules. Implementing these checks separately in every parser would allow more
+  specialised grammars, but would duplicate validation and make changes harder to apply consistently.
+* **Reject duplicate options:** Rejecting repeated aliases prevents ambiguous input from silently replacing an earlier
+  value. Accepting the last value would allow easy overrides, but could hide an accidental repeated field.
+
+The parsing rules are exercised in `ArgumentTokenizerTest`, including aliases, option kinds, preambles, malformed input,
+and conflicting option definitions. `AddCommandParserTest`, `AddApplicationCommandParserTest`, and
+`EditCommandParserTest` cover the command-specific validation and error messages.
 
 ### \[Proposed\] Undo/redo feature
 
@@ -202,11 +345,11 @@ Step 1. The user launches the application for the first time. The `VersionedAddr
 
 ![UndoRedoState0](images/UndoRedoState0.png)
 
-Step 2. The user executes `delete 5` command to delete the 5th person in the address book. The `delete` command calls `Model#commitAddressBook()`, causing the modified state of the address book after the `delete 5` command executes to be saved in the `addressBookStateList`, and the `currentStatePointer` is shifted to the newly inserted address book state.
+Step 2. The user executes `delete 5` command to delete the 5th applicant in the address book. The `delete` command calls `Model#commitAddressBook()`, causing the modified state of the address book after the `delete 5` command executes to be saved in the `addressBookStateList`, and the `currentStatePointer` is shifted to the newly inserted address book state.
 
 ![UndoRedoState1](images/UndoRedoState1.png)
 
-Step 3. The user executes `add n/David …​` to add a new person. The `add` command also calls `Model#commitAddressBook()`, causing another modified address book state to be saved into the `addressBookStateList`.
+Step 3. The user executes `add n/David …​` to add a new applicant. The `add` command also calls `Model#commitAddressBook()`, causing another modified address book state to be saved into the `addressBookStateList`.
 
 ![UndoRedoState2](images/UndoRedoState2.png)
 
@@ -214,7 +357,7 @@ Step 3. The user executes `add n/David …​` to add a new person. The `add` co
 
 </div>
 
-Step 4. The user now decides that adding the person was a mistake, and decides to undo that action by executing the `undo` command. The `undo` command will call `Model#undoAddressBook()`, which will shift the `currentStatePointer` once to the left, pointing it to the previous address book state, and restores the address book to that state.
+Step 4. The user now decides that adding the applicant was a mistake, and decides to undo that action by executing the `undo` command. The `undo` command will call `Model#undoAddressBook()`, which will shift the `currentStatePointer` once to the left, pointing it to the previous address book state, and restores the address book to that state.
 
 ![UndoRedoState3](images/UndoRedoState3.png)
 
@@ -263,7 +406,7 @@ The following activity diagram summarizes what happens when a user executes a ne
 
 * **Alternative 2:** Individual command knows how to undo/redo by
   itself.
-  * Pros: Will use less memory (e.g. for `delete`, just save the person being deleted).
+  * Pros: Will use less memory (e.g. for `delete`, just save the applicant being deleted).
   * Cons: We must ensure that the implementation of each individual command is correct.
 
 _{more aspects and alternatives to be added}_
@@ -489,10 +632,11 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 ### Glossary
 
 * **Mainstream OS**: Windows, Linux, Unix, or macOS
-* **Applicant**: A person registered in LinkedOut with a name and email address, whose job application can be tracked.
-* **Application**: A record of an applicant's application for a job, containing a job description and an application status. An applicant can have at most one application.
-* **Job**: An open role stored in the job list, identified by its description. It is separate from an applicant's application.
-* **Job description**: The text describing a job. On an application, it records the role that applicant applied for. In the job list, it is the role's identity.
+* **Applicant**: An applicant registered in LinkedOut with a name and email address, whose job application can be tracked.
+* **Application**: A record linking an applicant to an existing job and an application status. An applicant can have at most one application.
+* **Job**: An open role stored in the job list, identified by its role name and accompanied by a description.
+* **Job role**: The name identifying a job, matched exactly after trimming surrounding spaces.
+* **Job description**: The additional text describing a job. It does not determine the job's identity.
 * **Application status**: The recorded outcome of an application: `accept` (accepted), `reject` (rejected), or `pending` (awaiting a decision). These values are case-sensitive.
 * **Applicant index**: The number used in commands to identify an applicant in the applicant list, starting from 1.
 
@@ -511,36 +655,70 @@ testers are expected to do more *exploratory* testing.
 
 1. Initial launch
 
-   1. Download the JAR file and copy it into an empty folder.
+   1. Download or build `linkedout.jar` and copy it into an empty, writable folder.
 
-   1. Double-click the JAR file.<br>
-      Expected: The GUI opens with a set of sample contacts. The window size may not be optimal.
+   1. Open a terminal in that folder. Run `java -version` and verify that Java `25` is selected.
+
+   1. Run `java -jar "linkedout.jar"`.<br>
+      Expected: The LinkedOut window opens in the Applicants view with six sample applicants and the first
+      applicant's contact details. `viewj` shows three sample jobs; `viewp` shows no applications.
 
 1. Saving window preferences
 
-   1. Resize the window to an optimal size. Move the window to a different location. Close the window.
+   1. Resize the window and move it to a different location. Run `bye` to close it.
 
-   1. Relaunch the app by double-clicking the JAR file.<br>
+   1. Relaunch from the same folder using `java -jar "linkedout.jar"`.<br>
        Expected: The most recent window size and location are retained.
 
 1. _{ more test cases …​ }_
 
-### Deleting a person
+### Deleting an applicant
 
-1. Deleting a person while all persons are being shown
+1. Deleting an applicant while all applicants are being shown
 
-   1. Prerequisites: List all persons using the `list` command, with multiple persons in the list.
+   1. Prerequisites: List all applicants using the `list` command, with multiple applicants in the list.
 
    1. Test case: `delete 1`<br>
       Expected: The first contact is deleted from the list. The status message shows the deleted contact's details.
 
    1. Test case: `delete 0`<br>
-      Expected: No person is deleted. The status message shows error details.
+      Expected: No applicant is deleted. The status message shows error details.
 
    1. Other incorrect delete commands to try: `delete`, `delete x`, `...` (where x is larger than the list size)<br>
       Expected: Similar to previous.
 
 1. _{ more test cases …​ }_
+
+### Managing job roles and descriptions
+
+1. Adding and filtering a job
+
+   1. Prerequisites: Use role names that are not already in the job list.
+
+   1. Test case: `addj -j Research Assistant -d Analyse survey responses`<br>
+      Expected: The job list is shown with the new job selected. Its details show the supplied description.
+
+   1. Test case: `addj -j Research Assistant -d Different description`<br>
+      Expected: A duplicate-job error is shown; the original job is unchanged.
+
+   1. Test case: `viewj -f SURVEY`<br>
+      Expected: The Research Assistant job is included because its description matches, ignoring case.
+
+   1. Test case: `viewj -f search ass`<br>
+      Expected: The same job is included because its role contains the substring.
+
+1. Editing a job and its application references
+
+   1. Prerequisites: Create the Research Assistant job above and an applicant without an application.
+      Use `list` to find that applicant's index, then `addp INDEX -j Research Assistant -s accept`.
+      Use `viewj -f survey` to find the job's filtered index.
+
+   1. Test case: `editj INDEX -j Senior Research Assistant`, using the job's filtered index.<br>
+      Expected: The full job list is shown with the replacement selected. Its description is `No information ~`.
+      Viewing the applicant shows the new role and default description; the status remains accepted.
+
+   1. Close and relaunch the app.<br>
+      Expected: The replacement job and updated application load with the same role, description, and status.
 
 ### Saving data
 

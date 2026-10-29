@@ -6,8 +6,8 @@ import java.util.Objects;
 import java.util.Optional;
 
 import seedu.address.commons.util.ToStringBuilder;
+import seedu.address.model.applicant.Applicant;
 import seedu.address.model.application.Application;
-import seedu.address.model.person.Person;
 
 /**
  * Represents the result of a command execution.
@@ -28,24 +28,17 @@ public class CommandResult {
     /** A snapshot to display after an applicant has been deleted. */
     private final DeletedApplicant deletedApplicant;
 
-    /**
-     * Constructs a {@code CommandResult} with the specified feedback,
-     * and other fields set to their default value.
-     */
+    /** Constructs a {@code CommandResult} with the specified feedback. */
     public CommandResult(String feedbackToUser) {
         this(feedbackToUser, false, false, null, null);
     }
 
-    /**
-     * Constructs a {@code CommandResult} with the specified fields.
-     */
+    /** Constructs a {@code CommandResult} with the specified fields. */
     public CommandResult(String feedbackToUser, boolean showHelp, boolean exit) {
         this(feedbackToUser, showHelp, exit, null, null);
     }
 
-    /**
-     * Constructs a {@code CommandResult} that requests a view change.
-     */
+    /** Constructs a {@code CommandResult} that requests a view change. */
     public CommandResult(String feedbackToUser, ViewRequest viewRequest) {
         this(feedbackToUser, false, false, viewRequest, null);
     }
@@ -59,10 +52,8 @@ public class CommandResult {
         this.deletedApplicant = deletedApplicant;
     }
 
-    /**
-     * Returns a result displaying the deleted applicant and their former application, if any.
-     */
-    public static CommandResult deletedApplicant(String feedback, Person applicant, Application application) {
+    /** Returns a result displaying the deleted applicant and their former application, if any. */
+    public static CommandResult deletedApplicant(String feedback, Applicant applicant, Application application) {
         return new CommandResult(feedback, false, false, null,
                 new DeletedApplicant(applicant, application));
     }
@@ -121,10 +112,8 @@ public class CommandResult {
                 .toString();
     }
 
-    /**
-     * Stores immutable details captured before deletion; the application may be null.
-     */
-    public record DeletedApplicant(Person applicant, Application application) {
+    /** Stores immutable details captured before deletion; the application may be null. */
+    public record DeletedApplicant(Applicant applicant, Application application) {
         /** Creates a snapshot with a non-null applicant. */
         public DeletedApplicant {
             requireNonNull(applicant);

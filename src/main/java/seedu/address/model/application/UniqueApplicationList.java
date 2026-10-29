@@ -9,9 +9,9 @@ import java.util.Optional;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import seedu.address.model.applicant.Applicant;
 import seedu.address.model.application.exceptions.ApplicationNotFoundException;
 import seedu.address.model.application.exceptions.DuplicateApplicationException;
-import seedu.address.model.person.Person;
 
 /**
  * A list of applications that enforces one application per applicant and does not allow nulls.
@@ -30,7 +30,7 @@ public class UniqueApplicationList implements Iterable<Application> {
      * @param applicant applicant to check
      * @return true if an application for {@code applicant} exists in the list
      */
-    public boolean contains(Person applicant) {
+    public boolean contains(Applicant applicant) {
         requireNonNull(applicant);
         return get(applicant).isPresent();
     }
@@ -40,10 +40,10 @@ public class UniqueApplicationList implements Iterable<Application> {
      * @param applicant applicant whose application is requested
      * @return the application for {@code applicant}, if one exists
      */
-    public Optional<Application> get(Person applicant) {
+    public Optional<Application> get(Applicant applicant) {
         requireNonNull(applicant);
         return internalList.stream()
-                .filter(application -> application.getApplicant().isSamePerson(applicant))
+                .filter(application -> application.getApplicant().isSameApplicant(applicant))
                 .findFirst();
     }
 
@@ -73,17 +73,17 @@ public class UniqueApplicationList implements Iterable<Application> {
     }
 
     /**
-     * Replaces the stored applicant {@code target} with {@code editedPerson}, keeping the job and status.
+     * Replaces the stored applicant {@code target} with {@code editedApplicant}, keeping the job and status.
      * Does nothing when {@code target} has no application.
      * @param target applicant currently stored on the application
-     * @param editedPerson applicant to store instead
+     * @param editedApplicant applicant to store instead
      */
-    public void setApplicant(Person target, Person editedPerson) {
-        requireAllNonNull(target, editedPerson);
+    public void setApplicant(Applicant target, Applicant editedApplicant) {
+        requireAllNonNull(target, editedApplicant);
         get(target).ifPresent(application -> {
             int index = internalList.indexOf(application);
             internalList.set(index, new Application(
-                    editedPerson, application.getJob(), application.getStatus()));
+                    editedApplicant, application.getJob(), application.getStatus()));
         });
     }
 
@@ -124,9 +124,19 @@ public class UniqueApplicationList implements Iterable<Application> {
      * Removes the application belonging to {@code applicant}, if one exists.
      * @param applicant applicant whose application should be removed
      */
-    public void remove(Person applicant) {
+    public void remove(Applicant applicant) {
         requireNonNull(applicant);
         get(applicant).ifPresent(internalList::remove);
+    }
+
+    /**
+     * Removes every application for {@code job}, comparing jobs by their roles.
+     *
+     * @param job job whose applications should be removed.
+     */
+    public void removeForJob(Job job) {
+        requireNonNull(job);
+        internalList.removeIf(application -> application.getJob().equals(job));
     }
 
     /**

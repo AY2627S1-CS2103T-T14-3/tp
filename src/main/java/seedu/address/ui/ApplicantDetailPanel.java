@@ -7,8 +7,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import seedu.address.model.applicant.Applicant;
 import seedu.address.model.application.Application;
-import seedu.address.model.person.Person;
 
 /** Displays the selected applicant's contact information and application placeholder. */
 public class ApplicantDetailPanel extends UiPart<Region> {
@@ -41,11 +41,11 @@ public class ApplicantDetailPanel extends UiPart<Region> {
 
     /**
      * Updates all details, or shows the empty state when no applicant is selected.
-     * @param person applicant to display, or null when none is selected
-     * @param application application belonging to {@code person}, or null when none is recorded
+     * @param applicant applicant to display, or null when none is selected
+     * @param application application belonging to {@code applicant}, or null when none is recorded
      */
-    public void showApplicant(Person person, Application application) {
-        boolean selected = person != null;
+    public void showApplicant(Applicant applicant, Application application) {
+        boolean selected = applicant != null;
         contactDetails.setVisible(selected);
         contactDetails.setManaged(selected);
         if (!selected) {
@@ -58,13 +58,13 @@ public class ApplicantDetailPanel extends UiPart<Region> {
             return;
         }
 
-        applicantName.setText(person.getName().fullName);
-        initials.setText(Stream.of(person.getName().fullName.split("\\s+"))
+        applicantName.setText(applicant.getName().fullName);
+        initials.setText(Stream.of(applicant.getName().fullName.split("\\s+"))
                 .limit(2).map(word -> word.substring(0, 1).toUpperCase(java.util.Locale.ROOT))
                 .collect(Collectors.joining()));
         selectionHint.setText("Applicant contact information");
-        email.setText(person.getEmail().value);
-        phone.setText(person.getPhone().value);
+        email.setText(applicant.getEmail().value);
+        phone.setText(applicant.getPhone().value);
         showApplication(application);
     }
 
@@ -74,7 +74,7 @@ public class ApplicantDetailPanel extends UiPart<Region> {
      * @param person the deleted applicant.
      * @param application the former application, or null when none was recorded.
      */
-    public void showDeletedApplicant(Person person, Application application) {
+    public void showDeletedApplicant(Applicant person, Application application) {
         showApplicant(person, application);
         selectionHint.setText("Deleted applicant. These details are no longer stored.");
     }

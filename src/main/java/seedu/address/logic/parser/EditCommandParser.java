@@ -8,7 +8,7 @@ import static seedu.address.logic.parser.CliSyntax.OPTION_PHONE_OPT;
 
 import seedu.address.commons.core.index.Index;
 import seedu.address.logic.commands.EditCommand;
-import seedu.address.logic.commands.EditCommand.EditPersonDescriptor;
+import seedu.address.logic.commands.EditCommand.EditApplicantDescriptor;
 import seedu.address.logic.parser.exceptions.ParseException;
 
 /**
@@ -35,22 +35,22 @@ public class EditCommandParser implements Parser<EditCommand> {
             throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditCommand.MESSAGE_USAGE), pe);
         }
 
-        EditPersonDescriptor editPersonDescriptor = new EditPersonDescriptor();
+        EditApplicantDescriptor editApplicantDescriptor = new EditApplicantDescriptor();
 
         if (argMultimap.getValue(OPTION_NAME_OPT).isPresent()) {
-            editPersonDescriptor.setName(ParserUtil.parseName(argMultimap.getValue(OPTION_NAME_OPT).get()));
+            editApplicantDescriptor.setName(ParserUtil.parseName(argMultimap.getValue(OPTION_NAME_OPT).get()));
         }
         if (argMultimap.getValue(OPTION_PHONE_OPT).isPresent()) {
-            editPersonDescriptor.setPhone(ParserUtil.parsePhone(argMultimap.getValue(OPTION_PHONE_OPT).get()));
+            editApplicantDescriptor.setPhone(ParserUtil.parsePhone(argMultimap.getValue(OPTION_PHONE_OPT).get()));
         }
         if (argMultimap.getValue(OPTION_EMAIL_OPT).isPresent()) {
-            editPersonDescriptor.setEmail(ParserUtil.parseEmail(argMultimap.getValue(OPTION_EMAIL_OPT).get()));
+            editApplicantDescriptor.setEmail(ParserUtil.parseEmail(argMultimap.getValue(OPTION_EMAIL_OPT).get()));
         }
-        if (!editPersonDescriptor.isAnyFieldEdited()) {
+        if (!editApplicantDescriptor.isAnyFieldEdited()) {
             throw new ParseException(EditCommand.MESSAGE_NOT_EDITED);
         }
 
-        return new EditCommand(index, editPersonDescriptor);
+        return new EditCommand(index, editApplicantDescriptor);
     }
 
 }

@@ -2,26 +2,21 @@ package seedu.address.logic.parser;
 
 import static java.util.Objects.requireNonNull;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
-import static seedu.address.logic.Messages.MESSAGE_INVALID_JOB_ROLE;
 import static seedu.address.logic.parser.CliSyntax.OPTION_JOB_DESC_OPT;
 import static seedu.address.logic.parser.CliSyntax.OPTION_JOB_ROLE_OPT;
-import static seedu.address.logic.parser.CliSyntax.OPTION_NAME_OPT;
 
 import seedu.address.commons.core.index.Index;
-import seedu.address.logic.commands.AddJobCommand;
-import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.EditJobCommand;
 import seedu.address.logic.commands.EditJobCommand.EditJobDescriptor;
 import seedu.address.logic.parser.exceptions.ParseException;
-import seedu.address.model.application.Job;
 
 /**
- * Parses a displayed job index and a replacement description into an EditJobCommand.
+ * Parses a displayed job index and a replacement role into an EditJobCommand.
  */
 public class EditJobCommandParser implements Parser<EditJobCommand> {
 
     /**
-     * Parses a leading job index followed by a required job description.
+     * Parses a leading job index followed by a required job role.
      *
      * @throws ParseException if the arguments do not conform to the expected format.
      */
