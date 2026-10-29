@@ -65,7 +65,7 @@ public class Job {
 
     @Override
     public int hashCode() {
-        return Objects.hash(role, description);
+        return Objects.hash(role);
     }
 
     @Override
