@@ -43,11 +43,12 @@ public class ViewJobCommand extends Command {
         requireNonNull(model);
         if (keyword == null) {
             model.updateFilteredJobList(Model.PREDICATE_SHOW_ALL_JOBS);
-            return CommandResult.showJobs(MESSAGE_SUCCESS);
+            return new CommandResult(MESSAGE_SUCCESS, ViewRequest.jobs());
         }
 
         model.updateFilteredJobList(new JobDescriptionContainsKeywordPredicate(keyword));
-        return CommandResult.showJobs(String.format(MESSAGE_JOBS_LISTED, model.getFilteredJobList().size()));
+        return new CommandResult(
+                String.format(MESSAGE_JOBS_LISTED, model.getFilteredJobList().size()), ViewRequest.jobs());
     }
 
     @Override

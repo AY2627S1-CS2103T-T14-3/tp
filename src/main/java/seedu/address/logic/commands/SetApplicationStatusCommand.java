@@ -71,7 +71,7 @@ public class SetApplicationStatusCommand extends Command {
                 existing.getApplicant(), existing.getJob(), status);
         model.setApplication(existing, updated);
         return new CommandResult(String.format(
-                MESSAGE_SUCCESS, applicant.getName(), applicant.getEmail(), status), applicant);
+                MESSAGE_SUCCESS, applicant.getName(), applicant.getEmail(), status), ViewRequest.applicant(applicant));
     }
 
     @Override

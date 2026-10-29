@@ -11,6 +11,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputControl;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
@@ -18,20 +19,24 @@ import javafx.stage.Stage;
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.LogsCenter;
 import seedu.address.logic.Logic;
+import seedu.address.logic.commands.ApplicantSelection;
+import seedu.address.logic.commands.ApplicationSelection;
 import seedu.address.logic.commands.CommandResult;
+import seedu.address.logic.commands.JobSelection;
+import seedu.address.logic.commands.ViewRequest;
+import seedu.address.logic.commands.ViewSelection;
+import seedu.address.logic.commands.ViewType;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.application.Application;
 import seedu.address.model.person.Person;
 
-/**
- * The Main Window. Provides the basic application layout containing
- * a menu bar and space where other JavaFX elements can be placed.
- */
+/** The main window containing the command console and list views. */
 public class MainWindow extends UiPart<Stage> {
 
     private static final String FXML = "MainWindow.fxml";
     private static final String APPLICANT_HINT = "Find and manage applicants using commands.";
+    private static final String APPLICATION_HINT = "See which applicant applied to each job.";
     private static final String JOB_HINT = "Add, view, and remove open roles.";
 
     private final Logger logger = LogsCenter.getLogger(getClass());
@@ -39,15 +44,16 @@ public class MainWindow extends UiPart<Stage> {
     private Stage primaryStage;
     private Logic logic;
     private Path dataFilePath;
+    private ViewType currentView = ViewType.APPLICANTS;
 
     // Independent Ui parts residing in this Ui container
     private PersonListPanel personListPanel;
+    private ApplicationListPanel applicationListPanel;
     private JobListPanel jobListPanel;
     private ApplicantDetailPanel applicantDetailPanel;
     private JobDetailPanel jobDetailPanel;
     private ResultDisplay resultDisplay;
     private HelpWindow helpWindow;
-    private boolean showingJobs;
 
     @FXML
     private StackPane applicantDetailPlaceholder;
@@ -65,13 +71,22 @@ public class MainWindow extends UiPart<Stage> {
     private Label consoleHint;
 
     @FXML
+    private ToggleButton applicantsTab;
+
+    @FXML
+    private ToggleButton applicationsTab;
+
+    @FXML
+    private ToggleButton jobsTab;
+
+    @FXML
     private StackPane commandBoxPlaceholder;
 
     @FXML
     private MenuItem helpMenuItem;
 
     @FXML
-    private StackPane personListPanelPlaceholder;
+    private StackPane viewListPlaceholder;
 
     @FXML
     private StackPane resultDisplayPlaceholder;
@@ -86,16 +101,12 @@ public class MainWindow extends UiPart<Stage> {
     public MainWindow(Stage primaryStage, Logic logic, Path dataFilePath) {
         super(FXML, primaryStage);
 
-        // Set dependencies
         this.primaryStage = primaryStage;
         this.logic = logic;
         this.dataFilePath = dataFilePath;
 
-        // Configure the UI
         setWindowDefaultSize(logic.getGuiSettings());
-
         setAccelerators();
-
         helpWindow = new HelpWindow();
     }
 
@@ -107,27 +118,13 @@ public class MainWindow extends UiPart<Stage> {
         setAccelerator(helpMenuItem, KeyCombination.valueOf("F1"));
     }
 
-    /**
-     * Sets the accelerator of a MenuItem.
-     * @param keyCombination the KeyCombination value of the accelerator
-     */
+    /** Sets the accelerator of a menu item. */
     private void setAccelerator(MenuItem menuItem, KeyCombination keyCombination) {
         menuItem.setAccelerator(keyCombination);
 
         /*
-         * TODO: the code below can be removed once the bug reported here
-         * https://bugs.openjdk.java.net/browse/JDK-8131666
-         * is fixed in a later version of the SDK.
-         *
-         * According to the bug report, TextInputControl (TextField, TextArea) will
-         * consume function-key events. Because CommandBox contains a TextField and
-         * ResultDisplay contains a TextArea, some accelerators (e.g., F1) will
-         * not work when the focus is in them because the key event is consumed by
-         * the TextInputControl(s).
-         *
-         * For now, we add the following event filter to capture such key events and open
-         * the help window purposely so as to support accelerators even when focus is
-         * in CommandBox or ResultDisplay.
+         * TextInputControl consumes function-key events. Capture matching events before they
+         * reach the command box or result display so that F1 remains available there.
          */
         getRoot().addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (event.getTarget() instanceof TextInputControl && keyCombination.match(event)) {
@@ -137,25 +134,33 @@ public class MainWindow extends UiPart<Stage> {
         });
     }
 
-    /**
-     * Fills up all the placeholders of this window.
-     */
+    /** Fills all placeholders of this window. */
     void fillInnerParts() {
         personListPanel = new PersonListPanel(logic.getFilteredPersonList());
+        applicationListPanel = new ApplicationListPanel(
+                logic.getFilteredPersonList(), logic.getApplicationList());
         jobListPanel = new JobListPanel(logic.getFilteredJobList());
-        personListPanelPlaceholder.getChildren().add(personListPanel.getRoot());
 
         applicantDetailPanel = new ApplicantDetailPanel();
         jobDetailPanel = new JobDetailPanel();
+
+        viewListPlaceholder.getChildren().add(personListPanel.getRoot());
         applicantDetailPlaceholder.getChildren().add(applicantDetailPanel.getRoot());
+
+        applicantsTab.setOnAction(event -> showView(ViewType.APPLICANTS));
+        applicationsTab.setOnAction(event -> showView(ViewType.APPLICATIONS));
+        jobsTab.setOnAction(event -> showView(ViewType.JOBS));
+
         personListPanel.selectedPersonProperty().addListener((observable, previous, selected) ->
-                showSelectedApplicant());
+                refreshSelectedDetails());
+        applicationListPanel.selectedApplicationProperty()
+                .addListener((observable, previous, selected) -> refreshSelectedDetails());
         jobListPanel.selectedJobProperty().addListener((observable, previous, selected) ->
-                showSelectedJob());
+                refreshSelectedDetails());
         logic.getApplicationList().addListener((ListChangeListener<Application>) change ->
-                showSelectedApplicant());
-        showSelectedApplicant();
-        bindCount(logic.getFilteredPersonList(), "applicant", "applicants");
+                refreshSelectedDetails());
+
+        showView(ViewType.APPLICANTS);
 
         resultDisplay = new ResultDisplay();
         resultDisplayPlaceholder.getChildren().add(resultDisplay.getRoot());
@@ -168,9 +173,98 @@ public class MainWindow extends UiPart<Stage> {
         commandBoxPlaceholder.getChildren().add(commandBox.getRoot());
     }
 
-    /**
-     * Sets the default size based on {@code guiSettings}.
-     */
+    /** Shows the requested list and its matching detail panel. */
+    private void showView(ViewType viewType) {
+        currentView = viewType;
+        switch (viewType) {
+            case APPLICANTS -> showApplicantsView();
+            case APPLICATIONS -> showApplicationsView();
+            case JOBS -> showJobsView();
+            default -> throw new IllegalStateException("Unexpected view type: " + viewType);
+        }
+        selectTab(viewType);
+        refreshSelectedDetails();
+    }
+
+    private void showApplicantsView() {
+        listTitle.setText("Applicants");
+        listHint.setText("Select an applicant to view their details.");
+        consoleHint.setText(APPLICANT_HINT);
+        viewListPlaceholder.getChildren().setAll(personListPanel.getRoot());
+        applicantDetailPlaceholder.getChildren().setAll(applicantDetailPanel.getRoot());
+        bindCount(logic.getFilteredPersonList(), "applicant", "applicants");
+    }
+
+    private void showApplicationsView() {
+        listTitle.setText("Applications");
+        listHint.setText("Each row shows an applicant, job, and status.");
+        consoleHint.setText(APPLICATION_HINT);
+        viewListPlaceholder.getChildren().setAll(applicationListPanel.getRoot());
+        applicantDetailPlaceholder.getChildren().setAll(applicantDetailPanel.getRoot());
+        bindCount(applicationListPanel.getDisplayedApplications(), "application", "applications");
+    }
+
+    private void showJobsView() {
+        listTitle.setText("Jobs");
+        listHint.setText("Select a job to view its details.");
+        consoleHint.setText(JOB_HINT);
+        viewListPlaceholder.getChildren().setAll(jobListPanel.getRoot());
+        applicantDetailPlaceholder.getChildren().setAll(jobDetailPanel.getRoot());
+        bindCount(logic.getFilteredJobList(), "job", "jobs");
+    }
+
+    private void selectTab(ViewType viewType) {
+        switch (viewType) {
+            case APPLICANTS -> applicantsTab.setSelected(true);
+            case APPLICATIONS -> applicationsTab.setSelected(true);
+            case JOBS -> jobsTab.setSelected(true);
+            default -> throw new IllegalStateException("Unexpected view type: " + viewType);
+        }
+    }
+
+    private void refreshSelectedDetails() {
+        switch (currentView) {
+            case APPLICANTS -> showSelectedApplicant();
+            case APPLICATIONS -> showSelectedApplication();
+            case JOBS -> showSelectedJob();
+            default -> throw new IllegalStateException("Unexpected view type: " + currentView);
+        }
+    }
+
+    private void showSelectedApplicant() {
+        Person selected = personListPanel.selectedPersonProperty().get();
+        Application application = null;
+        if (selected != null) {
+            application = logic.getApplicationList().stream()
+                    .filter(existing -> existing.getApplicant().isSamePerson(selected))
+                    .findFirst()
+                    .orElse(null);
+        }
+        applicantDetailPanel.showApplicant(selected, application);
+    }
+
+    private void showSelectedApplication() {
+        Application selected = applicationListPanel.selectedApplicationProperty().get();
+        if (selected == null) {
+            applicantDetailPanel.showApplicant(null, null);
+            return;
+        }
+        applicantDetailPanel.showApplicant(selected.getApplicant(), selected);
+    }
+
+    private void showSelectedJob() {
+        jobDetailPanel.showJob(jobListPanel.selectedJobProperty().get());
+    }
+
+    private void bindCount(ObservableList<?> items, String singular, String plural) {
+        applicantCount.textProperty().unbind();
+        applicantCount.textProperty().bind(Bindings.createStringBinding(() -> {
+            int count = items.size();
+            return count + " " + (count == 1 ? singular : plural);
+        }, items));
+    }
+
+    /** Sets the default size based on {@code guiSettings}. */
     private void setWindowDefaultSize(GuiSettings guiSettings) {
         primaryStage.setHeight(Math.max(primaryStage.getMinHeight(), guiSettings.getWindowHeight()));
         primaryStage.setWidth(Math.max(primaryStage.getMinWidth(), guiSettings.getWindowWidth()));
@@ -180,9 +274,7 @@ public class MainWindow extends UiPart<Stage> {
         }
     }
 
-    /**
-     * Opens the help window or focuses on it if it's already opened.
-     */
+    /** Opens the help window or focuses on it if it is already open. */
     @FXML
     public void handleHelp() {
         if (!helpWindow.isShowing()) {
@@ -196,9 +288,7 @@ public class MainWindow extends UiPart<Stage> {
         primaryStage.show();
     }
 
-    /**
-     * Closes the application.
-     */
+    /** Closes the application. */
     @FXML
     private void handleExit() {
         GuiSettings guiSettings = new GuiSettings(primaryStage.getWidth(), primaryStage.getHeight(),
@@ -213,103 +303,42 @@ public class MainWindow extends UiPart<Stage> {
     }
 
     /**
-     * Shows the selected applicant and that applicant's application, if one has been recorded.
+     * Shows the applicants tab and the details captured before deletion.
+     * The list selection is cleared first so another applicant is not highlighted.
      */
-    private void showSelectedApplicant() {
-        Person selected = personListPanel.selectedPersonProperty().get();
-        Application application = null;
-        if (selected != null) {
-            application = logic.getApplicationList().stream()
-                    .filter(existing -> existing.getApplicant().isSamePerson(selected))
-                    .findFirst()
-                    .orElse(null);
+    private void showDeletedApplicant(CommandResult.DeletedApplicant deleted) {
+        showView(ViewType.APPLICANTS);
+        personListPanel.clearSelection();
+        applicantDetailPanel.showDeletedApplicant(deleted.applicant(), deleted.application());
+    }
+
+    private void applyViewRequest(ViewRequest request) {
+        showView(request.getViewType());
+        request.getSelection().ifPresent(this::selectViewItem);
+    }
+
+    private void selectViewItem(ViewSelection selection) {
+        if (selection instanceof ApplicantSelection applicant) {
+            personListPanel.selectPerson(applicant.getPerson());
+        } else if (selection instanceof ApplicationSelection application) {
+            applicationListPanel.selectApplication(application.getApplication());
+        } else if (selection instanceof JobSelection job) {
+            jobListPanel.selectJob(job.getJob());
+        } else {
+            throw new IllegalArgumentException("Unknown view selection");
         }
-        applicantDetailPanel.showApplicant(selected, application);
     }
 
-    /**
-     * Shows the selected job. Applications are not matched to the role by description.
-     */
-    private void showSelectedJob() {
-        jobDetailPanel.showJob(jobListPanel.selectedJobProperty().get());
-    }
-
-    /**
-     * Shows the applicant list and detail panel.
-     */
-    private void showApplicantView() {
-        if (!showingJobs) {
-            return;
-        }
-        showingJobs = false;
-        listTitle.setText("Applicants");
-        listHint.setText("Select an applicant to view their details.");
-        consoleHint.setText(APPLICANT_HINT);
-        personListPanelPlaceholder.getChildren().setAll(personListPanel.getRoot());
-        applicantDetailPlaceholder.getChildren().setAll(applicantDetailPanel.getRoot());
-        bindCount(logic.getFilteredPersonList(), "applicant", "applicants");
-        showSelectedApplicant();
-    }
-
-    /**
-     * Shows the job list and detail panel.
-     */
-    private void showJobView() {
-        if (showingJobs) {
-            showSelectedJob();
-            return;
-        }
-        showingJobs = true;
-        listTitle.setText("Jobs");
-        listHint.setText("Select a job to view its details.");
-        consoleHint.setText(JOB_HINT);
-        personListPanelPlaceholder.getChildren().setAll(jobListPanel.getRoot());
-        applicantDetailPlaceholder.getChildren().setAll(jobDetailPanel.getRoot());
-        bindCount(logic.getFilteredJobList(), "job", "jobs");
-        showSelectedJob();
-    }
-
-    /**
-     * Binds the list count badge to {@code items}.
-     * @param items list whose size is shown
-     * @param singular label used when the list contains one item
-     * @param plural label used when the list does not contain one item
-     */
-    private void bindCount(ObservableList<?> items, String singular, String plural) {
-        applicantCount.textProperty().unbind();
-        applicantCount.textProperty().bind(Bindings.createStringBinding(() -> {
-            int count = items.size();
-            return count + " " + (count == 1 ? singular : plural);
-        }, items));
-    }
-
-    /**
-     * Executes the command and returns the result.
-     *
-     * @see seedu.address.logic.Logic#execute(String)
-     */
+    /** Executes the command and returns the result. */
     private CommandResult executeCommand(String commandText) throws CommandException, ParseException {
         try {
             CommandResult commandResult = logic.execute(commandText);
             logger.info("Result: " + commandResult.getFeedbackToUser());
             resultDisplay.setFeedbackToUser(commandResult.getFeedbackToUser());
-            if (commandResult.isShowJobs()) {
-                showJobView();
-                commandResult.getJobToView().ifPresent(jobListPanel::selectJob);
-            } else if (!commandResult.isShowHelp()) {
-                showApplicantView();
-                if (commandResult.getDeletedApplicant().isPresent()) {
-                    CommandResult.DeletedApplicant deleted = commandResult.getDeletedApplicant().orElseThrow();
-                    personListPanel.clearSelection();
-                    applicantDetailPanel.showDeletedApplicant(deleted.applicant(), deleted.application());
-                } else {
-                    commandResult.getPersonToView().ifPresent(personListPanel::selectPerson);
-                    if (personListPanel.selectedPersonProperty().get() == null
-                            && !logic.getFilteredPersonList().isEmpty()) {
-                        personListPanel.selectPerson(logic.getFilteredPersonList().getFirst());
-                    }
-                    showSelectedApplicant();
-                }
+            if (commandResult.getDeletedApplicant().isPresent()) {
+                showDeletedApplicant(commandResult.getDeletedApplicant().orElseThrow());
+            } else {
+                commandResult.getViewRequest().ifPresent(this::applyViewRequest);
             }
 
             if (commandResult.isShowHelp()) {

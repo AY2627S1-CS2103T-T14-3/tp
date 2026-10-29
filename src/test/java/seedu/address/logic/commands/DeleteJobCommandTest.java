@@ -39,7 +39,8 @@ public class DeleteJobCommandTest {
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
         expectedModel.deleteJob(ENGINEER);
 
-        assertCommandSuccess(command, model, CommandResult.showJobs(expectedMessage), expectedModel);
+        assertCommandSuccess(command, model,
+                new CommandResult(expectedMessage, ViewRequest.jobs()), expectedModel);
         assertFalse(model.hasJob(ENGINEER));
         assertTrue(model.hasJob(ANALYST));
     }
@@ -63,7 +64,8 @@ public class DeleteJobCommandTest {
         expectedModel.updateFilteredJobList(job -> job.toString().contains("Data"));
         expectedModel.deleteJob(ANALYST);
 
-        assertCommandSuccess(command, model, CommandResult.showJobs(expectedMessage), expectedModel);
+        assertCommandSuccess(command, model,
+                new CommandResult(expectedMessage, ViewRequest.jobs()), expectedModel);
         assertTrue(model.hasJob(ENGINEER));
         assertFalse(model.hasJob(ANALYST));
     }

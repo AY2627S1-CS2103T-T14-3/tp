@@ -55,7 +55,8 @@ public class EditJobCommandTest {
         expectedModel.setJob(ENGINEER, DESIGNER);
 
         assertCommandSuccess(new EditJobCommand(INDEX_FIRST_PERSON, DESIGNER), model,
-                new CommandResult(String.format(EditJobCommand.MESSAGE_EDIT_JOB_SUCCESS, DESIGNER), DESIGNER),
+                new CommandResult(String.format(EditJobCommand.MESSAGE_EDIT_JOB_SUCCESS, DESIGNER),
+                        ViewRequest.job(DESIGNER)),
                 expectedModel);
         assertEquals(List.of(DESIGNER, ANALYST), model.getJobList());
         assertEquals(application, model.getApplication(ALICE).orElseThrow());
@@ -68,7 +69,8 @@ public class EditJobCommandTest {
         expectedModel.setJob(ANALYST, DESIGNER);
 
         assertCommandSuccess(new EditJobCommand(INDEX_FIRST_PERSON, DESIGNER), model,
-                new CommandResult(String.format(EditJobCommand.MESSAGE_EDIT_JOB_SUCCESS, DESIGNER), DESIGNER),
+                new CommandResult(String.format(EditJobCommand.MESSAGE_EDIT_JOB_SUCCESS, DESIGNER),
+                        ViewRequest.job(DESIGNER)),
                 expectedModel);
         assertEquals(List.of(ENGINEER, DESIGNER), model.getFilteredJobList());
     }
@@ -88,7 +90,8 @@ public class EditJobCommandTest {
         Job sameJob = new Job(" Software Engineer ");
 
         assertCommandSuccess(new EditJobCommand(INDEX_FIRST_PERSON, sameJob), model,
-                new CommandResult(String.format(EditJobCommand.MESSAGE_EDIT_JOB_SUCCESS, ENGINEER), ENGINEER),
+                new CommandResult(String.format(EditJobCommand.MESSAGE_EDIT_JOB_SUCCESS, ENGINEER),
+                        ViewRequest.job(ENGINEER)),
                 expectedModel);
     }
 

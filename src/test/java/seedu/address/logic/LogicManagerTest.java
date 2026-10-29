@@ -19,6 +19,7 @@ import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.EditJobCommand;
 import seedu.address.logic.commands.ListCommand;
+import seedu.address.logic.commands.ViewRequest;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.model.Model;
@@ -128,8 +129,8 @@ public class LogicManagerTest {
         expectedModel.addApplication(new Application(AMY, new Job("Software Engineer"), Application.Status.PENDING));
         expectedModel.addJob(editedJob);
 
-        assertEquals(new CommandResult(String.format(EditJobCommand.MESSAGE_EDIT_JOB_SUCCESS, editedJob), editedJob),
-                result);
+        assertEquals(new CommandResult(String.format(EditJobCommand.MESSAGE_EDIT_JOB_SUCCESS, editedJob),
+                ViewRequest.job(editedJob)), result);
         assertEquals(expectedModel, model);
         JsonAddressBookStorage savedStorage =
                 new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
@@ -153,7 +154,7 @@ public class LogicManagerTest {
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
 
         CommandResult result = logic.execute("view 1");
-        assertEquals(new CommandResult("Viewing applicant: Amy Bee", AMY), result);
+        assertEquals(new CommandResult("Viewing applicant: Amy Bee", ViewRequest.applicant(AMY)), result);
         assertEquals(expectedModel, model);
     }
 
