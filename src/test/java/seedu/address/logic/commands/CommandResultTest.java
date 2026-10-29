@@ -11,9 +11,9 @@ import static seedu.address.testutil.TypicalApplicants.BENSON;
 import org.junit.jupiter.api.Test;
 
 import seedu.address.model.applicant.Applicant;
-import seedu.address.testutil.ApplicantBuilder;
 import seedu.address.model.application.Application;
 import seedu.address.model.application.Job;
+import seedu.address.testutil.ApplicantBuilder;
 
 public class CommandResultTest {
     @Test

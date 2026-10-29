@@ -24,9 +24,9 @@ import seedu.address.model.ModelManager;
 import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.ReadOnlyUserPrefs;
 import seedu.address.model.UserPrefs;
+import seedu.address.model.applicant.Applicant;
 import seedu.address.model.application.Application;
 import seedu.address.model.application.Job;
-import seedu.address.model.applicant.Applicant;
 import seedu.address.testutil.ApplicantBuilder;
 
 public class AddCommandTest {
@@ -54,8 +54,8 @@ public class AddCommandTest {
         AddCommand addCommand = new AddCommand(validApplicant);
         ModelStub modelStub = new ModelStubWithApplicant(validApplicant);
 
-        assertThrows(CommandException.class, AddCommand.MESSAGE_DUPLICATE_APPLICANT,
-                () -> addCommand.execute(modelStub));
+        assertThrows(CommandException.class, AddCommand.MESSAGE_DUPLICATE_APPLICANT, ()
+                -> addCommand.execute(modelStub));
     }
 
     @Test

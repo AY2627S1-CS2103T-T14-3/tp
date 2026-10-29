@@ -2,11 +2,11 @@ package seedu.address.model.util;
 
 import seedu.address.model.AddressBook;
 import seedu.address.model.ReadOnlyAddressBook;
-import seedu.address.model.application.Job;
 import seedu.address.model.applicant.Applicant;
 import seedu.address.model.applicant.Email;
 import seedu.address.model.applicant.Name;
 import seedu.address.model.applicant.Phone;
+import seedu.address.model.application.Job;
 
 /**
  * Contains utility methods for populating {@code AddressBook} with sample data.

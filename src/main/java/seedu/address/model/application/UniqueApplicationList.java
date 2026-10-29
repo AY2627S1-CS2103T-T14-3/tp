@@ -9,9 +9,9 @@ import java.util.Optional;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import seedu.address.model.applicant.Applicant;
 import seedu.address.model.application.exceptions.ApplicationNotFoundException;
 import seedu.address.model.application.exceptions.DuplicateApplicationException;
-import seedu.address.model.applicant.Applicant;
 
 /**
  * A list of applications that enforces one application per applicant and does not allow nulls.

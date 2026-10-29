@@ -16,13 +16,13 @@ import org.junit.jupiter.api.Test;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import seedu.address.model.applicant.Applicant;
+import seedu.address.model.applicant.exceptions.DuplicateApplicantException;
 import seedu.address.model.application.Application;
 import seedu.address.model.application.Job;
 import seedu.address.model.application.exceptions.ApplicationNotFoundException;
 import seedu.address.model.application.exceptions.DuplicateApplicationException;
 import seedu.address.model.application.exceptions.DuplicateJobException;
-import seedu.address.model.applicant.Applicant;
-import seedu.address.model.applicant.exceptions.DuplicateApplicantException;
 import seedu.address.testutil.ApplicantBuilder;
 
 public class AddressBookTest {

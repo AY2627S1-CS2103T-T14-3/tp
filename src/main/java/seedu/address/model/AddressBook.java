@@ -8,12 +8,12 @@ import java.util.Optional;
 
 import javafx.collections.ObservableList;
 import seedu.address.commons.util.ToStringBuilder;
+import seedu.address.model.applicant.Applicant;
+import seedu.address.model.applicant.UniqueApplicantList;
 import seedu.address.model.application.Application;
 import seedu.address.model.application.Job;
 import seedu.address.model.application.UniqueApplicationList;
 import seedu.address.model.application.UniqueJobList;
-import seedu.address.model.applicant.Applicant;
-import seedu.address.model.applicant.UniqueApplicantList;
 
 /**
  * Wraps all data at the address-book level.

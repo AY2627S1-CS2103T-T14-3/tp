@@ -14,9 +14,9 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import seedu.address.logic.commands.AddCommand;
+import seedu.address.model.applicant.Applicant;
 import seedu.address.model.applicant.Email;
 import seedu.address.model.applicant.Name;
-import seedu.address.model.applicant.Applicant;
 import seedu.address.model.applicant.Phone;
 import seedu.address.testutil.ApplicantBuilder;
 
