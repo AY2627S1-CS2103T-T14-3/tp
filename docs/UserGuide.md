@@ -236,7 +236,7 @@ Format: `addp INDEX -j JOB_ROLE [-s STATUS]`
 * `INDEX` is the positive integer shown beside an applicant in the current list. It must appear before the options.
 * When the list is filtered, the index refers to that filtered list.
 * `JOB_ROLE` is the role the applicant is applying for. It cannot contain another option, such as `-s`.
-* The role must already exist in the job list. Use `addj` to create it before adding an application.
+* The role must already exist in the job list. Use `addj` to create it before adding an application. Matching is case-sensitive and ignores surrounding spaces; supply the role name, without its description.
 * `STATUS` is optional. When it is omitted, the status is `pending`.
 * Accepted statuses are `accept`, `reject`, and `pending`. The value is case-sensitive.
 * Aliases: `-job` for `-j` and `-status` for `-s`.
@@ -287,10 +287,10 @@ Adds an open role to the job list. The list on the right switches from applicant
 
 Format: `addj -j JOB_ROLE [-d JOB_DESCRIPTION]`
 
-* `JOB_ROLE` is the role name. It cannot be blank.
-* `JOB_DESCRIPTION` is the description for the job. It is an optional field.
+* `JOB_ROLE` is the role name. It cannot be blank. Surrounding spaces are removed from both the role and description; values containing spaces do not need quotation marks.
+* `JOB_DESCRIPTION` is optional. If omitted, it is stored and displayed as `No information ~`. If `-d` is supplied, its value must not be empty.
 * Alias: `-job` for `-j`, and `-description`, `-desc` for `-d`.
-* A role that is already in the list cannot be added again. Matching ignores surrounding spaces and is otherwise case-sensitive.
+* A role that is already in the list cannot be added again, even with a different description. Matching ignores surrounding spaces and is otherwise case-sensitive. Different roles may share a description.
 * Adding a role does not create an application. Use `addp` to record an applicant's application for a role.
 
 Examples:
@@ -306,9 +306,10 @@ Format: `editj INDEX -j JOB_ROLE`
 
 * `INDEX` is the positive integer shown beside a job in the current job list, including a filtered list.
 * `JOB_ROLE` is required and follows the same rules as `addj`. Alias: `-job` for `-j`.
+* `editj` accepts only the role option. It replaces the job with a new job whose description is `No information ~`, even when the role name is unchanged. An existing description is not preserved, and `-d`, `-desc`, and `-description` are not accepted by this command.
 * The new role cannot match another stored job. Matching ignores surrounding spaces and is otherwise case-sensitive. Keeping the current role is allowed.
 * The job keeps its position in the full list. Any job filter is cleared so the edited role remains visible.
-* Applications for the job are updated to reference the edited role. Their applicants and statuses are kept.
+* Applications for the job are updated to reference the replacement job, including its reset description. Their applicants and statuses are kept.
 * An empty list, an invalid index, a missing role, or a duplicate role produces an error and leaves the jobs unchanged.
 
 Examples:
@@ -323,7 +324,7 @@ Shows open roles. The list on the right switches to jobs, and the detail panel s
 Format: `viewj [-f KEYWORD]`
 
 * Without `-f`, every job is shown.
-* `-f KEYWORD` shows roles whose description contains `KEYWORD`. Matching ignores case and does not need a full word, so `jan` matches `Janitor`.
+* `-f KEYWORD` searches the combined text `ROLE : DESCRIPTION`. Matching ignores case and does not need a full word, so `jan` matches the role `Janitor`. Text found only in the description also matches. A multi-word keyword is matched as one substring.
 * Alias: `-filter` for `-f`.
 * The command word is case-sensitive. `Viewj` is not recognised.
 * `editj` and `deletej` use the index in the list currently displayed, including a filtered list.
@@ -333,6 +334,7 @@ Examples:
 
 * `viewj` lists every job. An empty list shows "No jobs to display."
 * `viewj -f jan` lists roles such as Janitor.
+* After `addj -j Research Assistant -d Analyse survey responses`, `viewj -f survey` includes that job because its description matches.
 
 ### Deleting a job: `deletej`
 
@@ -362,6 +364,20 @@ AddressBook data is saved automatically as a JSON file `[JAR file location]/data
 If your changes make the data file invalid, AddressBook starts with an empty address book at the next run. The invalid file remains on disk until you run a command (AddressBook saves after every command). Still, we recommend backing up the file before editing it.<br>
 Furthermore, certain edits can cause the AddressBook to behave in unexpected ways (e.g., if a value entered is outside of the acceptable range). Therefore, edit the data file only if you are confident that you can update it correctly.
 </div>
+
+#### Job data format
+
+Each entry in `jobs` is an object with a non-blank `role` and a `description` string, for example
+`{"role": "Research Assistant", "description": "Analyse survey responses"}`. The description may be an empty
+string in the data file, but it must be present and cannot be `null`. Role names must be unique after removing
+surrounding spaces; comparisons are case-sensitive.
+
+Each application stores its job as an object with the same two fields. Its role must match an entry in `jobs`.
+When loading, the application uses the matching job from `jobs`, including that job's description.
+
+**Compatibility:** Older files with jobs stored as strings or without a `role` field are not automatically
+migrated. Back up the file before updating it. Convert each job to the object format above, including the `job`
+inside each application, and ensure every application refers to a role in `jobs`.
 
 ### Archiving data files `[coming in v2.0]`
 
@@ -403,6 +419,5 @@ Action | Format, Examples
 **View applicants** | `viewa`
 **View applications** | `viewp`
 **View applicant** | `view INDEX`<br> e.g., `view 1`
-**View jobs** | `viewj [-f KEYWORD]`<br> e.g., `viewj -f jan`
 **Help** | `help`
 **Bye** | `bye` or `exit`

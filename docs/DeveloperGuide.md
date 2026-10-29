@@ -150,12 +150,16 @@ Deleting an applicant or application never removes a job.
 
 `AddressBook` also keeps a separate `UniqueJobList` of open roles. A job is identified by its role:
 duplicate roles are rejected, surrounding spaces are ignored, and other differences in case are kept.
-`addj` adds a role and shows the full job list. `viewj` lists every role, and `viewj -f KEYWORD` limits that list to roles whose description contains `KEYWORD`, ignoring case. `deletej` removes the role at the displayed index, which follows the current filter.
+`addj` adds a role with an optional description and shows the full job list. `viewj` lists every role, and
+`viewj -f KEYWORD` filters the combined `ROLE : DESCRIPTION` text by a case-insensitive substring.
+`deletej` removes the role at the displayed index, which follows the current filter.
 `editj INDEX -j JOB_ROLE` replaces a role at its displayed index, rejecting a role that
 matches another stored job. `Model#setJob` delegates to `AddressBook#setJob` and `UniqueJobList#setJob`,
 which replaces the job at the same position and enforces uniqueness. `UniqueApplicationList#setJob` updates
 matching applications to reference the edited job, keeping their applicants and statuses. This prevents stale role
 references that the storage loader would reject.
+The parser constructs the replacement with `new Job(role)`, so editing resets the description to
+`No information ~`, including when the role is unchanged. Description options are not supported by `editj`.
 After editing, the command clears the job filter and returns the edited job in `CommandResult` so it
 is visible and selected even if the new role no longer matches the previous filter.
 These four commands ask the UI to show the job list and the selected role's detail panel. The panel shows
@@ -192,6 +196,21 @@ The `Storage` component,
 * is implemented by `StorageManager`, which delegates the actual JSON file access to `JsonAddressBookStorage` and `JsonUserPrefsStorage` (one class per data file).
 * depends on some classes in the `Model` component (because the `Storage` component's job is to save/retrieve objects that belong to the `Model`)
 
+`JsonAdaptedJob` stores each job as an object containing `role` and `description`, both in the top-level `jobs`
+array and in each application's `job` field. `role` must be non-blank; `description` must be a non-null string,
+although an empty string is valid. `Job` strips surrounding whitespace from both fields. Duplicate jobs are
+rejected by role, independently of their descriptions.
+
+`JsonSerializableAddressBook#toModelType` loads persons, then jobs, then applications. A missing `jobs` or
+`applications` array is treated as empty. `JsonAdaptedApplication#toModelType` resolves the applicant by exact
+name and the job by role equality against those already loaded. It uses the stored job from `jobs`, so that
+job's description takes precedence over the description embedded in the application. Unknown applicants,
+unknown roles, and duplicate applications cause loading to fail.
+
+The job role/description format introduced in PR #130 has no automatic migration from the earlier string job
+format or from job objects without a role. Such files must be backed up and converted before loading; see
+[Job data format in the User Guide](UserGuide.md#job-data-format).
+
 ### Common classes
 
 Classes used by multiple components are in the `seedu.address.commons` package.
@@ -201,6 +220,23 @@ Classes used by multiple components are in the `seedu.address.commons` package.
 ## **Implementation**
 
 This section describes some noteworthy details on how certain features are implemented.
+
+### Job roles and descriptions
+
+`Job` is an immutable value object with separate `role` and `description` strings. `Job#equals` and
+`Job#hashCode` use only the stripped, case-sensitive role. Consequently, `UniqueJobList` rejects the same role
+with a different description, while allowing different roles to share a description. The single-argument
+constructor supplies the default description `No information ~`.
+
+`AddJobCommandParser` accepts a required role (`-j` or `-job`) and an optional description (`-d`, `-desc`, or
+`-description`). `EditJobCommandParser` accepts an index and a required role, then constructs a replacement
+using the single-argument constructor. This explains the current description reset described in the
+[User Guide](UserGuide.md#editing-a-job-editj).
+
+Despite its name, `JobDescriptionContainsKeywordPredicate` searches `Job#toString`, which returns
+`role + " : " + description`. It lowercases both that text and the keyword using `Locale.ROOT`, then calls
+`contains`. Thus filtering matches either field, including partial words, and treats a multi-word keyword as
+one substring. Filtering does not change job identity or the exact role lookup used by `addp`.
 
 ### Command parsing and validation
 
@@ -640,6 +676,37 @@ testers are expected to do more *exploratory* testing.
       Expected: Similar to previous.
 
 1. _{ more test cases …​ }_
+
+### Managing job roles and descriptions
+
+1. Adding and filtering a job
+
+   1. Prerequisites: Use role names that are not already in the job list.
+
+   1. Test case: `addj -j Research Assistant -d Analyse survey responses`<br>
+      Expected: The job list is shown with the new job selected. Its details show the supplied description.
+
+   1. Test case: `addj -j Research Assistant -d Different description`<br>
+      Expected: A duplicate-job error is shown; the original job is unchanged.
+
+   1. Test case: `viewj -f SURVEY`<br>
+      Expected: The Research Assistant job is included because its description matches, ignoring case.
+
+   1. Test case: `viewj -f search ass`<br>
+      Expected: The same job is included because its role contains the substring.
+
+1. Editing a job and its application references
+
+   1. Prerequisites: Create the Research Assistant job above and an applicant without an application.
+      Use `list` to find that applicant's index, then `addp INDEX -j Research Assistant -s accept`.
+      Use `viewj -f survey` to find the job's filtered index.
+
+   1. Test case: `editj INDEX -j Senior Research Assistant`, using the job's filtered index.<br>
+      Expected: The full job list is shown with the replacement selected. Its description is `No information ~`.
+      Viewing the applicant shows the new role and default description; the status remains accepted.
+
+   1. Close and relaunch the app.<br>
+      Expected: The replacement job and updated application load with the same role, description, and status.
 
 ### Saving data
 
