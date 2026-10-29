@@ -47,7 +47,7 @@ public class AddApplicationCommandParser implements Parser<AddApplicationCommand
     private ArgumentMultimap parseOptions(String args) throws ParseException {
         try {
             return ArgumentTokenizer
-                    .tokenizeOptions(args, ArgumentTokenizer.HAS_PREAMBLE,OPTION_JOB_REQ, OPTION_STATUS_OPT);
+                    .tokenizeOptions(args, ArgumentTokenizer.HAS_PREAMBLE, OPTION_JOB_REQ, OPTION_STATUS_OPT);
         } catch (ParseException pe) {
             throw unrecognized(args);
         }

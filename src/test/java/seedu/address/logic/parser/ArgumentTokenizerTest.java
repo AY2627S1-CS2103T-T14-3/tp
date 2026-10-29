@@ -5,7 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.logic.Messages.MESSAGE_DUPLICATE_FIELDS;
-import static seedu.address.logic.parser.ArgumentTokenizer.*;
+import static seedu.address.logic.parser.ArgumentTokenizer.HAS_PREAMBLE;
+import static seedu.address.logic.parser.ArgumentTokenizer.MESSAGE_INVALID_COMMAND_OPTIONS;
+import static seedu.address.logic.parser.ArgumentTokenizer.NO_PREAMBLE;
 
 import org.junit.jupiter.api.Test;
 
