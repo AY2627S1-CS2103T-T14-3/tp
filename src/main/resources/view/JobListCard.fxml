@@ -4,14 +4,13 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<HBox fx:id="cardPane" spacing="12" alignment="CENTER_LEFT" styleClass="job-card"
-      xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
-  <Label fx:id="id" styleClass="list-index" minWidth="28" />
-  <VBox spacing="6" HBox.hgrow="ALWAYS">
-    <HBox alignment="CENTER_LEFT" spacing="8">
-      <Label text="ROLE" styleClass="role-chip" />
-      <Label fx:id="description" styleClass="list-name" wrapText="true" HBox.hgrow="ALWAYS" maxWidth="Infinity" />
+<HBox fx:id="cardPane" alignment="CENTER_LEFT" spacing="12" styleClass="job-card" stylesheets="@LinkedOut.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+  <Label fx:id="id" minWidth="28" styleClass="list-index" />
+  <VBox fillWidth="false" spacing="6">
+    <HBox alignment="CENTER_LEFT" fillHeight="false" spacing="8">
+      <Label styleClass="role-chip" text="ROLE" />
+      <Label fx:id="role" maxWidth="Infinity" styleClass="list-name" wrapText="true" HBox.hgrow="ALWAYS" />
     </HBox>
-    <Label text="Open role" styleClass="muted-label" />
+    <Label fx:id="description" styleClass="muted-label" text="Open role" wrapText="true" />
   </VBox>
 </HBox>

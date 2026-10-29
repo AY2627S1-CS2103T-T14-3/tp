@@ -6,39 +6,38 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="detail-scroll"
-            xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+<ScrollPane fitToWidth="true" hbarPolicy="NEVER" styleClass="detail-scroll" stylesheets="@LinkedOut.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
   <content>
     <VBox spacing="12" styleClass="panel,detail-panel">
-      <Label text="Applicant details" styleClass="section-title" />
+      <Label styleClass="section-title" text="Applicant details" />
       <HBox alignment="CENTER_LEFT" spacing="14">
-        <Label fx:id="initials" text="?" styleClass="avatar" />
+        <Label fx:id="initials" styleClass="avatar" text="?" />
         <VBox spacing="4" HBox.hgrow="ALWAYS">
-          <Label fx:id="applicantName" styleClass="applicant-name" wrapText="true" maxWidth="Infinity" />
+          <Label fx:id="applicantName" maxWidth="Infinity" styleClass="applicant-name" wrapText="true" />
           <Label fx:id="selectionHint" styleClass="muted-label" wrapText="true" />
         </VBox>
       </HBox>
       <Separator />
-      <VBox spacing="12" fx:id="contactDetails">
+      <VBox fx:id="contactDetails" spacing="12">
         <HBox spacing="24">
           <VBox spacing="4" HBox.hgrow="ALWAYS">
-            <Label text="EMAIL" styleClass="field-heading" />
+            <Label styleClass="field-heading" text="EMAIL" />
             <Label fx:id="email" styleClass="detail-value" wrapText="true" />
           </VBox>
-          <VBox spacing="4" minWidth="120">
-            <Label text="PHONE" styleClass="field-heading" />
+          <VBox minWidth="120" spacing="4">
+            <Label styleClass="field-heading" text="PHONE" />
             <Label fx:id="phone" styleClass="detail-value" wrapText="true" />
           </VBox>
         </HBox>
       </VBox>
       <Separator />
       <VBox spacing="8" styleClass="application-section">
-        <Label text="Application" styleClass="section-title" />
+        <Label styleClass="section-title" text="Application" />
         <HBox alignment="CENTER_LEFT" spacing="10">
-          <Label fx:id="applicationStatus" text="No application recorded." styleClass="muted-label"
-                 wrapText="true" HBox.hgrow="ALWAYS" />
+          <Label fx:id="applicationStatus" styleClass="muted-label" text="No application recorded." wrapText="true" HBox.hgrow="ALWAYS" />
           <Label fx:id="applicationStatusBadge" styleClass="status-badge" />
         </HBox>
+            <Label fx:id="jobDesc" styleClass="muted-label" visible="false" wrapText="true" />
       </VBox>
     </VBox>
   </content>

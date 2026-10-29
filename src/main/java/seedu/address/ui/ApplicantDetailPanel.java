@@ -29,6 +29,8 @@ public class ApplicantDetailPanel extends UiPart<Region> {
     @FXML
     private Label applicationStatusBadge;
     @FXML
+    private Label jobDesc;
+    @FXML
     private VBox contactDetails;
 
     /** Creates the detail panel with no applicant selected. */
@@ -90,11 +92,15 @@ public class ApplicantDetailPanel extends UiPart<Region> {
             applicationStatusBadge.setText("");
             applicationStatusBadge.setVisible(false);
             applicationStatusBadge.setManaged(false);
+
+            jobDesc.setText("");
+            jobDesc.setVisible(false);
+            jobDesc.setManaged(false);
             return;
         }
 
         applicationStatus.getStyleClass().add("detail-value");
-        applicationStatus.setText(application.getJob().toString());
+        applicationStatus.setText(application.getJob().getJobRole());
         applicationStatusBadge.setVisible(true);
         applicationStatusBadge.setManaged(true);
         Application.Status status = application.getStatus();
@@ -108,5 +114,9 @@ public class ApplicantDetailPanel extends UiPart<Region> {
             applicationStatusBadge.setText("Pending");
             applicationStatusBadge.getStyleClass().add("status-pending");
         }
+
+        jobDesc.setText(application.getJob().getJobDescription());
+        jobDesc.setVisible(true);
+        jobDesc.setManaged(true);
     }
 }

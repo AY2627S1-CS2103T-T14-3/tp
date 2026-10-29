@@ -135,26 +135,44 @@ The `Model` component,
 
 The `Application` model class in [`Application.java`](../src/main/java/seedu/address/model/application/Application.java)
 represents one applicant’s job application. It contains a reference to the applicant’s `Person`, together with an
-immutable job description and application status. Applicant identity is determined using `Person#isSamePerson`, while
-`Application#equals` compares the complete applicant, job description, and status. Job descriptions must be non-blank
-and must not contain option-like tokens; statuses are restricted to the case-sensitive values `accept`, `reject`, and
+immutable job and application status. Applicant identity is determined using `Person#isSamePerson`, while
+`Application#equals` compares the complete applicant, job identity, and status. A job has a non-blank role and a
+separate description; statuses are restricted to the case-sensitive values `accept`, `reject`, and
 `pending`. `AddressBook` stores these applications separately from its person list and keeps at most one application
-per applicant. `add -p` creates an application for an applicant in the displayed list, and `set` updates the
+per applicant. `addp` creates an application for an existing job and an applicant in the displayed list, and `set` updates the
 status of an existing application without changing its job. Deleting an applicant also
 deletes that applicant's application, and editing an applicant updates the person stored on the application.
+`deletep INDEX` removes only the displayed applicant's application through `Model#deleteApplication` and
+`AddressBook#removeApplication`, preserving the applicant, job, and applicant filter. It returns the applicant
+in `ViewRequest.applicant` to select the applicants view and refresh their details. An applicant without an application
+produces an error.
+Deleting an applicant or application never removes a job.
 
-`AddressBook` also keeps a separate `UniqueJobList` of open roles. A job is identified by its description:
-duplicate descriptions are rejected, surrounding spaces are ignored, and other differences in case are kept.
+`AddressBook` also keeps a separate `UniqueJobList` of open roles. A job is identified by its role:
+duplicate roles are rejected, surrounding spaces are ignored, and other differences in case are kept.
 `addj` adds a role and shows the full job list. `viewj` lists every role, and `viewj -f KEYWORD` limits that list to roles whose description contains `KEYWORD`, ignoring case. `deletej` removes the role at the displayed index, which follows the current filter.
-`editj INDEX -j JOB_DESCRIPTION` replaces a role at its displayed index, rejecting a description that
+`editj INDEX -j JOB_ROLE` replaces a role at its displayed index, rejecting a role that
 matches another stored job. `Model#setJob` delegates to `AddressBook#setJob` and `UniqueJobList#setJob`,
-which replaces the job at the same position and enforces uniqueness. Applications remain unchanged.
+which replaces the job at the same position and enforces uniqueness. `UniqueApplicationList#setJob` updates
+matching applications to reference the edited job, keeping their applicants and statuses. This prevents stale role
+references that the storage loader would reject.
 After editing, the command clears the job filter and returns the edited job in `CommandResult` so it
-is visible and selected even if the new description no longer matches the previous filter.
+is visible and selected even if the new role no longer matches the previous filter.
 These four commands ask the UI to show the job list and the selected role's detail panel. The panel shows
 that role only. It does not list applicants by comparing the role text with application job descriptions.
-Other successful commands show the applicant list again. Deleting a job does not delete applications, and
-adding an application does not add a job to this list. Jobs are stored in the same JSON address book under `jobs`.
+The `view` command selects an applicant from the currently displayed applicant list and shows the applicant's
+details. `list` and `viewa` show the applicant list. `viewp` shows each application with its applicant, job, and status.
+`find`, `add`, `edit`, and `clear` also request the applicants view. `add` and `edit` select the changed applicant
+so the detail panel shows that person. `clear` replaces a deleted-applicant snapshot with the empty panel.
+`help` does not request a view, so that snapshot stays in place.
+
+Deleting a job cascades through `AddressBook#removeJob`
+to `UniqueApplicationList#removeForJob`, removing every application whose `Job#equals` matches the deleted role
+while keeping all applicants. Matching uses the exact, case-sensitive job role after trimming surrounding spaces,
+consistent with job identity. The cascade operates on all stored applications regardless of the current filters,
+so subsequent saves contain no applications for the deleted role. Adding an application does not add a job to this list.
+This cascade does not change the JSON format introduced by the job model.
+Jobs are stored in the same JSON address book under `jobs`.
 
 <div markdown="span" class="alert alert-info">:information_source: **Note:** The alternative, arguably more object-oriented, design below keeps a unique list of tags in `AddressBook`, and each `Person` references tags from that list. This lets `AddressBook` maintain one `Tag` object per unique tag instead of each `Person` holding its own `Tag` objects.<br>
 
@@ -570,9 +588,10 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 * **Mainstream OS**: Windows, Linux, Unix, or macOS
 * **Applicant**: A person registered in LinkedOut with a name and email address, whose job application can be tracked.
-* **Application**: A record of an applicant's application for a job, containing a job description and an application status. An applicant can have at most one application.
-* **Job**: An open role stored in the job list, identified by its description. It is separate from an applicant's application.
-* **Job description**: The text describing a job. On an application, it records the role that applicant applied for. In the job list, it is the role's identity.
+* **Application**: A record linking an applicant to an existing job and an application status. An applicant can have at most one application.
+* **Job**: An open role stored in the job list, identified by its role name and accompanied by a description.
+* **Job role**: The name identifying a job, matched exactly after trimming surrounding spaces.
+* **Job description**: The additional text describing a job. It does not determine the job's identity.
 * **Application status**: The recorded outcome of an application: `accept` (accepted), `reject` (rejected), or `pending` (awaiting a decision). These values are case-sensitive.
 * **Applicant index**: The number used in commands to identify an applicant in the applicant list, starting from 1.
 

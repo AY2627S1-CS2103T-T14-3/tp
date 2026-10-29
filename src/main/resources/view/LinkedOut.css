@@ -93,6 +93,21 @@
     -fx-padding: 5 9;
     -fx-font-size: 11px;
 }
+.view-tab {
+    -fx-background-color: transparent;
+    -fx-text-fill: #64748b;
+    -fx-padding: 7 10;
+    -fx-font-weight: bold;
+}
+.view-tab:selected { -fx-background-color: #e7efff; -fx-text-fill: #1749ad; }
+.application-card {
+    -fx-background-color: #f8faff;
+    -fx-background-radius: 9;
+    -fx-border-color: #e6edf7;
+    -fx-border-radius: 9;
+    -fx-padding: 12 10;
+}
+.application-job { -fx-text-fill: #475569; -fx-font-size: 12px; }
 .applicant-list-panel { -fx-padding: 18 14; }
 .list-view { -fx-background-color: transparent; -fx-padding: 0; }
 .list-view .virtual-flow { -fx-background-color: transparent; }
@@ -104,8 +119,10 @@
     -fx-border-radius: 9;
     -fx-padding: 12 10;
 }
-.list-cell:filled:hover .applicant-card { -fx-background-color: #edf3ff; }
-.list-cell:filled:selected .applicant-card { -fx-background-color: #e7efff; -fx-border-color: #7ca5f6; }
+.list-cell:filled:hover .applicant-card,
+.list-cell:filled:hover .application-card { -fx-background-color: #edf3ff; }
+.list-cell:filled:selected .applicant-card,
+.list-cell:filled:selected .application-card { -fx-background-color: #e7efff; -fx-border-color: #7ca5f6; }
 .list-cell:empty { -fx-background-color: transparent; }
 .list-name { -fx-font-weight: bold; -fx-font-size: 14px; }
 .list-index { -fx-text-fill: #2563eb; -fx-font-weight: bold; }
