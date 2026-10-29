@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
-import static seedu.address.logic.Messages.MESSAGE_UNKNOWN_COMMAND;
+import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.testutil.TypicalPersons.ALICE;
 import static seedu.address.testutil.TypicalPersons.BENSON;
 import static seedu.address.testutil.TypicalPersons.DANIEL;
@@ -33,6 +33,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import seedu.address.logic.LogicManager;
 import seedu.address.logic.commands.AddApplicationCommand;
+import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.SetApplicationStatusCommand;
 import seedu.address.logic.commands.ViewCommand;
 import seedu.address.model.Model;
@@ -122,7 +123,7 @@ public class LinkedOutUiTest {
     }
 
     @Test
-    public void editCommand_unsupported_preservesApplicantsAndShowsError() throws Exception {
+    public void editCommand_invalidSyntax_preservesApplicantsAndShowsError() throws Exception {
         withWindow((window, model) -> {
             List<Person> expectedPersons = List.copyOf(model.getAddressBook().getPersonList());
             command(window, "find Meier");
@@ -136,7 +137,8 @@ public class LinkedOutUiTest {
 
                 assertEquals(editCommand, input.getText());
                 assertTrue(input.getStyleClass().contains(CommandBox.ERROR_STYLE_CLASS));
-                assertEquals(MESSAGE_UNKNOWN_COMMAND, feedback(window));
+                assertEquals(String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditCommand.MESSAGE_USAGE),
+                        feedback(window));
                 assertEquals(expectedPersons, model.getAddressBook().getPersonList());
                 assertEquals(List.of(BENSON, DANIEL), model.getFilteredPersonList());
                 assertApplicantDetails(window, DANIEL);

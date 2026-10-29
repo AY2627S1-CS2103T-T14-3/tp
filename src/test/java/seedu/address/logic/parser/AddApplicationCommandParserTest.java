@@ -52,7 +52,7 @@ public class AddApplicationCommandParserTest {
     }
 
     private void assertUnrecognized(String args) {
-        String input = ("add" + args).trim().replaceAll("\\s+", " ");
+        String input = ("addp" + args).trim().replaceAll("\\s+", " ");
         assertParseFailure(parser, args, String.format(MESSAGE_UNRECOGNIZED, input));
     }
 }
