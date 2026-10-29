@@ -34,7 +34,7 @@ public class DeleteJobCommandTest {
     @Test
     public void execute_validIndex_success() {
         DeleteJobCommand command = new DeleteJobCommand(INDEX_FIRST_APPLICANT);
-        String expectedMessage = String.format(DeleteJobCommand.MESSAGE_DELETE_JOB_SUCCESS, ENGINEER);
+        String expectedMessage = String.format(DeleteJobCommand.MESSAGE_DELETE_JOB_SUCCESS, ENGINEER.getJobRole());
 
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
         expectedModel.deleteJob(ENGINEER);
@@ -57,7 +57,7 @@ public class DeleteJobCommandTest {
     public void execute_filteredList_deletesDisplayedJob() {
         model.updateFilteredJobList(job -> job.toString().contains("Data"));
         DeleteJobCommand command = new DeleteJobCommand(INDEX_FIRST_APPLICANT);
-        String expectedMessage = String.format(DeleteJobCommand.MESSAGE_DELETE_JOB_SUCCESS, ANALYST);
+        String expectedMessage = String.format(DeleteJobCommand.MESSAGE_DELETE_JOB_SUCCESS, ANALYST.getJobRole());
 
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
         expectedModel.updateFilteredJobList(job -> job.toString().contains("Data"));

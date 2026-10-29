@@ -40,7 +40,7 @@ public class AddJobCommand extends Command {
         }
 
         model.addJob(job);
-        return new CommandResult(String.format(MESSAGE_SUCCESS, job), job);
+        return new CommandResult(String.format(MESSAGE_SUCCESS, job.getJobRole()), job);
     }
 
     @Override

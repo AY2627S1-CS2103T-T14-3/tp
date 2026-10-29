@@ -6,48 +6,37 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
 
 public class JobTest {
 
     @Test
-    public void constructor_validDescription_success() {
-        Job job = new Job("Janitor");
+    public void constructor_validRole_success() {
+        Job jobNoDescription = new Job("Janitor");
+        Job jobWithDescription = new Job("Janitor", "Cleaner Guy");
 
-        assertEquals("Janitor", job.toString());
-        assertEquals("Janitor", job.toString());
+        assertEquals("Janitor : No information ~", jobNoDescription.toString());
+        assertEquals("Janitor : Cleaner Guy", jobWithDescription.toString());
     }
 
     @Test
-    public void constructor_descriptionWithWhitespace_trimsDescription() {
-        Job job = new Job("  Janitor  ");
+    public void constructor_roleWithWhitespace_trimsDescription() {
+        Job jobNoDescription = new Job("    Janitor  \t");
+        Job jobWithDescription = new Job("\tJanitor  ", "\t\tCleaner Guy   ");
 
-        assertEquals("Janitor", job.toString());
+
+        assertEquals("Janitor : No information ~", jobNoDescription.toString());
+        assertEquals("Janitor : Cleaner Guy", jobWithDescription.toString());
     }
 
     @Test
-    public void constructor_invalidDescription_throwsException() {
+    public void constructor_invalidRole_throwsException() {
         assertThrows(NullPointerException.class, () -> new Job(null));
         assertThrows(IllegalArgumentException.class, () -> new Job("   "));
     }
 
     @Test
-    public void constructor_optionLikeDescription_throwsException() {
-        List<String> invalidDescriptions = List.of(
-                "-s accept",
-                "Janitor -s",
-                "Janitor -status accept",
-                "Janitor\t-s\taccept",
-                "Janitor\n-s\naccept");
-
-        invalidDescriptions.forEach(description ->
-                assertThrows(IllegalArgumentException.class, () -> new Job(description)));
-    }
-
-    @Test
-    public void equals_sameDescriptions_returnsTrue() {
+    public void equals_sameRole_returnsTrue() {
         Job first = new Job("Janitor");
         Job same = new Job("  Janitor  ");
 
@@ -56,7 +45,7 @@ public class JobTest {
     }
 
     @Test
-    public void equals_differentDescriptions_returnsFalse() {
+    public void equals_differentRole_returnsFalse() {
         Job first = new Job("Janitor");
         Job different = new Job("Engineer");
 
@@ -65,15 +54,14 @@ public class JobTest {
     }
 
     @Test
-    public void isValidDescription_validDescriptions_returnsTrue() {
-        assertTrue(Job.isValidDescription("Janitor"));
-        assertTrue(Job.isValidDescription("ClaudeGPT Expert"));
+    public void isValidRole_validRole_returnsTrue() {
+        assertTrue(Job.isValidRole("Janitor"));
+        assertTrue(Job.isValidRole("ClaudeGPT Expert"));
     }
 
     @Test
-    public void isValidDescription_invalidDescriptions_returnsFalse() {
-        assertFalse(Job.isValidDescription(null));
-        assertFalse(Job.isValidDescription("   "));
-        assertFalse(Job.isValidDescription("Janitor -s accept"));
+    public void isValidRole_invalidRole_returnsFalse() {
+        assertFalse(Job.isValidRole(null));
+        assertFalse(Job.isValidRole("   "));
     }
 }

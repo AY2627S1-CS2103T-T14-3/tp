@@ -28,7 +28,7 @@ class JsonSerializableAddressBook {
 
     private final List<JsonAdaptedApplicant> applicants = new ArrayList<>();
     private final List<JsonAdaptedApplication> applications = new ArrayList<>();
-    private final List<String> jobs = new ArrayList<>();
+    private final List<JsonAdaptedJob> jobs = new ArrayList<>();
 
     /**
      * Constructs a {@code JsonSerializableAddressBook} with the given applicants, applications, and jobs.
@@ -41,7 +41,7 @@ class JsonSerializableAddressBook {
     @JsonCreator
     public JsonSerializableAddressBook(@JsonProperty("applicants") List<JsonAdaptedApplicant> applicants,
             @JsonProperty("applications") List<JsonAdaptedApplication> applications,
-            @JsonProperty("jobs") List<String> jobs) {
+            @JsonProperty("jobs") List<JsonAdaptedJob> jobs) {
         this.applicants.addAll(applicants);
         if (applications != null) {
             this.applications.addAll(applications);
@@ -61,7 +61,7 @@ class JsonSerializableAddressBook {
                 .map(JsonAdaptedApplicant::new).collect(Collectors.toList()));
         applications.addAll(source.getApplicationList().stream()
                 .map(JsonAdaptedApplication::new).collect(Collectors.toList()));
-        jobs.addAll(source.getJobList().stream().map(Job::toString).collect(Collectors.toList()));
+        jobs.addAll(source.getJobList().stream().map(JsonAdaptedJob::new).collect(Collectors.toList()));
     }
 
     /**
@@ -78,22 +78,19 @@ class JsonSerializableAddressBook {
             }
             addressBook.addApplicant(applicant);
         }
+        for (JsonAdaptedJob jsonAdaptedJob : jobs) {
+            Job job = jsonAdaptedJob.toModelType(addressBook);
+            if (addressBook.hasJob(job)) {
+                throw new IllegalValueException(MESSAGE_DUPLICATE_JOB);
+            }
+            addressBook.addJob(job);
+        }
         for (JsonAdaptedApplication jsonAdaptedApplication : applications) {
             Application application = jsonAdaptedApplication.toModelType(addressBook);
             if (addressBook.hasApplication(application.getApplicant())) {
                 throw new IllegalValueException(MESSAGE_DUPLICATE_APPLICATION);
             }
             addressBook.addApplication(application);
-        }
-        for (String description : jobs) {
-            if (!Job.isValidDescription(description)) {
-                throw new IllegalValueException(Job.MESSAGE_CONSTRAINTS);
-            }
-            Job job = new Job(description);
-            if (addressBook.hasJob(job)) {
-                throw new IllegalValueException(MESSAGE_DUPLICATE_JOB);
-            }
-            addressBook.addJob(job);
         }
         return addressBook;
     }

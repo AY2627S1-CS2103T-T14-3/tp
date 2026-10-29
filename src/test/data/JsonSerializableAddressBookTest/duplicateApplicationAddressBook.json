@@ -6,11 +6,24 @@
   } ],
   "applications" : [ {
     "name" : "Alice Pauline",
-    "jobDescription" : "Janitor",
+    "job": {
+      "role" : "Janitor",
+      "description" : "Cleaner Guy"
+    } ,
     "status" : "pending"
   }, {
     "name" : "Alice Pauline",
-    "jobDescription" : "Engineer",
+    "job" : {
+      "role" : "Engineer",
+      "description" : "Fix Fix Guy"
+    },
     "status" : "accept"
+  } ],
+  "jobs" : [ {
+    "role" : "Janitor",
+    "description" : "Cleaner Guy"
+  }, {
+    "role" : "Engineer",
+    "description" : "Fix Fix Guy"
   } ]
 }

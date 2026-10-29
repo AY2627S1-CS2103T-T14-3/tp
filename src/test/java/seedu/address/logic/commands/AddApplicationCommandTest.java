@@ -11,6 +11,8 @@ import static seedu.address.testutil.TypicalApplicants.BENSON;
 import static seedu.address.testutil.TypicalApplicants.getTypicalAddressBook;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_APPLICANT;
 import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND_APPLICANT;
+import static seedu.address.testutil.TypicalJobs.JANITOR;
+import static seedu.address.testutil.TypicalJobs.addJobsToAddressBook;
 
 import org.junit.jupiter.api.Test;
 
@@ -23,15 +25,15 @@ import seedu.address.model.application.Job;
 
 public class AddApplicationCommandTest {
 
-    private final Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs());
+    private final Model model = new ModelManager(addJobsToAddressBook(getTypicalAddressBook()), new UserPrefs());
 
     @Test
     public void execute_newApplicationWithoutStatus_addsPendingApplication() {
-        Application application = new Application(ALICE, new Job("Janitor"), Application.Status.PENDING);
+        Application application = new Application(ALICE, JANITOR, Application.Status.PENDING);
         AddApplicationCommand command = new AddApplicationCommand(
                 INDEX_FIRST_APPLICANT, "Janitor", Application.Status.PENDING);
 
-        Model expectedModel = new ModelManager(getTypicalAddressBook(), new UserPrefs());
+        Model expectedModel = new ModelManager(addJobsToAddressBook(getTypicalAddressBook()), new UserPrefs());
         expectedModel.addApplication(application);
         CommandResult expectedResult = new CommandResult(String.format(
                 AddApplicationCommand.MESSAGE_SUCCESS, ALICE.getName(), ALICE.getEmail()), ALICE);
@@ -42,11 +44,12 @@ public class AddApplicationCommandTest {
 
     @Test
     public void execute_newApplicationWithStatus_addsRequestedStatus() {
-        Application application = new Application(BENSON, new Job("ClaudeGPT Expert"), Application.Status.ACCEPT);
-        AddApplicationCommand command = new AddApplicationCommand(
-                INDEX_SECOND_APPLICANT, "ClaudeGPT Expert", Application.Status.ACCEPT);
 
-        Model expectedModel = new ModelManager(getTypicalAddressBook(), new UserPrefs());
+        Application application = new Application(BENSON, JANITOR, Application.Status.ACCEPT);
+        AddApplicationCommand command = new AddApplicationCommand(
+                INDEX_SECOND_APPLICANT, "Janitor", Application.Status.ACCEPT);
+
+        Model expectedModel = new ModelManager(addJobsToAddressBook(getTypicalAddressBook()), new UserPrefs());
         expectedModel.addApplication(application);
         CommandResult expectedResult = new CommandResult(String.format(
                 AddApplicationCommand.MESSAGE_SUCCESS, BENSON.getName(), BENSON.getEmail()), BENSON);
@@ -60,7 +63,7 @@ public class AddApplicationCommandTest {
         AddApplicationCommand command = new AddApplicationCommand(
                 INDEX_FIRST_APPLICANT, "Janitor", Application.Status.REJECT);
 
-        Model expectedModel = new ModelManager(getTypicalAddressBook(), new UserPrefs());
+        Model expectedModel = new ModelManager(addJobsToAddressBook(getTypicalAddressBook()), new UserPrefs());
         showApplicantAtIndex(expectedModel, INDEX_SECOND_APPLICANT);
         expectedModel.addApplication(new Application(BENSON, new Job("Janitor"), Application.Status.REJECT));
         CommandResult expectedResult = new CommandResult(String.format(
@@ -130,7 +133,7 @@ public class AddApplicationCommandTest {
                 INDEX_FIRST_APPLICANT, "Janitor", Application.Status.PENDING);
         String expected = AddApplicationCommand.class.getCanonicalName()
                 + "{targetIndex=" + INDEX_FIRST_APPLICANT
-                + ", jobDescription=Janitor, status=pending}";
+                + ", jobRole=Janitor, status=pending}";
         assertEquals(expected, command.toString());
     }
 }

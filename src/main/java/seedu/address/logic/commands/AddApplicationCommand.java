@@ -28,6 +28,9 @@ public class AddApplicationCommand extends Command {
     public static final String MESSAGE_INVALID_INDEX =
             "Invalid applicant index. Please enter an integer from 1 to %1$d.";
 
+    public static final String MESSAGE_INVALID_JOB =
+            "Could not find specified job in the program.";
+
     public static final String MESSAGE_EMPTY_LIST =
             "There are no applicants in the displayed list to add an application to.";
 
@@ -41,18 +44,18 @@ public class AddApplicationCommand extends Command {
             + "Example: addp 2 -j ClaudeGPT Expert -s accept";
 
     private final Index targetIndex;
-    private final String jobDescription;
+    private final String jobRole;
     private final Application.Status status;
 
     /**
      * Creates an AddApplicationCommand to add an application to the specified applicant.
-     * @param targetIndex of the applicant in the filtered applicant list to add an application to
-     * @param jobDescription job the applicant is applying for
+     * @param targetIndex of the applicant in the filtered person list to add an application to
+     * @param jobRole job the applicant is applying for
      * @param status status of the application
      */
-    public AddApplicationCommand(Index targetIndex, String jobDescription, Application.Status status) {
+    public AddApplicationCommand(Index targetIndex, String jobRole, Application.Status status) {
         this.targetIndex = requireNonNull(targetIndex);
-        this.jobDescription = requireNonNull(jobDescription);
+        this.jobRole = requireNonNull(jobRole);
         this.status = requireNonNull(status);
     }
 
@@ -73,7 +76,10 @@ public class AddApplicationCommand extends Command {
             throw new CommandException(MESSAGE_DUPLICATE_APPLICATION);
         }
 
-        Application application = new Application(applicant, new Job(jobDescription), status);
+        Job job = model.getJobList().stream().filter(j -> j.getJobRole().equals(jobRole))
+                .findFirst().orElseThrow(() -> new CommandException(MESSAGE_INVALID_JOB));
+
+        Application application = new Application(applicant, job, status);
         model.addApplication(application);
         return new CommandResult(String.format(MESSAGE_SUCCESS, applicant.getName(), applicant.getEmail()), applicant);
     }
@@ -89,7 +95,7 @@ public class AddApplicationCommand extends Command {
         }
 
         return targetIndex.equals(otherCommand.targetIndex)
-                && jobDescription.equals(otherCommand.jobDescription)
+                && jobRole.equals(otherCommand.jobRole)
                 && status == otherCommand.status;
     }
 
@@ -97,7 +103,7 @@ public class AddApplicationCommand extends Command {
     public String toString() {
         return new ToStringBuilder(this)
                 .add("targetIndex", targetIndex)
-                .add("jobDescription", jobDescription)
+                .add("jobRole", jobRole)
                 .add("status", status)
                 .toString();
     }
