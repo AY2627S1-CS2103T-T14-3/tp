@@ -16,6 +16,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import seedu.address.logic.commands.AddCommand;
 import seedu.address.logic.commands.CommandResult;
+import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.commands.ViewRequest;
 import seedu.address.logic.commands.exceptions.CommandException;
@@ -76,6 +77,36 @@ public class LogicManagerTest {
 
         assertCommandSuccess(addCommand, String.format(AddCommand.MESSAGE_SUCCESS, Messages.format(AMY)),
                 expectedModel);
+
+        JsonAddressBookStorage savedStorage =
+                new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
+        assertEquals(expectedModel.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
+    }
+
+    @Test
+    public void execute_editWithHyphenOptions_savesPersonAndPreservesPhone() throws Exception {
+        model.addPerson(AMY);
+        Person editedPerson = new PersonBuilder(AMY).withName("John Doe").withEmail("john@example.com").build();
+        Model expectedModel = new ModelManager();
+        expectedModel.addPerson(editedPerson);
+
+        assertCommandSuccess("edit 1 -n John Doe -e john@example.com",
+                String.format(EditCommand.MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(editedPerson)), expectedModel);
+
+        JsonAddressBookStorage savedStorage =
+                new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
+        assertEquals(expectedModel.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
+    }
+
+    @Test
+    public void execute_editPhone_savesPhoneAndPreservesOtherFields() throws Exception {
+        model.addPerson(AMY);
+        Person editedPerson = new PersonBuilder(AMY).withPhone("91234567").build();
+        Model expectedModel = new ModelManager();
+        expectedModel.addPerson(editedPerson);
+
+        assertCommandSuccess("edit 1 -p 91234567",
+                String.format(EditCommand.MESSAGE_EDIT_PERSON_SUCCESS, Messages.format(editedPerson)), expectedModel);
 
         JsonAddressBookStorage savedStorage =
                 new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
