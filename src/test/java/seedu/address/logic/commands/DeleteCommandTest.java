@@ -6,9 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandFailure;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandSuccess;
 import static seedu.address.logic.commands.CommandTestUtil.showApplicantAtIndex;
+import static seedu.address.testutil.TypicalApplicants.getTypicalAddressBook;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_APPLICANT;
 import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND_APPLICANT;
-import static seedu.address.testutil.TypicalApplicants.getTypicalAddressBook;
 
 import org.junit.jupiter.api.Test;
 
@@ -18,6 +18,8 @@ import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
 import seedu.address.model.applicant.Applicant;
+import seedu.address.model.application.Application;
+import seedu.address.model.application.Job;
 
 /**
  * Contains integration tests (interaction with the Model) and unit tests for
@@ -38,7 +40,8 @@ public class DeleteCommandTest {
         ModelManager expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
         expectedModel.deleteApplicant(applicantToDelete);
 
-        assertCommandSuccess(deleteCommand, model, expectedMessage, expectedModel);
+        assertCommandSuccess(deleteCommand, model,
+                CommandResult.deletedApplicant(expectedMessage, applicantToDelete, null), expectedModel);
     }
 
     @Test
@@ -63,7 +66,23 @@ public class DeleteCommandTest {
         expectedModel.deleteApplicant(applicantToDelete);
         showNoApplicant(expectedModel);
 
-        assertCommandSuccess(deleteCommand, model, expectedMessage, expectedModel);
+        assertCommandSuccess(deleteCommand, model,
+                CommandResult.deletedApplicant(expectedMessage, applicantToDelete, null), expectedModel);
+    }
+
+    @Test
+    public void execute_applicantWithApplication_returnsSnapshotAndRemovesBoth() throws Exception {
+        Applicant applicant = model.getFilteredApplicantList().getFirst();
+        Application application = new Application(applicant, new Job("Engineer"), Application.Status.ACCEPT);
+        model.addApplication(application);
+
+        CommandResult result = new DeleteCommand(INDEX_FIRST_APPLICANT).execute(model);
+
+        assertEquals(new CommandResult.DeletedApplicant(applicant, application),
+                result.getDeletedApplicant().orElseThrow());
+        assertFalse(model.hasApplicant(applicant));
+        assertTrue(model.getApplicationList().isEmpty());
+        assertTrue(result.getApplicantToView().isEmpty());
     }
 
     @Test

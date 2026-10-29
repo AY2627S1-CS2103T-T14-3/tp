@@ -6,8 +6,9 @@ import java.util.Objects;
 import java.util.Optional;
 
 import seedu.address.commons.util.ToStringBuilder;
-import seedu.address.model.application.Job;
 import seedu.address.model.applicant.Applicant;
+import seedu.address.model.application.Application;
+import seedu.address.model.application.Job;
 
 /**
  * Represents the result of a command execution.
@@ -31,6 +32,9 @@ public class CommandResult {
     /** The job to select in the UI, or null if the selection should remain unchanged. */
     private final Job jobToView;
 
+    /** A snapshot to display after an applicant has been deleted. */
+    private final DeletedApplicant deletedApplicant;
+
     /**
      * Constructs a {@code CommandResult} with the specified fields.
      */
@@ -43,12 +47,18 @@ public class CommandResult {
      */
     private CommandResult(String feedbackToUser, boolean showHelp, boolean exit, Applicant applicantToView,
             boolean showJobs, Job jobToView) {
+        this(feedbackToUser, showHelp, exit, applicantToView, showJobs, jobToView, null);
+    }
+
+    private CommandResult(String feedbackToUser, boolean showHelp, boolean exit, Applicant applicantToView,
+            boolean showJobs, Job jobToView, DeletedApplicant deletedApplicant) {
         this.feedbackToUser = requireNonNull(feedbackToUser);
         this.showHelp = showHelp;
         this.exit = exit;
         this.applicantToView = applicantToView;
         this.showJobs = showJobs;
         this.jobToView = jobToView;
+        this.deletedApplicant = deletedApplicant;
     }
 
     /**
@@ -73,6 +83,18 @@ public class CommandResult {
      */
     public CommandResult(String feedbackToUser) {
         this(feedbackToUser, false, false);
+    }
+
+    /**
+     * Returns a result displaying the deleted applicant and their former application, if any.
+     */
+    public static CommandResult deletedApplicant(String feedback, Applicant applicant, Application application) {
+        return new CommandResult(feedback, false, false, null, false, null,
+                new DeletedApplicant(applicant, application));
+    }
+
+    public Optional<DeletedApplicant> getDeletedApplicant() {
+        return Optional.ofNullable(deletedApplicant);
     }
 
     /**
@@ -125,12 +147,13 @@ public class CommandResult {
                 && exit == otherCommandResult.exit
                 && Objects.equals(applicantToView, otherCommandResult.applicantToView)
                 && showJobs == otherCommandResult.showJobs
-                && Objects.equals(jobToView, otherCommandResult.jobToView);
+                && Objects.equals(jobToView, otherCommandResult.jobToView)
+                && Objects.equals(deletedApplicant, otherCommandResult.deletedApplicant);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(feedbackToUser, showHelp, exit, applicantToView, showJobs, jobToView);
+        return Objects.hash(feedbackToUser, showHelp, exit, applicantToView, showJobs, jobToView, deletedApplicant);
     }
 
     @Override
@@ -142,7 +165,17 @@ public class CommandResult {
                 .add("applicantToView", applicantToView)
                 .add("showJobs", showJobs)
                 .add("jobToView", jobToView)
+                .add("deletedApplicant", deletedApplicant)
                 .toString();
     }
 
+    /**
+     * Stores immutable details captured before deletion; the application may be null.
+     */
+    public record DeletedApplicant(Applicant applicant, Application application) {
+        /** Creates a snapshot with a non-null applicant. */
+        public DeletedApplicant {
+            requireNonNull(applicant);
+        }
+    }
 }

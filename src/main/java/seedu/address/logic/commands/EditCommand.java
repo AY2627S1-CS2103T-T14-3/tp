@@ -31,6 +31,7 @@ public class EditCommand extends Command {
     public static final String MESSAGE_USAGE = COMMAND_WORD + ": Edits the details of the applicant identified "
             + "by the index number used in the displayed applicant list. "
             + "Existing values will be overwritten by the input values.\n"
+            + "At least one of name, phone, or email must be provided.\n"
             + "Parameters: INDEX (must be a positive integer) "
             + "[" + OPTION_NAME_OPT + " NAME] "
             + "[" + OPTION_PHONE_OPT + " PHONE] "

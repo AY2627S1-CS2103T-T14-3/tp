@@ -7,8 +7,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import seedu.address.model.application.Application;
 import seedu.address.model.applicant.Applicant;
+import seedu.address.model.application.Application;
 
 /** Displays the selected applicant's contact information and application placeholder. */
 public class ApplicantDetailPanel extends UiPart<Region> {
@@ -64,6 +64,17 @@ public class ApplicantDetailPanel extends UiPart<Region> {
         email.setText(applicant.getEmail().value);
         phone.setText(applicant.getPhone().value);
         showApplication(application);
+    }
+
+    /**
+     * Displays a deleted applicant's former details with an explicit deletion label.
+     *
+     * @param person the deleted applicant.
+     * @param application the former application, or null when none was recorded.
+     */
+    public void showDeletedApplicant(Applicant person, Application application) {
+        showApplicant(person, application);
+        selectionHint.setText("Deleted applicant. These details are no longer stored.");
     }
 
     /**

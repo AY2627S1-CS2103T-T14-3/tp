@@ -10,9 +10,10 @@ import seedu.address.logic.Messages;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
 import seedu.address.model.applicant.Applicant;
+import seedu.address.model.application.Application;
 
 /**
- * Deletes a applicant identified using its displayed index from the address book.
+ * Deletes an applicant identified using its displayed index from the address book.
  */
 public class DeleteCommand extends Command {
 
@@ -41,8 +42,11 @@ public class DeleteCommand extends Command {
         }
 
         Applicant applicantToDelete = lastShownList.get(targetIndex.getZeroBased());
+        Application application = model.getApplication(applicantToDelete).orElse(null);
         model.deleteApplicant(applicantToDelete);
-        return new CommandResult(String.format(MESSAGE_DELETE_APPLICANT_SUCCESS, Messages.format(applicantToDelete)));
+        return CommandResult.deletedApplicant(
+                String.format(MESSAGE_DELETE_APPLICANT_SUCCESS, Messages.format(applicantToDelete)),
+                applicantToDelete, application);
     }
 
     @Override

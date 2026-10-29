@@ -102,6 +102,12 @@ public class ApplicantListPanel extends UiPart<Region> {
         applicantListView.scrollTo(applicant);
     }
 
+    /** Clears the list selection when displaying a deleted applicant. */
+    public void clearSelection() {
+        applicantListView.getSelectionModel().clearSelection();
+    }
+
+
     /**
      * Custom {@code ListCell} that displays the graphics of a {@code Applicant} using a {@code ApplicantCard}.
      */

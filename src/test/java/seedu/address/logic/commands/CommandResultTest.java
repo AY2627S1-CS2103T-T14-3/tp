@@ -12,6 +12,8 @@ import org.junit.jupiter.api.Test;
 
 import seedu.address.model.applicant.Applicant;
 import seedu.address.testutil.ApplicantBuilder;
+import seedu.address.model.application.Application;
+import seedu.address.model.application.Job;
 
 public class CommandResultTest {
     @Test
@@ -98,12 +100,28 @@ public class CommandResultTest {
     }
 
     @Test
+    public void deletedApplicant_preservesSnapshotAndParticipatesInEquality() {
+        Application application = new Application(ALICE, new Job("Engineer"), Application.Status.ACCEPT);
+        CommandResult result = CommandResult.deletedApplicant("deleted", ALICE, application);
+        CommandResult copy = CommandResult.deletedApplicant("deleted", ALICE, application);
+
+        assertEquals(result, copy);
+        assertEquals(result.hashCode(), copy.hashCode());
+        assertEquals(application, result.getDeletedApplicant().orElseThrow().application());
+        assertTrue(result.getApplicantToView().isEmpty());
+        assertNotEquals(result, new CommandResult("deleted"));
+        assertNotEquals(result, CommandResult.deletedApplicant("deleted", ALICE, null));
+        assertNotEquals(result, CommandResult.deletedApplicant("deleted", BENSON, null));
+        assertThrows(NullPointerException.class, () -> CommandResult.deletedApplicant("deleted", null, null));
+    }
+
+    @Test
     public void toStringMethod() {
         CommandResult commandResult = new CommandResult("feedback");
         String expected = CommandResult.class.getCanonicalName() + "{feedbackToUser="
                 + commandResult.getFeedbackToUser() + ", showHelp=" + commandResult.isShowHelp()
                 + ", exit=" + commandResult.isExit()
-                + ", applicantToView=null, showJobs=false, jobToView=null}";
+                + ", applicantToView=null, showJobs=false, jobToView=null, deletedApplicant=null}";
         assertEquals(expected, commandResult.toString());
     }
 }
