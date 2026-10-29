@@ -3,6 +3,7 @@
 skinparam arrowThickness 1.1
 skinparam arrowColor LOGIC_COLOR_T4
 skinparam classBackgroundColor LOGIC_COLOR
+skinparam classAttributeFontColor #FFFFFF
 
 Class "{abstract}\nCommand" as Command
 Class XYZCommand
@@ -16,6 +17,12 @@ Class ParserUtil
 Class ArgumentMultimap
 Class ArgumentTokenizer
 Class Option
+Enum "Option.Kind" as OptionKind {
+    REQUIRED
+    OPTIONAL
+    FLAG
+}
+show OptionKind members
 }
 
 Class HiddenOutside #FFFFFF
@@ -28,11 +35,12 @@ AddressBookParser ..> Command : <<use>>
 XYZCommandParser .up.|> Parser
 XYZCommandParser ..> ArgumentMultimap
 XYZCommandParser ..> ArgumentTokenizer
-ArgumentTokenizer .left.> ArgumentMultimap
+ArgumentTokenizer .left.> ArgumentMultimap : <<create>>
 XYZCommandParser ..> CliSyntax
-CliSyntax ..> Option
+CliSyntax --> "*" Option : shared options
 XYZCommandParser ..> ParserUtil
 ArgumentMultimap --> "*" Option : keys
-ArgumentTokenizer .down.> Option
+ArgumentTokenizer .down.> Option : resolves aliases
+Option --> "1" OptionKind : kind
 XYZCommand -up-|> Command
 @enduml
