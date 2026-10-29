@@ -296,7 +296,7 @@ public class MainWindow extends UiPart<Stage> {
             if (commandResult.isShowJobs()) {
                 showJobView();
                 commandResult.getJobToView().ifPresent(jobListPanel::selectJob);
-            } else {
+            } else if (!commandResult.isShowHelp()) {
                 showApplicantView();
                 if (commandResult.getDeletedApplicant().isPresent()) {
                     CommandResult.DeletedApplicant deleted = commandResult.getDeletedApplicant().orElseThrow();
