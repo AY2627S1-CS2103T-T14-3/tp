@@ -21,6 +21,7 @@ import seedu.address.logic.commands.ClearCommand;
 import seedu.address.logic.commands.DeleteCommand;
 import seedu.address.logic.commands.DeleteJobCommand;
 import seedu.address.logic.commands.EditCommand;
+import seedu.address.logic.commands.EditJobCommand;
 import seedu.address.logic.commands.FindCommand;
 import seedu.address.logic.commands.HelpCommand;
 import seedu.address.logic.commands.ListCommand;
@@ -118,11 +119,17 @@ public class AddressBookParserTest {
         assertEquals(new AddJobCommand(job), parser.parseCommand("addj -j Software Engineer"));
         assertEquals(new AddJobCommand(job), parser.parseCommand("  addj   -job   Software Engineer  "));
         assertEquals(new DeleteJobCommand(INDEX_FIRST_APPLICANT), parser.parseCommand("deletej 1"));
+        assertEquals(new EditJobCommand(INDEX_FIRST_APPLICANT, job),
+                parser.parseCommand("editj 1 -j Software Engineer"));
+        assertEquals(new EditJobCommand(INDEX_FIRST_APPLICANT, job),
+                parser.parseCommand("  editj   1   -job   Software Engineer  "));
+        assertEquals(new DeleteJobCommand(INDEX_FIRST_APPLICANT), parser.parseCommand("deletej 1"));
         assertEquals(new ViewJobCommand(), parser.parseCommand("viewj"));
         assertEquals(new ViewJobCommand("jan"), parser.parseCommand("viewj -f jan"));
         assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> parser.parseCommand("Addj -j Engineer"));
         assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> parser.parseCommand("Viewj"));
         assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> parser.parseCommand("Deletej 1"));
+        assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> parser.parseCommand("Editj 1 -j Engineer"));
     }
 
     @Test

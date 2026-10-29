@@ -440,6 +440,40 @@ public class LinkedOutUiTest {
     }
 
     @Test
+    public void editJob_filteredList_updatesDetailsAndSelectsRenamedJob() throws Exception {
+        withWindow(window -> {
+            command(window, "addj -j Software Engineer");
+            command(window, "addj -j Data Analyst");
+            command(window, "viewj -f data");
+            command(window, "editj 1 -job Product Designer");
+            pulse(window);
+
+            assertEquals("Jobs", label(window, "listTitle").getText());
+            assertEquals("2 jobs", label(window, "applicantCount").getText());
+            assertEquals("Product Designer", label(window, "jobName").getText());
+            assertEquals("Edited job: Product Designer", feedback(window));
+            ListView<?> jobs = (ListView<?>) window.getRoot().getScene().lookup("#jobListView");
+            assertEquals("Product Designer", jobs.getSelectionModel().getSelectedItem().toString());
+            assertEquals(1, jobs.getSelectionModel().getSelectedIndex());
+
+            TextField input = (TextField) window.getRoot().getScene().lookup("#commandTextField");
+            input.setText("editj 2 -j Software Engineer");
+            input.fireEvent(new ActionEvent());
+            pulse(window);
+            assertEquals("This job already exists in the job list.", feedback(window));
+            assertEquals("Product Designer", label(window, "jobName").getText());
+            assertEquals(1, jobs.getSelectionModel().getSelectedIndex());
+
+            command(window, "list");
+            command(window, "editj 1 -j Senior Software Engineer");
+            pulse(window);
+            assertEquals("Jobs", label(window, "listTitle").getText());
+            assertEquals("Senior Software Engineer", label(window, "jobName").getText());
+            assertEquals(0, jobs.getSelectionModel().getSelectedIndex());
+        });
+    }
+
+    @Test
     public void jobCommands_switchToJobListAndBackToApplicants() throws Exception {
         withWindow(window -> {
             assertEquals("Applicants", label(window, "listTitle").getText());

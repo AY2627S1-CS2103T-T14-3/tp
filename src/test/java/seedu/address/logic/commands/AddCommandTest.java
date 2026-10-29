@@ -183,6 +183,11 @@ public class AddCommandTest {
         }
 
         @Override
+        public void setJob(Job target, Job editedJob) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
         public void deleteJob(Job target) {
             throw new AssertionError("This method should not be called.");
         }

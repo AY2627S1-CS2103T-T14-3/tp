@@ -114,6 +114,13 @@ public interface Model {
     void addJob(Job job);
 
     /**
+     * Replaces {@code target} with {@code editedJob}, preserving its position in the job list.
+     * The target must exist, and the edited description must not match another stored job.
+     * Applicant applications remain unchanged.
+     */
+    void setJob(Job target, Job editedJob);
+
+    /**
      * Deletes the given job.
      * The job must exist in the address book.
      * @param target job to delete

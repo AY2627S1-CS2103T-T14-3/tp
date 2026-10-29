@@ -17,6 +17,7 @@ import org.junit.jupiter.api.io.TempDir;
 import seedu.address.logic.commands.AddCommand;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.EditCommand;
+import seedu.address.logic.commands.EditJobCommand;
 import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.exceptions.ParseException;
@@ -25,6 +26,8 @@ import seedu.address.model.ModelManager;
 import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.UserPrefs;
 import seedu.address.model.applicant.Applicant;
+import seedu.address.model.application.Application;
+import seedu.address.model.application.Job;
 import seedu.address.storage.JsonAddressBookStorage;
 import seedu.address.storage.JsonUserPrefsStorage;
 import seedu.address.storage.StorageManager;
@@ -110,6 +113,27 @@ public class LogicManagerTest {
                 String.format(EditCommand.MESSAGE_EDIT_APPLICANT_SUCCESS, Messages.format(editedApplicant)),
                 expectedModel);
 
+        JsonAddressBookStorage savedStorage =
+                new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
+        assertEquals(expectedModel.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
+    }
+
+    @Test
+    public void execute_editJob_savesEditedJobAndPreservesApplication() throws Exception {
+        logic.execute("add -n Amy Bee -p 11111111 -e amy@example.com");
+        logic.execute("addp 1 -j Software Engineer");
+        logic.execute("addj -j Software Engineer");
+
+        Job editedJob = new Job("Product Designer");
+        CommandResult result = logic.execute("editj 1 -job Product Designer");
+        Model expectedModel = new ModelManager();
+        expectedModel.addApplicant(AMY);
+        expectedModel.addApplication(new Application(AMY, new Job("Software Engineer"), Application.Status.PENDING));
+        expectedModel.addJob(editedJob);
+
+        assertEquals(new CommandResult(String.format(EditJobCommand.MESSAGE_EDIT_JOB_SUCCESS, editedJob), editedJob),
+                result);
+        assertEquals(expectedModel, model);
         JsonAddressBookStorage savedStorage =
                 new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
         assertEquals(expectedModel.getAddressBook(), savedStorage.readAddressBook().orElseThrow());

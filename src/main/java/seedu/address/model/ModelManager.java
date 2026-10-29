@@ -141,6 +141,12 @@ public class ModelManager implements Model {
     }
 
     @Override
+    public void setJob(Job target, Job editedJob) {
+        requireAllNonNull(target, editedJob);
+        addressBook.setJob(target, editedJob);
+    }
+
+    @Override
     public void deleteJob(Job target) {
         requireNonNull(target);
         addressBook.removeJob(target);
