@@ -172,7 +172,7 @@ public class LinkedOutUiTest {
     public void deleteApplicant_lastApplicant_showsApplicationSnapshotUntilNextCommand() throws Exception {
         withWindow((window, model) -> {
             command(window, "find Alice");
-            command(window, "add -p 1 -j Engineer -s accept");
+            command(window, "addp 1 -j Engineer -s accept");
             command(window, "delete 1");
 
             assertApplicantName(window, "Alice Pauline");
@@ -230,7 +230,7 @@ public class LinkedOutUiTest {
     public void helpCommand_afterDeletingLastDisplayedApplicant_preservesApplicationSnapshot() throws Exception {
         withWindow(window -> {
             command(window, "find Alice");
-            command(window, "add -p 1 -j Engineer -s accept");
+            command(window, "addp 1 -j Engineer -s accept");
             command(window, "delete 1");
             assertApplicantName(window, "Alice Pauline");
             assertApplication(window, "Engineer", "Accepted");
