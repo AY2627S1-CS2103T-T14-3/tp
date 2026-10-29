@@ -38,6 +38,15 @@ public class EditJobCommandParserTest {
     }
 
     @Test
+    public void parse_validDescriptionAndRole_returnsEditJobCommand() {
+        EditJobCommand expected = new EditJobCommand(INDEX_FIRST_APPLICANT,
+                new EditJobDescriptorBuilder().withRole("Gamer").withDescription("New Description").build());
+        assertParseSuccess(parser, "1 -d New Description -j Gamer", expected);
+        assertParseSuccess(parser, "  1   -desc   New Description  -j   Gamer\t", expected);
+        assertParseSuccess(parser, "1 -j Gamer\t-description\tNew Description", expected);
+    }
+
+    @Test
     public void parse_invalidIndex_throwsParseException() {
         for (String index : List.of("", "0", "-1", "1.5", "abc", "2147483648", "1 2")) {
             assertParseFailure(parser, index + " -j Engineer",
