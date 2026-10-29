@@ -9,6 +9,7 @@ import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_PERSON;
 import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND_PERSON;
 import static seedu.address.testutil.TypicalPersons.ALICE;
+import static seedu.address.testutil.TypicalPersons.BENSON;
 import static seedu.address.testutil.TypicalPersons.getTypicalAddressBook;
 
 import java.util.List;
@@ -24,7 +25,7 @@ import seedu.address.model.application.Application;
 import seedu.address.model.application.Job;
 
 /**
- * Checks job edits against displayed indices, uniqueness, and independent application data.
+ * Checks job edits against displayed indices, uniqueness, and application job references.
  */
 public class EditJobCommandTest {
 
@@ -48,9 +49,11 @@ public class EditJobCommandTest {
     }
 
     @Test
-    public void execute_validIndex_preservesOrderAndApplications() {
+    public void execute_validIndex_preservesOrderAndUpdatesApplicationJob() {
         Application application = new Application(ALICE, ENGINEER, Application.Status.ACCEPT);
         model.addApplication(application);
+        Application unrelatedApplication = new Application(BENSON, ANALYST, Application.Status.REJECT);
+        model.addApplication(unrelatedApplication);
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
         expectedModel.setJob(ENGINEER, DESIGNER);
 
@@ -59,7 +62,9 @@ public class EditJobCommandTest {
                         ViewRequest.job(DESIGNER)),
                 expectedModel);
         assertEquals(List.of(DESIGNER, ANALYST), model.getJobList());
-        assertEquals(application, model.getApplication(ALICE).orElseThrow());
+        assertEquals(new Application(ALICE, DESIGNER, Application.Status.ACCEPT),
+                model.getApplication(ALICE).orElseThrow());
+        assertEquals(unrelatedApplication, model.getApplication(BENSON).orElseThrow());
     }
 
     @Test

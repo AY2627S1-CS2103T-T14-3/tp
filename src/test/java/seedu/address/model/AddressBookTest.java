@@ -154,6 +154,8 @@ public class AddressBookTest {
     public void removePerson_applicantWithApplication_removesApplication() {
         addressBook.addPerson(ALICE);
         addressBook.addPerson(BOB);
+        addressBook.addJob(new Job("Janitor"));
+        addressBook.addJob(new Job("Engineer"));
         addressBook.addApplication(new Application(ALICE, new Job("Janitor"), Application.Status.PENDING));
         addressBook.addApplication(new Application(BOB, new Job("Engineer"), Application.Status.ACCEPT));
 
@@ -161,6 +163,25 @@ public class AddressBookTest {
 
         assertFalse(addressBook.hasApplication(ALICE));
         assertTrue(addressBook.hasApplication(BOB));
+        assertEquals(List.of(new Job("Janitor"), new Job("Engineer")), addressBook.getJobList());
+    }
+
+    @Test
+    public void removeApplication_missingApplication_keepsApplicantAndJob() {
+        addressBook.addPerson(ALICE);
+        Job job = new Job("Janitor");
+        addressBook.addJob(job);
+
+        addressBook.removeApplication(ALICE);
+
+        assertEquals(List.of(ALICE), addressBook.getPersonList());
+        assertEquals(List.of(job), addressBook.getJobList());
+        assertTrue(addressBook.getApplicationList().isEmpty());
+    }
+
+    @Test
+    public void removeApplication_nullApplicant_throwsNullPointerException() {
+        assertThrows(NullPointerException.class, () -> addressBook.removeApplication(null));
     }
 
     @Test
@@ -196,6 +217,29 @@ public class AddressBookTest {
         addressBook.addJob(job);
         addressBook.removeJob(job);
         assertFalse(addressBook.hasJob(job));
+    }
+
+    @Test
+    public void removeJob_multipleApplications_removesAllMatchingApplicationsAndKeepsApplicants() {
+        AddressBook original = getTypicalAddressBook();
+        addressBook.resetData(original);
+        Job job = new Job("Engineer");
+        Job otherJob = new Job("engineer");
+        addressBook.addJob(job);
+        addressBook.addJob(otherJob);
+        List<Person> applicants = addressBook.getPersonList();
+        for (int i = 0; i < Application.Status.values().length; i++) {
+            addressBook.addApplication(new Application(applicants.get(i), new Job("Engineer", "Different description"),
+                    Application.Status.values()[i]));
+        }
+        Application otherApplication = new Application(applicants.getLast(), otherJob, Application.Status.PENDING);
+        addressBook.addApplication(otherApplication);
+
+        addressBook.removeJob(new Job("Engineer"));
+
+        assertEquals(original.getPersonList(), addressBook.getPersonList());
+        assertEquals(List.of(otherJob), addressBook.getJobList());
+        assertEquals(List.of(otherApplication), addressBook.getApplicationList());
     }
 
     @Test

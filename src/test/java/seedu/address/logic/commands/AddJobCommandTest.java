@@ -29,7 +29,7 @@ public class AddJobCommandTest {
     @Test
     public void execute_newJob_success() {
         AddJobCommand command = new AddJobCommand(ENGINEER);
-        String expectedMessage = String.format(AddJobCommand.MESSAGE_SUCCESS, ENGINEER.getJobRole());
+        String expectedMessage = String.format(AddJobCommand.MESSAGE_SUCCESS, ENGINEER);
 
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
         expectedModel.addJob(ENGINEER);

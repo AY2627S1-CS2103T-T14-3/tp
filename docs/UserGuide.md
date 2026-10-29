@@ -177,8 +177,9 @@ Examples:
 
 Deletes the specified person from the address book.
 
-The applicant and their application are removed together. Their former details remain visible in the
-detail panel, marked as deleted, until you select another applicant or run another successful applicant command.
+The applicant and their application are removed together. Jobs remain in the job list. The applicant's former details
+remain visible in the detail panel, marked as deleted, until you select another applicant or run another successful
+applicant command.
 Opening Help, either with `help` or through the menu, preserves these deleted details.
 
 Format: `delete INDEX`
@@ -235,6 +236,7 @@ Format: `addp INDEX -j JOB_ROLE [-s STATUS]`
 * `INDEX` is the positive integer shown beside an applicant in the current list. It must appear before the options.
 * When the list is filtered, the index refers to that filtered list.
 * `JOB_ROLE` is the role the applicant is applying for. It cannot contain another option, such as `-s`.
+* The role must already exist in the job list. Use `addj` to create it before adding an application.
 * `STATUS` is optional. When it is omitted, the status is `pending`.
 * Accepted statuses are `accept`, `reject`, and `pending`. The value is case-sensitive.
 * Aliases: `-job` for `-j` and `-status` for `-s`.
@@ -245,6 +247,21 @@ Examples:
 
 * `addp 1 -j Janitor` adds a pending Janitor application for the first displayed applicant.
 * `addp 2 -job ClaudeGPT Expert -s accept` adds an accepted application for the second displayed applicant.
+
+### Deleting an application: `deletep`
+
+Deletes an applicant's application while keeping the applicant's contact details and the job in the job list.
+
+Format: `deletep INDEX`
+
+* `INDEX` is the positive integer shown beside an applicant in the current list, including a filtered list.
+* A successful command keeps the current applicant filter, selects the applicant, and shows their details with no application recorded.
+* An applicant who has no application produces an error; no records are changed.
+* You can use `addp` afterwards to record a new application for the applicant.
+
+Example:
+
+* `find Betsy` followed by `deletep 1` deletes the application of the first applicant in the search results.
 
 ### Updating an application status: `set`
 
@@ -283,16 +300,16 @@ Examples:
 
 ### Editing a job: `editj`
 
-Replaces a job's description. The full job list is shown after a successful edit, with the edited role selected.
+Replaces a job's role. The full job list is shown after a successful edit, with the edited role selected.
 
-Format: `editj INDEX -j JOB_DESCRIPTION`
+Format: `editj INDEX -j JOB_ROLE`
 
 * `INDEX` is the positive integer shown beside a job in the current job list, including a filtered list.
-* `JOB_DESCRIPTION` is required and follows the same rules as `addj`. Alias: `-job` for `-j`.
-* The new description cannot match another stored job. Matching ignores surrounding spaces and is otherwise case-sensitive. Keeping the current description is allowed.
+* `JOB_ROLE` is required and follows the same rules as `addj`. Alias: `-job` for `-j`.
+* The new role cannot match another stored job. Matching ignores surrounding spaces and is otherwise case-sensitive. Keeping the current role is allowed.
 * The job keeps its position in the full list. Any job filter is cleared so the edited role remains visible.
-* Editing a job leaves applicants and their application descriptions unchanged.
-* An empty list, an invalid index, a missing description, or a duplicate description produces an error and leaves the jobs unchanged.
+* Applications for the job are updated to reference the edited role. Their applicants and statuses are kept.
+* An empty list, an invalid index, a missing role, or a duplicate role produces an error and leaves the jobs unchanged.
 
 Examples:
 
@@ -324,7 +341,8 @@ Deletes the role at the displayed index. The list stays on jobs.
 Format: `deletej INDEX`
 
 * `INDEX` is the positive integer shown beside a job in the job list currently displayed. After `viewj -f jan`, index 1 is the first matching job.
-* Deleting a role does not delete applicants or their applications.
+* Deleting a role also deletes all applications with the same job role. Applicants and their contact details are kept.
+* Job roles are matched exactly after trimming surrounding spaces; different letter cases identify different jobs.
 * An empty list, a missing index, or an index past the end of the list produces an error and leaves the jobs unchanged.
 
 Examples:
@@ -371,9 +389,10 @@ Action | Format, Examples
 --------|------------------
 **Add** | `add -n NAME -p PHONE_NUMBER -e EMAIL` <br> e.g., `add -n James Ho -p 22224444 -e jamesho@example.com`
 **Add application** | `addp INDEX -j JOB_ROLE [-s STATUS]`<br> e.g., `addp 1 -j Janitor -s pending`
+**Delete application** | `deletep INDEX`<br> e.g., `deletep 1`
 **Set application status** | `set INDEX -s STATUS`<br> e.g., `set 1 -s accept`
-**Add job** | `addj -j JOB_DESCRIPTION`<br> e.g., `addj -j Software Engineer`
-**Edit job** | `editj INDEX -j JOB_DESCRIPTION`<br> e.g., `editj 1 -j Senior Software Engineer`
+**Add job** | `addj -j JOB_ROLE [-d JOB_DESCRIPTION]`<br> e.g., `addj -j Software Engineer`
+**Edit job** | `editj INDEX -j JOB_ROLE`<br> e.g., `editj 1 -j Senior Software Engineer`
 **View jobs** | `viewj [-f KEYWORD]`<br> e.g., `viewj -f engineer`
 **Delete job** | `deletej INDEX`<br> e.g., `deletej 1`
 **Clear** | `clear`
