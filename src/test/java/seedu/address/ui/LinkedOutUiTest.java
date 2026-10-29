@@ -33,6 +33,7 @@ import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import seedu.address.logic.LogicManager;
 import seedu.address.logic.commands.AddApplicationCommand;
+import seedu.address.logic.commands.DeleteApplicationCommand;
 import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.SetApplicationStatusCommand;
 import seedu.address.logic.commands.ViewCommand;
@@ -414,6 +415,23 @@ public class LinkedOutUiTest {
             assertApplication(window, "Janitor", "Accepted");
             assertEquals(String.format(SetApplicationStatusCommand.MESSAGE_SUCCESS,
                     BENSON.getName(), BENSON.getEmail(), "accept"), feedback(window));
+        });
+    }
+
+    @Test
+    public void deleteApplication_filteredList_selectsApplicantAndClearsApplicationDetails() throws Exception {
+        withWindow((window, model) -> {
+            command(window, "addp 2 -j Janitor");
+            command(window, "find Meier");
+            command(window, "view 2");
+            command(window, "deletep 1");
+
+            assertApplicantDetails(window, BENSON);
+            assertApplication(window, "No application recorded.", null);
+            assertEquals(String.format(DeleteApplicationCommand.MESSAGE_SUCCESS,
+                    BENSON.getName(), BENSON.getEmail()), feedback(window));
+            assertEquals(List.of(BENSON, DANIEL), model.getFilteredPersonList());
+            assertFalse(model.hasApplication(BENSON));
         });
     }
 
