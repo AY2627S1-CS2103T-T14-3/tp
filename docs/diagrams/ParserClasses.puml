@@ -9,7 +9,7 @@ Class "{abstract}\nCommand" as Command
 Class XYZCommand
 
 package "Parser classes"{
-Class "<<interface>>\nParser" as Parser
+Interface Parser <<interface>>
 Class AddressBookParser
 Class XYZCommandParser
 Class CliSyntax
@@ -17,7 +17,7 @@ Class ParserUtil
 Class ArgumentMultimap
 Class ArgumentTokenizer
 Class Option
-Enum "Option.Kind" as OptionKind {
+Enum "Option.Kind" as OptionKind <<enumeration>> {
     REQUIRED
     OPTIONAL
     FLAG
@@ -25,22 +25,19 @@ Enum "Option.Kind" as OptionKind {
 show OptionKind members
 }
 
-Class HiddenOutside #FFFFFF
-HiddenOutside ..> AddressBookParser
-
 AddressBookParser .down.> XYZCommandParser: <<create>>
 
 XYZCommandParser ..> XYZCommand : <<create>>
-AddressBookParser ..> Command : <<use>>
+AddressBookParser ..> Command
 XYZCommandParser .up.|> Parser
 XYZCommandParser ..> ArgumentMultimap
 XYZCommandParser ..> ArgumentTokenizer
 ArgumentTokenizer .left.> ArgumentMultimap : <<create>>
 XYZCommandParser ..> CliSyntax
-CliSyntax --> "*" Option : shared options
+CliSyntax ..> Option
 XYZCommandParser ..> ParserUtil
 ArgumentMultimap --> "*" Option : keys
-ArgumentTokenizer .down.> Option : resolves aliases
+ArgumentTokenizer .down.> Option
 Option --> "1" OptionKind : kind
 XYZCommand -up-|> Command
 @enduml
