@@ -18,6 +18,7 @@ import seedu.address.logic.commands.AddCommand;
 import seedu.address.logic.commands.AddJobCommand;
 import seedu.address.logic.commands.ByeCommand;
 import seedu.address.logic.commands.ClearCommand;
+import seedu.address.logic.commands.DeleteApplicationCommand;
 import seedu.address.logic.commands.DeleteCommand;
 import seedu.address.logic.commands.DeleteJobCommand;
 import seedu.address.logic.commands.EditCommand;
@@ -135,6 +136,17 @@ public class AddressBookParserTest {
         DeleteCommand command = (DeleteCommand) parser.parseCommand(
                 DeleteCommand.COMMAND_WORD + " " + INDEX_FIRST_PERSON.getOneBased());
         assertEquals(new DeleteCommand(INDEX_FIRST_PERSON), command);
+    }
+
+    @Test
+    public void parseCommand_deleteApplication() throws Exception {
+        DeleteApplicationCommand expected = new DeleteApplicationCommand(INDEX_FIRST_PERSON);
+        assertEquals(expected, parser.parseCommand("deletep 1"));
+        assertEquals(expected, parser.parseCommand("  deletep   1  "));
+        assertThrows(ParseException.class,
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, DeleteApplicationCommand.MESSAGE_USAGE), () ->
+                parser.parseCommand("deletep"));
+        assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> parser.parseCommand("Deletep 1"));
     }
 
     @Test
