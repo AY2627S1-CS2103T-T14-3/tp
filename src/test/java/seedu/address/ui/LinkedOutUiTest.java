@@ -418,6 +418,21 @@ public class LinkedOutUiTest {
     }
 
     @Test
+    public void deleteJob_withApplications_clearsApplicantApplicationDetails() throws Exception {
+        withWindow((window, model) -> {
+            command(window, "addp 2 -j Janitor");
+            command(window, "addj -j Janitor");
+            command(window, "deletej 1");
+            command(window, "view 2");
+
+            assertApplicantDetails(window, BENSON);
+            assertApplication(window, "No application recorded.", null);
+            assertFalse(model.hasApplication(BENSON));
+            assertTrue(model.getJobList().isEmpty());
+        });
+    }
+
+    @Test
     public void setApplicationStatus_invalidStatusAndMissingApplication_preservesApplication() throws Exception {
         withWindow(window -> {
             command(window, "addp 1 -j Janitor");
