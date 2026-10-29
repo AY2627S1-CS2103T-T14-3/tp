@@ -6,58 +6,54 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
 import seedu.address.model.application.Application;
 import seedu.address.model.person.Person;
 
-
-/** Panel containing the list of applications. */
+/**
+ * Panel containing the list of applications.
+ */
 public class ApplicationListPanel extends UiPart<Region> {
-    private final ListView<Application> applicationListView;
-    private final ObservableList<Application> displayedApplications = FXCollections.observableArrayList();
-    private final ObservableList<Person> applicants;
+    private static final String FXML = "ApplicationListPanel.fxml";
 
-    /** Creates an application list backed by the supplied observable list. */
+    private final ObservableList<Person> applicants;
+    private final ObservableList<Application> applications;
+    private final ObservableList<Application> displayedApplications = FXCollections.observableArrayList();
+    private final ObservableList<Application> visibleApplications =
+            FXCollections.unmodifiableObservableList(displayedApplications);
+
+    @FXML
+    private ListView<Application> applicationListView;
+
+    /**
+     * Creates an application list for the applicants and applications currently stored.
+     * @param applicants applicants whose indexes are shown on each application.
+     * @param applications applications available to display.
+     */
     public ApplicationListPanel(ObservableList<Person> applicants, ObservableList<Application> applications) {
-        super("ApplicationListPanel.fxml");
+        super(FXML);
         this.applicants = applicants;
-        applicationListView = (ListView<Application>) getRoot().lookup("#applicationListView");
+        this.applications = applications;
         applicationListView.setItems(displayedApplications);
+        applicationListView.setCellFactory(listView -> new ApplicationListViewCell());
         applicationListView.setPlaceholder(new Label("No applications to display."));
-        applicationListView.setCellFactory(list -> new ListCell<>() {
-            @Override
-            protected void updateItem(Application application, boolean empty) {
-                super.updateItem(application, empty);
-                if (empty || application == null) {
-                    setGraphic(null);
-                } else {
-                    VBox card = new VBox(4);
-                    card.getStyleClass().add("application-card");
-                    int applicantIndex = findApplicantIndex(application);
-                    Label applicant = new Label(applicantIndex + ". "
-                            + application.getApplicantName());
-                    applicant.getStyleClass().add("list-name");
-                    Label job = new Label(application.getJob().toString());
-                    job.getStyleClass().add("application-job");
-                    Label status = new Label(application.getStatusValue());
-                    status.getStyleClass().addAll("status-badge", "status-" + application.getStatusValue());
-                    card.getChildren().addAll(applicant, job, status);
-                    setGraphic(card);
-                }
-            }
-        });
-        applicants.addListener((ListChangeListener<Person>) change ->
-                refreshApplications(applications));
-        applications.addListener((ListChangeListener<Application>) change ->
-                refreshApplications(applications));
-        refreshApplications(applications);
+        applicants.addListener((ListChangeListener<Person>) change -> refreshApplications());
+        applications.addListener((ListChangeListener<Application>) change -> refreshApplications());
+        refreshApplications();
     }
 
-    private void refreshApplications(ObservableList<Application> applications) {
+    /**
+     * Returns the applications currently shown, in the same order as the applicant list.
+     */
+    public ObservableList<Application> getDisplayedApplications() {
+        return visibleApplications;
+    }
+
+    private void refreshApplications() {
         displayedApplications.setAll(applicants.stream()
                 .map(applicant -> applications.stream()
                         .filter(application -> application.isForApplicant(applicant))
@@ -75,19 +71,43 @@ public class ApplicationListPanel extends UiPart<Region> {
         return applicationListView.getSelectionModel().selectedItemProperty();
     }
 
-    /** Selects an application in the displayed list and scrolls to make it visible. */
+    /**
+     * Selects an application in the displayed list and scrolls to make it visible.
+     * @param application application to select.
+     */
     public void selectApplication(Application application) {
         Objects.requireNonNull(application);
         applicationListView.getSelectionModel().select(application);
         applicationListView.scrollTo(application);
     }
 
-    private int findApplicantIndex(Application application) {
-        for (int index = 0; index < applicants.size(); index++) {
-            if (application.isForApplicant(applicants.get(index))) {
-                return index + 1;
+    /**
+     * Returns the one-based index of the applicant who owns {@code application}.
+     * @param application application shown in this list.
+     */
+    private int applicantIndex(Application application) {
+        for (int i = 0; i < applicants.size(); i++) {
+            if (application.isForApplicant(applicants.get(i))) {
+                return i + 1;
             }
         }
         return 0;
+    }
+
+    /**
+     * Custom {@code ListCell} that displays an {@code Application} using an {@code ApplicationCard}.
+     */
+    class ApplicationListViewCell extends ListCell<Application> {
+        @Override
+        protected void updateItem(Application application, boolean empty) {
+            super.updateItem(application, empty);
+
+            if (empty || application == null) {
+                setGraphic(null);
+                setText(null);
+            } else {
+                setGraphic(new ApplicationCard(application, applicantIndex(application)).getRoot());
+            }
+        }
     }
 }

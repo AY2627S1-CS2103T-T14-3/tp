@@ -36,7 +36,7 @@ public class MainWindow extends UiPart<Stage> {
 
     private static final String FXML = "MainWindow.fxml";
     private static final String APPLICANT_HINT = "Find and manage applicants using commands.";
-    private static final String APPLICATION_HINT = "Review submitted applications.";
+    private static final String APPLICATION_HINT = "See which applicant applied to each job.";
     private static final String JOB_HINT = "Add, view, and remove open roles.";
 
     private final Logger logger = LogsCenter.getLogger(getClass());
@@ -197,11 +197,11 @@ public class MainWindow extends UiPart<Stage> {
 
     private void showApplicationsView() {
         listTitle.setText("Applications");
-        listHint.setText("Select an application to view its details.");
+        listHint.setText("Each row shows an applicant, job, and status.");
         consoleHint.setText(APPLICATION_HINT);
         viewListPlaceholder.getChildren().setAll(applicationListPanel.getRoot());
         applicantDetailPlaceholder.getChildren().setAll(applicantDetailPanel.getRoot());
-        bindCount(logic.getApplicationList(), "application", "applications");
+        bindCount(applicationListPanel.getDisplayedApplications(), "application", "applications");
     }
 
     private void showJobsView() {

@@ -143,7 +143,7 @@ duplicate descriptions are rejected, surrounding spaces are ignored, and other d
 The job commands ask the UI to show the job list and the selected role's detail panel. The panel shows
 that role only. It does not list applicants by comparing the role text with application job descriptions.
 The `view` command selects an applicant from the currently displayed applicant list and shows the applicant's
-details. `list` and `viewa` show the applicant list, while `viewp` shows the application list. Deleting a job does not
+details. `list` and `viewa` show the applicant list. `viewp` shows each application with its applicant, job, and status. Deleting a job does not
 delete applications, and
 adding an application does not add a job to this list. Jobs are stored in the same JSON address book under `jobs`.
 

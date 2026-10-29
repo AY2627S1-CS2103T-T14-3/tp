@@ -106,6 +106,35 @@ public class LinkedOutUiTest {
     }
 
     @Test
+    public void viewApplications_filteredApplicants_showsApplicantJobAndStatus() throws Exception {
+        withWindow(window -> {
+            command(window, "addp 1 -j Janitor -s accept");
+            command(window, "addp 2 -j Analyst -s pending");
+            command(window, "find Alice");
+            command(window, "viewp");
+            pulse(window);
+
+            ListView<?> applications = (ListView<?>) window.getRoot().getScene().lookup("#applicationListView");
+            assertEquals("Applications", label(window, "listTitle").getText());
+            assertEquals("1 application", label(window, "applicantCount").getText());
+            assertEquals(1, applications.getItems().size());
+            assertEquals("1. ", ((Label) applications.lookup("#id")).getText());
+            assertEquals("Alice Pauline", ((Label) applications.lookup("#name")).getText());
+            assertEquals("Janitor", ((Label) applications.lookup("#job")).getText());
+            assertEquals("Accepted", ((Label) applications.lookup("#statusBadge")).getText());
+            assertApplication(window, "Janitor", "Accepted");
+
+            command(window, "list");
+            command(window, "viewp");
+            pulse(window);
+            assertEquals("2 applications", label(window, "applicantCount").getText());
+            assertEquals(2, applications.getItems().size());
+            assertEquals("Alice Pauline", ((Label) applications.lookup("#name")).getText());
+            assertEquals("Janitor", ((Label) applications.lookup("#job")).getText());
+        });
+    }
+
+    @Test
     public void updateApplicant_selectedFirstApplicant_applicantNameUpdated() throws Exception {
         withWindow((window, model) -> {
             model.setPerson(ALICE, new PersonBuilder(ALICE).withName("Alice Updated").build());

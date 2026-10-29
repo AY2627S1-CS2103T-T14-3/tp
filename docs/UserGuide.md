@@ -122,7 +122,7 @@ The command accepts no arguments.
 
 ### Viewing applications: `viewp`
 
-Switches the list to the Applications tab. Each application shows its applicant, job description, and status.
+Switches the list to the Applications tab. Each row shows the applicant's index and name, the job, and a status of Accepted, Rejected, or Pending. The index matches the applicant list, including a filtered list.
 
 Format: `viewp`
 
