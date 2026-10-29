@@ -10,6 +10,11 @@ import seedu.address.model.person.Person;
 public final class ApplicantSelection implements ViewSelection {
     private final Person person;
 
+    /**
+     * Creates a selection for the given applicant.
+     *
+     * @param person the applicant to select.
+     */
     public ApplicantSelection(Person person) {
         this.person = requireNonNull(person);
     }

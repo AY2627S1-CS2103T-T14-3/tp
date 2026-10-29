@@ -10,6 +10,11 @@ import seedu.address.model.application.Job;
 public final class JobSelection implements ViewSelection {
     private final Job job;
 
+    /**
+     * Creates a selection for the given job.
+     *
+     * @param job the job to select.
+     */
     public JobSelection(Job job) {
         this.job = requireNonNull(job);
     }

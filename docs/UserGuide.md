@@ -98,6 +98,7 @@ Email | `-e` | `-email`
 * Short and long aliases can be mixed, and options can appear in any order.
 * Values containing spaces, such as a full name, do not need quotation marks.
 * Unknown options, repeated options (including different aliases for the same field), missing values, and text before the first option produce a format error with a usage hint.
+* The applicant list is shown and the new applicant is selected.
 * Standalone words such as `-unknown` are treated as options, even inside a value.
 * The legacy `add n/NAME p/PHONE_NUMBER e/EMAIL` format is no longer accepted.
 
@@ -146,6 +147,7 @@ Email | `-e` | `-email`
 * Short and long aliases can be mixed, and options can appear in any order. Values containing spaces do not need quotation marks.
 * Unknown options, repeated options (including aliases for the same field), missing values, and extra positional text produce a format error.
 * The legacy `edit INDEX n/NAME p/PHONE e/EMAIL` format is no longer accepted.
+* The applicant list is shown with the edited applicant selected.
 
 Examples:
 
@@ -164,6 +166,7 @@ Format: `find KEYWORD [MORE_KEYWORDS]`
 * The search considers only names.
 * Only full words match; for example, `Han` does not match `Hans`.
 * Persons matching at least one keyword are returned (an `OR` search); for example, `Hans Bo` returns `Hans Gruber` and `Bo Yang`.
+* The applicant list is shown, including when jobs or applications were visible.
 
 Examples:
 * `find John` returns `john` and `John Doe`
@@ -193,6 +196,8 @@ Examples:
 Clears all entries from the address book.
 
 Format: `clear`
+
+The applicant list is shown. Details left on screen after a deletion are replaced by the empty detail panel.
 
 ### Exiting the program: `bye`
 
@@ -304,7 +309,7 @@ Format: `viewj [-f KEYWORD]`
 * Alias: `-filter` for `-f`.
 * The command word is case-sensitive. `Viewj` is not recognised.
 * `editj` and `deletej` use the index in the list currently displayed, including a filtered list.
-* `list`, `view`, and `viewa` switch the list back to applicants. `viewp` switches to applications.
+* `list`, `view`, `viewa`, `find`, `add`, `edit`, and `clear` switch the list back to applicants. `viewp` switches to applications.
 
 Examples:
 

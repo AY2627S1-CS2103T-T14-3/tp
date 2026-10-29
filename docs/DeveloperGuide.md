@@ -148,7 +148,11 @@ is visible and selected even if the new description no longer matches the previo
 These four commands ask the UI to show the job list and the selected role's detail panel. The panel shows
 that role only. It does not list applicants by comparing the role text with application job descriptions.
 The `view` command selects an applicant from the currently displayed applicant list and shows the applicant's
-details. `list` and `viewa` show the applicant list. `viewp` shows each application with its applicant, job, and status. Deleting a job does not
+details. `list` and `viewa` show the applicant list. `viewp` shows each application with its applicant, job, and status.
+`find`, `add`, `edit`, and `clear` also request the applicants view. `add` and `edit` select the changed applicant
+so the detail panel shows that person. `clear` replaces a deleted-applicant snapshot with the empty panel.
+`help` does not request a view, so that snapshot stays in place.
+Deleting a job does not
 delete applications, and
 adding an application does not add a job to this list. Jobs are stored in the same JSON address book under `jobs`.
 

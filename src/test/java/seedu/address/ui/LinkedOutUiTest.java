@@ -297,6 +297,71 @@ public class LinkedOutUiTest {
     }
 
     @Test
+    public void find_afterJobsView_showsMatchingApplicants() throws Exception {
+        withWindow(window -> {
+            command(window, "viewj");
+            assertEquals("Jobs", label(window, "listTitle").getText());
+
+            command(window, "find Alice");
+            assertEquals("Applicants", label(window, "listTitle").getText());
+            assertEquals("1 person(s) listed!", feedback(window));
+            assertEquals("1 applicant", label(window, "applicantCount").getText());
+            assertApplicantDetails(window, ALICE);
+            ListView<?> applicants = (ListView<?>) window.getRoot().getScene().lookup("#personListView");
+            assertEquals(1, applicants.getItems().size());
+        });
+    }
+
+    @Test
+    public void clear_afterDeletedApplicant_showsEmptyDetails() throws Exception {
+        withWindow(window -> {
+            command(window, "find Alice");
+            command(window, "delete 1");
+            assertEquals("Deleted applicant. These details are no longer stored.",
+                    label(window, "selectionHint").getText());
+
+            command(window, "clear");
+            assertEquals("Applicants", label(window, "listTitle").getText());
+            assertEquals("No applicant selected", label(window, "applicantName").getText());
+            assertEquals("Select an applicant from the list to view their details.",
+                    label(window, "selectionHint").getText());
+            assertEquals("0 applicants", label(window, "applicantCount").getText());
+            assertEquals("Address book has been cleared!", feedback(window));
+        });
+    }
+
+    @Test
+    public void addAndEdit_fromJobsView_showsUpdatedApplicant() throws Exception {
+        withWindow(window -> {
+            command(window, "addj -j Software Engineer");
+            pulse(window);
+            assertEquals("Jobs", label(window, "listTitle").getText());
+
+            command(window, "add -n Ada Lovelace -p 81234567 -e ada@example.com");
+            assertEquals("Applicants", label(window, "listTitle").getText());
+            assertApplicantName(window, "Ada Lovelace");
+            assertEquals("ada@example.com", label(window, "email").getText());
+
+            command(window, "viewj");
+            command(window, "edit 1 -n Alice Edited");
+            assertEquals("Applicants", label(window, "listTitle").getText());
+            assertApplicantName(window, "Alice Edited");
+            assertEquals(ALICE.getEmail().value, label(window, "email").getText());
+        });
+    }
+
+    @Test
+    public void help_afterJobsView_keepsJobList() throws Exception {
+        withWindow(window -> {
+            command(window, "addj -j Software Engineer");
+            pulse(window);
+            command(window, "help");
+            assertEquals("Jobs", label(window, "listTitle").getText());
+            assertEquals("Software Engineer", label(window, "jobName").getText());
+        });
+    }
+
+    @Test
     public void findApplicant_currentApplicant_applicantNameUnchanged() throws Exception {
         withWindow(window -> {
             command(window, "find Alice");

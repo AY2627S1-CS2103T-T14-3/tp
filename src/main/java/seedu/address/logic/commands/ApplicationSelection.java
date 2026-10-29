@@ -10,6 +10,11 @@ import seedu.address.model.application.Application;
 public final class ApplicationSelection implements ViewSelection {
     private final Application application;
 
+    /**
+     * Creates a selection for the given application.
+     *
+     * @param application the application to select.
+     */
     public ApplicationSelection(Application application) {
         this.application = requireNonNull(application);
     }

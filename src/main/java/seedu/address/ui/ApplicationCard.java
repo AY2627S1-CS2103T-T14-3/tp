@@ -13,7 +13,7 @@ public class ApplicationCard extends UiPart<Region> {
 
     private static final String FXML = "ApplicationListCard.fxml";
 
-    public final Application application;
+    private final Application application;
 
     @FXML
     private HBox cardPane;
@@ -35,10 +35,10 @@ public class ApplicationCard extends UiPart<Region> {
         super(FXML);
         this.application = application;
         id.setText(displayedIndex + ". ");
-        name.setText(application.getApplicantName());
-        job.setText(application.getJob().toString());
+        name.setText(this.application.getApplicantName());
+        job.setText(this.application.getJob().toString());
         job.setWrapText(true);
-        showStatus(application.getStatus());
+        showStatus(this.application.getStatus());
     }
 
     /**
