@@ -122,7 +122,7 @@ public class LinkedOutUiTest {
             assertEquals("Alice Pauline", ((Label) applications.lookup("#name")).getText());
             assertEquals("Janitor", ((Label) applications.lookup("#job")).getText());
             assertEquals("Accepted", ((Label) applications.lookup("#statusBadge")).getText());
-            assertApplication(window, "Janitor", "Accepted");
+            assertApplication(window, "Janitor", "No information ~", "Accepted");
 
             command(window, "list");
             command(window, "viewp");
