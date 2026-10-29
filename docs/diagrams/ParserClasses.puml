@@ -32,7 +32,7 @@ ArgumentTokenizer .left.> ArgumentMultimap
 XYZCommandParser ..> CliSyntax
 CliSyntax ..> Option
 XYZCommandParser ..> ParserUtil
-ParserUtil .down.> Option
+ArgumentMultimap --> "*" Option : keys
 ArgumentTokenizer .down.> Option
 XYZCommand -up-|> Command
 @enduml

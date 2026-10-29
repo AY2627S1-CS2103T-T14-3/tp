@@ -114,6 +114,8 @@ How the parsing works:
 * When called upon to parse a user command, the `AddressBookParser` class creates an `XYZCommandParser` (`XYZ` is a placeholder for the specific command name, e.g., `AddCommandParser`). The parser uses the other classes shown above to parse the user command and create an `XYZCommand` object (e.g., `AddCommand`). The `AddressBookParser` returns that object as a `Command` object.
 * All `XYZCommandParser` classes, such as `AddCommandParser` and `DeleteCommandParser`, implement the `Parser` interface so they can be treated similarly where appropriate, for example during testing.
 
+See [Command parsing and validation](#command-parsing-and-validation) for the option rules and a parsing walkthrough.
+
 ### Model component
 **API** : [`Model.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/model/Model.java)
 
@@ -177,6 +179,86 @@ Classes used by multiple components are in the `seedu.address.commons` package.
 ## **Implementation**
 
 This section describes some noteworthy details on how certain features are implemented.
+
+### Command parsing and validation
+
+Commands with named options use `ArgumentTokenizer#tokenizeOptions` to share the rules for recognising options,
+resolving aliases, and rejecting malformed arguments. Each command parser supplies its own option definitions and
+then validates the extracted values. Commands that only take an index, such as `delete`, use `ParserUtil#parseIndex`
+directly instead.
+
+#### Parsing responsibilities
+
+The [parser class diagram](#logic-component) shows how these classes collaborate:
+
+| Class | Responsibility |
+| --- | --- |
+| `AddressBookParser` | Separates the command word from its arguments and dispatches to the matching command parser. |
+| `CliSyntax` | Defines shared `Option` objects, including short and long aliases. |
+| `Option` | Describes the accepted aliases and whether an option is required, optional, or a flag. |
+| `ArgumentTokenizer` | Recognises option tokens, maps aliases to their configured `Option`, and validates argument structure. |
+| `ArgumentMultimap` | Stores extracted strings under `Option` keys and exposes any positional preamble. |
+| `ParserUtil` | Converts extracted strings to validated values, such as an `Index`, `Name`, `Phone`, or `Email`. |
+| Command parser | Selects the options allowed for its command, applies command-specific rules, and constructs a `Command`. |
+
+`Option.Kind` determines how the tokenizer handles an option:
+
+| Kind | Rule |
+| --- | --- |
+| `REQUIRED` | The option must appear once with a non-empty value. |
+| `OPTIONAL` | The option may be omitted, but must have a non-empty value when present. |
+| `FLAG` | The option may be omitted and takes no value when present. |
+
+Flag support is provided by the tokenizer and covered by its tests; the shared options in `CliSyntax` use the
+required and optional kinds. The tokenizer trims surrounding whitespace from values and accepts options in any order.
+It recognises lowercase, hyphen-prefixed option tokens separated by whitespace, such as `-n`, `-name`, or `-job`.
+An embedded hyphen, such as the one in `alice-tan@example.com`, does not start an option.
+
+#### Example: adding an applicant
+
+Consider `add -name Alice -p 91234567 -email alice@example.com`:
+
+1. `AddressBookParser` recognises `add` and passes the remaining arguments to `AddCommandParser`.
+1. `AddCommandParser` calls `tokenizeOptions` with `NO_PREAMBLE` and the required name, phone, and email options
+   from `CliSyntax`.
+1. The tokenizer maps `-name`, `-p`, and `-email` to `OPTION_NAME_REQ`, `OPTION_PHONE_REQ`, and `OPTION_EMAIL_REQ`.
+   Each alias resolves to the same configured `Option` object as its short form. The resulting `ArgumentMultimap`
+   stores `Alice`, `91234567`, and `alice@example.com` under those keys.
+1. After the tokenizer checks that every required option is present with a value and no option is repeated,
+   `AddCommandParser` retrieves the strings and uses `ParserUtil` to validate the name, phone, and email.
+1. The parser constructs a `Person` and returns an `AddCommand`. Checking whether the applicant's name or email
+   conflicts with an existing record happens when the command executes against the model.
+
+For an indexed command such as `addp 1 -j Engineer`, `AddApplicationCommandParser` enables `HAS_PREAMBLE`.
+The tokenizer stores the leading `1` under the internal `Option.OPTION_EMPTY` key, which is exposed through
+`ArgumentMultimap#getPreamble`. Allowing a preamble does not require it to contain an index: the command parser
+must call `ParserUtil#parseIndex` to reject a missing, non-integer, or non-positive index. The command later checks
+whether the index exists in the filtered applicant list. The job option is required, while the omitted status
+defaults to `pending` in `AddApplicationCommandParser`.
+
+#### Validation and error handling
+
+The tokenizer rejects unknown option tokens, repeated options (including mixed aliases such as `-n` and `-name`),
+missing required options, empty option values, values supplied to flags, and positional text when `NO_PREAMBLE`
+is selected. `ArgumentMultimap` can hold multiple values for a key, but `tokenizeOptions` rejects duplicates before
+returning it to the command parser.
+
+Command parsers decide how to present these errors. For example, `AddCommandParser` wraps tokenizer errors in its
+command usage message, while an invalid phone or email produces the corresponding field constraint message.
+Additional rules stay in the command parser: `EditCommandParser` configures optional fields but separately requires
+at least one field to be supplied. Parsing failures throw `ParseException` before a command is executed.
+
+#### Design considerations
+
+* **Shared tokenizer with command-specific configuration:** Keeping alias resolution and structural checks in one
+  tokenizer gives commands consistent rules. Implementing these checks separately in every parser would allow more
+  specialised grammars, but would duplicate validation and make changes harder to apply consistently.
+* **Reject duplicate options:** Rejecting repeated aliases prevents ambiguous input from silently replacing an earlier
+  value. Accepting the last value would allow easy overrides, but could hide an accidental repeated field.
+
+The parsing rules are exercised in `ArgumentTokenizerTest`, including aliases, option kinds, preambles, malformed input,
+and conflicting option definitions. `AddCommandParserTest`, `AddApplicationCommandParserTest`, and
+`EditCommandParserTest` cover the command-specific validation and error messages.
 
 ### \[Proposed\] Undo/redo feature
 
