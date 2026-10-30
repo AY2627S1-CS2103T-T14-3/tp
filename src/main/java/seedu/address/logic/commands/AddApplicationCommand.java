@@ -8,9 +8,9 @@ import seedu.address.commons.core.index.Index;
 import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
+import seedu.address.model.applicant.Applicant;
 import seedu.address.model.application.Application;
 import seedu.address.model.application.Job;
-import seedu.address.model.person.Person;
 
 /**
  * Adds one job application to an applicant shown in the current list.
@@ -28,6 +28,9 @@ public class AddApplicationCommand extends Command {
     public static final String MESSAGE_INVALID_INDEX =
             "Invalid applicant index. Please enter an integer from 1 to %1$d.";
 
+    public static final String MESSAGE_INVALID_JOB =
+            "Could not find specified job in the program.";
+
     public static final String MESSAGE_EMPTY_LIST =
             "There are no applicants in the displayed list to add an application to.";
 
@@ -41,25 +44,25 @@ public class AddApplicationCommand extends Command {
             + "Example: addp 2 -j ClaudeGPT Expert -s accept";
 
     private final Index targetIndex;
-    private final String jobDescription;
+    private final String jobRole;
     private final Application.Status status;
 
     /**
      * Creates an AddApplicationCommand to add an application to the specified applicant.
      * @param targetIndex of the applicant in the filtered person list to add an application to
-     * @param jobDescription job the applicant is applying for
+     * @param jobRole job the applicant is applying for
      * @param status status of the application
      */
-    public AddApplicationCommand(Index targetIndex, String jobDescription, Application.Status status) {
+    public AddApplicationCommand(Index targetIndex, String jobRole, Application.Status status) {
         this.targetIndex = requireNonNull(targetIndex);
-        this.jobDescription = requireNonNull(jobDescription);
+        this.jobRole = requireNonNull(jobRole);
         this.status = requireNonNull(status);
     }
 
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
-        List<Person> lastShownList = model.getFilteredPersonList();
+        List<Applicant> lastShownList = model.getFilteredApplicantList();
 
         if (lastShownList.isEmpty()) {
             throw new CommandException(MESSAGE_EMPTY_LIST);
@@ -68,14 +71,18 @@ public class AddApplicationCommand extends Command {
             throw new CommandException(String.format(MESSAGE_INVALID_INDEX, lastShownList.size()));
         }
 
-        Person applicant = lastShownList.get(targetIndex.getZeroBased());
+        Applicant applicant = lastShownList.get(targetIndex.getZeroBased());
         if (model.hasApplication(applicant)) {
             throw new CommandException(MESSAGE_DUPLICATE_APPLICATION);
         }
 
-        Application application = new Application(applicant, new Job(jobDescription), status);
+        Job job = model.getJobList().stream().filter(j -> j.getJobRole().equals(jobRole))
+                .findFirst().orElseThrow(() -> new CommandException(MESSAGE_INVALID_JOB));
+
+        Application application = new Application(applicant, job, status);
         model.addApplication(application);
-        return new CommandResult(String.format(MESSAGE_SUCCESS, applicant.getName(), applicant.getEmail()), applicant);
+        return new CommandResult(String.format(MESSAGE_SUCCESS, applicant.getName(), applicant.getEmail()),
+                ViewRequest.applicant(applicant));
     }
 
     @Override
@@ -89,7 +96,7 @@ public class AddApplicationCommand extends Command {
         }
 
         return targetIndex.equals(otherCommand.targetIndex)
-                && jobDescription.equals(otherCommand.jobDescription)
+                && jobRole.equals(otherCommand.jobRole)
                 && status == otherCommand.status;
     }
 
@@ -97,7 +104,7 @@ public class AddApplicationCommand extends Command {
     public String toString() {
         return new ToStringBuilder(this)
                 .add("targetIndex", targetIndex)
-                .add("jobDescription", jobDescription)
+                .add("jobRole", jobRole)
                 .add("status", status)
                 .toString();
     }

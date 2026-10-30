@@ -4,14 +4,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static seedu.address.testutil.TypicalPersons.ALICE;
-import static seedu.address.testutil.TypicalPersons.BOB;
-
-import java.util.List;
+import static seedu.address.testutil.TypicalApplicants.ALICE;
+import static seedu.address.testutil.TypicalApplicants.BOB;
 
 import org.junit.jupiter.api.Test;
 
-import seedu.address.testutil.PersonBuilder;
+import seedu.address.testutil.ApplicantBuilder;
 
 public class ApplicationTest {
 
@@ -22,6 +20,16 @@ public class ApplicationTest {
         assertEquals(ALICE, application.getApplicant());
         assertEquals(new Job("Janitor"), application.getJob());
         assertEquals(Application.Status.PENDING, application.getStatus());
+    }
+
+    @Test
+    public void applicantDisplayMethods_returnApplicantDetails() {
+        Application application = new Application(ALICE, new Job("Janitor"), Application.Status.PENDING);
+
+        assertEquals(ALICE.getDisplayName(), application.getApplicantName());
+        assertEquals("pending", application.getStatusValue());
+        assertTrue(application.isForApplicant(ALICE));
+        assertFalse(application.isForApplicant(BOB));
     }
 
     @Test
@@ -39,21 +47,6 @@ public class ApplicationTest {
         assertThrows(NullPointerException.class, () -> new Application(ALICE, new Job("Janitor"), null));
         assertThrows(IllegalArgumentException.class, ()
                 -> new Application(ALICE, new Job("   "), Application.Status.PENDING));
-        assertThrows(IllegalArgumentException.class, ()
-                -> new Application(ALICE, new Job("ClaudeGPT -s accept"), Application.Status.PENDING));
-    }
-
-    @Test
-    public void constructor_optionLikeJobDescription_throwsException() {
-        List<String> invalidDescriptions = List.of(
-                "-s accept",
-                "Janitor -s",
-                "Janitor -status accept",
-                "Janitor\t-s\taccept",
-                "Janitor\n-s\naccept");
-
-        invalidDescriptions.forEach(description -> assertThrows(IllegalArgumentException.class, ()
-                -> new Application(ALICE, new Job(description), Application.Status.PENDING)));
     }
 
     @Test
@@ -92,7 +85,7 @@ public class ApplicationTest {
     public void isForSameApplicant_variousApplicants_returnsExpectedResult() {
         Application aliceApplication = new Application(ALICE, new Job("Janitor"), Application.Status.PENDING);
         Application sameApplicantApplication = new Application(
-                new PersonBuilder(ALICE).withPhone("91234567").build(),
+                new ApplicantBuilder(ALICE).withPhone("91234567").build(),
                 new Job("Engineer"), Application.Status.ACCEPT);
         Application bobApplication = new Application(BOB, new Job("Janitor"), Application.Status.PENDING);
 

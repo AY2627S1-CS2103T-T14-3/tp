@@ -1,16 +1,29 @@
 {
-  "persons" : [ {
+  "applicants" : [ {
     "name" : "Alice Pauline",
     "phone" : "94351253",
     "email" : "alice@example.com"
   } ],
   "applications" : [ {
     "name" : "Alice Pauline",
-    "jobDescription" : "Janitor",
+    "job": {
+      "role" : "Janitor",
+      "description" : "Cleaner Guy"
+    } ,
     "status" : "pending"
   }, {
     "name" : "Alice Pauline",
-    "jobDescription" : "Engineer",
+    "job" : {
+      "role" : "Engineer",
+      "description" : "Fix Fix Guy"
+    },
     "status" : "accept"
+  } ],
+  "jobs" : [ {
+    "role" : "Janitor",
+    "description" : "Cleaner Guy"
+  }, {
+    "role" : "Engineer",
+    "description" : "Fix Fix Guy"
   } ]
 }

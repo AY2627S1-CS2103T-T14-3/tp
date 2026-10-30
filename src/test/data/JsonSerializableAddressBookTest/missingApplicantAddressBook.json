@@ -1,12 +1,19 @@
 {
-  "persons" : [ {
+  "applicants" : [ {
     "name" : "Alice Pauline",
     "phone" : "94351253",
     "email" : "alice@example.com"
   } ],
   "applications" : [ {
     "name" : "Benson Meier",
-    "jobDescription" : "Janitor",
+    "job" : {
+      "role" : "Janitor",
+      "description" : "REAL ROLE"
+    },
     "status" : "pending"
+  } ],
+  "jobs" : [ {
+    "role" : "Janitor",
+    "description" : "REAL ROLE"
   } ]
 }

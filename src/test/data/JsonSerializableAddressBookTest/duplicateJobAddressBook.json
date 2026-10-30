@@ -1,4 +1,11 @@
 {
-  "persons" : [ ],
-  "jobs" : [ "Engineer", "Engineer" ]
+  "applicants" : [ ],
+  "jobs" : [
+    {
+      "role" : "Engineer",
+      "description" : "Based"
+    }, {
+      "role" : "Engineer",
+      "description" : "Based"
+    }]
 }

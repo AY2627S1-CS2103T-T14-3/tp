@@ -1,4 +1,8 @@
 {
-  "persons" : [ ],
-  "jobs" : [ "   " ]
+  "applicants" : [ ],
+  "jobs" : [
+    {
+      "role" : "   ",
+      "description" : ""
+    } ]
 }

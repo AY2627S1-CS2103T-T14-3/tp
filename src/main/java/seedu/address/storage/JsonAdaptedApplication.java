@@ -5,9 +5,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import seedu.address.commons.exceptions.IllegalValueException;
 import seedu.address.model.AddressBook;
+import seedu.address.model.applicant.Applicant;
 import seedu.address.model.application.Application;
 import seedu.address.model.application.Job;
-import seedu.address.model.person.Person;
 
 /**
  * Jackson-friendly version of {@link Application}.
@@ -17,24 +17,26 @@ class JsonAdaptedApplication {
     public static final String MISSING_FIELD_MESSAGE_FORMAT = "Application's %s field is missing!";
     public static final String MESSAGE_UNKNOWN_APPLICANT =
             "Application refers to an applicant that does not exist.";
+    public static final String MESSAGE_UNKNOWN_JOB =
+            "Application refers to a job that does not exist.";
     public static final String MESSAGE_INVALID_STATUS = "Invalid status. Please choose a status from "
             + "\"accept\", \"reject\", or \"pending\".";
 
     private final String name;
-    private final String jobDescription;
+    private final JsonAdaptedJob job;
     private final String status;
 
     /**
      * Constructs a {@code JsonAdaptedApplication} with the given application details.
      * @param name name of the applicant who owns the application
-     * @param jobDescription job the applicant is applying for
+     * @param job job the applicant is applying for
      * @param status application status
      */
     @JsonCreator
     public JsonAdaptedApplication(@JsonProperty("name") String name,
-            @JsonProperty("jobDescription") String jobDescription, @JsonProperty("status") String status) {
+            @JsonProperty("job") JsonAdaptedJob job, @JsonProperty("status") String status) {
         this.name = name;
-        this.jobDescription = jobDescription;
+        this.job = job;
         this.status = status;
     }
 
@@ -44,7 +46,7 @@ class JsonAdaptedApplication {
      */
     public JsonAdaptedApplication(Application source) {
         name = source.getApplicant().getName().fullName;
-        jobDescription = source.getJob().toString();
+        job = new JsonAdaptedJob(source.getJob());
         status = source.getStatus().getValue();
     }
 
@@ -58,8 +60,8 @@ class JsonAdaptedApplication {
         if (name == null) {
             throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, "name"));
         }
-        if (jobDescription == null) {
-            throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, "job description"));
+        if (job == null) {
+            throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, "job"));
         }
         if (status == null) {
             throw new IllegalValueException(String.format(MISSING_FIELD_MESSAGE_FORMAT, "status"));
@@ -72,18 +74,17 @@ class JsonAdaptedApplication {
             throw new IllegalValueException(MESSAGE_INVALID_STATUS);
         }
 
-        Person applicant = addressBook.getPersonList().stream()
-                .filter(person -> person.getName().fullName.equals(name))
+        Applicant applicant = addressBook.getApplicantList().stream()
+                .filter(existingApplicant -> existingApplicant.getName().fullName.equals(name))
                 .findFirst()
                 .orElseThrow(() -> new IllegalValueException(MESSAGE_UNKNOWN_APPLICANT));
 
-        final Job modelJob;
-        try {
-            modelJob = new Job(jobDescription);
-        } catch (IllegalArgumentException exception) {
-            throw new IllegalValueException(Job.MESSAGE_CONSTRAINTS);
-        }
+        Job applicationJob = this.job.toModelType(addressBook);
+        Job job = addressBook.getJobList().stream()
+                .filter(j -> j.equals(applicationJob))
+                .findFirst()
+                .orElseThrow(() -> new IllegalValueException(MESSAGE_UNKNOWN_JOB));
 
-        return new Application(applicant, modelJob, modelStatus);
+        return new Application(applicant, job, modelStatus);
     }
 }

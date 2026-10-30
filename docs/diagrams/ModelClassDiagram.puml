@@ -12,9 +12,9 @@ Class AddressBook
 Class ModelManager
 Class UserPrefs
 
-Class UniquePersonList
+Class UniqueApplicantList
 Class UniqueApplicationList
-Class Person
+Class Applicant
 Class Email
 Class Name
 Class Phone
@@ -34,18 +34,18 @@ ModelManager -left-> "1" AddressBook
 ModelManager -right-> "1" UserPrefs
 UserPrefs .up.|> ReadOnlyUserPrefs
 
-AddressBook *--> "1" UniquePersonList
+AddressBook *--> "1" UniqueApplicantList
 AddressBook *--> "1" UniqueApplicationList
-UniquePersonList --> "~* all" Person
-Person *--> Name
-Person *--> Phone
-Person *--> Email
+UniqueApplicantList --> "~* all" Applicant
+Applicant *--> Name
+Applicant *--> Phone
+Applicant *--> Email
 
-Person -[hidden]up--> I
-UniquePersonList -[hidden]right-> I
+Applicant -[hidden]up--> I
+UniqueApplicantList -[hidden]right-> I
 
 Name -[hidden]right-> Phone
 Phone -[hidden]right-> Email
 
-ModelManager --> "~* filtered" Person
+ModelManager --> "~* filtered" Applicant
 @enduml

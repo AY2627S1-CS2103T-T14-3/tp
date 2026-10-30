@@ -2,6 +2,7 @@ package seedu.address.ui;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import seedu.address.model.application.Job;
@@ -20,6 +21,8 @@ public class JobCard extends UiPart<Region> {
     @FXML
     private Label id;
     @FXML
+    private Label role;
+    @FXML
     private Label description;
 
     /**
@@ -27,11 +30,16 @@ public class JobCard extends UiPart<Region> {
      * @param job job to display
      * @param displayedIndex one-based index shown beside the job
      */
-    public JobCard(Job job, int displayedIndex) {
+    public JobCard(Job job, int displayedIndex, ListCell<Job> listCell) {
         super(FXML);
         this.job = job;
         id.setText(displayedIndex + ". ");
-        description.setText(job.toString());
+        role.setText(job.getJobRole());
+        role.setWrapText(true);
+
+        description.setText(job.getJobDescription());
         description.setWrapText(true);
+
+        cardPane.maxWidthProperty().bind(listCell.widthProperty());
     }
 }

@@ -9,22 +9,22 @@ import seedu.address.commons.util.ToStringBuilder;
 import seedu.address.logic.Messages;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.model.Model;
+import seedu.address.model.applicant.Applicant;
 import seedu.address.model.application.Application;
-import seedu.address.model.person.Person;
 
 /**
- * Deletes a person identified using its displayed index from the address book.
+ * Deletes an applicant identified using its displayed index from the address book.
  */
 public class DeleteCommand extends Command {
 
     public static final String COMMAND_WORD = "delete";
 
     public static final String MESSAGE_USAGE = COMMAND_WORD
-            + ": Deletes the person identified by the index number used in the displayed person list.\n"
+            + ": Deletes the applicant identified by the index number used in the displayed applicant list.\n"
             + "Parameters: INDEX (must be a positive integer)\n"
             + "Example: " + COMMAND_WORD + " 1";
 
-    public static final String MESSAGE_DELETE_PERSON_SUCCESS = "Deleted person: %1$s";
+    public static final String MESSAGE_DELETE_APPLICANT_SUCCESS = "Deleted applicant: %1$s";
 
     private final Index targetIndex;
 
@@ -35,18 +35,18 @@ public class DeleteCommand extends Command {
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
-        List<Person> lastShownList = model.getFilteredPersonList();
+        List<Applicant> lastShownList = model.getFilteredApplicantList();
 
         if (targetIndex.getZeroBased() >= lastShownList.size()) {
-            throw new CommandException(Messages.MESSAGE_INVALID_PERSON_DISPLAYED_INDEX);
+            throw new CommandException(Messages.MESSAGE_INVALID_APPLICANT_DISPLAYED_INDEX);
         }
 
-        Person personToDelete = lastShownList.get(targetIndex.getZeroBased());
-        Application application = model.getApplication(personToDelete).orElse(null);
-        model.deletePerson(personToDelete);
+        Applicant applicantToDelete = lastShownList.get(targetIndex.getZeroBased());
+        Application application = model.getApplication(applicantToDelete).orElse(null);
+        model.deleteApplicant(applicantToDelete);
         return CommandResult.deletedApplicant(
-                String.format(MESSAGE_DELETE_PERSON_SUCCESS, Messages.format(personToDelete)),
-                personToDelete, application);
+                String.format(MESSAGE_DELETE_APPLICANT_SUCCESS, Messages.format(applicantToDelete)),
+                applicantToDelete, application);
     }
 
     @Override

@@ -45,6 +45,24 @@ public class UniqueJobList implements Iterable<Job> {
     }
 
     /**
+     * Replaces {@code target} with {@code editedJob} at the same position.
+     *
+     * @throws JobNotFoundException if the target is not in the list.
+     * @throws DuplicateJobException if another job already has the edited description.
+     */
+    public void setJob(Job target, Job editedJob) {
+        requireAllNonNull(target, editedJob);
+        int index = internalList.indexOf(target);
+        if (index == -1) {
+            throw new JobNotFoundException();
+        }
+        if (!target.equals(editedJob) && contains(editedJob)) {
+            throw new DuplicateJobException();
+        }
+        internalList.set(index, editedJob);
+    }
+
+    /**
      * Removes the equivalent job from the list.
      * The job must exist in the list.
      * @param toRemove job to remove
