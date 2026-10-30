@@ -4,8 +4,8 @@ import static seedu.address.logic.commands.AddApplicationCommand.MESSAGE_INVALID
 import static seedu.address.logic.commands.AddApplicationCommand.MESSAGE_UNRECOGNIZED;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
-import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_APPLICANT;
-import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND_APPLICANT;
+import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST;
+import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND;
 
 import org.junit.jupiter.api.Test;
 
@@ -19,7 +19,7 @@ public class AddApplicationCommandParserTest {
     @Test
     public void parse_allFields_returnsCommand() {
         AddApplicationCommand expected = new AddApplicationCommand(
-                INDEX_SECOND_APPLICANT, "ClaudeGPT Expert", Application.Status.ACCEPT);
+                INDEX_SECOND, "ClaudeGPT Expert", Application.Status.ACCEPT);
         assertParseSuccess(parser, " 2 -j ClaudeGPT Expert -s accept", expected);
         assertParseSuccess(parser, " 2 -job ClaudeGPT Expert -status accept", expected);
         assertParseSuccess(parser, " 2 -s accept -job ClaudeGPT Expert", expected);
@@ -28,7 +28,7 @@ public class AddApplicationCommandParserTest {
     @Test
     public void parse_optionalStatusMissing_defaultsToPending() {
         AddApplicationCommand expected = new AddApplicationCommand(
-                INDEX_FIRST_APPLICANT, "full-time engineer", Application.Status.PENDING);
+                INDEX_FIRST, "full-time engineer", Application.Status.PENDING);
         assertParseSuccess(parser, " 1 -j full-time engineer", expected);
     }
 

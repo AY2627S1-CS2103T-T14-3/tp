@@ -610,7 +610,7 @@ public class LinkedOutUiTest {
             assertEquals("Jobs", label(window, "listTitle").getText());
             assertEquals("2 jobs", label(window, "applicantCount").getText());
             assertEquals("Product Designer", label(window, "jobName").getText());
-            assertEquals("Edited job: Product Designer : No information ~", feedback(window));
+            assertEquals("Edited job: \nRole: Product Designer\nDescription: No information ~", feedback(window));
             ListView<?> jobs = (ListView<?>) window.getRoot().getScene().lookup("#jobListView");
             assertEquals("Product Designer : No information ~", jobs.getSelectionModel().getSelectedItem().toString());
             assertEquals(1, jobs.getSelectionModel().getSelectedIndex());
@@ -644,7 +644,7 @@ public class LinkedOutUiTest {
             assertEquals("Software Engineer", label(window, "jobName").getText());
             assertEquals("Open", label(window, "openBadge").getText());
             assertNull(window.getRoot().getScene().lookup("#applicantSummary"));
-            assertEquals("New job added: Software Engineer : No information ~", feedback(window));
+            assertEquals("New job added: Software Engineer", feedback(window));
 
             command(window, "addj -j Data Analyst");
             pulse(window);

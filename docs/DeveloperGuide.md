@@ -162,13 +162,12 @@ duplicate roles are rejected, surrounding spaces are ignored, and other differen
 `addj` adds a role with an optional description and shows the full job list. `viewj` lists every role, and
 `viewj -f KEYWORD` filters the combined `ROLE : DESCRIPTION` text by a case-insensitive substring.
 `deletej` removes the role at the displayed index, which follows the current filter.
-`editj INDEX -j JOB_ROLE` replaces a role at its displayed index, rejecting a role that
-matches another stored job. `Model#setJob` delegates to `AddressBook#setJob` and `UniqueJobList#setJob`,
-which replaces the job at the same position and enforces uniqueness. `UniqueApplicationList#setJob` updates
-matching applications to reference the edited job, keeping their applicants and statuses. This prevents stale role
-references that the storage loader would reject.
-The parser constructs the replacement with `new Job(role)`, so editing resets the description to
-`No information ~`, including when the role is unchanged. Description options are not supported by `editj`.
+`editj INDEX [-j JOB_ROLE] [-d JOB_DESCRIPTION]` replaces a job at its displayed index with a new job with the specified
+fields modified. There must be at least one modified field provided. If there exists another job with the same job role
+as the would-be-new job, the command will fail instead. `Model#setJob` delegates to `AddressBook#setJob` and
+`UniqueJobList#setJob`, which replaces the job at the same position and enforces uniqueness. 
+`UniqueApplicationList#setJob` updates matching applications to reference the edited job, keeping their applicants and
+statuses. This prevents stale role references that the storage loader would reject.
 After editing, the command clears the job filter and returns the edited job in `CommandResult` so it
 is visible and selected even if the new role no longer matches the previous filter.
 These four commands ask the UI to show the job list and the selected role's detail panel. The panel shows

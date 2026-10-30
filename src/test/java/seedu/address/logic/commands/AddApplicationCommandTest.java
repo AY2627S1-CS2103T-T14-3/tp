@@ -9,8 +9,8 @@ import static seedu.address.logic.commands.CommandTestUtil.showApplicantAtIndex;
 import static seedu.address.testutil.TypicalApplicants.ALICE;
 import static seedu.address.testutil.TypicalApplicants.BENSON;
 import static seedu.address.testutil.TypicalApplicants.getTypicalAddressBook;
-import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_APPLICANT;
-import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND_APPLICANT;
+import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST;
+import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND;
 import static seedu.address.testutil.TypicalJobs.JANITOR;
 import static seedu.address.testutil.TypicalJobs.addJobsToAddressBook;
 
@@ -31,7 +31,7 @@ public class AddApplicationCommandTest {
     public void execute_newApplicationWithoutStatus_addsPendingApplication() {
         Application application = new Application(ALICE, JANITOR, Application.Status.PENDING);
         AddApplicationCommand command = new AddApplicationCommand(
-                INDEX_FIRST_APPLICANT, "Janitor", Application.Status.PENDING);
+                INDEX_FIRST, "Janitor", Application.Status.PENDING);
 
         Model expectedModel = new ModelManager(addJobsToAddressBook(getTypicalAddressBook()), new UserPrefs());
         expectedModel.addApplication(application);
@@ -48,7 +48,7 @@ public class AddApplicationCommandTest {
 
         Application application = new Application(BENSON, JANITOR, Application.Status.ACCEPT);
         AddApplicationCommand command = new AddApplicationCommand(
-                INDEX_SECOND_APPLICANT, "Janitor", Application.Status.ACCEPT);
+                INDEX_SECOND, "Janitor", Application.Status.ACCEPT);
 
         Model expectedModel = new ModelManager(addJobsToAddressBook(getTypicalAddressBook()), new UserPrefs());
         expectedModel.addApplication(application);
@@ -61,12 +61,12 @@ public class AddApplicationCommandTest {
 
     @Test
     public void execute_filteredList_usesDisplayedIndexAndKeepsFilter() {
-        showApplicantAtIndex(model, INDEX_SECOND_APPLICANT);
+        showApplicantAtIndex(model, INDEX_SECOND);
         AddApplicationCommand command = new AddApplicationCommand(
-                INDEX_FIRST_APPLICANT, "Janitor", Application.Status.REJECT);
+                INDEX_FIRST, "Janitor", Application.Status.REJECT);
 
         Model expectedModel = new ModelManager(addJobsToAddressBook(getTypicalAddressBook()), new UserPrefs());
-        showApplicantAtIndex(expectedModel, INDEX_SECOND_APPLICANT);
+        showApplicantAtIndex(expectedModel, INDEX_SECOND);
         expectedModel.addApplication(new Application(BENSON, new Job("Janitor"), Application.Status.REJECT));
         CommandResult expectedResult = new CommandResult(String.format(
                 AddApplicationCommand.MESSAGE_SUCCESS, BENSON.getName(), BENSON.getEmail()),
@@ -80,7 +80,7 @@ public class AddApplicationCommandTest {
     public void execute_duplicateApplication_throwsCommandException() {
         model.addApplication(new Application(ALICE, new Job("Janitor"), Application.Status.PENDING));
         AddApplicationCommand command = new AddApplicationCommand(
-                INDEX_FIRST_APPLICANT, "Engineer", Application.Status.ACCEPT);
+                INDEX_FIRST, "Engineer", Application.Status.ACCEPT);
 
         assertCommandFailure(command, model, AddApplicationCommand.MESSAGE_DUPLICATE_APPLICATION);
         assertEquals(new Job("Janitor"), model.getApplication(ALICE).orElseThrow().getJob());
@@ -97,9 +97,9 @@ public class AddApplicationCommandTest {
 
     @Test
     public void execute_invalidIndexFilteredList_throwsCommandException() {
-        showApplicantAtIndex(model, INDEX_FIRST_APPLICANT);
+        showApplicantAtIndex(model, INDEX_FIRST);
         AddApplicationCommand command = new AddApplicationCommand(
-                INDEX_SECOND_APPLICANT, "Janitor", Application.Status.PENDING);
+                INDEX_SECOND, "Janitor", Application.Status.PENDING);
 
         assertCommandFailure(command, model, "Invalid applicant index. Please enter an integer from 1 to 1.");
     }
@@ -108,7 +108,7 @@ public class AddApplicationCommandTest {
     public void execute_emptyList_throwsCommandException() {
         Model emptyModel = new ModelManager();
         AddApplicationCommand command = new AddApplicationCommand(
-                INDEX_FIRST_APPLICANT, "Janitor", Application.Status.PENDING);
+                INDEX_FIRST, "Janitor", Application.Status.PENDING);
 
         assertCommandFailure(command, emptyModel, AddApplicationCommand.MESSAGE_EMPTY_LIST);
     }
@@ -116,16 +116,16 @@ public class AddApplicationCommandTest {
     @Test
     public void equals() {
         AddApplicationCommand command = new AddApplicationCommand(
-                INDEX_FIRST_APPLICANT, "Janitor", Application.Status.PENDING);
+                INDEX_FIRST, "Janitor", Application.Status.PENDING);
         assertTrue(command.equals(command));
         assertTrue(command.equals(new AddApplicationCommand(
-                INDEX_FIRST_APPLICANT, "Janitor", Application.Status.PENDING)));
+                INDEX_FIRST, "Janitor", Application.Status.PENDING)));
         assertFalse(command.equals(new AddApplicationCommand(
-                INDEX_SECOND_APPLICANT, "Janitor", Application.Status.PENDING)));
+                INDEX_SECOND, "Janitor", Application.Status.PENDING)));
         assertFalse(command.equals(new AddApplicationCommand(
-                INDEX_FIRST_APPLICANT, "Engineer", Application.Status.PENDING)));
+                INDEX_FIRST, "Engineer", Application.Status.PENDING)));
         assertFalse(command.equals(new AddApplicationCommand(
-                INDEX_FIRST_APPLICANT, "Janitor", Application.Status.ACCEPT)));
+                INDEX_FIRST, "Janitor", Application.Status.ACCEPT)));
         assertFalse(command.equals(null));
         assertFalse(command.equals(new ListCommand()));
     }
@@ -133,9 +133,9 @@ public class AddApplicationCommandTest {
     @Test
     public void toStringMethod() {
         AddApplicationCommand command = new AddApplicationCommand(
-                INDEX_FIRST_APPLICANT, "Janitor", Application.Status.PENDING);
+                INDEX_FIRST, "Janitor", Application.Status.PENDING);
         String expected = AddApplicationCommand.class.getCanonicalName()
-                + "{targetIndex=" + INDEX_FIRST_APPLICANT
+                + "{targetIndex=" + INDEX_FIRST
                 + ", jobRole=Janitor, status=pending}";
         assertEquals(expected, command.toString());
     }

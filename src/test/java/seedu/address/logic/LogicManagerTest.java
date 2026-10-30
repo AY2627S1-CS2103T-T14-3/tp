@@ -126,15 +126,17 @@ public class LogicManagerTest {
         logic.execute("add -n Amy Bee -p 11111111 -e amy@example.com");
         logic.execute("addj -j Software Engineer");
         logic.execute("addp 1 -j Software Engineer");
+        CommandResult result = logic.execute("editj 1 -job Product Designer");
 
         Job editedJob = new Job("Product Designer");
-        CommandResult result = logic.execute("editj 1 -job Product Designer");
         Model expectedModel = new ModelManager();
         expectedModel.addApplicant(AMY);
-        expectedModel.addApplication(new Application(AMY, editedJob, Application.Status.PENDING));
-        expectedModel.addJob(editedJob);
+        expectedModel.addJob(new Job("Software Engineer"));
+        expectedModel.addApplication(new Application(AMY, new Job("Software Engineer"), Application.Status.PENDING));
+        expectedModel.setJob(new Job("Software Engineer"), editedJob);
 
-        assertEquals(new CommandResult(String.format(EditJobCommand.MESSAGE_EDIT_JOB_SUCCESS, editedJob),
+        assertEquals(
+                new CommandResult(String.format(EditJobCommand.MESSAGE_EDIT_JOB_SUCCESS, Messages.format(editedJob)),
                 ViewRequest.job(editedJob)), result);
         assertEquals(expectedModel, model);
         JsonAddressBookStorage savedStorage =
