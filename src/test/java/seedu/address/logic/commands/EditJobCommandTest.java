@@ -140,12 +140,13 @@ public class EditJobCommandTest {
     @Test
     public void equals() {
         EditJobDescriptor designerDescriptor = new EditJobDescriptorBuilder(DESIGNER).build();
+        EditJobDescriptor designerDescriptor2 = new EditJobDescriptorBuilder(new Job("Product Designer")).build();
         EditJobDescriptor analystDescriptor = new EditJobDescriptorBuilder(ANALYST).build();
 
         EditJobCommand editFirst = new EditJobCommand(INDEX_FIRST, designerDescriptor);
 
         assertTrue(editFirst.equals(editFirst));
-        assertTrue(editFirst.equals(new EditJobCommand(INDEX_FIRST, designerDescriptor)));
+        assertTrue(editFirst.equals(new EditJobCommand(INDEX_FIRST, designerDescriptor2)));
         assertFalse(editFirst.equals(new EditJobCommand(INDEX_SECOND, designerDescriptor)));
         assertFalse(editFirst.equals(new EditJobCommand(INDEX_FIRST, analystDescriptor)));
         assertFalse(editFirst.equals(null));
