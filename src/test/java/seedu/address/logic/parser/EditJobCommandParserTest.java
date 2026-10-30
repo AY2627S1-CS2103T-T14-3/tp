@@ -3,7 +3,7 @@ package seedu.address.logic.parser;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
-import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_APPLICANT;
+import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST;
 
 import java.util.List;
 
@@ -21,7 +21,7 @@ public class EditJobCommandParserTest {
 
     @Test
     public void parse_validRole_returnsEditJobCommand() {
-        EditJobCommand expected = new EditJobCommand(INDEX_FIRST_APPLICANT,
+        EditJobCommand expected = new EditJobCommand(INDEX_FIRST,
                 new EditJobDescriptorBuilder().withRole("Software Engineer Intern").build());
         assertParseSuccess(parser, "1 -j Software Engineer Intern", expected);
         assertParseSuccess(parser, "  1   -job   Software Engineer Intern  ", expected);
@@ -30,7 +30,7 @@ public class EditJobCommandParserTest {
 
     @Test
     public void parse_validDescription_returnsEditJobCommand() {
-        EditJobCommand expected = new EditJobCommand(INDEX_FIRST_APPLICANT,
+        EditJobCommand expected = new EditJobCommand(INDEX_FIRST,
                 new EditJobDescriptorBuilder().withDescription("New Description").build());
         assertParseSuccess(parser, "1 -d New Description", expected);
         assertParseSuccess(parser, "  1   -desc   New Description  ", expected);
@@ -39,7 +39,7 @@ public class EditJobCommandParserTest {
 
     @Test
     public void parse_validDescriptionAndRole_returnsEditJobCommand() {
-        EditJobCommand expected = new EditJobCommand(INDEX_FIRST_APPLICANT,
+        EditJobCommand expected = new EditJobCommand(INDEX_FIRST,
                 new EditJobDescriptorBuilder().withRole("Gamer").withDescription("New Description").build());
         assertParseSuccess(parser, "1 -d New Description -j Gamer", expected);
         assertParseSuccess(parser, "  1   -desc   New Description  -j   Gamer\t", expected);

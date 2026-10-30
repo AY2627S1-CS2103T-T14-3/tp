@@ -9,8 +9,8 @@ import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalApplicants.ALICE;
 import static seedu.address.testutil.TypicalApplicants.BENSON;
 import static seedu.address.testutil.TypicalApplicants.getTypicalAddressBook;
-import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_APPLICANT;
-import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND_APPLICANT;
+import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST;
+import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND;
 
 import java.util.List;
 
@@ -50,7 +50,7 @@ public class EditJobCommandTest {
         EditJobDescriptor designerDescriptor = new EditJobDescriptorBuilder(DESIGNER).build();
 
         assertThrows(NullPointerException.class, () -> new EditJobCommand(null, designerDescriptor));
-        assertThrows(NullPointerException.class, () -> new EditJobCommand(INDEX_FIRST_APPLICANT, null));
+        assertThrows(NullPointerException.class, () -> new EditJobCommand(INDEX_FIRST, null));
     }
 
     @Test
@@ -65,7 +65,7 @@ public class EditJobCommandTest {
         expectedModel.setJob(ENGINEER, DESIGNER);
         Application editedApplication = new Application(ALICE, DESIGNER, Application.Status.ACCEPT);
 
-        assertCommandSuccess(new EditJobCommand(INDEX_FIRST_APPLICANT, designerDescriptor), model,
+        assertCommandSuccess(new EditJobCommand(INDEX_FIRST, designerDescriptor), model,
                 new CommandResult(String.format(EditJobCommand.MESSAGE_EDIT_JOB_SUCCESS, Messages.format(DESIGNER)),
                         ViewRequest.job(DESIGNER)),
                 expectedModel);
@@ -82,7 +82,7 @@ public class EditJobCommandTest {
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
         expectedModel.setJob(ANALYST, DESIGNER);
 
-        assertCommandSuccess(new EditJobCommand(INDEX_FIRST_APPLICANT, designerDescriptor), model,
+        assertCommandSuccess(new EditJobCommand(INDEX_FIRST, designerDescriptor), model,
                 new CommandResult(String.format(EditJobCommand.MESSAGE_EDIT_JOB_SUCCESS, Messages.format(DESIGNER)),
                         ViewRequest.job(DESIGNER)),
                 expectedModel);
@@ -95,7 +95,7 @@ public class EditJobCommandTest {
 
         model.updateFilteredJobList(job -> job.equals(ANALYST));
 
-        assertCommandFailure(new EditJobCommand(INDEX_FIRST_APPLICANT, engineerDescriptor), model,
+        assertCommandFailure(new EditJobCommand(INDEX_FIRST, engineerDescriptor), model,
                 EditJobCommand.MESSAGE_DUPLICATE_JOB);
         assertEquals(List.of(ANALYST), model.getFilteredJobList());
     }
@@ -105,7 +105,7 @@ public class EditJobCommandTest {
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
         EditJobDescriptor engineerDescriptor = new EditJobDescriptorBuilder(ENGINEER).build();
 
-        assertCommandSuccess(new EditJobCommand(INDEX_FIRST_APPLICANT, engineerDescriptor), model,
+        assertCommandSuccess(new EditJobCommand(INDEX_FIRST, engineerDescriptor), model,
                 new CommandResult(String.format(EditJobCommand.MESSAGE_EDIT_JOB_SUCCESS, Messages.format(ENGINEER)),
                         ViewRequest.job(ENGINEER)),
                 expectedModel);
@@ -119,7 +119,7 @@ public class EditJobCommandTest {
                 String.format(EditJobCommand.MESSAGE_INVALID_INDEX, 2));
 
         model.updateFilteredJobList(job -> job.equals(ANALYST));
-        assertCommandFailure(new EditJobCommand(INDEX_SECOND_APPLICANT, designerDescriptor), model,
+        assertCommandFailure(new EditJobCommand(INDEX_SECOND, designerDescriptor), model,
                 String.format(EditJobCommand.MESSAGE_INVALID_INDEX, 1));
         assertEquals(List.of(ANALYST), model.getFilteredJobList());
     }
@@ -128,11 +128,11 @@ public class EditJobCommandTest {
     public void execute_emptyList_throwsCommandException() {
         EditJobDescriptor designerDescriptor = new EditJobDescriptorBuilder(DESIGNER).build();
 
-        assertCommandFailure(new EditJobCommand(INDEX_FIRST_APPLICANT, designerDescriptor), new ModelManager(),
+        assertCommandFailure(new EditJobCommand(INDEX_FIRST, designerDescriptor), new ModelManager(),
                 EditJobCommand.MESSAGE_EMPTY_LIST);
 
         model.updateFilteredJobList(job -> false);
-        assertCommandFailure(new EditJobCommand(INDEX_FIRST_APPLICANT, designerDescriptor), model,
+        assertCommandFailure(new EditJobCommand(INDEX_FIRST, designerDescriptor), model,
                 EditJobCommand.MESSAGE_EMPTY_LIST);
         assertTrue(model.getFilteredJobList().isEmpty());
     }
@@ -142,12 +142,12 @@ public class EditJobCommandTest {
         EditJobDescriptor designerDescriptor = new EditJobDescriptorBuilder(DESIGNER).build();
         EditJobDescriptor analystDescriptor = new EditJobDescriptorBuilder(ANALYST).build();
 
-        EditJobCommand editFirst = new EditJobCommand(INDEX_FIRST_APPLICANT, designerDescriptor);
+        EditJobCommand editFirst = new EditJobCommand(INDEX_FIRST, designerDescriptor);
 
         assertTrue(editFirst.equals(editFirst));
-        assertTrue(editFirst.equals(new EditJobCommand(INDEX_FIRST_APPLICANT, designerDescriptor)));
-        assertFalse(editFirst.equals(new EditJobCommand(INDEX_SECOND_APPLICANT, designerDescriptor)));
-        assertFalse(editFirst.equals(new EditJobCommand(INDEX_FIRST_APPLICANT, analystDescriptor)));
+        assertTrue(editFirst.equals(new EditJobCommand(INDEX_FIRST, designerDescriptor)));
+        assertFalse(editFirst.equals(new EditJobCommand(INDEX_SECOND, designerDescriptor)));
+        assertFalse(editFirst.equals(new EditJobCommand(INDEX_FIRST, analystDescriptor)));
         assertFalse(editFirst.equals(null));
         assertFalse(editFirst.equals(1));
     }

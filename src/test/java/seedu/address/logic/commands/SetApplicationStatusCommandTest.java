@@ -9,8 +9,8 @@ import static seedu.address.logic.commands.CommandTestUtil.showApplicantAtIndex;
 import static seedu.address.testutil.TypicalApplicants.ALICE;
 import static seedu.address.testutil.TypicalApplicants.BENSON;
 import static seedu.address.testutil.TypicalApplicants.getTypicalAddressBook;
-import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_APPLICANT;
-import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND_APPLICANT;
+import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST;
+import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND;
 
 import org.junit.jupiter.api.Test;
 
@@ -29,7 +29,7 @@ public class SetApplicationStatusCommandTest {
     public void execute_existingApplication_updatesStatusAndKeepsJob() {
         model.addApplication(new Application(ALICE, new Job("Janitor"), Application.Status.PENDING));
         SetApplicationStatusCommand command = new SetApplicationStatusCommand(
-                INDEX_FIRST_APPLICANT, Application.Status.ACCEPT);
+                INDEX_FIRST, Application.Status.ACCEPT);
 
         Model expectedModel = new ModelManager(getTypicalAddressBook(), new UserPrefs());
         expectedModel.addApplication(new Application(ALICE, new Job("Janitor"), Application.Status.ACCEPT));
@@ -48,7 +48,7 @@ public class SetApplicationStatusCommandTest {
         Application application = new Application(ALICE, new Job("Janitor"), Application.Status.PENDING);
         model.addApplication(application);
         SetApplicationStatusCommand command = new SetApplicationStatusCommand(
-                INDEX_FIRST_APPLICANT, Application.Status.PENDING);
+                INDEX_FIRST, Application.Status.PENDING);
 
         Model expectedModel = new ModelManager(getTypicalAddressBook(), new UserPrefs());
         expectedModel.addApplication(application);
@@ -62,12 +62,12 @@ public class SetApplicationStatusCommandTest {
     @Test
     public void execute_filteredList_usesDisplayedIndexAndKeepsFilter() {
         model.addApplication(new Application(BENSON, new Job("Janitor"), Application.Status.PENDING));
-        showApplicantAtIndex(model, INDEX_SECOND_APPLICANT);
+        showApplicantAtIndex(model, INDEX_SECOND);
         SetApplicationStatusCommand command = new SetApplicationStatusCommand(
-                INDEX_FIRST_APPLICANT, Application.Status.REJECT);
+                INDEX_FIRST, Application.Status.REJECT);
 
         Model expectedModel = new ModelManager(getTypicalAddressBook(), new UserPrefs());
-        showApplicantAtIndex(expectedModel, INDEX_SECOND_APPLICANT);
+        showApplicantAtIndex(expectedModel, INDEX_SECOND);
         expectedModel.addApplication(new Application(BENSON, new Job("Janitor"), Application.Status.REJECT));
         CommandResult expectedResult = new CommandResult(String.format(
                 SetApplicationStatusCommand.MESSAGE_SUCCESS, BENSON.getName(), BENSON.getEmail(),
@@ -80,7 +80,7 @@ public class SetApplicationStatusCommandTest {
     @Test
     public void execute_missingApplication_throwsCommandException() {
         SetApplicationStatusCommand command = new SetApplicationStatusCommand(
-                INDEX_FIRST_APPLICANT, Application.Status.ACCEPT);
+                INDEX_FIRST, Application.Status.ACCEPT);
 
         assertCommandFailure(command, model, SetApplicationStatusCommand.MESSAGE_MISSING_APPLICATION);
         assertTrue(model.getApplication(ALICE).isEmpty());
@@ -98,9 +98,9 @@ public class SetApplicationStatusCommandTest {
 
     @Test
     public void execute_invalidIndexFilteredList_throwsCommandException() {
-        showApplicantAtIndex(model, INDEX_FIRST_APPLICANT);
+        showApplicantAtIndex(model, INDEX_FIRST);
         SetApplicationStatusCommand command = new SetApplicationStatusCommand(
-                INDEX_SECOND_APPLICANT, Application.Status.ACCEPT);
+                INDEX_SECOND, Application.Status.ACCEPT);
 
         assertCommandFailure(command, model, "Invalid applicant index. Please enter an integer from 1 to 1.");
     }
@@ -109,7 +109,7 @@ public class SetApplicationStatusCommandTest {
     public void execute_emptyList_throwsCommandException() {
         Model emptyModel = new ModelManager();
         SetApplicationStatusCommand command = new SetApplicationStatusCommand(
-                INDEX_FIRST_APPLICANT, Application.Status.ACCEPT);
+                INDEX_FIRST, Application.Status.ACCEPT);
 
         assertCommandFailure(command, emptyModel, SetApplicationStatusCommand.MESSAGE_EMPTY_LIST);
     }
@@ -117,14 +117,14 @@ public class SetApplicationStatusCommandTest {
     @Test
     public void equals() {
         SetApplicationStatusCommand command = new SetApplicationStatusCommand(
-                INDEX_FIRST_APPLICANT, Application.Status.ACCEPT);
+                INDEX_FIRST, Application.Status.ACCEPT);
         assertTrue(command.equals(command));
         assertTrue(command.equals(new SetApplicationStatusCommand(
-                INDEX_FIRST_APPLICANT, Application.Status.ACCEPT)));
+                INDEX_FIRST, Application.Status.ACCEPT)));
         assertFalse(command.equals(new SetApplicationStatusCommand(
-                INDEX_SECOND_APPLICANT, Application.Status.ACCEPT)));
+                INDEX_SECOND, Application.Status.ACCEPT)));
         assertFalse(command.equals(new SetApplicationStatusCommand(
-                INDEX_FIRST_APPLICANT, Application.Status.REJECT)));
+                INDEX_FIRST, Application.Status.REJECT)));
         assertFalse(command.equals(null));
         assertFalse(command.equals(new ListCommand()));
     }
@@ -132,9 +132,9 @@ public class SetApplicationStatusCommandTest {
     @Test
     public void toStringMethod() {
         SetApplicationStatusCommand command = new SetApplicationStatusCommand(
-                INDEX_FIRST_APPLICANT, Application.Status.ACCEPT);
+                INDEX_FIRST, Application.Status.ACCEPT);
         String expected = SetApplicationStatusCommand.class.getCanonicalName()
-                + "{targetIndex=" + INDEX_FIRST_APPLICANT + ", status=accept}";
+                + "{targetIndex=" + INDEX_FIRST + ", status=accept}";
         assertEquals(expected, command.toString());
     }
 }

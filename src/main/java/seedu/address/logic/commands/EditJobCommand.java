@@ -115,7 +115,7 @@ public class EditJobCommand extends Command {
         /**
          * Copy constructor.
          */
-        public EditJobDescriptor(EditJobCommand.EditJobDescriptor toCopy) {
+        public EditJobDescriptor(EditJobDescriptor toCopy) {
             setRole(toCopy.jobRole);
             setDescription(toCopy.jobDescription);
         }
