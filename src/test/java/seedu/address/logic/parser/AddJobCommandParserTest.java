@@ -4,6 +4,8 @@ import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 import seedu.address.logic.commands.AddJobCommand;
@@ -12,6 +14,17 @@ import seedu.address.model.application.Job;
 public class AddJobCommandParserTest {
 
     private final AddJobCommandParser parser = new AddJobCommandParser();
+
+    @Test
+    public void parse_unicodeOptionBoundaries_preservesRoleAndDescription() {
+        AddJobCommand expected = new AddJobCommand(new Job("Engineer", "Original description"));
+        assertParseSuccess(parser, " -j Engineer\u2003-d Original description", expected);
+
+        for (String whitespace : List.of("\u2003", "\u2009", "\u3000")) {
+            assertParseSuccess(parser, whitespace + "-j" + whitespace + "Engineer" + whitespace
+                    + "-d" + whitespace + "Original description", expected);
+        }
+    }
 
     @Test
     public void parse_validRoleNoDesc_returnsAddJobCommand() {
