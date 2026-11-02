@@ -5,6 +5,8 @@ import static seedu.address.storage.JsonAdaptedApplicant.MISSING_FIELD_MESSAGE_F
 import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalApplicants.BENSON;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 import seedu.address.commons.exceptions.IllegalValueException;
@@ -14,7 +16,7 @@ import seedu.address.model.applicant.Phone;
 
 public class JsonAdaptedApplicantTest {
     private static final String INVALID_NAME = "R@chel";
-    private static final String INVALID_PHONE = "+651234";
+    private static final String INVALID_PHONE = "65123a";
     private static final String INVALID_EMAIL = "example.com";
 
     private static final String VALID_NAME = BENSON.getName().toString();
@@ -48,6 +50,14 @@ public class JsonAdaptedApplicantTest {
                 new JsonAdaptedApplicant(VALID_NAME, INVALID_PHONE, VALID_EMAIL);
         String expectedMessage = Phone.MESSAGE_CONSTRAINTS;
         assertThrows(IllegalValueException.class, expectedMessage, applicant::toModelType);
+    }
+
+    @Test
+    public void toModelType_invalidPhoneLength_throwsIllegalValueException() {
+        for (String phone : List.of("12", "1234567890123456", "+123 456 789 012 3456")) {
+            JsonAdaptedApplicant applicant = new JsonAdaptedApplicant(VALID_NAME, phone, VALID_EMAIL);
+            assertThrows(IllegalValueException.class, Phone.MESSAGE_CONSTRAINTS, applicant::toModelType);
+        }
     }
 
     @Test

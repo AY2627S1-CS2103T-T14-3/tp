@@ -105,7 +105,8 @@ public class LinkedOutUiTest {
     public void applicantCards_longFields_stayWithinListWhenResized() throws Exception {
         withWindow((window, model) -> {
             Applicant applicant = new ApplicantBuilder(ALICE).withName("LongName".repeat(100))
-                    .withEmail("long".repeat(40) + "@example.com").withPhone("1234567890".repeat(5)).build();
+                    .withEmail("long".repeat(40) + "@example.com")
+                    .withPhone("+1-2-3-4-5-6-7-8-9-0-1-2-3-4-5").build();
             model.setApplicant(ALICE, applicant);
 
             for (int width : List.of(1200, 900, 1100)) {

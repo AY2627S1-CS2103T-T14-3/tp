@@ -115,6 +115,23 @@ public class EditCommandParserTest {
     }
 
     @Test
+    public void parse_internationalPhone_success() {
+        for (String phone : List.of("123", "+65 9123 4567", "+1-202-555-0123", "9123-4567")) {
+            EditApplicantDescriptor descriptor = new EditApplicantDescriptorBuilder().withPhone(phone).build();
+            for (String option : List.of(" -p ", " -phone ")) {
+                assertParseSuccess(parser, "1" + option + phone, new EditCommand(INDEX_FIRST, descriptor));
+            }
+        }
+    }
+
+    @Test
+    public void parse_invalidPhoneLength_failure() {
+        for (String phone : List.of("12", "1234567890123456", "123456789012345678901234567890")) {
+            assertParseFailure(parser, "1 -p " + phone, Phone.MESSAGE_CONSTRAINTS);
+        }
+    }
+
+    @Test
     public void parse_missingIndex_failure() {
         for (String args : List.of("", " ", NAME_OPTION, PHONE_OPTION, EMAIL_OPTION,
                 NAME_OPTION + PHONE_OPTION + EMAIL_OPTION)) {

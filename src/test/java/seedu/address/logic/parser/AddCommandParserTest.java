@@ -91,6 +91,23 @@ public class AddCommandParserTest {
     }
 
     @Test
+    public void parse_internationalPhone_success() {
+        for (String phone : List.of("123", "+65 9123 4567", "+1-202-555-0123", "9123-4567")) {
+            Applicant applicant = new ApplicantBuilder(BOB).withPhone(phone).build();
+            for (String option : List.of(" -p ", " -phone ")) {
+                assertParseSuccess(parser, NAME_OPTION + option + phone + EMAIL_OPTION, new AddCommand(applicant));
+            }
+        }
+    }
+
+    @Test
+    public void parse_invalidPhoneLength_failure() {
+        for (String phone : List.of("12", "1234567890123456", "123456789012345678901234567890")) {
+            assertParseFailure(parser, NAME_OPTION + " -p " + phone + EMAIL_OPTION, Phone.MESSAGE_CONSTRAINTS);
+        }
+    }
+
+    @Test
     public void parse_repeatedOptions_failure() {
         for (String duplicate : List.of(" -n Amy Bee", " -name Amy Bee", " -p 1234567", " -phone 1234567",
                 " -e amy@example.com", " -email amy@example.com")) {

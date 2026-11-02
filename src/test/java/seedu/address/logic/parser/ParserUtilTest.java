@@ -16,7 +16,7 @@ import seedu.address.model.applicant.Phone;
 
 public class ParserUtilTest {
     private static final String INVALID_NAME = "R@chel";
-    private static final String INVALID_PHONE = "+651234";
+    private static final String INVALID_PHONE = "65123a";
     private static final String INVALID_EMAIL = "example.com";
 
     private static final String VALID_NAME = "Rachel Walker";
@@ -107,6 +107,20 @@ public class ParserUtilTest {
         String phoneWithWhitespace = WHITESPACE + VALID_PHONE + WHITESPACE;
         Phone expectedPhone = new Phone(VALID_PHONE);
         assertEquals(expectedPhone, ParserUtil.parsePhone(phoneWithWhitespace));
+    }
+
+    @Test
+    public void parsePhone_internationalFormats_preservesFormatting() throws Exception {
+        for (String phone : List.of("+65 9123 4567", "+1-202-555-0123", "9123-4567")) {
+            assertEquals(phone, ParserUtil.parsePhone(WHITESPACE + phone + WHITESPACE).value);
+        }
+    }
+
+    @Test
+    public void parsePhone_invalidLength_throwsParseException() {
+        for (String phone : List.of("12", "1234567890123456", "+123 456 789 012 3456")) {
+            assertThrows(ParseException.class, Phone.MESSAGE_CONSTRAINTS, () -> ParserUtil.parsePhone(phone));
+        }
     }
 
     @Test
