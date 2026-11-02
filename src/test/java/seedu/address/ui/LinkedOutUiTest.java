@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import javafx.application.Platform;
+import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
 import javafx.geometry.Bounds;
 import javafx.geometry.Orientation;
@@ -61,6 +62,9 @@ import seedu.address.testutil.TypicalApplicants;
 
 /** Integration checks for applicant selection and the existing command workflow. */
 public class LinkedOutUiTest {
+    /** Allows for rounding when JavaFX snaps layout sizes to the display grid. */
+    private static final double LAYOUT_TOLERANCE = 1;
+
     @TempDir
     public Path testFolder;
 
@@ -105,7 +109,8 @@ public class LinkedOutUiTest {
     public void applicantCards_longFields_stayWithinListWhenResized() throws Exception {
         withWindow((window, model) -> {
             Applicant applicant = new ApplicantBuilder(ALICE).withName("LongName".repeat(100))
-                    .withEmail("long".repeat(40) + "@example.com").withPhone("1234567890".repeat(5)).build();
+                    .withEmail("long".repeat(40) + "@example.com")
+                    .withPhone("+1-2-3-4-5-6-7-8-9-0-1-2-3-4-5").build();
             model.setApplicant(ALICE, applicant);
 
             for (int width : List.of(1200, 900, 1100)) {
@@ -174,11 +179,28 @@ public class LinkedOutUiTest {
                     Bounds viewportBounds = viewport.localToScene(viewport.getLayoutBounds());
                     Bounds badgeBounds = badge.localToScene(badge.getLayoutBounds());
                     // Long details may scroll vertically, but the badge must fit horizontally.
-                    assertTrue(badgeBounds.getMinX() >= viewportBounds.getMinX()
-                            && badgeBounds.getMaxX() <= viewportBounds.getMaxX(),
+                    assertTrue(badgeBounds.getMinX() >= viewportBounds.getMinX() - LAYOUT_TOLERANCE
+                            && badgeBounds.getMaxX() <= viewportBounds.getMaxX() + LAYOUT_TOLERANCE,
                             "Status bounds " + badgeBounds + " exceed detail viewport width " + viewportBounds);
                 }
             }
+        });
+    }
+
+    @Test
+    public void applicationDetails_focusedStatusBadge_keepsFullStatusVisible() throws Exception {
+        withWindow((window, model) -> {
+            Job job = new Job("LongRole".repeat(10), "Long description ".repeat(40));
+            model.addJob(job);
+            model.addApplication(new Application(ALICE, job, Application.Status.PENDING));
+            command(window, "view 1");
+            Label badge = label(window, "applicationStatusBadge");
+            // Apply the focus style without depending on the operating system to focus the test window.
+            badge.pseudoClassStateChanged(PseudoClass.getPseudoClass("focused"), true);
+            pulse(window);
+            pulse(window);
+            assertNotNull(badge.getEffect(), "The regression check must include the focus glow");
+            assertBadgeFits(badge);
         });
     }
 
@@ -1098,11 +1120,16 @@ public class LinkedOutUiTest {
     /** Verifies that a status badge displays its full text within its row. */
     private void assertBadgeFits(Label badge) {
         assertTrue(badge.isVisible());
-        assertTrue(badge.getWidth() >= badge.prefWidth(-1) - 1,
+        assertTrue(badge.getWidth() >= badge.prefWidth(-1) - LAYOUT_TOLERANCE,
                 "Status width " + badge.getWidth() + " vs preferred " + badge.prefWidth(-1));
         Bounds rowBounds = badge.getParent().getLayoutBounds();
-        assertTrue(rowBounds.contains(badge.getBoundsInParent()),
-                "The full status badge should remain inside its row");
+        // Compare layout boxes so a decorative focus glow does not count as clipped content.
+        Bounds badgeBounds = badge.localToParent(badge.getLayoutBounds());
+        assertTrue(badgeBounds.getMinX() >= rowBounds.getMinX() - LAYOUT_TOLERANCE
+                && badgeBounds.getMaxX() <= rowBounds.getMaxX() + LAYOUT_TOLERANCE
+                && badgeBounds.getMinY() >= rowBounds.getMinY() - LAYOUT_TOLERANCE
+                && badgeBounds.getMaxY() <= rowBounds.getMaxY() + LAYOUT_TOLERANCE,
+                "Status layout bounds " + badgeBounds + " exceed row bounds " + rowBounds);
     }
 
     /** Verifies that cards fit the viewport without a horizontal scrollbar. */
