@@ -95,11 +95,9 @@ public class UniqueApplicationList implements Iterable<Application> {
      */
     public void setJob(Job target, Job editedJob) {
         requireAllNonNull(target, editedJob);
-        get(target).ifPresent(application -> {
-            int index = internalList.indexOf(application);
-            internalList.set(index, new Application(
-                    application.getApplicant(), editedJob, application.getStatus()));
-        });
+        internalList.replaceAll(application -> application.getJob().equals(target)
+                ? new Application(application.getApplicant(), editedJob, application.getStatus())
+                : application);
     }
 
     /**

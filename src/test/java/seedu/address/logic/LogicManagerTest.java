@@ -9,6 +9,7 @@ import static seedu.address.testutil.TypicalApplicants.AMY;
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.Path;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -142,6 +143,33 @@ public class LogicManagerTest {
         JsonAddressBookStorage savedStorage =
                 new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
         assertEquals(expectedModel.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
+    }
+
+    @Test
+    public void execute_editJobWithThreeApplications_savesReloadableReferences() throws Exception {
+        logic.execute("add -n Alice -p 91234567 -e alice@example.com");
+        logic.execute("add -n Bob -p 91234568 -e bob@example.com");
+        logic.execute("add -n Carol -p 91234569 -e carol@example.com");
+        logic.execute("addj -j Janitor");
+        logic.execute("addp 1 -j Janitor");
+        logic.execute("addp 2 -j Janitor");
+        logic.execute("addp 3 -j Janitor");
+
+        logic.execute("editj 1 -j Cleaner");
+
+        Job editedJob = new Job("Cleaner");
+        assertEquals(List.of(editedJob), model.getJobList());
+        assertEquals(3, model.getApplicationList().size());
+        for (Application application : model.getApplicationList()) {
+            assertEquals(editedJob, application.getJob());
+            assertEquals(Application.Status.PENDING, application.getStatus());
+        }
+        JsonAddressBookStorage savedStorage =
+                new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
+        ReadOnlyAddressBook reloaded = savedStorage.readAddressBook().orElseThrow();
+        assertEquals(model.getAddressBook(), reloaded);
+        assertEquals(3, reloaded.getApplicantList().size());
+        assertEquals(3, reloaded.getApplicationList().size());
     }
 
     @Test

@@ -6,7 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.logic.commands.CommandTestUtil.VALID_EMAIL_BOB;
 import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalApplicants.ALICE;
+import static seedu.address.testutil.TypicalApplicants.BENSON;
 import static seedu.address.testutil.TypicalApplicants.BOB;
+import static seedu.address.testutil.TypicalApplicants.CARL;
 import static seedu.address.testutil.TypicalApplicants.getTypicalAddressBook;
 
 import java.util.Collection;
@@ -210,6 +212,55 @@ public class AddressBookTest {
         assertThrows(DuplicateJobException.class, () -> addressBook.addJob(new Job("Software Engineer")));
         assertThrows(DuplicateJobException.class, () -> addressBook.addJob(
                 new Job("Software Engineer", "different descriptor")));
+    }
+
+    @Test
+    public void setJob_descriptionOnlyEdit_updatesAllMatchingApplicationsAndPreservesOtherData() {
+        List<Applicant> applicants = List.of(ALICE, BOB, CARL, BENSON);
+        addressBook.setApplicants(applicants);
+        Job job = new Job("Janitor", "Old description");
+        Job otherJob = new Job("janitor", "Other description");
+        addressBook.addJob(job);
+        addressBook.addJob(otherJob);
+        List<Application> applications = List.of(
+                new Application(ALICE, job, Application.Status.PENDING),
+                new Application(BOB, job, Application.Status.ACCEPT),
+                new Application(CARL, job, Application.Status.REJECT),
+                new Application(BENSON, otherJob, Application.Status.PENDING));
+        addressBook.setApplications(applications);
+        Job editedJob = new Job("Janitor", "New description");
+
+        addressBook.setJob(job, editedJob);
+
+        assertEquals(applicants, addressBook.getApplicantList());
+        assertEquals(List.of(editedJob, otherJob), addressBook.getJobList());
+        assertEquals("New description", addressBook.getJobList().getFirst().getJobDescription());
+        assertEquals(applications.size(), addressBook.getApplicationList().size());
+        for (int i = 0; i < 3; i++) {
+            Application updated = addressBook.getApplicationList().get(i);
+            assertEquals(applications.get(i).getApplicant(), updated.getApplicant());
+            assertEquals(applications.get(i).getStatus(), updated.getStatus());
+            assertEquals("Janitor", updated.getJob().getJobRole());
+            assertEquals("New description", updated.getJob().getJobDescription());
+        }
+        assertEquals(applications.getLast(), addressBook.getApplicationList().getLast());
+        assertEquals("Other description", addressBook.getApplicationList().getLast().getJob().getJobDescription());
+    }
+
+    @Test
+    public void setJob_duplicateRole_throwsDuplicateJobExceptionWithoutChangingApplications() {
+        Job job = new Job("Janitor");
+        Job otherJob = new Job("Cleaner");
+        addressBook.addApplicant(ALICE);
+        addressBook.addJob(job);
+        addressBook.addJob(otherJob);
+        Application application = new Application(ALICE, job, Application.Status.ACCEPT);
+        addressBook.addApplication(application);
+
+        assertThrows(DuplicateJobException.class, () -> addressBook.setJob(job, otherJob));
+
+        assertEquals(List.of(job, otherJob), addressBook.getJobList());
+        assertEquals(List.of(application), addressBook.getApplicationList());
     }
 
     @Test
