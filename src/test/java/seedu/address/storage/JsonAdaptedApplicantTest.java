@@ -61,6 +61,12 @@ public class JsonAdaptedApplicantTest {
     }
 
     @Test
+    public void toModelType_zeroImmediatelyAfterPlus_throwsIllegalValueException() {
+        JsonAdaptedApplicant applicant = new JsonAdaptedApplicant(VALID_NAME, "+065 9123 4567", VALID_EMAIL);
+        assertThrows(IllegalValueException.class, Phone.MESSAGE_CONSTRAINTS, applicant::toModelType);
+    }
+
+    @Test
     public void toModelType_nullPhone_throwsIllegalValueException() {
         JsonAdaptedApplicant applicant = new JsonAdaptedApplicant(VALID_NAME, null, VALID_EMAIL);
         String expectedMessage = String.format(MISSING_FIELD_MESSAGE_FORMAT, Phone.class.getSimpleName());

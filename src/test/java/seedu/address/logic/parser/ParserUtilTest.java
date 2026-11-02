@@ -111,8 +111,15 @@ public class ParserUtilTest {
 
     @Test
     public void parsePhone_internationalFormats_preservesFormatting() throws Exception {
-        for (String phone : List.of("+65 9123 4567", "+1-202-555-0123", "9123-4567")) {
+        for (String phone : List.of("+65 9123 4567", "+1-202-555-0123", "9123-4567", "0123-4567")) {
             assertEquals(phone, ParserUtil.parsePhone(WHITESPACE + phone + WHITESPACE).value);
+        }
+    }
+
+    @Test
+    public void parsePhone_zeroImmediatelyAfterPlus_throwsParseException() {
+        for (String phone : List.of("+012", "+065 9123 4567", "+0-65-9123-4567")) {
+            assertThrows(ParseException.class, Phone.MESSAGE_CONSTRAINTS, () -> ParserUtil.parsePhone(phone));
         }
     }
 

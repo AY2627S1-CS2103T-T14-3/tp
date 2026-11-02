@@ -49,11 +49,20 @@ public class PhoneTest {
     @Test
     public void isValidPhone_validLocalAndInternationalFormats_returnsTrue() {
         for (String phone : List.of("123", "+1-2 3", "1234567", "93121534", "124293842033123", "+124293842033123",
-                "9312 1534", "9312-1534", "+65 9123 4567", "+1-202-555-0123", "+65 9123-4567",
+                "000", "01234567", "0123-4567", "9312 1534", "9312-1534", "+65 9123 4567",
+                "+1-202-555-0123", "+65 9123-4567",
                 "+1-2-3-4-5-6-7-8-9-0-1-2-3-4-5")) {
             assertTrue(Phone.isValidPhone(phone), phone);
             assertEquals(phone, new Phone(phone).value);
             assertEquals(phone, new Phone(phone).toString());
+        }
+    }
+
+    @Test
+    public void isValidPhone_zeroImmediatelyAfterPlus_returnsFalse() {
+        for (String phone : List.of("+012", "+06591234567", "+065 9123 4567", "+0-65-9123-4567")) {
+            assertFalse(Phone.isValidPhone(phone), phone);
+            assertThrows(IllegalArgumentException.class, Phone.MESSAGE_CONSTRAINTS, () -> new Phone(phone));
         }
     }
 
