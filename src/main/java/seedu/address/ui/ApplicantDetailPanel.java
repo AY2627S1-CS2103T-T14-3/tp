@@ -61,7 +61,8 @@ public class ApplicantDetailPanel extends UiPart<Region> {
 
         applicantName.setText(applicant.getName().fullName);
         initials.setText(Stream.of(applicant.getName().fullName.split("\\s+"))
-                .limit(2).map(word -> word.substring(0, 1).toUpperCase(java.util.Locale.ROOT))
+                .limit(2).map(word -> word.substring(0, word.offsetByCodePoints(0, 1))
+                        .toUpperCase(java.util.Locale.ROOT))
                 .collect(Collectors.joining()));
         selectionHint.setText("Applicant contact information");
         email.setText(applicant.getEmail().value);
