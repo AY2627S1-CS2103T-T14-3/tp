@@ -9,6 +9,7 @@ import static seedu.address.testutil.TypicalApplicants.ALICE;
 import static seedu.address.testutil.TypicalApplicants.BENSON;
 import static seedu.address.testutil.TypicalApplicants.BOB;
 import static seedu.address.testutil.TypicalApplicants.CARL;
+import static seedu.address.testutil.TypicalApplicants.DANIEL;
 import static seedu.address.testutil.TypicalApplicants.getTypicalAddressBook;
 
 import java.util.Collection;
@@ -215,36 +216,18 @@ public class AddressBookTest {
     }
 
     @Test
-    public void setJob_descriptionOnlyEdit_updatesAllMatchingApplicationsAndPreservesOtherData() {
-        List<Applicant> applicants = List.of(ALICE, BOB, CARL, BENSON);
-        addressBook.setApplicants(applicants);
-        Job job = new Job("Janitor", "Old description");
-        Job otherJob = new Job("janitor", "Other description");
-        addressBook.addJob(job);
-        addressBook.addJob(otherJob);
-        List<Application> applications = List.of(
-                new Application(ALICE, job, Application.Status.PENDING),
-                new Application(BOB, job, Application.Status.ACCEPT),
-                new Application(CARL, job, Application.Status.REJECT),
-                new Application(BENSON, otherJob, Application.Status.PENDING));
-        addressBook.setApplications(applications);
-        Job editedJob = new Job("Janitor", "New description");
+    public void setJob_roleOnlyEdit_updatesOnlyMatchingApplications() {
+        assertJobEditUpdatesOnlyMatchingApplications(new Job("Cleaner", "Old description"));
+    }
 
-        addressBook.setJob(job, editedJob);
+    @Test
+    public void setJob_descriptionOnlyEdit_updatesOnlyMatchingApplications() {
+        assertJobEditUpdatesOnlyMatchingApplications(new Job("Janitor", "New description"));
+    }
 
-        assertEquals(applicants, addressBook.getApplicantList());
-        assertEquals(List.of(editedJob, otherJob), addressBook.getJobList());
-        assertEquals("New description", addressBook.getJobList().getFirst().getJobDescription());
-        assertEquals(applications.size(), addressBook.getApplicationList().size());
-        for (int i = 0; i < 3; i++) {
-            Application updated = addressBook.getApplicationList().get(i);
-            assertEquals(applications.get(i).getApplicant(), updated.getApplicant());
-            assertEquals(applications.get(i).getStatus(), updated.getStatus());
-            assertEquals("Janitor", updated.getJob().getJobRole());
-            assertEquals("New description", updated.getJob().getJobDescription());
-        }
-        assertEquals(applications.getLast(), addressBook.getApplicationList().getLast());
-        assertEquals("Other description", addressBook.getApplicationList().getLast().getJob().getJobDescription());
+    @Test
+    public void setJob_roleAndDescriptionEdit_updatesOnlyMatchingApplications() {
+        assertJobEditUpdatesOnlyMatchingApplications(new Job("Cleaner", "New description"));
     }
 
     @Test
@@ -300,6 +283,43 @@ public class AddressBookTest {
         original.addJob(new Job("Product Designer"));
         addressBook.resetData(original);
         assertEquals(original, addressBook);
+    }
+
+    /**
+     * Checks that replacing Janitor with {@code editedJob} updates all three matching applications,
+     * preserving applicants, statuses, an unrelated application, and an applicant without an application.
+     */
+    private void assertJobEditUpdatesOnlyMatchingApplications(Job editedJob) {
+        List<Applicant> applicants = List.of(ALICE, BOB, CARL, BENSON, DANIEL);
+        addressBook.setApplicants(applicants);
+        Job job = new Job("Janitor", "Old description");
+        Job otherJob = new Job("janitor", "Other description");
+        addressBook.addJob(job);
+        addressBook.addJob(otherJob);
+        List<Application> applications = List.of(
+                new Application(ALICE, job, Application.Status.PENDING),
+                new Application(BOB, job, Application.Status.ACCEPT),
+                new Application(CARL, job, Application.Status.REJECT),
+                new Application(BENSON, otherJob, Application.Status.PENDING));
+        addressBook.setApplications(applications);
+
+        addressBook.setJob(job, editedJob);
+
+        assertEquals(applicants, addressBook.getApplicantList());
+        assertFalse(addressBook.hasApplication(DANIEL));
+        assertEquals(List.of(editedJob, otherJob), addressBook.getJobList());
+        assertEquals(editedJob.getJobDescription(), addressBook.getJobList().getFirst().getJobDescription());
+        assertEquals(applications.size(), addressBook.getApplicationList().size());
+        for (int i = 0; i < 3; i++) {
+            Application updated = addressBook.getApplicationList().get(i);
+            assertEquals(applications.get(i).getApplicant(), updated.getApplicant());
+            assertEquals(applications.get(i).getStatus(), updated.getStatus());
+            assertEquals(editedJob.getJobRole(), updated.getJob().getJobRole());
+            assertEquals(editedJob.getJobDescription(), updated.getJob().getJobDescription());
+        }
+        assertEquals(applications.getLast(), addressBook.getApplicationList().getLast());
+        assertEquals("Other description", addressBook.getApplicationList().getLast().getJob().getJobDescription());
+        assertEquals("Other description", addressBook.getJobList().getLast().getJobDescription());
     }
 
     /**
