@@ -214,8 +214,21 @@ public class MainWindow extends UiPart<Stage> {
     }
 
     private void showApplicationsView() {
-        listTitle.setText("Applications");
-        listHint.setText("Each row shows an applicant, job, and status.");
+        FilteredList<Applicant> applicantFilteredList = logic.getFilteredApplicantList();
+        int totalApplicants = logic.getApplicantList().size();
+        Predicate<? super Applicant> applicantPredicate = applicantFilteredList.getPredicate();
+
+        if (applicantPredicate == null
+                || applicantPredicate.equals(Model.PREDICATE_SHOW_ALL_APPLICANTS)
+                || NameContainsKeywordsPredicate.getKeywords(applicantPredicate) == null) {
+            listTitle.setText("Applications");
+            listHint.setText("Each row shows an applicant, job, and status.");
+        } else {
+            listTitle.setText(String.format("Search: From %d out of %d applicant(s)",
+                    applicantFilteredList.size(), totalApplicants));
+            listHint.setText(String.format("Filtered with keyword(s): %s",
+                    NameContainsKeywordsPredicate.getKeywords(applicantPredicate)));
+        }
         consoleHint.setText(APPLICATION_HINT);
         viewListPlaceholder.getChildren().setAll(applicationListPanel.getRoot());
         applicantDetailPlaceholder.getChildren().setAll(applicantDetailPanel.getRoot());

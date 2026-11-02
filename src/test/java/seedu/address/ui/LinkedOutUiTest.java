@@ -118,7 +118,7 @@ public class LinkedOutUiTest {
             pulse(window);
 
             ListView<?> applications = (ListView<?>) window.getRoot().getScene().lookup("#applicationListView");
-            assertEquals("Applications", label(window, "listTitle").getText());
+            assertEquals("Search: From 1 out of 7 applicant(s)", label(window, "listTitle").getText());
             assertEquals("1 application", label(window, "applicantCount").getText());
             assertEquals(1, applications.getItems().size());
             assertEquals("1. ", ((Label) applications.lookup("#id")).getText());
@@ -308,7 +308,7 @@ public class LinkedOutUiTest {
             assertEquals("Jobs", label(window, "listTitle").getText());
 
             command(window, "find Alice");
-            assertEquals("Applicants", label(window, "listTitle").getText());
+            assertEquals("Search: Found 1 out of 7 applicant(s)", label(window, "listTitle").getText());
             assertEquals("1 applicant(s) listed!", feedback(window));
             assertEquals("1 applicant", label(window, "applicantCount").getText());
             assertApplicantDetails(window, ALICE);
@@ -325,6 +325,9 @@ public class LinkedOutUiTest {
             assertEquals("Deleted applicant. These details are no longer stored.",
                     label(window, "selectionHint").getText());
 
+            assertEquals("Search: Found 0 out of 6 applicant(s)", label(window, "listTitle").getText());
+            assertEquals("Filtered with keyword(s): Alice", label(window, "listHint").getText());
+            command(window, "list");
             command(window, "clear");
             assertEquals("Applicants", label(window, "listTitle").getText());
             assertEquals("No applicant selected", label(window, "applicantName").getText());
@@ -548,7 +551,7 @@ public class LinkedOutUiTest {
             assertEquals("1 application", label(window, "applicantCount").getText());
             command(window, "deletep 1");
 
-            assertEquals("Applicants", label(window, "listTitle").getText());
+            assertEquals("Search: Found 2 out of 7 applicant(s)", label(window, "listTitle").getText());
             assertApplicantDetails(window, BENSON);
             assertApplication(window, "No application recorded.", null, null);
             assertEquals(String.format(DeleteApplicationCommand.MESSAGE_SUCCESS,

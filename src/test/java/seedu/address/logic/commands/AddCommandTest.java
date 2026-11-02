@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import javafx.collections.transformation.FilteredList;
 import org.junit.jupiter.api.Test;
 
 import javafx.collections.ObservableList;
@@ -204,7 +205,7 @@ public class AddCommandTest {
         }
 
         @Override
-        public ObservableList<Job> getFilteredJobList() {
+        public FilteredList<Job> getFilteredJobList() {
             throw new AssertionError("This method should not be called.");
         }
 
@@ -214,7 +215,12 @@ public class AddCommandTest {
         }
 
         @Override
-        public ObservableList<Applicant> getFilteredApplicantList() {
+        public ObservableList<Applicant> getApplicantList() {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public FilteredList<Applicant> getFilteredApplicantList() {
             throw new AssertionError("This method should not be called.");
         }
 
