@@ -49,7 +49,7 @@ public class AddApplicationCommand extends Command {
 
     /**
      * Creates an AddApplicationCommand to add an application to the specified applicant.
-     * @param targetIndex of the applicant in the filtered person list to add an application to
+     * @param targetIndex of the applicant in the filtered applicant list to add an application to
      * @param jobRole job the applicant is applying for
      * @param status status of the application
      */
