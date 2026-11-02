@@ -10,6 +10,8 @@ import java.util.logging.Logger;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -85,12 +87,26 @@ public class JsonUtil {
 
 
     /**
-     * Converts a given string representation of JSON data to an instance of a class
-     * @param <T> The generic type to create an instance of
-     * @return The instance of T with the specified values in the JSON string
+     * Returns an instance of {@code instanceClass} built from {@code json}.
+     * Rejects text that still contains another value after the first JSON value.
+     *
+     * @param <T> Type of the returned instance.
+     * @param json JSON text to read. Cannot be null.
+     * @param instanceClass Class of the instance to create. Cannot be null.
+     * @return The instance described by {@code json}.
+     * @throws IOException If {@code json} is not one JSON value of that class.
      */
     public static <T> T fromJsonString(String json, Class<T> instanceClass) throws IOException {
-        return objectMapper.readValue(json, instanceClass);
+        requireNonNull(json);
+        requireNonNull(instanceClass);
+
+        try (JsonParser parser = objectMapper.getFactory().createParser(json)) {
+            T value = objectMapper.readValue(parser, instanceClass);
+            if (parser.nextToken() != null) {
+                throw new JsonParseException(parser, "Trailing content after JSON value");
+            }
+            return value;
+        }
     }
 
     /**
