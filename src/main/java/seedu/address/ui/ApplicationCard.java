@@ -37,7 +37,6 @@ public class ApplicationCard extends UiPart<Region> {
         id.setText(displayedIndex + ". ");
         name.setText(this.application.getApplicantName());
         job.setText(this.application.getJob().toString());
-        job.setWrapText(true);
         showStatus(this.application.getStatus());
     }
 
