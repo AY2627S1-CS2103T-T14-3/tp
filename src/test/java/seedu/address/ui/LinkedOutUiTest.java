@@ -80,6 +80,47 @@ public class LinkedOutUiTest {
     }
 
     @Test
+    public void applicantInitials_supplementaryCharacters_preservesCompleteInitials() throws Exception {
+        withWindow((window, model) -> {
+            for (Map.Entry<String, String> entry : Map.of(
+                    "\uD840\uDC00 Ming Third", "\uD840\uDC00M",
+                    "Alice \uD840\uDC00 Third", "A\uD840\uDC00",
+                    "\uD840\uDC00 \uD840\uDC01 Third", "\uD840\uDC00\uD840\uDC01",
+                    "\uD801\uDC28 Ming Third", "\uD801\uDC00M",
+                    "Alice Bob Carol", "AB",
+                    "Alice", "A").entrySet()) {
+                Applicant previous = model.getFilteredApplicantList().getFirst();
+                model.setApplicant(previous, new ApplicantBuilder(previous).withName(entry.getKey()).build());
+                command(window, "view 1");
+                pulse(window);
+
+                assertEquals(entry.getKey(), label(window, "applicantName").getText());
+                assertEquals(entry.getValue(), label(window, "initials").getText());
+            }
+        });
+    }
+
+    @Test
+    public void jobInitials_supplementaryCharacters_preservesFirstTwoWordInitials() throws Exception {
+        withWindow((window, model) -> {
+            for (Map.Entry<String, String> entry : Map.of(
+                    "\uD840\uDC00 Engineer Third", "\uD840\uDC00E",
+                    "Engineer \uD840\uDC00 Third", "E\uD840\uDC00",
+                    "\uD840\uDC00 \uD840\uDC01 Third", "\uD840\uDC00\uD840\uDC01",
+                    "\uD801\uDC28 Engineer Third", "\uD801\uDC00E",
+                    "Software Engineer Intern", "SE",
+                    "\uD840\uDC00", "\uD840\uDC00").entrySet()) {
+                model.addJob(new Job(entry.getKey()));
+                command(window, "viewj " + model.getFilteredJobList().size());
+                pulse(window);
+
+                assertEquals(entry.getKey(), label(window, "jobName").getText());
+                assertEquals(entry.getValue(), label(window, "initials").getText());
+            }
+        });
+    }
+
+    @Test
     public void selectionAndCommands_keepApplicantDetailsCurrent() throws Exception {
         withWindow((window, model) -> {
             assertEquals("LinkedOut", window.getRoot().getTitle());
