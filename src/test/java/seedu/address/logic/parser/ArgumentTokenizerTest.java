@@ -45,6 +45,28 @@ public class ArgumentTokenizerTest {
     }
 
     @Test
+    public void tokenizeOptions_unicodePadding_stripsValuesAndPreamble() throws ParseException {
+        ArgumentMultimap options = ArgumentTokenizer.tokenizeOptions(
+                "\u2003 2\u2009 -n \u2003John  Doe\u2009 -e \u3000john@example.com\u2003",
+                HAS_PREAMBLE, nameOption, emailOption);
+        assertEquals("2", options.getPreamble());
+        assertArgumentPresent(options, nameOption, "John  Doe");
+        assertArgumentPresent(options, emailOption, "john@example.com");
+
+        options = ArgumentTokenizer.tokenizeOptions("\u2003 -t \u2009 -n John\u3000",
+                NO_PREAMBLE, testFlag, nameOption);
+        assertTrue(options.contains(testFlag));
+        assertArgumentPresent(options, nameOption, "John");
+    }
+
+    @Test
+    public void tokenizeOptions_whitespaceOnlyRequiredValue_throwsParseException() {
+        for (String whitespace : List.of(" ", "\u2003", "\u2009\u3000")) {
+            assertMalformedOptions("-n " + whitespace, nameOption);
+        }
+    }
+
+    @Test
     public void tokenizeOptions_shortAndLongAliases_valuesCanonicalized() throws ParseException {
         ArgumentMultimap shortOptions = ArgumentTokenizer.tokenizeOptions(
                 " -n John Doe -e john@example.com",

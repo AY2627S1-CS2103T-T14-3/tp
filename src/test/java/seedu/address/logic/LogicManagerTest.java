@@ -3,6 +3,7 @@ package seedu.address.logic;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_APPLICANT_DISPLAYED_INDEX;
+import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.Messages.MESSAGE_UNKNOWN_COMMAND;
 import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalApplicants.AMY;
@@ -16,6 +17,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import seedu.address.logic.commands.AddApplicationCommand;
 import seedu.address.logic.commands.AddCommand;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.DeleteApplicationCommand;
@@ -226,6 +228,91 @@ public class LogicManagerTest {
         JsonAddressBookStorage savedStorage =
                 new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
         assertEquals(expectedModel.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
+    }
+
+    @Test
+    public void execute_nonWhitespaceControls_rejectsWithoutChangingData() throws Exception {
+        logic.execute("add -n Amy Bee -p 11111111 -e amy@example.com");
+        logic.execute("addj -j Engineer");
+        logic.execute("addp 1 -j Engineer -s accept");
+        JsonAddressBookStorage savedStorage =
+                new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
+        ReadOnlyAddressBook original = savedStorage.readAddressBook().orElseThrow();
+
+        for (int codePoint : List.of(0, 1, 8, 14, 27, 127, 159)) {
+            String control = Character.toString(codePoint);
+            for (String input : List.of("editj 1 -j " + control, "find " + control,
+                    "set " + control + "1 -s accept", "addj -j Other -d before" + control + "after")) {
+                assertThrows(ParseException.class, () -> logic.execute(input));
+                assertEquals(original, model.getAddressBook());
+            }
+        }
+        assertEquals(original, savedStorage.readAddressBook().orElseThrow());
+    }
+
+    @Test
+    public void execute_unicodePaddedValues_normalizesAcrossWorkflows() throws Exception {
+        logic.execute("\u2003add -n \u2003Amy  Bee\u2009 -p \u200311111111\u2009 "
+                + "-e \u3000Amy@Example.com\u2003");
+        assertEquals("Amy  Bee", model.getFilteredApplicantList().getFirst().getName().fullName);
+        logic.execute("addj -j \u2003Engineer\u2009 -d \u3000Research position\u2003");
+        logic.execute("addp \u20031\u2009 -j \u2003Engineer\u2009 -s \u3000pending\u2003");
+        logic.execute("set \u20031\u2009 -s \u2003accept\u2009");
+        logic.execute("edit \u20031\u2009 -n \u3000Amy  Updated\u2003 "
+                + "-p \u200391234567\u2009 -e \u2003new@example.com\u2009");
+        logic.execute("find Missing \u2003 \u2009 Amy\u2009");
+        logic.execute("viewj -f \u2003Engineer\u2009");
+
+        Applicant expected = new ApplicantBuilder(AMY).withName("Amy  Updated")
+                .withPhone("91234567").withEmail("new@example.com").build();
+        assertEquals(List.of(expected), model.getFilteredApplicantList());
+        Application application = model.getApplication(expected).orElseThrow();
+        assertEquals(expected, application.getApplicant());
+        assertEquals(Application.Status.ACCEPT, application.getStatus());
+        assertEquals("Research position", application.getJob().getJobDescription());
+        assertEquals(1, model.getFilteredJobList().size());
+        JsonAddressBookStorage savedStorage =
+                new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
+        assertEquals(model.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
+    }
+
+    @Test
+    public void execute_addJobThenApplicationWithUnicodeWhitespace_savesApplication() throws Exception {
+        logic.execute("add -n Amy Bee -p 11111111 -e amy@example.com");
+        String role = "\u2003Senior  Engineer\u2003";
+        logic.execute("addj -j " + role + " -d Research position");
+        assertCommandException("addp 1 -j senior  Engineer", AddApplicationCommand.MESSAGE_INVALID_JOB);
+        assertCommandException("addp 1 -j Senior Engineer", AddApplicationCommand.MESSAGE_INVALID_JOB);
+        logic.execute("addp 1 -j " + role + " -s accept");
+
+        Application application = model.getApplication(AMY).orElseThrow();
+        assertEquals("Senior  Engineer", application.getJob().getJobRole());
+        assertEquals("Research position", application.getJob().getJobDescription());
+        assertEquals(Application.Status.ACCEPT, application.getStatus());
+        JsonAddressBookStorage savedStorage =
+                new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
+        assertEquals(model.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
+    }
+
+    @Test
+    public void execute_editJobToUnicodeWhitespace_rejectsWithoutChangingData() throws Exception {
+        logic.execute("add -n Amy Bee -p 11111111 -e amy@example.com");
+        logic.execute("addj -j Engineer -d Research position");
+        logic.execute("addp 1 -j Engineer -s accept");
+        JsonAddressBookStorage savedStorage =
+                new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
+        ReadOnlyAddressBook original = savedStorage.readAddressBook().orElseThrow();
+
+        String expected = String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditJobCommand.MESSAGE_USAGE);
+        assertParseException("editj 1 -j \u2003", expected);
+        assertParseException("editj 1 -j \u2003 -d Changed description", expected);
+        for (String input : List.of("edit 1 -n \u2003", "edit 1 -p \u2003", "edit 1 -e \u2003",
+                "add -n \u2003 -p 91234567 -e other@example.com",
+                "addp 1 -j Engineer -s \u2003", "set 1 -s \u2003")) {
+            assertThrows(ParseException.class, () -> logic.execute(input));
+        }
+        assertEquals(original, model.getAddressBook());
+        assertEquals(original, savedStorage.readAddressBook().orElseThrow());
     }
 
     @Test

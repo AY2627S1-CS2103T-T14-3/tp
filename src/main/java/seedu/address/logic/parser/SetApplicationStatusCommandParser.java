@@ -22,7 +22,7 @@ public class SetApplicationStatusCommandParser implements Parser<SetApplicationS
      */
     public SetApplicationStatusCommand parse(String args) throws ParseException {
         requireNonNull(args);
-        String[] tokens = args.trim().split("\\s+", 2);
+        String[] tokens = args.strip().split("\\s+", 2);
         Index index = parseIndex(args, tokens[0]);
         String optionArgs = tokens.length == 2 ? tokens[1] : "";
         Application.Status status = parseStatus(args, optionArgs);
@@ -82,7 +82,7 @@ public class SetApplicationStatusCommandParser implements Parser<SetApplicationS
      * @return parse exception describing the expected command format
      */
     private static ParseException unrecognized(String args) {
-        String input = (SetApplicationStatusCommand.COMMAND_WORD + args).trim().replaceAll("\\s+", " ");
+        String input = (SetApplicationStatusCommand.COMMAND_WORD + args).strip().replaceAll("\\s+", " ");
         return new ParseException(String.format(SetApplicationStatusCommand.MESSAGE_UNRECOGNIZED, input));
     }
 }
