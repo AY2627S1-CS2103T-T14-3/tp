@@ -36,10 +36,10 @@ public class EditJobCommandParser implements Parser<EditJobCommand> {
         EditJobDescriptor editJobDescriptor = new EditJobDescriptor();
 
         if (values.getValue(OPTION_JOB_ROLE_OPT).isPresent()) {
-            editJobDescriptor.setRole(values.getValue(OPTION_JOB_ROLE_OPT).get().trim());
+            editJobDescriptor.setRole(values.getValue(OPTION_JOB_ROLE_OPT).get());
         }
         if (values.getValue(OPTION_JOB_DESC_OPT).isPresent()) {
-            editJobDescriptor.setDescription(values.getValue(OPTION_JOB_DESC_OPT).get().trim());
+            editJobDescriptor.setDescription(values.getValue(OPTION_JOB_DESC_OPT).get());
         }
         if (!editJobDescriptor.isAnyFieldEdited()) {
             throw new ParseException(EditJobCommand.MESSAGE_NOT_EDITED);

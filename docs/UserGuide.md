@@ -76,6 +76,11 @@ LinkedOut is a personal workspace for one recruiter. Your records are stored loc
 * Items in square brackets are optional.<br>
   For example, `edit INDEX [-n NAME] [-p PHONE] [-e EMAIL]` can be used as `edit 1 -n John Doe -p 98765432` or as `edit 1 -n John Doe`.
 
+* Surrounding spaces, tabs, and Unicode whitespace such as em spaces are ignored in parameter values.
+  Internal text is preserved and must follow the field's validation rules. A required value containing only
+  whitespace is treated as missing. Surrounding whitespace is also ignored around the complete command.
+  Non-whitespace control characters are rejected.
+
 * Options can be in any order. A positional index must appear before the options.<br>
   For example, if the command specifies `-n NAME -p PHONE_NUMBER`, `-p PHONE_NUMBER -n NAME` is also acceptable.
 
@@ -183,6 +188,7 @@ Finds applicants whose names contain any of the given keywords.
 Format: `find KEYWORD [MORE_KEYWORDS]`
 
 * The search is case-insensitive; for example, `hans` matches `Hans`.
+* Keywords are separated by whitespace, including Unicode spaces.
 * Keyword order does not matter; for example, `Hans Bo` matches `Bo Hans`.
 * The search considers only names.
 * Only full words match; for example, `Han` does not match `Hans`.
@@ -257,7 +263,7 @@ Format: `addp INDEX -j JOB_ROLE [-s STATUS]`
 * `INDEX` is the positive integer shown beside an applicant in the current list. It must appear before the options.
 * When the list is filtered, the index refers to that filtered list.
 * `JOB_ROLE` is the role the applicant is applying for. It cannot contain another option, such as `-s`.
-* The role must already exist in the job list. Use `addj` to create it before adding an application. Matching is case-sensitive and ignores surrounding spaces; supply the role name, without its description.
+* The role must already exist in the job list. Use `addj` to create it before adding an application. Matching is case-sensitive and ignores surrounding whitespace, including Unicode spaces; supply the role name, without its description.
 * `STATUS` is optional. When it is omitted, the status is `pending`.
 * Accepted statuses are `accept`, `reject`, and `pending`. The value is case-sensitive.
 * Aliases: `-job` for `-j` and `-status` for `-s`.
@@ -328,6 +334,7 @@ Format: `editj INDEX -j JOB_ROLE`
 * `INDEX` is the positive integer shown beside a job in the current job list, including a filtered list.
 * `JOB_ROLE` is required and follows the same rules as `addj`. Alias: `-job` for `-j`.
 * `editj` accepts only the role option. It replaces the job with a new job whose description is `No information ~`, even when the role name is unchanged. An existing description is not preserved, and `-d`, `-desc`, and `-description` are not accepted by this command.
+* A supplied role cannot be blank, including Unicode whitespace such as an em space.
 * The new role cannot match another stored job. Matching ignores surrounding spaces and is otherwise case-sensitive. Keeping the current role is allowed.
 * The job keeps its position in the full list. Any job filter is cleared so the edited role remains visible.
 * Applications for the job are updated to reference the replacement job, including its reset description. Their applicants and statuses are kept.

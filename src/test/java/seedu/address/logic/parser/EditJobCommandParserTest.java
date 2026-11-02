@@ -26,6 +26,7 @@ public class EditJobCommandParserTest {
         assertParseSuccess(parser, "1 -j Software Engineer Intern", expected);
         assertParseSuccess(parser, "  1   -job   Software Engineer Intern  ", expected);
         assertParseSuccess(parser, "1\t-j\tSoftware Engineer Intern", expected);
+        assertParseSuccess(parser, "1 -j \u2003Software Engineer Intern\u2003", expected);
     }
 
     @Test
@@ -61,6 +62,15 @@ public class EditJobCommandParserTest {
                 "1 -j Engineer -job Analyst", "1 -J Engineer")) {
             assertParseFailure(parser, args,
                     String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditJobCommand.MESSAGE_USAGE));
+        }
+    }
+
+    @Test
+    public void parse_unicodeWhitespaceRole_throwsParseException() {
+        String expected = String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditJobCommand.MESSAGE_USAGE);
+        for (String role : List.of("\u2003", "\u2009", "\u3000", "\u2003 \u2009")) {
+            assertParseFailure(parser, "1 -j " + role, expected);
+            assertParseFailure(parser, "1 -j " + role + " -d Changed description", expected);
         }
     }
 

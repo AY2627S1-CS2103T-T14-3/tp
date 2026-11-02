@@ -44,6 +44,18 @@ public class AddApplicationCommandTest {
     }
 
     @Test
+    public void execute_jobRoleHasSurroundingWhitespace_usesStoredJob() {
+        AddApplicationCommand command = new AddApplicationCommand(
+                INDEX_FIRST, " \u2003Janitor\u2009 ", Application.Status.PENDING);
+        Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
+        expectedModel.addApplication(new Application(ALICE, JANITOR, Application.Status.PENDING));
+
+        assertCommandSuccess(command, model, new CommandResult(String.format(
+                AddApplicationCommand.MESSAGE_SUCCESS, ALICE.getName(), ALICE.getEmail()),
+                ViewRequest.applicant(ALICE)), expectedModel);
+    }
+
+    @Test
     public void execute_newApplicationWithStatus_addsRequestedStatus() {
 
         Application application = new Application(BENSON, JANITOR, Application.Status.ACCEPT);

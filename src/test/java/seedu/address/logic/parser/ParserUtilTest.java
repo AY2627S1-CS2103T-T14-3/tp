@@ -5,6 +5,8 @@ import static seedu.address.logic.parser.ParserUtil.MESSAGE_INVALID_INDEX;
 import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 import seedu.address.logic.parser.exceptions.ParseException;
@@ -21,7 +23,7 @@ public class ParserUtilTest {
     private static final String VALID_PHONE = "123456";
     private static final String VALID_EMAIL = "rachel@example.com";
 
-    private static final String WHITESPACE = " \t\r\n";
+    private static final String WHITESPACE = " \t\r\n\u2003\u2009\u3000";
 
     @Test
     public void parseIndex_invalidInput_throwsParseException() {
@@ -41,6 +43,24 @@ public class ParserUtilTest {
 
         // Leading and trailing whitespaces
         assertEquals(INDEX_FIRST, ParserUtil.parseIndex("  1  "));
+        assertEquals(INDEX_FIRST, ParserUtil.parseIndex(WHITESPACE + "1" + WHITESPACE));
+    }
+
+    @Test
+    public void parse_whitespaceOnlyValues_throwsParseException() {
+        for (String value : List.of(" ", "\u2003", "\u2009\u3000")) {
+            assertThrows(ParseException.class, () -> ParserUtil.parseIndex(value));
+            assertThrows(ParseException.class, () -> ParserUtil.parseName(value));
+            assertThrows(ParseException.class, () -> ParserUtil.parsePhone(value));
+            assertThrows(ParseException.class, () -> ParserUtil.parseEmail(value));
+        }
+    }
+
+    @Test
+    public void parse_internalWhitespace_preservesFieldRules() throws Exception {
+        assertEquals(new Name("Rachel  Walker"), ParserUtil.parseName("\u2003Rachel  Walker\u2009"));
+        assertThrows(ParseException.class, () -> ParserUtil.parsePhone("123\u2003456"));
+        assertThrows(ParseException.class, () -> ParserUtil.parseEmail("rachel\u2003@example.com"));
     }
 
     @Test

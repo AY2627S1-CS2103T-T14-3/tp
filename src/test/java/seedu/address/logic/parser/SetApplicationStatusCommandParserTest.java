@@ -24,6 +24,11 @@ public class SetApplicationStatusCommandParserTest {
     }
 
     @Test
+    public void parse_nonWhitespaceControlPrefix_throwsParseException() {
+        assertUnrecognized(String.valueOf((char) 0) + " 2 -s accept");
+    }
+
+    @Test
     public void parse_invalidStatus_throwsParseException() {
         assertParseFailure(parser, " 1 -s ACCEPT", MESSAGE_INVALID_STATUS);
         assertParseFailure(parser, " 1 -s Pending", MESSAGE_INVALID_STATUS);
@@ -48,7 +53,7 @@ public class SetApplicationStatusCommandParserTest {
     }
 
     private void assertUnrecognized(String args) {
-        String input = ("set" + args).trim().replaceAll("\\s+", " ");
+        String input = ("set" + args).strip().replaceAll("\\s+", " ");
         assertParseFailure(parser, args, String.format(MESSAGE_UNRECOGNIZED, input));
     }
 }
