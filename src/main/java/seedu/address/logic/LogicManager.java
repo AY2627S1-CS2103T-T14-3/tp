@@ -60,7 +60,8 @@ public class LogicManager implements Logic {
             stateBeforeCommand = new AddressBook(model.getAddressBook());
         }
         CommandResult commandResult = command.execute(model);
-        if (stateBeforeCommand != null && !stateBeforeCommand.equals(model.getAddressBook())) {
+        if (stateBeforeCommand != null
+                && storedRecordsChanged(stateBeforeCommand, model.getAddressBook())) {
             model.rememberStateForUndo(stateBeforeCommand);
         }
 
@@ -73,6 +74,24 @@ public class LogicManager implements Logic {
         }
 
         return commandResult;
+    }
+
+    /**
+     * Returns true if the stored applicants, jobs, or applications differ.
+     * Job equality compares the role only, so a description edit is checked separately.
+     */
+    private static boolean storedRecordsChanged(ReadOnlyAddressBook before, ReadOnlyAddressBook after) {
+        if (!before.equals(after)) {
+            return true;
+        }
+        for (int i = 0; i < before.getJobList().size(); i++) {
+            String beforeDescription = before.getJobList().get(i).getJobDescription();
+            String afterDescription = after.getJobList().get(i).getJobDescription();
+            if (!beforeDescription.equals(afterDescription)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

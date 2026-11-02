@@ -108,6 +108,18 @@ public class LogicManagerTest {
     }
 
     @Test
+    public void execute_undoAfterDescriptionEdit_restoresDescription() throws Exception {
+        logic.execute("addj -j Engineer -d Original");
+        logic.execute("editj 1 -d Revised");
+        assertEquals("Revised", model.getJobList().get(0).getJobDescription());
+
+        logic.execute("undo");
+        assertEquals(1, model.getJobList().size());
+        assertEquals("Engineer", model.getJobList().get(0).getJobRole());
+        assertEquals("Original", model.getJobList().get(0).getJobDescription());
+    }
+
+    @Test
     public void execute_failedDelete_doesNotReplaceUndoState() throws Exception {
         logic.execute("add -n Amy Bee -p 11111111 -e amy@example.com");
         assertCommandException("delete 5", MESSAGE_INVALID_APPLICANT_DISPLAYED_INDEX);
