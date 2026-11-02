@@ -1,11 +1,13 @@
 package seedu.address.ui;
 
 import java.nio.file.Path;
+import java.util.function.Predicate;
 import java.util.logging.Logger;
 
 import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -28,7 +30,9 @@ import seedu.address.logic.commands.ViewSelection;
 import seedu.address.logic.commands.ViewType;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.model.Model;
 import seedu.address.model.applicant.Applicant;
+import seedu.address.model.applicant.NameContainsKeywordsPredicate;
 import seedu.address.model.application.Application;
 
 /** The main window containing the command console and list views. */
@@ -186,12 +190,23 @@ public class MainWindow extends UiPart<Stage> {
     }
 
     private void showApplicantsView() {
-        listTitle.setText("Applicants");
-        listHint.setText("Select an applicant to view their details.");
+        FilteredList<Applicant> applicantFilteredList = logic.getFilteredApplicantList();
+        Predicate<? super Applicant> applicantPredicate = applicantFilteredList.getPredicate();
+
+        if (applicantPredicate == null
+                || applicantPredicate.equals(Model.PREDICATE_SHOW_ALL_APPLICANTS)
+                || NameContainsKeywordsPredicate.getKeywords(applicantPredicate) == null) {
+            listTitle.setText("Applicants");
+            listHint.setText("Select an applicant to view their details.");
+        } else {
+            listTitle.setText(String.format("Search: Found %d applicant(s)", applicantFilteredList.size()));
+            listHint.setText(String.format("Filtered with keyword(s): %s",
+                    NameContainsKeywordsPredicate.getKeywords(applicantPredicate)));
+        }
         consoleHint.setText(APPLICANT_HINT);
         viewListPlaceholder.getChildren().setAll(applicantListPanel.getRoot());
         applicantDetailPlaceholder.getChildren().setAll(applicantDetailPanel.getRoot());
-        bindCount(logic.getFilteredApplicantList(), "applicant", "applicants");
+        bindCount(applicantFilteredList, "applicant", "applicants");
     }
 
     private void showApplicationsView() {

@@ -1,6 +1,7 @@
 package seedu.address.logic;
 
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.exceptions.CommandException;
@@ -23,7 +24,7 @@ public interface Logic {
     CommandResult execute(String commandText) throws CommandException, ParseException;
 
     /** Returns an unmodifiable view of the filtered list of applicants */
-    ObservableList<Applicant> getFilteredApplicantList();
+    FilteredList<Applicant> getFilteredApplicantList();
 
     /** Returns an unmodifiable view of the recorded applications */
     ObservableList<Application> getApplicationList();

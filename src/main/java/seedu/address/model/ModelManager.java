@@ -164,7 +164,7 @@ public class ModelManager implements Model {
     }
 
     @Override
-    public ObservableList<Job> getFilteredJobList() {
+    public FilteredList<Job> getFilteredJobList() {
         return filteredJobs;
     }
 
@@ -181,7 +181,7 @@ public class ModelManager implements Model {
      * {@code addressBook}
      */
     @Override
-    public ObservableList<Applicant> getFilteredApplicantList() {
+    public FilteredList<Applicant> getFilteredApplicantList() {
         return filteredApplicants;
     }
 

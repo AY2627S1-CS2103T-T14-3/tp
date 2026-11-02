@@ -22,6 +22,13 @@ public class NameContainsKeywordsPredicate implements Predicate<Applicant> {
                 .anyMatch(keyword -> StringUtil.containsWordIgnoreCase(applicant.getName().fullName, keyword));
     }
 
+    public static String getKeywords(Predicate<? super Applicant> predicate) {
+        if (predicate instanceof NameContainsKeywordsPredicate keywordsPredicate) {
+            return String.join(", ", (keywordsPredicate.keywords));
+        }
+        return null;
+    }
+
     @Override
     public boolean equals(Object other) {
         if (other == this) {
