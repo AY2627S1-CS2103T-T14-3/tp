@@ -36,6 +36,7 @@ public class ApplicantDetailPanel extends UiPart<Region> {
     /** Creates the detail panel with no applicant selected. */
     public ApplicantDetailPanel() {
         super(FXML);
+        enableCopy(applicantName, email, phone, applicationStatus, applicationStatusBadge, jobDesc);
         showApplicant(null, null);
     }
 
