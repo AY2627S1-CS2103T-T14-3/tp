@@ -9,6 +9,7 @@ import static seedu.address.testutil.TypicalApplicants.AMY;
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.Path;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -86,6 +87,46 @@ public class LogicManagerTest {
         JsonAddressBookStorage savedStorage =
                 new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
         assertEquals(expectedModel.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
+    }
+
+    @Test
+    public void execute_addCaseVariantDuplicate_throwsCommandException() throws Exception {
+        logic.execute("add -n Amy Bee -p 11111111 -e amy@example.com");
+        for (String fields : List.of("-n amy bee -e other@example.com", "-n AMY BEE -e other@example.com",
+                "-n Other Name -e AMY@example.com", "-n Other Name -e amy@EXAMPLE.COM")) {
+            assertCommandException("add -p 91234567 " + fields, AddCommand.MESSAGE_DUPLICATE_APPLICANT);
+        }
+    }
+
+    @Test
+    public void execute_editCaseVariantDuplicateHiddenByFilter_throwsCommandException() throws Exception {
+        logic.execute("add -n Amy Bee -p 11111111 -e amy@example.com");
+        logic.execute("add -n Bob Choo -p 91234567 -e bob@example.com");
+        logic.execute("find Bob");
+        Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
+        expectedModel.updateFilteredApplicantList(applicant -> applicant.getName().fullName.equals("Bob Choo"));
+
+        for (String fields : List.of("-n AMY BEE", "-e AMY@example.com", "-e amy@EXAMPLE.COM")) {
+            assertCommandFailure("edit 1 " + fields, CommandException.class,
+                    EditCommand.MESSAGE_DUPLICATE_APPLICANT, expectedModel);
+        }
+    }
+
+    @Test
+    public void execute_editOwnCapitalization_preservesApplicationAndSavesSpelling() throws Exception {
+        logic.execute("add -n Amy Bee -p 11111111 -e amy@example.com");
+        logic.execute("addj -j Engineer");
+        logic.execute("addp 1 -j Engineer -s accept");
+        logic.execute("edit 1 -n AMY BEE -e Amy@Example.com");
+        Applicant editedApplicant = new ApplicantBuilder(AMY).withName("AMY BEE")
+                .withEmail("Amy@Example.com").build();
+
+        assertEquals(List.of(editedApplicant), model.getAddressBook().getApplicantList());
+        assertEquals(new Application(editedApplicant, new Job("Engineer"), Application.Status.ACCEPT),
+                model.getApplication(editedApplicant).orElseThrow());
+        JsonAddressBookStorage savedStorage =
+                new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
+        assertEquals(model.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
     }
 
     @Test

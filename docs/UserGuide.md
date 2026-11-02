@@ -101,8 +101,11 @@ Format: `help`
 Adds an applicant to the address book.
 
 Each applicant must have a unique name and a unique email address. Adding or editing an applicant
-to use another applicant's name or email is rejected. Comparisons are case-sensitive.
-Saved data containing duplicate names or emails is treated as invalid; correct the duplicates before loading it.
+to use another applicant's name or email is rejected, ignoring letter case. For example, `Amy Bee` and
+`amy bee` are duplicate names, and `amy@example.com` and `Amy@Example.com` are duplicate emails.
+The spelling and capitalization you enter are preserved. You can change an applicant's own capitalization with `edit`.
+Saved data containing duplicate names or emails, including those differing only in case, is treated as invalid;
+correct the duplicates before loading it.
 
 Format: `add -n NAME -p PHONE_NUMBER -e EMAIL`
 
