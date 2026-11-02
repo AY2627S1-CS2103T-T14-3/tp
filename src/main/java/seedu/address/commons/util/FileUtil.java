@@ -60,8 +60,12 @@ public class FileUtil {
         requireNonNull(file);
         requireNonNull(content);
 
-        Path absoluteFile = file.toAbsolutePath();
-        Path parentDir = absoluteFile.getParent();
+        Path destination = file.toAbsolutePath();
+        // Follow a symbolic link so the save updates its target, not the link itself.
+        if (Files.isSymbolicLink(destination)) {
+            destination = destination.toRealPath();
+        }
+        Path parentDir = destination.getParent();
         if (parentDir == null) {
             throw new IOException("File has no parent directory: " + file);
         }
@@ -70,7 +74,7 @@ public class FileUtil {
         Path tempFile = Files.createTempFile(parentDir, "linkedout", ".tmp");
         try {
             Files.write(tempFile, content.getBytes(CHARSET));
-            moveIntoPlace(tempFile, absoluteFile);
+            moveIntoPlace(tempFile, destination);
         } catch (IOException writeError) {
             try {
                 Files.deleteIfExists(tempFile);

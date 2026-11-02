@@ -2,6 +2,8 @@ package seedu.address.commons.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static seedu.address.testutil.Assert.assertThrows;
 
 import java.io.IOException;
@@ -40,6 +42,9 @@ public class FileUtilTest {
     public void writeToFile_parentNotWritable_keepsExistingContent() throws Exception {
         Path directory = tempDir.resolve("locked");
         Files.createDirectory(directory);
+        assumeTrue(directory.getFileSystem().supportedFileAttributeViews().contains("posix"),
+                "POSIX permissions are not supported");
+
         Path file = directory.resolve("save.json");
         String original = "previous-valid-save";
         Files.writeString(file, original);
@@ -50,6 +55,8 @@ public class FileUtilTest {
         permissions.remove(PosixFilePermission.OTHERS_WRITE);
         Files.setPosixFilePermissions(directory, permissions);
         try {
+            assumeFalse(Files.isWritable(directory),
+                    "Directory is still writable after removing write permission");
             assertThrows(IOException.class, () -> FileUtil.writeToFile(file, "replacement-that-must-not-land"));
             assertEquals(original, Files.readString(file));
             assertNoTempFiles(directory);
@@ -57,6 +64,27 @@ public class FileUtilTest {
             permissions.add(PosixFilePermission.OWNER_WRITE);
             Files.setPosixFilePermissions(directory, permissions);
         }
+    }
+
+    @Test
+    public void writeToFile_symbolicLink_updatesTargetAndKeepsLink() throws Exception {
+        Path targetDirectory = tempDir.resolve("elsewhere");
+        Files.createDirectory(targetDirectory);
+        Path target = targetDirectory.resolve("real-save.json");
+        Files.writeString(target, "previous");
+        Path link = tempDir.resolve("addressbook.json");
+        try {
+            Files.createSymbolicLink(link, target);
+        } catch (UnsupportedOperationException | IOException e) {
+            assumeTrue(false, "Symbolic links are not supported");
+        }
+
+        FileUtil.writeToFile(link, "updated");
+
+        assertTrue(Files.isSymbolicLink(link));
+        assertEquals("updated", Files.readString(target));
+        assertEquals("updated", Files.readString(link));
+        assertNoTempFiles(targetDirectory);
     }
 
     @Test
