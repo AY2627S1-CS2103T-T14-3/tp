@@ -25,6 +25,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.geometry.Bounds;
 import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
@@ -125,11 +126,53 @@ public class LinkedOutUiTest {
                 Label status = (Label) window.getRoot().getScene()
                         .lookup(".application-card #statusBadge");
                 assertEquals("Pending", status.getText());
-                assertTrue(status.getWidth() >= status.prefWidth(-1) - 1,
-                        "Status width " + status.getWidth() + " vs preferred " + status.prefWidth(-1));
+                assertBadgeFits(status);
+                for (String id : List.of("name", "job")) {
+                    Label summary = (Label) window.getRoot().getScene()
+                            .lookup(".application-card #" + id);
+                    assertTrue(summary.getHeight() <= summary.prefHeight(-1) + 1,
+                            "Card summaries should remain a single line when fields are long");
+                }
             }
             assertEquals(job.toString(), ((Label) window.getRoot().getScene()
                     .lookup(".application-card #job")).getText());
+        });
+    }
+
+    @Test
+    public void applicationDetails_longJobFields_keepFullStatusVisibleWhenResized() throws Exception {
+        withWindow((window, model) -> {
+            Job job = new Job("LongRole".repeat(10), "Long description ".repeat(40));
+            model.addJob(job);
+            Application application = new Application(ALICE, job, Application.Status.PENDING);
+            model.addApplication(application);
+            command(window, "view 1");
+
+            for (Application.Status status : Application.Status.values()) {
+                Application updatedApplication = new Application(ALICE, job, status);
+                model.setApplication(application, updatedApplication);
+                application = updatedApplication;
+                for (int width : List.of(1200, 900, 1100)) {
+                    window.getRoot().getScene().getRoot().resize(width, 680);
+                    pulse(window);
+                    pulse(window);
+                    Label badge = label(window, "applicationStatusBadge");
+                    String expectedStatus = switch (status) {
+                        case ACCEPT -> "Accepted";
+                        case REJECT -> "Rejected";
+                        case PENDING -> "Pending";
+                    };
+                    assertApplication(window, job.getJobRole(), job.getJobDescription(), expectedStatus);
+                    assertBadgeFits(badge);
+                    Node viewport = window.getRoot().getScene().lookup(".detail-scroll .viewport");
+                    Bounds viewportBounds = viewport.localToScene(viewport.getLayoutBounds());
+                    Bounds badgeBounds = badge.localToScene(badge.getLayoutBounds());
+                    // Long details may scroll vertically, but the badge must fit horizontally.
+                    assertTrue(badgeBounds.getMinX() >= viewportBounds.getMinX()
+                            && badgeBounds.getMaxX() <= viewportBounds.getMaxX(),
+                            "Status bounds " + badgeBounds + " exceed detail viewport width " + viewportBounds);
+                }
+            }
         });
     }
 
@@ -807,6 +850,16 @@ public class LinkedOutUiTest {
 
     private String feedback(MainWindow window) {
         return ((TextArea) window.getRoot().getScene().lookup("#resultDisplay")).getText();
+    }
+
+    /** Verifies that a status badge displays its full text within its row. */
+    private void assertBadgeFits(Label badge) {
+        assertTrue(badge.isVisible());
+        assertTrue(badge.getWidth() >= badge.prefWidth(-1) - 1,
+                "Status width " + badge.getWidth() + " vs preferred " + badge.prefWidth(-1));
+        Bounds rowBounds = badge.getParent().getLayoutBounds();
+        assertTrue(rowBounds.contains(badge.getBoundsInParent()),
+                "The full status badge should remain inside its row");
     }
 
     /** Verifies that cards fit the viewport without a horizontal scrollbar. */
