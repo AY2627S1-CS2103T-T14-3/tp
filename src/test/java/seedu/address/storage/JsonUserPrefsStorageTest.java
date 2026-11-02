@@ -44,6 +44,16 @@ public class JsonUserPrefsStorageTest {
     }
 
     @Test
+    public void readUserPrefs_nullGuiSettings_throwsDataLoadingException() throws Exception {
+        Path filePath = testFolder.resolve("NullGuiSettings.json");
+        String json = "{\"guiSettings\":null}";
+        Files.writeString(filePath, json);
+
+        assertThrows(DataLoadingException.class, () -> new JsonUserPrefsStorage(filePath).readUserPrefs());
+        assertEquals(json, Files.readString(filePath));
+    }
+
+    @Test
     public void readUserPrefs_missingFile_emptyResult() throws DataLoadingException {
         assertFalse(readUserPrefs("NonExistentFile.json").isPresent());
     }
