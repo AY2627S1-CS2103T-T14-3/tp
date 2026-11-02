@@ -229,6 +229,7 @@ public class LinkedOutUiTest {
             assertEquals(ALICE.getEmail().value, label(window, "email").getText());
             assertEquals(ALICE.getPhone().value, label(window, "phone").getText());
             assertApplication(window, "Engineer", "No information ~", "Accepted");
+            assertTrue(feedback(window).contains("Warning: The applicant's application was also deleted."));
             assertEquals("0 applicants", label(window, "applicantCount").getText());
             assertTrue(model.getApplicationList().isEmpty());
             ListView<?> applicants = (ListView<?>) window.getRoot().getScene().lookup("#applicantListView");
@@ -564,6 +565,7 @@ public class LinkedOutUiTest {
             command(window, "addj -j Janitor");
             command(window, "addp 2 -j Janitor");
             command(window, "deletej 1");
+            assertTrue(feedback(window).contains("Warning: Applications deleted with this job: 1."));
             command(window, "viewp");
             assertEquals("0 applications", label(window, "applicantCount").getText());
             command(window, "view 2");

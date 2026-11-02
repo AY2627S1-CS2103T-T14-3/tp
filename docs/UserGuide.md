@@ -202,6 +202,8 @@ The applicant and their application are removed together. Jobs remain in the job
 remain visible in the detail panel, marked as deleted, until you select another applicant or run another successful
 applicant command.
 Opening Help, either with `help` or through the menu, preserves these deleted details.
+If the applicant had an application, the result includes a warning that the application was also deleted.
+Deletion takes effect immediately, without a confirmation prompt.
 
 Format: `delete INDEX`
 
@@ -365,6 +367,7 @@ Format: `deletej INDEX`
 
 * `INDEX` is the positive integer shown beside a job in the job list currently displayed. After `viewj -f jan`, index 1 is the first matching job.
 * Deleting a role also deletes all applications with the same job role. Applicants and their contact details are kept.
+* If applications were removed, the result includes a warning with the number deleted, including those hidden by a filter. Deletion takes effect immediately, without a confirmation prompt.
 * Job roles are matched exactly after trimming surrounding spaces; different letter cases identify different jobs.
 * An empty list, a missing index, or an index past the end of the list produces an error and leaves the jobs unchanged.
 

@@ -155,7 +155,8 @@ public class LogicManagerTest {
         Model expectedModel = new ModelManager();
         expectedModel.addApplicant(AMY);
         assertEquals(new CommandResult(String.format(
-                DeleteJobCommand.MESSAGE_DELETE_JOB_SUCCESS, "Software Engineer"), ViewRequest.jobs()), result);
+                DeleteJobCommand.MESSAGE_DELETE_JOB_SUCCESS, "Software Engineer")
+                + "\nWarning: Applications deleted with this job: 1.", ViewRequest.jobs()), result);
         assertEquals(expectedModel, model);
         JsonAddressBookStorage savedStorage =
                 new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
