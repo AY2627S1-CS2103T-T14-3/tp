@@ -193,6 +193,13 @@ public class LogicManagerTest {
         }
         assertEquals(unrelatedApplication, reloaded.getApplicationList().getLast());
         assertEquals("Other description", reloaded.getApplicationList().getLast().getJob().getJobDescription());
+
+        CommandResult deletion = logic.execute("deletej 1");
+        assertEquals(String.format(DeleteJobCommand.MESSAGE_DELETE_JOB_SUCCESS, "Cleaner")
+                + "\nWarning: Applications deleted with this job: 3.", deletion.getFeedbackToUser());
+        assertEquals(List.of(unrelatedApplication), model.getApplicationList());
+        assertEquals(applicants, model.getAddressBook().getApplicantList());
+        assertEquals(model.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
     }
 
     @Test
@@ -206,7 +213,8 @@ public class LogicManagerTest {
         Model expectedModel = new ModelManager();
         expectedModel.addApplicant(AMY);
         assertEquals(new CommandResult(String.format(
-                DeleteJobCommand.MESSAGE_DELETE_JOB_SUCCESS, "Software Engineer"), ViewRequest.jobs()), result);
+                DeleteJobCommand.MESSAGE_DELETE_JOB_SUCCESS, "Software Engineer")
+                + "\nWarning: Applications deleted with this job: 1.", ViewRequest.jobs()), result);
         assertEquals(expectedModel, model);
         JsonAddressBookStorage savedStorage =
                 new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
