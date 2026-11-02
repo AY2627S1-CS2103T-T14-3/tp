@@ -14,6 +14,7 @@ import static seedu.address.testutil.TypicalApplicants.GEORGE;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
@@ -807,13 +808,16 @@ public class LinkedOutUiTest {
         withWindow(window -> {
             command(window, "addj -job Janitor");
             command(window, "addp 2 -j Janitor");
-            command(window, "set 2 -status accept");
-            ListView<?> applicants = (ListView<?>) window.getRoot().getScene().lookup("#applicantListView");
-            assertEquals(1, applicants.getSelectionModel().getSelectedIndex());
-            assertApplicantDetails(window, BENSON);
-            assertApplication(window, "Janitor", "No information ~", "Accepted");
-            assertEquals(String.format(SetApplicationStatusCommand.MESSAGE_SUCCESS,
-                    BENSON.getName(), BENSON.getEmail(), "accept"), feedback(window));
+            for (Map.Entry<String, String> status : Map.of("accept", "Accepted", "reject", "Rejected",
+                    "pending", "Pending").entrySet()) {
+                command(window, "set 2 -status " + status.getKey());
+                ListView<?> applicants = (ListView<?>) window.getRoot().getScene().lookup("#applicantListView");
+                assertEquals(1, applicants.getSelectionModel().getSelectedIndex());
+                assertApplicantDetails(window, BENSON);
+                assertApplication(window, "Janitor", "No information ~", status.getValue());
+                assertEquals(String.format(SetApplicationStatusCommand.MESSAGE_SUCCESS,
+                        BENSON.getName(), BENSON.getEmail(), status.getValue()), feedback(window));
+            }
         });
     }
 
