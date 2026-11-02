@@ -7,6 +7,10 @@ LinkedOut is a **desktop application for recruiters and HR administrators managi
 and application outcomes**. Type commands to manage your records, then review them in applicant, application,
 and job lists with a detail panel for the selected record. Each applicant can have one application.
 
+Long applicant fields and application summaries in list cards are shortened with ellipses to fit the available
+width. Application status badges keep their full text. Select a record to read its full details, with job text
+wrapped and the application status shown in full.
+
 LinkedOut is a personal workspace for one recruiter. Your records are stored locally on your computer.
 
 * Table of Contents
@@ -115,8 +119,11 @@ Format: `help`
 Adds an applicant to the address book.
 
 Each applicant must have a unique name and a unique email address. Adding or editing an applicant
-to use another applicant's name or email is rejected. Comparisons are case-sensitive.
-Saved data containing duplicate names or emails is treated as invalid; correct the duplicates before loading it.
+to use another applicant's name or email is rejected, ignoring letter case. For example, `Amy Bee` and
+`amy bee` are duplicate names, and `amy@example.com` and `Amy@Example.com` are duplicate emails.
+The spelling and capitalization you enter are preserved. You can change an applicant's own capitalization with `edit`.
+Saved data containing duplicate names or emails, including those differing only in case, is treated as invalid;
+correct the duplicates before loading it.
 
 Email addresses must be at most 254 characters long. Domain labels may contain consecutive hyphens,
 including Punycode names such as `alice@xn--bcher-kva.de`, but must start and end with a letter or digit.
@@ -136,6 +143,7 @@ Email | `-e` | `-email`
 * All three fields are required. Each option must appear exactly once and have a non-empty value.
 * Short and long aliases can be mixed, and options can appear in any order.
 * Values containing spaces, such as a full name, do not need quotation marks.
+* Names must start with a Unicode letter or digit. They can contain Unicode letters (including combining accents), digits, spaces, apostrophes (`'` or `’`), hyphens (`-`), periods (`.`), and slashes (`/`). These rules also apply to `edit`.
 * Unknown options, repeated options (including different aliases for the same field), missing values, and text before the first option produce a format error with a usage hint.
 * The applicant list is shown and the new applicant is selected.
 * Standalone words such as `-unknown` are treated as options, even inside a value.

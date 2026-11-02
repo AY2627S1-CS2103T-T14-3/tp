@@ -25,9 +25,12 @@ import org.junit.jupiter.api.io.TempDir;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.geometry.Bounds;
+import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -47,6 +50,7 @@ import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
 import seedu.address.model.applicant.Applicant;
+import seedu.address.model.application.Application;
 import seedu.address.model.application.Job;
 import seedu.address.storage.JsonAddressBookStorage;
 import seedu.address.storage.JsonUserPrefsStorage;
@@ -93,6 +97,87 @@ public class LinkedOutUiTest {
             Applicant selected = (Applicant) applicants.getSelectionModel().getSelectedItem();
             assertEquals(selected.getName().fullName, label(window, "applicantName").getText());
             assertApplication(window, "No application recorded.", null, null);
+        });
+    }
+
+    @Test
+    public void applicantCards_longFields_stayWithinListWhenResized() throws Exception {
+        withWindow((window, model) -> {
+            Applicant applicant = new ApplicantBuilder(ALICE).withName("LongName".repeat(100))
+                    .withEmail("long".repeat(40) + "@example.com").withPhone("1234567890".repeat(5)).build();
+            model.setApplicant(ALICE, applicant);
+
+            for (int width : List.of(1200, 900, 1100)) {
+                window.getRoot().getScene().getRoot().resize(width, 680);
+                assertCardsFitList(window, "applicantListView", "applicant-card");
+            }
+            assertEquals(applicant, model.getFilteredApplicantList().getFirst());
+        });
+    }
+
+    @Test
+    public void applicationCards_longFields_keepStatusVisibleWhenResized() throws Exception {
+        withWindow((window, model) -> {
+            Applicant applicant = new ApplicantBuilder(ALICE).withName("LongName".repeat(100)).build();
+            model.setApplicant(ALICE, applicant);
+            Job job = new Job("LongRole".repeat(100), "Long description ".repeat(40));
+            model.addJob(job);
+            model.addApplication(new Application(applicant, job, Application.Status.PENDING));
+            command(window, "viewp");
+
+            for (int width : List.of(1200, 900, 1100)) {
+                window.getRoot().getScene().getRoot().resize(width, 680);
+                assertCardsFitList(window, "applicationListView", "application-card");
+                Label status = (Label) window.getRoot().getScene()
+                        .lookup(".application-card #statusBadge");
+                assertEquals("Pending", status.getText());
+                assertBadgeFits(status);
+                for (String id : List.of("name", "job")) {
+                    Label summary = (Label) window.getRoot().getScene()
+                            .lookup(".application-card #" + id);
+                    assertTrue(summary.getHeight() <= summary.prefHeight(-1) + 1,
+                            "Card summaries should remain a single line when fields are long");
+                }
+            }
+            assertEquals(job.toString(), ((Label) window.getRoot().getScene()
+                    .lookup(".application-card #job")).getText());
+        });
+    }
+
+    @Test
+    public void applicationDetails_longJobFields_keepFullStatusVisibleWhenResized() throws Exception {
+        withWindow((window, model) -> {
+            Job job = new Job("LongRole".repeat(10), "Long description ".repeat(40));
+            model.addJob(job);
+            Application application = new Application(ALICE, job, Application.Status.PENDING);
+            model.addApplication(application);
+            command(window, "view 1");
+
+            for (Application.Status status : Application.Status.values()) {
+                Application updatedApplication = new Application(ALICE, job, status);
+                model.setApplication(application, updatedApplication);
+                application = updatedApplication;
+                for (int width : List.of(1200, 900, 1100)) {
+                    window.getRoot().getScene().getRoot().resize(width, 680);
+                    pulse(window);
+                    pulse(window);
+                    Label badge = label(window, "applicationStatusBadge");
+                    String expectedStatus = switch (status) {
+                        case ACCEPT -> "Accepted";
+                        case REJECT -> "Rejected";
+                        case PENDING -> "Pending";
+                    };
+                    assertApplication(window, job.getJobRole(), job.getJobDescription(), expectedStatus);
+                    assertBadgeFits(badge);
+                    Node viewport = window.getRoot().getScene().lookup(".detail-scroll .viewport");
+                    Bounds viewportBounds = viewport.localToScene(viewport.getLayoutBounds());
+                    Bounds badgeBounds = badge.localToScene(badge.getLayoutBounds());
+                    // Long details may scroll vertically, but the badge must fit horizontally.
+                    assertTrue(badgeBounds.getMinX() >= viewportBounds.getMinX()
+                            && badgeBounds.getMaxX() <= viewportBounds.getMaxX(),
+                            "Status bounds " + badgeBounds + " exceed detail viewport width " + viewportBounds);
+                }
+            }
         });
     }
 
@@ -1001,6 +1086,43 @@ public class LinkedOutUiTest {
 
     private String feedback(MainWindow window) {
         return ((TextArea) window.getRoot().getScene().lookup("#resultDisplay")).getText();
+    }
+
+    /** Verifies that a status badge displays its full text within its row. */
+    private void assertBadgeFits(Label badge) {
+        assertTrue(badge.isVisible());
+        assertTrue(badge.getWidth() >= badge.prefWidth(-1) - 1,
+                "Status width " + badge.getWidth() + " vs preferred " + badge.prefWidth(-1));
+        Bounds rowBounds = badge.getParent().getLayoutBounds();
+        assertTrue(rowBounds.contains(badge.getBoundsInParent()),
+                "The full status badge should remain inside its row");
+    }
+
+    /** Verifies that cards fit the viewport without a horizontal scrollbar. */
+    private void assertCardsFitList(MainWindow window, String listId, String cardClass) {
+        pulse(window);
+        pulse(window);
+        ListView<?> list = (ListView<?>) window.getRoot().getScene().lookup("#" + listId);
+        assertFalse(list.lookupAll("." + cardClass).isEmpty());
+        int visibleCardCount = 0;
+        for (Node card : list.lookupAll("." + cardClass)) {
+            // VirtualFlow retains offscreen cells at their old widths until they are reused.
+            if (!card.getParent().isVisible()) {
+                continue;
+            }
+            visibleCardCount++;
+            assertTrue(card.getLayoutBounds().getWidth() >= list.getWidth() - 30,
+                    "Visible cards should fill the list width, allowing space for its scrollbar");
+            assertTrue(card.getLayoutBounds().getWidth() <= list.getWidth() + 1,
+                    "Card width " + card.getLayoutBounds().getWidth() + " exceeds list width " + list.getWidth());
+        }
+        assertTrue(visibleCardCount > 0);
+        for (Node node : list.lookupAll(".scroll-bar")) {
+            ScrollBar bar = (ScrollBar) node;
+            if (bar.getOrientation() == Orientation.HORIZONTAL) {
+                assertFalse(bar.isVisible(), "Long fields must not cause horizontal scrolling");
+            }
+        }
     }
 
     private void pulse(MainWindow window) {
