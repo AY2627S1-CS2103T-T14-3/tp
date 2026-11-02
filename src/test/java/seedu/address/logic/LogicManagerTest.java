@@ -1,6 +1,7 @@
 package seedu.address.logic;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_APPLICANT_DISPLAYED_INDEX;
 import static seedu.address.logic.Messages.MESSAGE_UNKNOWN_COMMAND;
 import static seedu.address.testutil.Assert.assertThrows;
@@ -9,6 +10,7 @@ import static seedu.address.testutil.TypicalApplicants.AMY;
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
 import java.nio.file.Path;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -142,6 +144,62 @@ public class LogicManagerTest {
         JsonAddressBookStorage savedStorage =
                 new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
         assertEquals(expectedModel.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
+    }
+
+    @Test
+    public void execute_editJobWithThreeApplications_savesReloadableReferences() throws Exception {
+        logic.execute("add -n Alice -p 91234567 -e alice@example.com");
+        logic.execute("add -n Bob -p 91234568 -e bob@example.com");
+        logic.execute("add -n Carol -p 91234569 -e carol@example.com");
+        logic.execute("add -n Dave -p 91234570 -e dave@example.com");
+        logic.execute("add -n Eve -p 91234571 -e eve@example.com");
+        logic.execute("addj -j Janitor -d Old description");
+        logic.execute("addj -j janitor -d Other description");
+        logic.execute("addp 1 -j Janitor");
+        logic.execute("addp 2 -j Janitor");
+        logic.execute("addp 3 -j Janitor");
+        logic.execute("addp 4 -j janitor -s reject");
+        List<Applicant> applicants = List.copyOf(model.getAddressBook().getApplicantList());
+        Applicant applicantWithoutApplication = applicants.getLast();
+        Application unrelatedApplication = model.getApplicationList().getLast();
+
+        logic.execute("editj 1 -j Cleaner");
+
+        Job editedJob = new Job("Cleaner", "Old description");
+        assertEquals(List.of(editedJob, unrelatedApplication.getJob()), model.getJobList());
+        assertEquals(applicants, model.getAddressBook().getApplicantList());
+        assertFalse(model.hasApplication(applicantWithoutApplication));
+        assertEquals(4, model.getApplicationList().size());
+        for (int i = 0; i < 3; i++) {
+            Application application = model.getApplicationList().get(i);
+            assertEquals(applicants.get(i), application.getApplicant());
+            assertEquals(editedJob, application.getJob());
+            assertEquals(editedJob.getJobDescription(), application.getJob().getJobDescription());
+            assertEquals(Application.Status.PENDING, application.getStatus());
+        }
+        assertEquals(unrelatedApplication, model.getApplicationList().getLast());
+        assertEquals("Other description", model.getApplicationList().getLast().getJob().getJobDescription());
+        JsonAddressBookStorage savedStorage =
+                new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
+        ReadOnlyAddressBook reloaded = savedStorage.readAddressBook().orElseThrow();
+        assertEquals(model.getAddressBook(), reloaded);
+        assertEquals(applicants, reloaded.getApplicantList());
+        assertEquals(4, reloaded.getApplicationList().size());
+        assertFalse(reloaded.getApplicationList().stream()
+                .anyMatch(application -> application.isForApplicant(applicantWithoutApplication)));
+        for (int i = 0; i < 3; i++) {
+            assertEquals(editedJob.getJobDescription(),
+                    reloaded.getApplicationList().get(i).getJob().getJobDescription());
+        }
+        assertEquals(unrelatedApplication, reloaded.getApplicationList().getLast());
+        assertEquals("Other description", reloaded.getApplicationList().getLast().getJob().getJobDescription());
+
+        CommandResult deletion = logic.execute("deletej 1");
+        assertEquals(String.format(DeleteJobCommand.MESSAGE_DELETE_JOB_SUCCESS, "Cleaner")
+                + "\nWarning: Applications deleted with this job: 3.", deletion.getFeedbackToUser());
+        assertEquals(List.of(unrelatedApplication), model.getApplicationList());
+        assertEquals(applicants, model.getAddressBook().getApplicantList());
+        assertEquals(model.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
     }
 
     @Test
