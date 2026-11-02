@@ -35,6 +35,14 @@ public class ViewJobCommandParserTest {
     }
 
     @Test
+    public void parse_longUnknownOption_throwsParseException() {
+        String expected = String.format(MESSAGE_INVALID_COMMAND_FORMAT, ViewJobCommand.MESSAGE_USAGE);
+        for (String preamble : List.of("", "1 ", "-f jan ")) {
+            assertParseFailure(parser, preamble + "-" + "a-".repeat(2000) + "a value", expected);
+        }
+    }
+
+    @Test
     public void parse_invalidArgs_throwsParseException() {
         String expected = String.format(MESSAGE_INVALID_COMMAND_FORMAT, ViewJobCommand.MESSAGE_USAGE);
         for (String args : List.of("0", "-1", "1.5", "2147483648", "abc", "1 2", "-f",

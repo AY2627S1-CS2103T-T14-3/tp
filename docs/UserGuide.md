@@ -104,6 +104,11 @@ Each applicant must have a unique name and a unique email address. Adding or edi
 to use another applicant's name or email is rejected. Comparisons are case-sensitive.
 Saved data containing duplicate names or emails is treated as invalid; correct the duplicates before loading it.
 
+Email addresses must be at most 254 characters long. Domain labels may contain consecutive hyphens,
+including Punycode names such as `alice@xn--bcher-kva.de`, but must start and end with a letter or digit.
+The length limit also applies when editing applicants and loading saved data; older records exceeding
+it must be corrected before loading.
+
 Format: `add -n NAME -p PHONE_NUMBER -e EMAIL`
 
 Each option also accepts a long alias:

@@ -9,6 +9,7 @@ import static seedu.address.testutil.TypicalApplicants.IDA;
 import static seedu.address.testutil.TypicalApplicants.getTypicalAddressBook;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -60,6 +61,19 @@ public class JsonAddressBookStorageTest {
     @Test
     public void readAddressBook_invalidAndValidApplicantAddressBook_throwDataLoadingException() {
         assertThrows(DataLoadingException.class, () -> readAddressBook("invalidAndValidApplicantAddressBook.json"));
+    }
+
+    @Test
+    public void readAddressBook_trailingJson_throwsDataLoadingException() throws Exception {
+        Path filePath = testFolder.resolve("TrailingAddressBook.json");
+        JsonAddressBookStorage storage = new JsonAddressBookStorage(filePath);
+        storage.saveAddressBook(getTypicalAddressBook());
+        String saved = Files.readString(filePath);
+        String withTrailingObject = saved + saved;
+        Files.writeString(filePath, withTrailingObject);
+
+        assertThrows(DataLoadingException.class, () -> storage.readAddressBook());
+        assertEquals(withTrailingObject, Files.readString(filePath));
     }
 
     @Test
