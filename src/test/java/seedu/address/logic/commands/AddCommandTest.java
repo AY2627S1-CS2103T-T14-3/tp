@@ -134,6 +134,16 @@ public class AddCommandTest {
         }
 
         @Override
+        public void rememberStateForUndo(ReadOnlyAddressBook previousState) {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public boolean undoAddressBook() {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
         public boolean hasApplicant(Applicant applicant) {
             throw new AssertionError("This method should not be called.");
         }

@@ -23,6 +23,7 @@ import seedu.address.logic.commands.DeleteJobCommand;
 import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.EditJobCommand;
 import seedu.address.logic.commands.ListCommand;
+import seedu.address.logic.commands.UndoCommand;
 import seedu.address.logic.commands.ViewRequest;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.exceptions.ParseException;
@@ -68,6 +69,65 @@ public class LogicManagerTest {
     public void execute_commandExecutionError_throwsCommandException() {
         String deleteCommand = "delete 9";
         assertCommandException(deleteCommand, MESSAGE_INVALID_APPLICANT_DISPLAYED_INDEX);
+    }
+
+    @Test
+    public void execute_undoWithoutStoredChange_throwsCommandException() throws Exception {
+        logic.execute("list");
+        assertCommandException("undo", UndoCommand.MESSAGE_FAILURE);
+    }
+
+    @Test
+    public void execute_undoAfterDelete_restoresApplicantAndJob() throws Exception {
+        logic.execute("add -n Amy Bee -p 11111111 -e amy@example.com");
+        logic.execute("addj -j Engineer");
+        logic.execute("delete 1");
+        assertEquals(0, model.getFilteredApplicantList().size());
+
+        CommandResult undoApplicant = logic.execute("undo");
+        assertEquals(UndoCommand.MESSAGE_SUCCESS, undoApplicant.getFeedbackToUser());
+        assertEquals("Amy Bee", model.getFilteredApplicantList().get(0).getName().fullName);
+        assertEquals(1, model.getJobList().size());
+
+        logic.execute("deletej 1");
+        assertEquals(0, model.getJobList().size());
+        logic.execute("undo");
+        assertEquals("Engineer", model.getJobList().get(0).getJobRole());
+    }
+
+    @Test
+    public void execute_twoChanges_undoRestoresOneAtATime() throws Exception {
+        logic.execute("add -n Amy Bee -p 11111111 -e amy@example.com");
+        logic.execute("add -n Bob Choo -p 22222222 -e bob@example.com");
+
+        logic.execute("undo");
+        assertEquals(1, model.getFilteredApplicantList().size());
+        assertEquals("Amy Bee", model.getFilteredApplicantList().get(0).getName().fullName);
+
+        logic.execute("undo");
+        assertEquals(0, model.getFilteredApplicantList().size());
+        assertCommandException("undo", UndoCommand.MESSAGE_FAILURE);
+    }
+
+    @Test
+    public void execute_undoAfterDescriptionEdit_restoresDescription() throws Exception {
+        logic.execute("addj -j Engineer -d Original");
+        logic.execute("editj 1 -d Revised");
+        assertEquals("Revised", model.getJobList().get(0).getJobDescription());
+
+        logic.execute("undo");
+        assertEquals(1, model.getJobList().size());
+        assertEquals("Engineer", model.getJobList().get(0).getJobRole());
+        assertEquals("Original", model.getJobList().get(0).getJobDescription());
+    }
+
+    @Test
+    public void execute_failedDelete_doesNotReplaceUndoState() throws Exception {
+        logic.execute("add -n Amy Bee -p 11111111 -e amy@example.com");
+        assertCommandException("delete 5", MESSAGE_INVALID_APPLICANT_DISPLAYED_INDEX);
+
+        logic.execute("undo");
+        assertEquals(0, model.getFilteredApplicantList().size());
     }
 
     @Test

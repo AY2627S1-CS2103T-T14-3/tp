@@ -23,6 +23,7 @@ import seedu.address.logic.commands.FindCommand;
 import seedu.address.logic.commands.HelpCommand;
 import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.commands.SetApplicationStatusCommand;
+import seedu.address.logic.commands.UndoCommand;
 import seedu.address.logic.commands.ViewApplicationCommand;
 import seedu.address.logic.commands.ViewCommand;
 import seedu.address.logic.commands.ViewJobCommand;
@@ -78,10 +79,24 @@ public class AddressBookParser {
             case ViewJobCommand.COMMAND_WORD -> new ViewJobCommandParser().parse(arguments);
             case ByeCommand.COMMAND_WORD, "exit" -> new ByeCommandParser().parse(arguments);
             case HelpCommand.COMMAND_WORD -> new HelpCommand();
+            case UndoCommand.COMMAND_WORD -> parseUndoCommand(arguments);
             default -> {
                 logger.finer("This user input caused a ParseException: " + userInput);
                 throw new ParseException(MESSAGE_UNKNOWN_COMMAND);
             }
         };
+    }
+
+    /**
+     * Returns an undo command, which accepts no arguments.
+     *
+     * @param arguments text after the command word.
+     * @throws ParseException if {@code arguments} is not blank.
+     */
+    private UndoCommand parseUndoCommand(String arguments) throws ParseException {
+        if (!arguments.isBlank()) {
+            throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, UndoCommand.MESSAGE_USAGE));
+        }
+        return new UndoCommand();
     }
 }
