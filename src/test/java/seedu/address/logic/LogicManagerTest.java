@@ -23,6 +23,7 @@ import seedu.address.logic.commands.DeleteJobCommand;
 import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.EditJobCommand;
 import seedu.address.logic.commands.ListCommand;
+import seedu.address.logic.commands.ViewApplicationCommand;
 import seedu.address.logic.commands.ViewRequest;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.exceptions.ParseException;
@@ -123,8 +124,12 @@ public class LogicManagerTest {
                 .withEmail("Amy@Example.com").build();
 
         assertEquals(List.of(editedApplicant), model.getAddressBook().getApplicantList());
-        assertEquals(new Application(editedApplicant, new Job("Engineer"), Application.Status.ACCEPT),
-                model.getApplication(editedApplicant).orElseThrow());
+        Application editedApplication =
+                new Application(editedApplicant, new Job("Engineer"), Application.Status.ACCEPT);
+        assertEquals(editedApplication, model.getApplication(editedApplicant).orElseThrow());
+        assertEquals(new CommandResult(String.format(ViewApplicationCommand.MESSAGE_SELECTED,
+                editedApplicant.getName()), ViewRequest.application(editedApplication)),
+                logic.execute("viewp 1"));
         JsonAddressBookStorage savedStorage =
                 new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
         assertEquals(model.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
