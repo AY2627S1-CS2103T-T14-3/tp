@@ -12,12 +12,14 @@ import static seedu.address.testutil.TypicalApplicants.CARL;
 import static seedu.address.testutil.TypicalApplicants.DANIEL;
 import static seedu.address.testutil.TypicalApplicants.getTypicalAddressBook;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import seedu.address.model.applicant.Applicant;
 import seedu.address.model.applicant.exceptions.DuplicateApplicantException;
@@ -231,6 +233,24 @@ public class AddressBookTest {
     }
 
     @Test
+    public void setJob_noMatchingApplications_doesNotNotifyApplicationListeners() {
+        Job job = new Job("Engineer");
+        Job unusedJob = new Job("Janitor");
+        addressBook.addApplicant(ALICE);
+        addressBook.setJobs(List.of(job, unusedJob));
+        Application application = new Application(ALICE, job, Application.Status.PENDING);
+        addressBook.addApplication(application);
+        List<List<Application>> notifications = new ArrayList<>();
+        addressBook.getApplicationList().addListener((ListChangeListener<Application>) change ->
+                notifications.add(List.copyOf(change.getList())));
+
+        addressBook.setJob(unusedJob, new Job("Cleaner"));
+
+        assertTrue(notifications.isEmpty());
+        assertEquals(List.of(application), addressBook.getApplicationList());
+    }
+
+    @Test
     public void setJob_duplicateRole_throwsDuplicateJobExceptionWithoutChangingApplications() {
         Job job = new Job("Janitor");
         Job otherJob = new Job("Cleaner");
@@ -288,6 +308,7 @@ public class AddressBookTest {
     /**
      * Checks that replacing Janitor with {@code editedJob} updates all three matching applications,
      * preserving applicants, statuses, an unrelated application, and an applicant without an application.
+     * Checks that listeners receive exactly one notification containing all replacements.
      */
     private void assertJobEditUpdatesOnlyMatchingApplications(Job editedJob) {
         List<Applicant> applicants = List.of(ALICE, BOB, CARL, BENSON, DANIEL);
@@ -302,9 +323,14 @@ public class AddressBookTest {
                 new Application(CARL, job, Application.Status.REJECT),
                 new Application(BENSON, otherJob, Application.Status.PENDING));
         addressBook.setApplications(applications);
+        List<List<Application>> notifications = new ArrayList<>();
+        addressBook.getApplicationList().addListener((ListChangeListener<Application>) change ->
+                notifications.add(List.copyOf(change.getList())));
 
         addressBook.setJob(job, editedJob);
 
+        assertEquals(1, notifications.size());
+        assertEquals(addressBook.getApplicationList(), notifications.getFirst());
         assertEquals(applicants, addressBook.getApplicantList());
         assertFalse(addressBook.hasApplication(DANIEL));
         assertEquals(List.of(editedJob, otherJob), addressBook.getJobList());
@@ -316,6 +342,8 @@ public class AddressBookTest {
             assertEquals(applications.get(i).getStatus(), updated.getStatus());
             assertEquals(editedJob.getJobRole(), updated.getJob().getJobRole());
             assertEquals(editedJob.getJobDescription(), updated.getJob().getJobDescription());
+            assertEquals(editedJob.getJobDescription(),
+                    notifications.getFirst().get(i).getJob().getJobDescription());
         }
         assertEquals(applications.getLast(), addressBook.getApplicationList().getLast());
         assertEquals("Other description", addressBook.getApplicationList().getLast().getJob().getJobDescription());
