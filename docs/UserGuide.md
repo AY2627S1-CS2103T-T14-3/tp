@@ -146,6 +146,10 @@ Phone | `-p` | `-phone`
 Email | `-e` | `-email`
 
 * All three fields are required. Each option must appear exactly once and have a non-empty value.
+* Phone numbers contain only digits and must be at least three digits long. Spaces, `+`, and hyphens are not accepted.
+* The email local part contains letters and digits, optionally separated by single `+`, `_`, `.`, or `-` characters.
+  It cannot start or end with those separators. The last domain label must have at least two characters.
+  These phone and email rules also apply to `edit` and saved records.
 * Short and long aliases can be mixed, and options can appear in any order.
 * Values containing spaces, such as a full name, do not need quotation marks.
 * Names must start with a Unicode letter or digit. They can contain Unicode letters (including combining accents), digits, spaces, apostrophes (`'` or `’`), hyphens (`-`), periods (`.`), and slashes (`/`). These rules also apply to `edit`.
@@ -168,8 +172,10 @@ Format: `list`
 ### Moving through the current list
 
 Press `Up` or `Down` to select the previous or next record in the list on screen.
-The detail panel updates to match. This works on the Applicants, Applications, and Jobs tabs, including
-while you are typing a command. The selection stops at the first and last records.
+The detail panel updates to match. This works on the Applicants, Applications, and Jobs tabs when the
+command box or a record list has focus. The command box keeps focus while you type. In feedback text,
+copyable detail values, or other controls, arrow keys keep their normal editing or scrolling behavior.
+The selection stops at the first and last records; an empty list has no selection.
 
 You can still click a record, or use `view INDEX` to jump to an applicant.
 
@@ -190,7 +196,6 @@ Example: `viewp 2` selects the application belonging to applicant 2 in the curre
 
 ### Editing an applicant: `edit`
 
-Edits an existing applicant in the address book.
 Edits an existing applicant's name, phone number, or email address.
 
 Format: `edit INDEX [-n NAME] [-p PHONE] [-e EMAIL]`
@@ -230,6 +235,7 @@ Format: `find KEYWORD [MORE_KEYWORDS]`
 * The applicant list is shown, including when jobs or applications were visible.
 
 Examples:
+
 * `find John` returns `john` and `John Doe`
 * `find Alex` returns `Alex Yeoh`<br>
   ![result for 'find Alex'](images/findAlexResult.png)
@@ -252,6 +258,7 @@ Format: `delete INDEX`
 * The index **must be a positive integer** 1, 2, 3, …​
 
 Examples:
+
 * `list` followed by `delete 2` deletes the 2nd applicant in the address book.
 * `find Betsy` followed by `delete 1` deletes the 1st applicant in the results of the `find` command.
 * `undo` puts that applicant, and their application if they had one, back into the address book.
@@ -372,22 +379,24 @@ Examples:
 
 ### Editing a job: `editj`
 
-Replaces a job's role. The full job list is shown after a successful edit, with the edited role selected.
+Edits a job's role, description, or both. The full job list is shown after a successful edit, with the edited job selected.
 
-Format: `editj INDEX -j JOB_ROLE`
+Format: `editj INDEX [-j JOB_ROLE] [-d JOB_DESCRIPTION]`
 
 * `INDEX` is the positive integer shown beside a job in the current job list, including a filtered list.
-* `JOB_ROLE` is required and follows the same rules as `addj`. Alias: `-job` for `-j`.
-* `editj` accepts only the role option. It replaces the job with a new job whose description is `No information ~`, even when the role name is unchanged. An existing description is not preserved, and `-d`, `-desc`, and `-description` are not accepted by this command.
+* Supply at least one field. Omitted fields keep their existing values.
+* Role alias: `-job` for `-j`. Description aliases: `-desc` and `-description` for `-d`.
+* A supplied description must not be empty. To change a description, supply its complete replacement text.
 * A supplied role cannot be blank, including Unicode whitespace such as an em space.
 * The new role cannot match another stored job. Matching ignores surrounding spaces and is otherwise case-sensitive. Keeping the current role is allowed.
 * The job keeps its position in the full list. Any job filter is cleared so the edited role remains visible.
-* Applications for the job are updated to reference the replacement job, including its reset description. Their applicants and statuses are kept.
-* An empty list, an invalid index, a missing role, or a duplicate role produces an error and leaves the jobs unchanged.
+* Applications for the job immediately reference the updated role and description. Their applicants and statuses are kept.
+* An empty list, an invalid index, missing edit fields, empty values, or a duplicate role produces an error and leaves the jobs unchanged.
 
 Examples:
 
-* `viewj` followed by `editj 2 -j Senior Software Engineer` renames the second job.
+* `viewj` followed by `editj 2 -j Senior Software Engineer` renames the second job, keeping its description.
+* `editj 1 -d Build internal recruitment tools` changes only the first displayed job's description.
 * `viewj -f data` followed by `editj 1 -job Product Analyst` renames the first matching job and shows all jobs again.
 
 ### Viewing jobs: `viewj`
@@ -446,6 +455,7 @@ Format: `undo`
 * There is no `redo` command.
 
 Examples:
+
 * `delete 1` followed by `undo` restores that applicant.
 * `deletej 2` followed by `undo` restores that job and any applications removed with it.
 * `clear` followed by `undo` restores all applicants, jobs, and applications removed by the clear.
@@ -469,6 +479,28 @@ Restore your backup before continuing if your records fail to load.<br>
 Values outside the accepted ranges can cause loading errors or unexpected behavior. Edit the file only if you
 are confident that you can update it correctly.
 </div>
+
+#### Record collections
+
+The JSON file contains an `applicants` array and separate `jobs` and `applications` arrays. Applicant entries
+contain `name`, `phone`, and `email`. An application's `name` must match its applicant's stored name exactly,
+including case, and its `status` must be `accept`, `reject`, or `pending`. Each applicant can have at most one
+application. For example:
+
+```json
+{
+  "applicants": [{"name": "Alex Tan", "phone": "91234567", "email": "alex@example.com"}],
+  "jobs": [{"role": "Research Assistant", "description": "Analyse survey responses"}],
+  "applications": [{
+    "name": "Alex Tan",
+    "job": {"role": "Research Assistant", "description": "Analyse survey responses"},
+    "status": "pending"
+  }]
+}
+```
+
+Older contact files using the `persons` array instead of `applicants` are not automatically migrated. Back up
+the file before renaming that array, and check the field constraints and application references before loading.
 
 #### Job data format
 
@@ -511,7 +543,7 @@ Action | Format, Examples
 **Delete application** | `deletep INDEX`<br> e.g., `deletep 1`
 **Set application status** | `set INDEX -s STATUS`<br> e.g., `set 1 -s accept`
 **Add job** | `addj -j JOB_ROLE [-d JOB_DESCRIPTION]`<br> e.g., `addj -j Software Engineer`
-**Edit job** | `editj INDEX -j JOB_ROLE`<br> e.g., `editj 1 -j Senior Software Engineer`
+**Edit job** | `editj INDEX [-j JOB_ROLE] [-d JOB_DESCRIPTION]`<br> e.g., `editj 1 -j Senior Software Engineer`
 **View jobs** | `viewj [INDEX]` or `viewj [-f KEYWORD]`<br> e.g., `viewj 1` or `viewj -f engineer`
 **Delete job** | `deletej INDEX`<br> e.g., `deletej 1`
 **Clear** | `clear`

@@ -195,7 +195,7 @@ by `ApplicationListPanel`. Application indexes can therefore have gaps and do no
 Selections are returned through the existing `ViewRequest.applicant`, `ViewRequest.application`, and `ViewRequest.job`
 factories, which let `MainWindow` switch views, select the record, and refresh the detail panel.
 `find`, `add`, `edit`, and `clear` also request the applicants view. `add` and `edit` select the changed applicant
-so the detail panel shows that person. `clear` replaces a deleted-applicant snapshot with the empty panel.
+so the detail panel shows that applicant. `clear` replaces a deleted-applicant snapshot with the empty panel.
 `help` does not request a view, so that snapshot stays in place.
 
 Deleting a job cascades through `AddressBook#removeJob`
@@ -216,6 +216,9 @@ The `Storage` component,
 * can save both address book data and user preference data in JSON format, and read them back into corresponding objects.
 * is implemented by `StorageManager`, which delegates the actual JSON file access to `JsonAddressBookStorage` and `JsonUserPrefsStorage` (one class per data file).
 * depends on some classes in the `Model` component (because the `Storage` component's job is to save/retrieve objects that belong to the `Model`)
+
+`JsonSerializableAddressBook` uses the top-level keys `applicants`, `jobs`, and `applications`. Applicant
+entries store `name`, `phone`, and `email`; the inherited `persons` key is not an alias for `applicants`.
 
 `JsonAdaptedJob` stores each job as an object containing `role` and `description`, both in the top-level `jobs`
 array and in each application's `job` field. `role` must be non-blank; `description` must be a non-null string,
