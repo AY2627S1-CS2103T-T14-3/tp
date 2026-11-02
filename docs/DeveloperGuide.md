@@ -168,7 +168,7 @@ duplicate roles are rejected, surrounding spaces are ignored, and other differen
 `editj INDEX [-j JOB_ROLE] [-d JOB_DESCRIPTION]` replaces a job at its displayed index with a new job with the specified
 fields modified. There must be at least one modified field provided. If there exists another job with the same job role
 as the would-be-new job, the command will fail instead. `Model#setJob` delegates to `AddressBook#setJob` and
-`UniqueJobList#setJob`, which replaces the job at the same position and enforces uniqueness. 
+`UniqueJobList#setJob`, which replaces the job at the same position and enforces uniqueness.
 `UniqueApplicationList#setJob` updates all matching applications to reference the edited job, keeping their applicants and
 statuses. Description-only edits also take effect immediately. This prevents stale role references that the storage loader
 would reject.
@@ -248,9 +248,10 @@ with a different description, while allowing different roles to share a descript
 constructor supplies the default description `No information ~`.
 
 `AddJobCommandParser` accepts a required role (`-j` or `-job`) and an optional description (`-d`, `-desc`, or
-`-description`). `EditJobCommandParser` accepts an index and a required role, then constructs a replacement
-using the single-argument constructor. This explains the current description reset described in the
-[User Guide](UserGuide.md#editing-a-job-editj).
+`-description`). `EditJobCommandParser` accepts an index and optional role and description fields, requiring
+at least one field. It stores supplied values in `EditJobDescriptor`. `EditJobCommand` builds the replacement
+from those values and the existing job, preserving each omitted field. See
+[Editing a job in the User Guide](UserGuide.md#editing-a-job-editj).
 
 Despite its name, `JobDescriptionContainsKeywordPredicate` searches `Job#toString`, which returns
 `role + " : " + description`. It lowercases both that text and the keyword using `Locale.ROOT`, then calls
@@ -345,90 +346,57 @@ The parsing rules are exercised in `ArgumentTokenizerTest`, including aliases, o
 and conflicting option definitions. `AddCommandParserTest`, `AddApplicationCommandParserTest`, and
 `EditCommandParserTest` cover the command-specific validation and error messages.
 
-### \[Proposed\] Undo/redo feature
+### Undoing record changes
 
-#### Proposed Implementation
+The implemented `undo` command restores applicants, jobs, and applications from an in-memory history owned
+by `ModelManager`. There is no `redo` command.
+For command syntax and examples, see [Undoing the last change in the User Guide](UserGuide.md#undoing-the-last-change-undo).
 
-This section describes a proposed design, not the current implementation; `clear` cannot be undone in the current application.
-The proposed undo/redo mechanism is facilitated by `VersionedAddressBook`. It extends `AddressBook` with an undo/redo history, stored internally as an `addressBookStateList` and `currentStatePointer`. Additionally, it implements the following operations:
+#### Recording a change
 
-* `VersionedAddressBook#commit()` — Saves the current address book state in its history.
-* `VersionedAddressBook#undo()` — Restores the previous address book state from its history.
-* `VersionedAddressBook#redo()` — Restores a previously undone address book state from its history.
+1. `LogicManager#execute` parses the command and, unless it is an `UndoCommand`, copies the current records
+   with `new AddressBook(model.getAddressBook())` before executing it.
+2. After execution, `storedRecordsChanged` compares the previous and resulting records. It checks job
+   descriptions separately because `Job#equals` compares only roles. A description-only edit therefore
+   creates an undo entry even though the job's identity has not changed.
+3. If the records differ, `Model#rememberStateForUndo` adds the previous state to the front of
+   `ModelManager.previousAddressBooks`, a `Deque<ReadOnlyAddressBook>`. The deque keeps at most ten states;
+   adding an eleventh drops the oldest.
+4. `LogicManager` saves the resulting records through `Storage` using the normal command save path.
 
-These operations are exposed in the `Model` interface as `Model#commitAddressBook()`, `Model#undoAddressBook()` and `Model#redoAddressBook()` respectively.
+Commands that only change a filter, selection, or view do not create an entry. A command that leaves the
+records unchanged also creates no entry. Parsing and command-execution exceptions exit before history is
+recorded. Saving happens after the records and history have changed: a save failure reports an error but
+is not a transaction rollback.
 
-Given below is an example usage scenario and how the undo/redo mechanism behaves at each step.
+#### Restoring a change
 
-Step 1. The user launches the application for the first time. The `VersionedAddressBook` will be initialized with the initial address book state, and the `currentStatePointer` pointing to that single address book state.
+`UndoCommand#execute` calls `Model#undoAddressBook`. When a remembered state exists, `ModelManager` removes
+the newest state and passes it to `setAddressBook`, which resets the existing address book's records.
+This restores related records together, including applications removed by an applicant or job deletion.
+It also restores all records removed by `clear`.
 
-![UndoRedoState0](images/UndoRedoState0.png)
+On success, the command returns `Undone the last change.` without a view request, so the current tab stays
+selected. Observable lists update, and the existing applicant and job filters remain active. Filters, list
+selections, and window preferences are not part of the saved record snapshot. A restored record can therefore
+remain hidden by a filter; use `list` or `viewj` to show the full corresponding list.
 
-Step 2. The user executes `delete 5` command to delete the 5th applicant in the address book. The `delete` command calls `Model#commitAddressBook()`, causing the modified state of the address book after the `delete 5` command executes to be saved in the `addressBookStateList`, and the `currentStatePointer` is shifted to the newly inserted address book state.
+An undo command does not create another history entry. Repeated commands consume earlier states until the
+deque is empty, at which point `UndoCommand` throws a `CommandException` with `There is no change to undo.`.
+A successful undo is saved by `LogicManager` just like other successful commands. History itself is not
+serialized and starts empty when the application restarts.
 
-![UndoRedoState1](images/UndoRedoState1.png)
+#### Design considerations
 
-Step 3. The user executes `add n/David …​` to add a new applicant. The `add` command also calls `Model#commitAddressBook()`, causing another modified address book state to be saved into the `addressBookStateList`.
+* **Whole-record snapshots:** Copying the address book keeps restoration of applicants, jobs, and dependent
+  applications together. This is simpler than defining inverse operations for every mutating command,
+  especially cascading deletions, but uses memory proportional to the number and size of retained states.
+* **Bounded session history:** Keeping ten previous states limits retained snapshots. It allows several
+  corrections within a session without introducing persistent history or redo behavior.
 
-![UndoRedoState2](images/UndoRedoState2.png)
-
-<div markdown="span" class="alert alert-info">:information_source: **Note:** If a command fails its execution, it will not call `Model#commitAddressBook()`, so the address book state will not be saved into the `addressBookStateList`.
-
-</div>
-
-Step 4. The user now decides that adding the applicant was a mistake, and decides to undo that action by executing the `undo` command. The `undo` command will call `Model#undoAddressBook()`, which will shift the `currentStatePointer` once to the left, pointing it to the previous address book state, and restores the address book to that state.
-
-![UndoRedoState3](images/UndoRedoState3.png)
-
-<div markdown="span" class="alert alert-info">:information_source: **Note:** If the `currentStatePointer` is at index 0, pointing to the initial AddressBook state, then there are no previous AddressBook states to restore. The `undo` command uses `Model#canUndoAddressBook()` to check if this is the case. If so, it will return an error to the user rather
-than attempting to perform the undo.
-
-</div>
-
-The following sequence diagram shows how an undo operation goes through the `Logic` component:
-
-![UndoSequenceDiagram](images/UndoSequenceDiagram-Logic.png)
-
-<div markdown="span" class="alert alert-info">:information_source: **Note:** The lifeline for `UndoCommand` should end at the destroy marker (X), but due to a limitation of PlantUML, it continues to the end of the diagram.
-
-</div>
-
-Similarly, how an undo operation goes through the `Model` component is shown below:
-
-![UndoSequenceDiagram](images/UndoSequenceDiagram-Model.png)
-
-The `redo` command does the opposite — it calls `Model#redoAddressBook()`, which shifts the `currentStatePointer` once to the right, pointing to the previously undone state, and restores the address book to that state.
-
-<div markdown="span" class="alert alert-info">:information_source: **Note:** If the `currentStatePointer` is at index `addressBookStateList.size() - 1`, pointing to the latest address book state, then there are no undone AddressBook states to restore. The `redo` command uses `Model#canRedoAddressBook()` to check if this is the case. If so, it will return an error to the user rather than attempting to perform the redo.
-
-</div>
-
-Step 5. The user then decides to execute the command `list`. Commands that do not modify the address book, such as `list`, will usually not call `Model#commitAddressBook()`, `Model#undoAddressBook()` or `Model#redoAddressBook()`. Thus, the `addressBookStateList` remains unchanged.
-
-![UndoRedoState4](images/UndoRedoState4.png)
-
-Step 6. The user executes `clear`, which calls `Model#commitAddressBook()`. Since the `currentStatePointer` is not pointing at the end of the `addressBookStateList`, all address book states after the `currentStatePointer` will be purged. Reason: It no longer makes sense to redo the `add n/David …​` command. This is the behavior that most modern desktop applications follow.
-
-![UndoRedoState5](images/UndoRedoState5.png)
-
-The following activity diagram summarizes what happens when a user executes a new command:
-
-<img src="images/CommitActivityDiagram.png" width="250" />
-
-#### Design considerations:
-
-**Aspect: How undo & redo execute:**
-
-* **Alternative 1 (current choice):** Saves the entire address book.
-  * Pros: Easy to implement.
-  * Cons: May have performance issues in terms of memory usage.
-
-* **Alternative 2:** Individual command knows how to undo/redo by
-  itself.
-  * Pros: Will use less memory (e.g. for `delete`, just save the applicant being deleted).
-  * Cons: We must ensure that the implementation of each individual command is correct.
-
-_{more aspects and alternatives to be added}_
+`LogicManagerTest` covers undoing deletions, stepping through successive changes, restoring a description-only
+edit, and preserving history after a failed deletion. `AddressBookParserTest` covers the argument-free syntax
+and rejects `undo 1` and the case-mismatched command `Undo`.
 
 ### \[Proposed\] Data archiving
 
@@ -719,6 +687,27 @@ testers are expected to do more *exploratory* testing.
 3. Test case: `clear`<br>
    Expected: The applicants view and empty detail panel are shown. Applicants, jobs, and applications are empty;
    after restarting the application, they remain empty.
+
+### Undoing changes
+
+1. Prerequisites: Use a disposable data folder. Start a fresh session so its undo history is empty.
+
+2. Test case: `undo`<br>
+   Expected: `There is no change to undo.` is shown and no records change.
+
+3. Run `addj -j Undo Test Role -d Original`, then `editj INDEX -d Revised`, using the new job's index.
+   Run `viewj`, followed by `undo`.<br>
+   Expected: The job still exists with description `Original`. Viewing the list did not consume an undo entry.
+
+4. Run `undo` again, then `viewj`.<br>
+   Expected: Undo Test Role is removed. No further undo is available in this session.
+
+5. With applicants, jobs, and applications present, run `clear`, then `undo`, then `list` and `viewj`.<br>
+   Expected: All records from before the clear are restored, including the applications.
+
+6. Close and relaunch LinkedOut, then run `undo`.<br>
+   Expected: The restored records are loaded, but `There is no change to undo.` is shown because history
+   does not survive a restart.
 
 ### Managing job roles and descriptions
 

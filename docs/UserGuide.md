@@ -442,11 +442,14 @@ Format: `undo`
 * Only changes to stored records are undone. `list`, `find`, `view`, `viewp`, and `viewj` do not count as changes.
 * Each `undo` steps back one change, up to the ten most recent changes in this session.
 * Closing LinkedOut clears this history. The restored records are saved in the usual way.
-* The current tab stays where it is. The lists update to show the restored records.
+* The current tab and list filters stay where they are. Use `list` or `viewj` if a restored record is hidden by a filter.
+* There is no `redo` command.
 
 Examples:
 * `delete 1` followed by `undo` restores that applicant.
 * `deletej 2` followed by `undo` restores that job and any applications removed with it.
+* `clear` followed by `undo` restores all applicants, jobs, and applications removed by the clear.
+* `editj 1 -d Revised description` followed by `undo` restores the job's previous description.
 * `add -n John Doe -p 98765432 -e johnd@example.com` followed by `undo` removes John Doe again.
 
 ### Saving the data
