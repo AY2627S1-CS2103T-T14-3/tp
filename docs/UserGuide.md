@@ -136,7 +136,8 @@ The length limit also applies when editing applicants and loading saved data; ol
 it must be corrected before loading.
 
 Phone numbers must contain 3 to 15 digits. An optional leading `+` and single spaces or hyphens
-between digits are accepted, for example `+65 9123 4567` or `+1-202-555-0123`. Formatting is preserved
+between digits are accepted, for example `+65 9123 4567` or `+1-202-555-0123`.
+The first digit after `+` must be 1–9; local numbers without `+` may start with `0`. Formatting is preserved
 when displaying and saving the number. These rules also apply to `edit` and loading saved data;
 older records with more than 15 digits must be corrected before loading.
 

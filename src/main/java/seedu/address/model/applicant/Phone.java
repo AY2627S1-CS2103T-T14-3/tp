@@ -12,8 +12,8 @@ public class Phone {
 
     public static final String MESSAGE_CONSTRAINTS =
             "Phone numbers should contain 3 to 15 digits, with an optional leading + "
-            + "and single spaces or hyphens between digits";
-    public static final String VALIDATION_REGEX = "\\+?[0-9](?:[ -]?[0-9]){2,14}";
+            + "and single spaces or hyphens between digits. The first digit after + must not be 0";
+    public static final String VALIDATION_REGEX = "(?:\\+[1-9]|[0-9])(?:[ -]?[0-9]){2,14}";
     public final String value;
 
     /**
