@@ -7,6 +7,10 @@ LinkedOut is a **desktop application for recruiters and HR administrators managi
 and application outcomes**. Type commands to manage your records, then review them in applicant, application,
 and job lists with a detail panel for the selected record. Each applicant can have one application.
 
+Long applicant fields and application summaries in list cards are shortened with ellipses to fit the available
+width. Application status badges keep their full text. Select a record to read its full details, with job text
+wrapped and the application status shown in full.
+
 LinkedOut is a personal workspace for one recruiter. Your records are stored locally on your computer.
 
 * Table of Contents
@@ -19,13 +23,13 @@ LinkedOut is a personal workspace for one recruiter. Your records are stored loc
 1. Install Java `25`. Open a terminal and run `java -version` to check that the version shown is `25`.<br>
    **Mac users:** Follow the [Java installation instructions](https://se-education.org/guides/tutorials/javaInstallationMac.html) for your system.
 
-1. Download `linkedout.jar` from the [LinkedOut releases page](https://github.com/AY2627S1-CS2103T-T14-3/tp/releases).
+2. Download `linkedout.jar` from the [LinkedOut releases page](https://github.com/AY2627S1-CS2103T-T14-3/tp/releases).
    To build the latest source instead, see the [build instructions](DevOps.md#build-automation).
 
-1. Copy the JAR file to an empty folder where you have permission to create files. This will be your
+3. Copy the JAR file to an empty folder where you have permission to create files. This will be your
    LinkedOut _home folder_, containing your records and preferences.
 
-1. In the terminal, `cd` to that folder and run `java -jar "linkedout.jar"`.
+4. In the terminal, `cd` to that folder and run `java -jar "linkedout.jar"`.
    If you renamed the file, use its actual name in the command. Launching from the terminal ensures that
    LinkedOut uses the Java version you checked; double-clicking the JAR may use a different version or fail.
 
@@ -34,18 +38,22 @@ LinkedOut is a personal workspace for one recruiter. Your records are stored loc
 
    ![LinkedOut on first launch, showing sample applicants and the selected applicant's details](images/Ui.png)
 
-1. Type a command in the command box and press Enter to execute it. For example, type **`help`** and press Enter to open the help window.<br>
+5. Type a command in the command box and press Enter to execute it. For example, type **`help`** and press Enter to open the help window.<br>
    Some example commands you can try:
 
    * `list` : Lists all applicants.
 
-   * `viewa` : Shows the applicants view.
+   * `view` : Shows the applicants view.
 
    * `viewj` : Shows the jobs view.
 
    * `view 1` : Shows the first displayed applicant's details.
 
+   * `Up` / `Down` : Selects the previous or next record in the list on screen.
+
    * `add -n John Doe -p 98765432 -e johnd@example.com` : Adds an applicant named `John Doe`.
+
+   * `undo` : Restores the records from before the last change.
 
    * `bye` : Exits the app.
 
@@ -60,11 +68,21 @@ LinkedOut is a personal workspace for one recruiter. Your records are stored loc
 
    The first applicant now has an accepted application for the sample Software Engineer Intern job.
 
-1. Refer to the [Features](#features) section below for details of each command.
+6. Refer to the [Features](#features) section below for details of each command.
 
 --------------------------------------------------------------------------------------------------------------------
 
 ## Features
+
+To copy a value from the applicant, application, or job detail panel using the keyboard:
+
+1. Use `view INDEX` (for example, `view 1`), `viewp`, or `viewj` to display the desired record.
+2. Press `Tab` (or `Shift+Tab` to move backwards) until the desired value has a blue focus highlight.
+3. Press `Ctrl+C` (Windows/Linux) or `Command+C` (macOS) to copy the focused value.
+
+You can also right-click a value and choose **Copy**.
+Names, emails, phone numbers, job roles, descriptions, and application statuses can be copied.
+The complete value is copied, including text that wraps onto multiple lines. Empty values cannot be copied.
 
 <div markdown="block" class="alert alert-info">
 
@@ -76,12 +94,17 @@ LinkedOut is a personal workspace for one recruiter. Your records are stored loc
 * Items in square brackets are optional.<br>
   For example, `edit INDEX [-n NAME] [-p PHONE] [-e EMAIL]` can be used as `edit 1 -n John Doe -p 98765432` or as `edit 1 -n John Doe`.
 
+* Surrounding spaces, tabs, and Unicode whitespace such as em spaces are ignored in parameter values.
+  Internal text is preserved and must follow the field's validation rules. A required value containing only
+  whitespace is treated as missing. Surrounding whitespace is also ignored around the complete command.
+  Non-whitespace control characters are rejected.
+
 * Options can be in any order. A positional index must appear before the options.<br>
   For example, if the command specifies `-n NAME -p PHONE_NUMBER`, `-p PHONE_NUMBER -n NAME` is also acceptable.
 
 * `add` and `edit` use hyphen-prefixed options such as `-n NAME`.
 
-* Extraneous parameters for `help`, `list`, and `clear` are ignored. `bye` and its alias `exit` reject extra parameters.<br>
+* Extraneous parameters for `help` and `list` are ignored. `clear`, `bye`, and its alias `exit` reject extra parameters.<br>
   For example, `help 123` is interpreted as `help`.
 
 * If you are using a PDF version of this document, be careful when copying and pasting commands that span multiple lines as space characters surrounding line-breaks may be omitted when copied over to the application.
@@ -101,8 +124,16 @@ Format: `help`
 Adds an applicant to the address book.
 
 Each applicant must have a unique name and a unique email address. Adding or editing an applicant
-to use another applicant's name or email is rejected. Comparisons are case-sensitive.
-Saved data containing duplicate names or emails is treated as invalid; correct the duplicates before loading it.
+to use another applicant's name or email is rejected, ignoring letter case. For example, `Amy Bee` and
+`amy bee` are duplicate names, and `amy@example.com` and `Amy@Example.com` are duplicate emails.
+The spelling and capitalization you enter are preserved. You can change an applicant's own capitalization with `edit`.
+Saved data containing duplicate names or emails, including those differing only in case, is treated as invalid;
+correct the duplicates before loading it.
+
+Email addresses must be at most 254 characters long. Domain labels may contain consecutive hyphens,
+including Punycode names such as `alice@xn--bcher-kva.de`, but must start and end with a letter or digit.
+The length limit also applies when editing applicants and loading saved data; older records exceeding
+it must be corrected before loading.
 
 Format: `add -n NAME -p PHONE_NUMBER -e EMAIL`
 
@@ -117,6 +148,7 @@ Email | `-e` | `-email`
 * All three fields are required. Each option must appear exactly once and have a non-empty value.
 * Short and long aliases can be mixed, and options can appear in any order.
 * Values containing spaces, such as a full name, do not need quotation marks.
+* Names must start with a Unicode letter or digit. They can contain Unicode letters (including combining accents), digits, spaces, apostrophes (`'` or `’`), hyphens (`-`), periods (`.`), and slashes (`/`). These rules also apply to `edit`.
 * Unknown options, repeated options (including different aliases for the same field), missing values, and text before the first option produce a format error with a usage hint.
 * The applicant list is shown and the new applicant is selected.
 * Standalone words such as `-unknown` are treated as options, even inside a value.
@@ -133,21 +165,28 @@ Shows a list of all applicants in the address book.
 
 Format: `list`
 
-### Viewing applicants: `viewa`
+### Moving through the current list
 
-Switches the list to the Applicants tab and displays the current applicant list.
+Press `Up` or `Down` to select the previous or next record in the list on screen.
+The detail panel updates to match. This works on the Applicants, Applications, and Jobs tabs, including
+while you are typing a command. The selection stops at the first and last records.
 
-Format: `viewa`
-
-The command accepts no arguments.
+You can still click a record, or use `view INDEX` to jump to an applicant.
 
 ### Viewing applications: `viewp`
 
 Switches the list to the Applications tab. Each row shows the applicant's index and name, the job, and a status of Accepted, Rejected, or Pending. The index matches the applicant list, including a filtered list.
 
-Format: `viewp`
+Format: `viewp [INDEX]`
 
-The command accepts no arguments.
+* Without an index, shows the applications list.
+* With an index, selects that application and shows its applicant, job, and status in the detail panel.
+* `INDEX` must be the positive applicant index printed on the application row, not its position in the applications list.
+  For example, if only applicant 2 has an application, select that row with `viewp 2`.
+* The applicant filter is kept unchanged. After filtering applicants, use the indexes shown in the filtered list.
+* Invalid or out-of-range indexes produce an error. An applicant without an application also produces an error.
+
+Example: `viewp 2` selects the application belonging to applicant 2 in the current applicant list.
 
 ### Editing an applicant: `edit`
 
@@ -183,6 +222,7 @@ Finds applicants whose names contain any of the given keywords.
 Format: `find KEYWORD [MORE_KEYWORDS]`
 
 * The search is case-insensitive; for example, `hans` matches `Hans`.
+* Keywords are separated by whitespace, including Unicode spaces.
 * Keyword order does not matter; for example, `Hans Bo` matches `Bo Hans`.
 * The search considers only names.
 * Only full words match; for example, `Han` does not match `Hans`.
@@ -202,6 +242,8 @@ The applicant and their application are removed together. Jobs remain in the job
 remain visible in the detail panel, marked as deleted, until you select another applicant or run another successful
 applicant command.
 Opening Help, either with `help` or through the menu, preserves these deleted details.
+If the applicant had an application, the result includes a warning that the application was also deleted.
+Deletion takes effect immediately, without a confirmation prompt.
 
 Format: `delete INDEX`
 
@@ -212,12 +254,15 @@ Format: `delete INDEX`
 Examples:
 * `list` followed by `delete 2` deletes the 2nd applicant in the address book.
 * `find Betsy` followed by `delete 1` deletes the 1st applicant in the results of the `find` command.
+* `undo` puts that applicant, and their application if they had one, back into the address book.
 
 ### Clearing all entries: `clear`
 
 Deletes all applicants, applications, and jobs. This command takes effect immediately, with no confirmation.
 
 Format: `clear`
+
+Accepts no arguments. Extra text (e.g. `clear applicants`) is rejected without deleting any data.
 
 The applicant list is shown. Details left on screen after a deletion are replaced by the empty detail panel.
 
@@ -229,22 +274,27 @@ Alias: `exit`, which follows the same validation and behaviour as `bye`.
 
 Format: `bye`
 
-### Viewing an applicant: `view`
+### Viewing applicants: `view`
 
-Selects an applicant in the list, scrolls to their entry, and shows their name, email and phone in the applicant detail panel.
-The command result display confirms the applicant's name.
+Switches to the Applicants tab, preserving the current applicant list and filter.
+With an index, selects an applicant, scrolls to their entry, and shows their name, email and phone in the detail panel.
+The command result display confirms the selected applicant's name.
 
-Format: `view INDEX`
+Format: `view [INDEX]`
 
+Use `viewp INDEX` for an application or `viewj INDEX` for a job.
+
+* Without an index, shows the current applicant list without changing its selection. An empty list is allowed.
 * `INDEX` is the positive integer shown beside an applicant in the current list.
 * When the list is filtered, the index refers to that filtered list.
 * The command keeps the applicant list and its filter unchanged.
-* Missing, additional, or invalid arguments produce a format error with a usage hint.
+* Additional or invalid arguments produce a format error with a usage hint.
   An index beyond the displayed list produces an error showing the valid range.
-  An empty list produces a message that there are no applicants to view.
+  Supplying an index for an empty list produces a message that there are no applicants to view.
 
 Examples:
 
+* `view` shows the current applicant list. Unlike `list`, it does not clear an active filter.
 * `view 1` selects the first applicant in the displayed list and shows their details.
 * `find Meier` followed by `view 2` shows the details of the second applicant in the search results.
 
@@ -257,7 +307,7 @@ Format: `addp INDEX -j JOB_ROLE [-s STATUS]`
 * `INDEX` is the positive integer shown beside an applicant in the current list. It must appear before the options.
 * When the list is filtered, the index refers to that filtered list.
 * `JOB_ROLE` is the role the applicant is applying for. It cannot contain another option, such as `-s`.
-* The role must already exist in the job list. Use `addj` to create it before adding an application. Matching is case-sensitive and ignores surrounding spaces; supply the role name, without its description.
+* The role must already exist in the job list. Use `addj` to create it before adding an application. Matching is case-sensitive and ignores surrounding whitespace, including Unicode spaces; supply the role name, without its description.
 * `STATUS` is optional. When it is omitted, the status is `pending`.
 * Accepted statuses are `accept`, `reject`, and `pending`. The value is case-sensitive.
 * Aliases: `-job` for `-j` and `-status` for `-s`.
@@ -295,6 +345,7 @@ Format: `set INDEX -s STATUS`
 * `STATUS` is required. Accepted statuses are `accept`, `reject`, and `pending`. The value is case-sensitive.
 * Alias: `-status` for `-s`.
 * A successful command selects that applicant and shows the job and updated status in the detail panel.
+* Feedback and status badges use `Accepted`, `Rejected`, and `Pending`; command inputs remain lowercase.
 * An applicant who does not have an application cannot have a status set.
 
 Examples:
@@ -328,6 +379,7 @@ Format: `editj INDEX -j JOB_ROLE`
 * `INDEX` is the positive integer shown beside a job in the current job list, including a filtered list.
 * `JOB_ROLE` is required and follows the same rules as `addj`. Alias: `-job` for `-j`.
 * `editj` accepts only the role option. It replaces the job with a new job whose description is `No information ~`, even when the role name is unchanged. An existing description is not preserved, and `-d`, `-desc`, and `-description` are not accepted by this command.
+* A supplied role cannot be blank, including Unicode whitespace such as an em space.
 * The new role cannot match another stored job. Matching ignores surrounding spaces and is otherwise case-sensitive. Keeping the current role is allowed.
 * The job keeps its position in the full list. Any job filter is cleared so the edited role remains visible.
 * Applications for the job are updated to reference the replacement job, including its reset description. Their applicants and statuses are kept.
@@ -342,19 +394,23 @@ Examples:
 
 Shows open roles. The list on the right switches to jobs, and the detail panel shows the selected role.
 
-Format: `viewj [-f KEYWORD]`
+Format: `viewj [INDEX]` or `viewj [-f KEYWORD]`
 
-* Without `-f`, every job is shown.
+* Without any arguments, every job is shown.
+* `INDEX` selects a job using its positive index in the current job list and shows its details, keeping the job filter.
+  Invalid or out-of-range indexes produce an error; an empty list produces a message that there are no jobs to view.
+* An index and `-f` cannot be used together. Filter first, then select a job from the results.
 * `-f KEYWORD` searches the combined text `ROLE : DESCRIPTION`. Matching ignores case and does not need a full word, so `jan` matches the role `Janitor`. Text found only in the description also matches. A multi-word keyword is matched as one substring.
 * Alias: `-filter` for `-f`.
 * The command word is case-sensitive. `Viewj` is not recognised.
 * `editj` and `deletej` use the index in the list currently displayed, including a filtered list.
-* `list`, `view`, `viewa`, `find`, `add`, `edit`, and `clear` switch the list back to applicants. `viewp` switches to applications.
+* `list`, `view`, `find`, `add`, `edit`, and `clear` switch the list back to applicants. `viewp` switches to applications.
 
 Examples:
 
 * `viewj` lists every job. An empty list shows "No jobs to display."
 * `viewj -f jan` lists roles such as Janitor.
+* `viewj -f jan` followed by `viewj 1` selects the first matching job and keeps the filtered list.
 * After `addj -j Research Assistant -d Analyse survey responses`, `viewj -f survey` includes that job because its description matches.
 
 ### Deleting a job: `deletej`
@@ -365,6 +421,7 @@ Format: `deletej INDEX`
 
 * `INDEX` is the positive integer shown beside a job in the job list currently displayed. After `viewj -f jan`, index 1 is the first matching job.
 * Deleting a role also deletes all applications with the same job role. Applicants and their contact details are kept.
+* If applications were removed, the result includes a warning with the number deleted, including those hidden by a filter. Deletion takes effect immediately, without a confirmation prompt.
 * Job roles are matched exactly after trimming surrounding spaces; different letter cases identify different jobs.
 * An empty list, a missing index, or an index past the end of the list produces an error and leaves the jobs unchanged.
 
@@ -372,6 +429,25 @@ Examples:
 
 * `deletej 1` deletes the first job.
 * `viewj` followed by `deletej 2` deletes the second job.
+* `undo` puts that job back, together with the applications that were removed with it.
+
+### Undoing the last change: `undo`
+
+Restores applicants, jobs, and applications to the state before the most recent command that changed them.
+Use this after deleting or editing the wrong record.
+
+Format: `undo`
+
+* The command accepts no arguments.
+* Only changes to stored records are undone. `list`, `find`, `view`, `viewp`, and `viewj` do not count as changes.
+* Each `undo` steps back one change, up to the ten most recent changes in this session.
+* Closing LinkedOut clears this history. The restored records are saved in the usual way.
+* The current tab stays where it is. The lists update to show the restored records.
+
+Examples:
+* `delete 1` followed by `undo` restores that applicant.
+* `deletej 2` followed by `undo` restores that job and any applications removed with it.
+* `add -n John Doe -p 98765432 -e johnd@example.com` followed by `undo` removes John Doe again.
 
 ### Saving the data
 
@@ -437,15 +513,16 @@ Action | Format, Examples
 **Set application status** | `set INDEX -s STATUS`<br> e.g., `set 1 -s accept`
 **Add job** | `addj -j JOB_ROLE [-d JOB_DESCRIPTION]`<br> e.g., `addj -j Software Engineer`
 **Edit job** | `editj INDEX -j JOB_ROLE`<br> e.g., `editj 1 -j Senior Software Engineer`
-**View jobs** | `viewj [-f KEYWORD]`<br> e.g., `viewj -f engineer`
+**View jobs** | `viewj [INDEX]` or `viewj [-f KEYWORD]`<br> e.g., `viewj 1` or `viewj -f engineer`
 **Delete job** | `deletej INDEX`<br> e.g., `deletej 1`
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
+**Undo** | `undo`
 **Edit** | `edit INDEX [-n NAME] [-p PHONE] [-e EMAIL]`<br> e.g., `edit 1 -p 91234567 -e john@example.com`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
 **List** | `list`
-**View applicants** | `viewa`
-**View applications** | `viewp`
-**View applicant** | `view INDEX`<br> e.g., `view 1`
+**View applicants** | `view [INDEX]`<br> e.g., `view 1`
+**View applications** | `viewp [INDEX]`<br> e.g., `viewp 2` (uses the displayed applicant index)
+**Select previous / next** | `Up` / `Down`
 **Help** | `help`
 **Bye** | `bye` or `exit`

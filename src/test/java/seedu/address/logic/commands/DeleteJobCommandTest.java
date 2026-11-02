@@ -7,9 +7,11 @@ import static seedu.address.logic.commands.CommandTestUtil.assertCommandFailure;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandSuccess;
 import static seedu.address.testutil.TypicalApplicants.ALICE;
 import static seedu.address.testutil.TypicalApplicants.BENSON;
+import static seedu.address.testutil.TypicalApplicants.CARL;
+import static seedu.address.testutil.TypicalApplicants.DANIEL;
 import static seedu.address.testutil.TypicalApplicants.getTypicalAddressBook;
-import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_APPLICANT;
-import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND_APPLICANT;
+import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST;
+import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND;
 
 import java.util.List;
 
@@ -39,7 +41,7 @@ public class DeleteJobCommandTest {
 
     @Test
     public void execute_validIndex_success() {
-        DeleteJobCommand command = new DeleteJobCommand(INDEX_FIRST_APPLICANT);
+        DeleteJobCommand command = new DeleteJobCommand(INDEX_FIRST);
         String expectedMessage = String.format(DeleteJobCommand.MESSAGE_DELETE_JOB_SUCCESS, ENGINEER.getJobRole());
 
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
@@ -67,8 +69,9 @@ public class DeleteJobCommandTest {
         model.addApplication(new Application(BENSON, new Job("Data Analyst"), Application.Status.ACCEPT));
         model.updateFilteredApplicantList(applicant -> applicant.equals(ALICE));
         model.updateFilteredJobList(job -> job.toString().contains("Data"));
-        DeleteJobCommand command = new DeleteJobCommand(INDEX_FIRST_APPLICANT);
-        String expectedMessage = String.format(DeleteJobCommand.MESSAGE_DELETE_JOB_SUCCESS, ANALYST.getJobRole());
+        DeleteJobCommand command = new DeleteJobCommand(INDEX_FIRST);
+        String expectedMessage = String.format(DeleteJobCommand.MESSAGE_DELETE_JOB_SUCCESS, ANALYST.getJobRole())
+                + "\nWarning: Applications deleted with this job: 1.";
 
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
         expectedModel.updateFilteredJobList(job -> job.toString().contains("Data"));
@@ -84,20 +87,40 @@ public class DeleteJobCommandTest {
     }
 
     @Test
+    public void execute_jobWithApplications_warnsAboutAllDeletedApplications() throws Exception {
+        model.addApplication(new Application(ALICE, ENGINEER, Application.Status.PENDING));
+        model.addApplication(new Application(BENSON,
+                new Job(ENGINEER.getJobRole(), "Different description"), Application.Status.ACCEPT));
+        model.addApplication(new Application(CARL, ENGINEER, Application.Status.REJECT));
+        Application unrelatedApplication = new Application(DANIEL, ANALYST, Application.Status.PENDING);
+        model.addApplication(unrelatedApplication);
+        model.updateFilteredApplicantList(applicant -> applicant.equals(ALICE));
+
+        CommandResult result = new DeleteJobCommand(INDEX_FIRST).execute(model);
+
+        assertEquals(String.format(DeleteJobCommand.MESSAGE_DELETE_JOB_SUCCESS, ENGINEER.getJobRole())
+                + "\nWarning: Applications deleted with this job: 3.", result.getFeedbackToUser());
+        assertEquals(List.of(unrelatedApplication), model.getApplicationList());
+        assertEquals(getTypicalAddressBook().getApplicantList(), model.getAddressBook().getApplicantList());
+        assertFalse(model.hasJob(ENGINEER));
+        assertTrue(model.hasJob(ANALYST));
+    }
+
+    @Test
     public void execute_emptyList_throwsCommandException() {
         Model emptyModel = new ModelManager(getTypicalAddressBook(), new UserPrefs());
-        DeleteJobCommand command = new DeleteJobCommand(INDEX_FIRST_APPLICANT);
+        DeleteJobCommand command = new DeleteJobCommand(INDEX_FIRST);
 
         assertCommandFailure(command, emptyModel, DeleteJobCommand.MESSAGE_EMPTY_LIST);
     }
 
     @Test
     public void equals() {
-        DeleteJobCommand deleteFirst = new DeleteJobCommand(INDEX_FIRST_APPLICANT);
-        DeleteJobCommand deleteSecond = new DeleteJobCommand(INDEX_SECOND_APPLICANT);
+        DeleteJobCommand deleteFirst = new DeleteJobCommand(INDEX_FIRST);
+        DeleteJobCommand deleteSecond = new DeleteJobCommand(INDEX_SECOND);
 
         assertTrue(deleteFirst.equals(deleteFirst));
-        assertTrue(deleteFirst.equals(new DeleteJobCommand(INDEX_FIRST_APPLICANT)));
+        assertTrue(deleteFirst.equals(new DeleteJobCommand(INDEX_FIRST)));
         assertFalse(deleteFirst.equals(deleteSecond));
         assertFalse(deleteFirst.equals(null));
         assertFalse(deleteFirst.equals(1));

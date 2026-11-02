@@ -1,6 +1,7 @@
 package seedu.address.commons.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static seedu.address.testutil.Assert.assertThrows;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -37,6 +38,29 @@ public class JsonUtilTest {
         assertEquals(serializableTestClass.getName(), SerializableTestClass.getNameTestValue());
         assertEquals(serializableTestClass.getListOfLocalDateTimes(), SerializableTestClass.getListTestValues());
         assertEquals(serializableTestClass.getMapOfIntegerToString(), SerializableTestClass.getHashMapTestValues());
+    }
+
+    @Test
+    public void fromJsonString_trailingWhitespace_returnsObject() throws IOException {
+        SerializableTestClass value = JsonUtil.fromJsonString(
+                SerializableTestClass.JSON_STRING_REPRESENTATION + " \n", SerializableTestClass.class);
+
+        assertEquals(SerializableTestClass.getNameTestValue(), value.getName());
+    }
+
+    @Test
+    public void fromJsonString_trailingJsonValue_throwsIoException() {
+        String json = SerializableTestClass.JSON_STRING_REPRESENTATION
+                + SerializableTestClass.JSON_STRING_REPRESENTATION;
+
+        assertThrows(IOException.class, () -> JsonUtil.fromJsonString(json, SerializableTestClass.class));
+    }
+
+    @Test
+    public void fromJsonString_trailingText_throwsIoException() {
+        String json = SerializableTestClass.JSON_STRING_REPRESENTATION + " trailing";
+
+        assertThrows(IOException.class, () -> JsonUtil.fromJsonString(json, SerializableTestClass.class));
     }
 
     //TODO: @Test jsonUtil_readJsonStringToObjectInstance_correctObject()

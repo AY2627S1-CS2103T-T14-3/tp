@@ -44,6 +44,21 @@ public interface Model {
     ReadOnlyAddressBook getAddressBook();
 
     /**
+     * Remembers {@code previousState} so a later undo can restore it.
+     * Newer states are restored first. The given book is stored as-is and must not be changed afterward.
+     *
+     * @param previousState address book from before the latest change. Cannot be null.
+     */
+    void rememberStateForUndo(ReadOnlyAddressBook previousState);
+
+    /**
+     * Replaces the current address book with the most recently remembered state.
+     *
+     * @return true if a remembered state was restored.
+     */
+    boolean undoAddressBook();
+
+    /**
      * Returns true if an applicant with the same name or email as {@code applicant} exists in the address book.
      */
     boolean hasApplicant(Applicant applicant);

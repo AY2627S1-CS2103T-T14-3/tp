@@ -55,7 +55,7 @@ public class AddApplicationCommand extends Command {
      */
     public AddApplicationCommand(Index targetIndex, String jobRole, Application.Status status) {
         this.targetIndex = requireNonNull(targetIndex);
-        this.jobRole = requireNonNull(jobRole);
+        this.jobRole = requireNonNull(jobRole).strip();
         this.status = requireNonNull(status);
     }
 

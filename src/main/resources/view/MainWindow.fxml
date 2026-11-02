@@ -62,7 +62,8 @@
                 <ToggleButton fx:id="applicationsTab" styleClass="view-tab" text="Applications" toggleGroup="$viewToggleGroup" />
                 <ToggleButton fx:id="jobsTab" styleClass="view-tab" text="Jobs" toggleGroup="$viewToggleGroup" />
               </HBox>
-              <Label fx:id="listHint" styleClass="muted-label" text="Select an applicant to view their details." wrapText="true" />
+              <Label fx:id="listHint" text="Use the up and down arrows to select an applicant."
+                     styleClass="muted-label" wrapText="true" />
               <StackPane fx:id="viewListPlaceholder" VBox.vgrow="ALWAYS" />
             </VBox>
           </items>

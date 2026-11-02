@@ -10,10 +10,13 @@ import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.LogsCenter;
 import seedu.address.logic.commands.Command;
 import seedu.address.logic.commands.CommandResult;
+import seedu.address.logic.commands.UndoCommand;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.AddressBookParser;
 import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
+import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.applicant.Applicant;
 import seedu.address.model.application.Application;
 import seedu.address.model.application.Job;
@@ -43,13 +46,25 @@ public class LogicManager implements Logic {
         addressBookParser = new AddressBookParser();
     }
 
+    /**
+     * {@inheritDoc}
+     * Remembers the records from before a command that changes them.
+     * An undo command is not remembered, so the next undo steps further back.
+     */
     @Override
     public CommandResult execute(String commandText) throws CommandException, ParseException {
         logger.info("----------------[USER COMMAND][" + commandText + "]");
 
-        CommandResult commandResult;
         Command command = addressBookParser.parseCommand(commandText);
-        commandResult = command.execute(model);
+        ReadOnlyAddressBook stateBeforeCommand = null;
+        if (!(command instanceof UndoCommand)) {
+            stateBeforeCommand = new AddressBook(model.getAddressBook());
+        }
+        CommandResult commandResult = command.execute(model);
+        if (stateBeforeCommand != null
+                && storedRecordsChanged(stateBeforeCommand, model.getAddressBook())) {
+            model.rememberStateForUndo(stateBeforeCommand);
+        }
 
         try {
             storage.saveAddressBook(model.getAddressBook());
@@ -60,6 +75,24 @@ public class LogicManager implements Logic {
         }
 
         return commandResult;
+    }
+
+    /**
+     * Returns true if the stored applicants, jobs, or applications differ.
+     * Job equality compares the role only, so a description edit is checked separately.
+     */
+    private static boolean storedRecordsChanged(ReadOnlyAddressBook before, ReadOnlyAddressBook after) {
+        if (!before.equals(after)) {
+            return true;
+        }
+        for (int i = 0; i < before.getJobList().size(); i++) {
+            String beforeDescription = before.getJobList().get(i).getJobDescription();
+            String afterDescription = after.getJobList().get(i).getJobDescription();
+            if (!beforeDescription.equals(afterDescription)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

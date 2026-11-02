@@ -9,8 +9,10 @@ import static seedu.address.testutil.TypicalApplicants.IDA;
 import static seedu.address.testutil.TypicalApplicants.getTypicalAddressBook;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -18,6 +20,7 @@ import org.junit.jupiter.api.io.TempDir;
 import seedu.address.commons.exceptions.DataLoadingException;
 import seedu.address.model.AddressBook;
 import seedu.address.model.ReadOnlyAddressBook;
+import seedu.address.testutil.ApplicantBuilder;
 
 public class JsonAddressBookStorageTest {
     private static final Path TEST_DATA_FOLDER = Paths.get("src", "test", "data", "JsonAddressBookStorageTest");
@@ -61,6 +64,19 @@ public class JsonAddressBookStorageTest {
     }
 
     @Test
+    public void readAddressBook_trailingJson_throwsDataLoadingException() throws Exception {
+        Path filePath = testFolder.resolve("TrailingAddressBook.json");
+        JsonAddressBookStorage storage = new JsonAddressBookStorage(filePath);
+        storage.saveAddressBook(getTypicalAddressBook());
+        String saved = Files.readString(filePath);
+        String withTrailingObject = saved + saved;
+        Files.writeString(filePath, withTrailingObject);
+
+        assertThrows(DataLoadingException.class, () -> storage.readAddressBook());
+        assertEquals(withTrailingObject, Files.readString(filePath));
+    }
+
+    @Test
     public void readAndSaveAddressBook_allInOrder_success() throws Exception {
         Path filePath = testFolder.resolve("TempAddressBook.json");
         AddressBook original = getTypicalAddressBook();
@@ -84,6 +100,18 @@ public class JsonAddressBookStorageTest {
         readBack = jsonAddressBookStorage.readAddressBook().get(); // file path not specified
         assertEquals(original, new AddressBook(readBack));
 
+    }
+
+    @Test
+    public void readAndSaveAddressBook_commonPunctuationAndUnicodeName_preservesName() throws Exception {
+        JsonAddressBookStorage storage = new JsonAddressBookStorage(testFolder.resolve("names.json"));
+        for (String name : List.of("Mary-Jane Tan", "Shaun O'Brien", "Rajesh s/o Kumar", "J. R. Tan",
+                "José Lim", "Jose\u0301 Lim", "Shaun O’Brien", "陈伟")) {
+            AddressBook original = new AddressBook();
+            original.addApplicant(new ApplicantBuilder().withName(name).build());
+            storage.saveAddressBook(original);
+            assertEquals(original, new AddressBook(storage.readAddressBook().orElseThrow()));
+        }
     }
 
     @Test

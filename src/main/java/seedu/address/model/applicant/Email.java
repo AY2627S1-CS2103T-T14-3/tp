@@ -9,9 +9,10 @@ import static seedu.address.commons.util.AppUtil.checkArgument;
  */
 public class Email {
 
+    private static final int MAX_LENGTH = 254;
     private static final String SPECIAL_CHARACTERS = "+_.-";
     public static final String MESSAGE_CONSTRAINTS = "Emails should be of the format local-part@domain "
-            + "and adhere to the following constraints:\n"
+            + "and be at most " + MAX_LENGTH + " characters long. They must adhere to the following constraints:\n"
             + "1. The local-part should only contain alphanumeric characters and these special characters, excluding "
             + "the parentheses, (" + SPECIAL_CHARACTERS + "). The local-part may not start or end with any special "
             + "characters.\n"
@@ -26,8 +27,8 @@ public class Email {
     private static final String LOCAL_PART_REGEX = "^" + ALPHANUMERIC_NO_UNDERSCORE + "([" + SPECIAL_CHARACTERS + "]"
             + ALPHANUMERIC_NO_UNDERSCORE + ")*";
     private static final String DOMAIN_PART_REGEX = ALPHANUMERIC_NO_UNDERSCORE
-            + "(-" + ALPHANUMERIC_NO_UNDERSCORE + ")*";
-    private static final String DOMAIN_LAST_PART_REGEX = "(" + DOMAIN_PART_REGEX + "){2,}$"; // At least two chars
+            + "(-+" + ALPHANUMERIC_NO_UNDERSCORE + ")*";
+    private static final String DOMAIN_LAST_PART_REGEX = "(?=[^.]{2,}$)" + DOMAIN_PART_REGEX + "$"; // Min 2 chars
     private static final String DOMAIN_REGEX = "(" + DOMAIN_PART_REGEX + "\\.)*" + DOMAIN_LAST_PART_REGEX;
     public static final String VALIDATION_REGEX = LOCAL_PART_REGEX + "@" + DOMAIN_REGEX;
 
@@ -48,7 +49,7 @@ public class Email {
      * Returns true if a given string is a valid email.
      */
     public static boolean isValidEmail(String test) {
-        return test.matches(VALIDATION_REGEX);
+        return test.length() <= MAX_LENGTH && test.matches(VALIDATION_REGEX);
     }
 
     @Override

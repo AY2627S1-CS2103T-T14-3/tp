@@ -66,6 +66,25 @@ public class StringUtilTest {
     }
 
     @Test
+    public void containsWordIgnoreCase_unicodePaddedWord_ignoresSurroundingWhitespace() {
+        assertTrue(StringUtil.containsWordIgnoreCase("Alice Pauline", "\u2003Alice\u2009"));
+        assertThrows(IllegalArgumentException.class, "Word parameter cannot be empty", () ->
+                StringUtil.containsWordIgnoreCase("Alice Pauline", "\u2003\u2009"));
+    }
+
+    @Test
+    public void containsWordIgnoreCase_unicodeSeparatedWords_respectsWordBoundaries() {
+        assertTrue(StringUtil.containsWordIgnoreCase("Alice\u2003Pauline", "Pauline"));
+        assertThrows(IllegalArgumentException.class, "Word parameter should be a single word", () ->
+                StringUtil.containsWordIgnoreCase("Alice Pauline", "Alice\u2003Pauline"));
+    }
+
+    @Test
+    public void containsWordIgnoreCase_controlCharacterWord_returnsFalse() {
+        assertFalse(StringUtil.containsWordIgnoreCase("Alice Pauline", String.valueOf((char) 0)));
+    }
+
+    @Test
     public void containsWordIgnoreCase_multipleWords_throwsIllegalArgumentException() {
         assertThrows(IllegalArgumentException.class, "Word parameter should be a single word", ()
             -> StringUtil.containsWordIgnoreCase("typical sentence", "aaa BBB"));

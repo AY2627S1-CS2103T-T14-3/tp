@@ -10,10 +10,13 @@ import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
@@ -176,6 +179,50 @@ public class MainWindow extends UiPart<Stage> {
 
         CommandBox commandBox = new CommandBox(this::executeCommand);
         commandBoxPlaceholder.getChildren().add(commandBox.getRoot());
+        getRoot().addEventFilter(KeyEvent.KEY_PRESSED, this::handleListNavigation);
+    }
+
+    /**
+     * Moves the selection when Up or Down is pressed in the command box or a list.
+     * The result text and detail panes keep those keys for their own scrolling.
+     */
+    private void handleListNavigation(KeyEvent event) {
+        if (event.isShiftDown() || event.isControlDown() || event.isAltDown() || event.isMetaDown()) {
+            return;
+        }
+
+        int offset = 0;
+        if (event.getCode() == KeyCode.UP) {
+            offset = -1;
+        } else if (event.getCode() == KeyCode.DOWN) {
+            offset = 1;
+        }
+        if (offset == 0 || !isCommandOrList(event.getTarget())) {
+            return;
+        }
+
+        switch (currentView) {
+            case APPLICANTS -> applicantListPanel.selectOffset(offset);
+            case APPLICATIONS -> applicationListPanel.selectOffset(offset);
+            case JOBS -> jobListPanel.selectOffset(offset);
+            default -> throw new IllegalStateException("Unexpected view type: " + currentView);
+        }
+        event.consume();
+    }
+
+    /**
+     * Returns true if {@code target} is the command box or a record list.
+     */
+    private static boolean isCommandOrList(Object target) {
+        if (!(target instanceof Node node)) {
+            return false;
+        }
+        for (Node current = node; current != null; current = current.getParent()) {
+            if (current instanceof ListView || "commandTextField".equals(current.getId())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /** Shows the requested list and its matching detail panel. */
@@ -200,7 +247,7 @@ public class MainWindow extends UiPart<Stage> {
                 || applicantPredicate.equals(Model.PREDICATE_SHOW_ALL_APPLICANTS)
                 || NameContainsKeywordsPredicate.getKeywords(applicantPredicate) == null) {
             listTitle.setText("Applicants");
-            listHint.setText("Select an applicant to view their details.");
+            listHint.setText("Use the up and down arrows to select an applicant.");
         } else {
             listTitle.setText(String.format("Search: Found %d out of %d applicant(s)",
                     applicantFilteredList.size(), totalApplicants));
@@ -222,7 +269,7 @@ public class MainWindow extends UiPart<Stage> {
                 || applicantPredicate.equals(Model.PREDICATE_SHOW_ALL_APPLICANTS)
                 || NameContainsKeywordsPredicate.getKeywords(applicantPredicate) == null) {
             listTitle.setText("Applications");
-            listHint.setText("Each row shows an applicant, job, and status.");
+            listHint.setText("Use the up and down arrows to select an application.");
         } else {
             listTitle.setText(String.format("Search: From %d out of %d applicant(s)",
                     applicantFilteredList.size(), totalApplicants));
@@ -244,7 +291,7 @@ public class MainWindow extends UiPart<Stage> {
                 || jobPredicate.equals(Model.PREDICATE_SHOW_ALL_JOBS)
                 || JobDescriptionContainsKeywordPredicate.getKeywords(jobPredicate) == null) {
             listTitle.setText("Jobs");
-            listHint.setText("Select a job to view its details.");
+            listHint.setText("Use the up and down arrows to select a job.");
         } else {
             listTitle.setText(String.format("Search: Found %d out of %d job(s)",
                     jobFilteredList.size(), totalJobs));

@@ -58,12 +58,13 @@ public class Applicant {
     }
 
     /**
-     * Returns true if the other applicant has the same name or email.
+     * Returns true if the other applicant has the same name or email, ignoring case.
      * Names and emails must each be unique across applicants.
      */
     public boolean hasSameNameOrEmail(Applicant otherApplicant) {
         return otherApplicant != null
-                && (name.equals(otherApplicant.name) || email.equals(otherApplicant.email));
+                && (name.fullName.equalsIgnoreCase(otherApplicant.name.fullName)
+                        || email.value.equalsIgnoreCase(otherApplicant.email.value));
     }
 
     /**

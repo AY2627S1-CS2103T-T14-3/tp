@@ -126,6 +126,21 @@ public class JsonSerializableAddressBookTest {
     }
 
     @Test
+    public void toModelType_caseVariantDuplicates_throwsIllegalValueException() {
+        for (JsonAdaptedApplicant duplicate : List.of(
+                new JsonAdaptedApplicant("ALICE", "98765432", "other@example.com"),
+                new JsonAdaptedApplicant("Bob", "98765432", "ALICE@example.com"),
+                new JsonAdaptedApplicant("Bob", "98765432", "alice@EXAMPLE.COM"))) {
+            JsonSerializableAddressBook data = new JsonSerializableAddressBook(List.of(
+                    new JsonAdaptedApplicant("Alice", "91234567", "alice@example.com"), duplicate),
+                    List.of(), List.of());
+
+            assertThrows(IllegalValueException.class, JsonSerializableAddressBook.MESSAGE_DUPLICATE_APPLICANT,
+                    data::toModelType);
+        }
+    }
+
+    @Test
     public void toModelType_duplicateApplicants_throwsIllegalValueException() throws Exception {
         JsonSerializableAddressBook dataFromFile = JsonUtil.readJsonFile(DUPLICATE_APPLICANT_FILE,
                 JsonSerializableAddressBook.class).get();

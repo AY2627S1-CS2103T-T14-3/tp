@@ -15,24 +15,25 @@ public class StringUtil {
     /**
      * Returns true if the {@code sentence} contains the {@code word}.
      *   Ignores case, but a full word match is required.
+     *   Uses Java whitespace for surrounding padding and word boundaries.
      *   <br>examples:<pre>
      *       containsWordIgnoreCase("ABc def", "abc") == true
      *       containsWordIgnoreCase("ABc def", "DEF") == true
      *       containsWordIgnoreCase("ABc def", "AB") == false //not a full word match
      *       </pre>
-     * @param sentence cannot be null
-     * @param word cannot be null, cannot be empty, must be a single word
+     * @param sentence Cannot be null.
+     * @param word Cannot be null or blank, and must be a single word.
      */
     public static boolean containsWordIgnoreCase(String sentence, String word) {
         requireNonNull(sentence);
         requireNonNull(word);
 
-        String preppedWord = word.trim();
+        String preppedWord = word.strip();
         checkArgument(!preppedWord.isEmpty(), "Word parameter cannot be empty");
-        checkArgument(preppedWord.split("\\s+").length == 1, "Word parameter should be a single word");
+        checkArgument(preppedWord.split("\\p{javaWhitespace}+").length == 1, "Word parameter should be a single word");
 
         String preppedSentence = sentence;
-        String[] wordsInPreppedSentence = preppedSentence.split("\\s+");
+        String[] wordsInPreppedSentence = preppedSentence.split("\\p{javaWhitespace}+");
 
         return Arrays.stream(wordsInPreppedSentence)
                 .anyMatch(preppedWord::equalsIgnoreCase);
