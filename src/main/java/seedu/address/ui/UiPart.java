@@ -12,6 +12,10 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import seedu.address.MainApp;
 
 /**
@@ -65,11 +69,12 @@ public abstract class UiPart<T> {
     }
 
     /**
-     * Adds a Copy menu for each label's current text, including text hidden by wrapping or truncation.
+     * Adds a Copy menu and keyboard shortcut for each label's complete current text.
      *
      * @param labels detail values to make copyable.
      */
     protected static void enableCopy(Label... labels) {
+        KeyCombination copyShortcut = new KeyCodeCombination(KeyCode.C, KeyCombination.SHORTCUT_DOWN);
         for (Label label : labels) {
             MenuItem copy = new MenuItem("Copy");
             copy.disableProperty().bind(label.textProperty().isEmpty());
@@ -79,7 +84,14 @@ public abstract class UiPart<T> {
                 Clipboard.getSystemClipboard().setContent(content);
             });
             label.setContextMenu(new ContextMenu(copy));
-            label.setTooltip(new Tooltip("Right-click to copy."));
+            label.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
+                if (copyShortcut.match(event) && !copy.isDisable()) {
+                    copy.fire();
+                    event.consume();
+                }
+            });
+            label.setTooltip(new Tooltip("Press " + copyShortcut.getDisplayText() + " or right-click to copy."));
+            label.getStyleClass().add("copyable-value");
             label.setFocusTraversable(true);
         }
     }

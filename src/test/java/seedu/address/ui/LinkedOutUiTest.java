@@ -32,6 +32,9 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import seedu.address.logic.LogicManager;
 import seedu.address.logic.commands.AddApplicationCommand;
@@ -126,6 +129,44 @@ public class LinkedOutUiTest {
             pulse(window);
             assertCopiesText(window, "jobName", "Engineer");
             assertCopiesText(window, "jobDescription", description);
+        });
+    }
+
+    @Test
+    public void copyShortcut_tabNavigation_reachesDetailValues() throws Exception {
+        withWindow(window -> {
+            TextField input = (TextField) window.getRoot().getScene().lookup("#commandTextField");
+            input.requestFocus();
+            Label email = label(window, "email");
+            for (int i = 0; i < 20 && window.getRoot().getScene().getFocusOwner() != email; i++) {
+                window.getRoot().getScene().getFocusOwner().fireEvent(
+                        new KeyEvent(KeyEvent.KEY_PRESSED, "", "", KeyCode.TAB, false, false, false, false));
+            }
+            assertEquals(email, window.getRoot().getScene().getFocusOwner());
+            email.fireEvent(copyKeyEvent());
+            assertEquals(ALICE.getEmail().value, Clipboard.getSystemClipboard().getString());
+        });
+    }
+
+    @Test
+    public void copyShortcut_textInputAndEmptyValues_preservesExpectedClipboard() throws Exception {
+        withWindow(window -> {
+            TextField input = (TextField) window.getRoot().getScene().lookup("#commandTextField");
+            input.setText("find Alice");
+            input.requestFocus();
+            input.selectRange(5, 10);
+            input.fireEvent(copyKeyEvent());
+            assertEquals("Alice", Clipboard.getSystemClipboard().getString());
+
+            Label email = label(window, "email");
+            email.requestFocus();
+            email.fireEvent(new KeyEvent(KeyEvent.KEY_PRESSED, "c", "c", KeyCode.C,
+                    false, false, false, false));
+            assertEquals("Alice", Clipboard.getSystemClipboard().getString());
+
+            command(window, "clear");
+            email.fireEvent(copyKeyEvent());
+            assertEquals("Alice", Clipboard.getSystemClipboard().getString());
         });
     }
 
@@ -787,7 +828,7 @@ public class LinkedOutUiTest {
         assertEquals(status, badge.getText());
     }
 
-    /** Verifies that Copy uses the complete, current value of a detail label. */
+    /** Verifies that the menu and keyboard shortcut copy the complete, current detail value. */
     private void assertCopiesText(MainWindow window, String id, String expected) {
         Label value = label(window, id);
         assertNotNull(value.getContextMenu(), "Missing Copy menu: " + id);
@@ -795,6 +836,20 @@ public class LinkedOutUiTest {
         assertFalse(value.getContextMenu().getItems().getFirst().isDisable());
         value.getContextMenu().getItems().getFirst().fire();
         assertEquals(expected, Clipboard.getSystemClipboard().getString());
+
+        ClipboardContent previous = new ClipboardContent();
+        previous.putString("Previous clipboard value");
+        Clipboard.getSystemClipboard().setContent(previous);
+        value.requestFocus();
+        assertEquals(value, window.getRoot().getScene().getFocusOwner());
+        value.fireEvent(copyKeyEvent());
+        assertEquals(expected, Clipboard.getSystemClipboard().getString());
+    }
+
+    /** Creates a copy keystroke using the platform's shortcut modifier. */
+    private KeyEvent copyKeyEvent() {
+        boolean isMac = System.getProperty("os.name").startsWith("Mac");
+        return new KeyEvent(KeyEvent.KEY_PRESSED, "c", "c", KeyCode.C, false, !isMac, false, isMac);
     }
 
     private Label label(MainWindow window, String id) {
