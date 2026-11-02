@@ -13,9 +13,10 @@ import seedu.address.logic.parser.exceptions.ParseException;
 public class ViewJobCommandParser implements Parser<ViewJobCommand> {
 
     /**
-     * Parses the given arguments into a command that shows every job, or the jobs matching {@code -f}.
-     * @param args arguments following {@code viewj}
-     * @return a command that shows all jobs, or only jobs matching the filter
+     * Parses arguments to list jobs, filter jobs with {@code -f}, or select a job by index.
+     *
+     * @param args arguments following {@code viewj}.
+     * @return a command that lists, filters, or selects jobs
      * @throws ParseException if the user input does not conform to the expected format
      */
     @Override
@@ -27,7 +28,13 @@ public class ViewJobCommandParser implements Parser<ViewJobCommand> {
 
         ArgumentMultimap values;
         try {
-            values = ArgumentTokenizer.tokenizeOptions(args, ArgumentTokenizer.NO_PREAMBLE, OPTION_FILTER);
+            values = ArgumentTokenizer.tokenizeOptions(args, ArgumentTokenizer.HAS_PREAMBLE, OPTION_FILTER);
+            if (!values.getPreamble().isBlank()) {
+                if (values.getValue(OPTION_FILTER).isPresent()) {
+                    throw new ParseException(MESSAGE_INVALID_COMMAND_FORMAT);
+                }
+                return new ViewJobCommand(ParserUtil.parseIndex(values.getPreamble()));
+            }
         } catch (ParseException pe) {
             throw new ParseException(
                     String.format(MESSAGE_INVALID_COMMAND_FORMAT, ViewJobCommand.MESSAGE_USAGE), pe);
