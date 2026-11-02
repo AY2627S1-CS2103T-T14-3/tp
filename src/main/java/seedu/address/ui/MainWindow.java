@@ -34,6 +34,8 @@ import seedu.address.model.Model;
 import seedu.address.model.applicant.Applicant;
 import seedu.address.model.applicant.NameContainsKeywordsPredicate;
 import seedu.address.model.application.Application;
+import seedu.address.model.application.Job;
+import seedu.address.model.application.JobDescriptionContainsKeywordPredicate;
 
 /** The main window containing the command console and list views. */
 public class MainWindow extends UiPart<Stage> {
@@ -221,8 +223,21 @@ public class MainWindow extends UiPart<Stage> {
     }
 
     private void showJobsView() {
-        listTitle.setText("Jobs");
-        listHint.setText("Select a job to view its details.");
+        FilteredList<Job> jobFilteredList = logic.getFilteredJobList();
+        int totalJobs = logic.getJobList().size();
+        Predicate<? super Job> jobPredicate = jobFilteredList.getPredicate();
+
+        if (jobPredicate == null
+                || jobPredicate.equals(Model.PREDICATE_SHOW_ALL_JOBS)
+                || JobDescriptionContainsKeywordPredicate.getKeywords(jobPredicate) == null) {
+            listTitle.setText("Jobs");
+            listHint.setText("Select a job to view its details.");
+        } else {
+            listTitle.setText(String.format("Search: Found %d out of %d jobs(s)",
+                    jobFilteredList.size(), totalJobs));
+            listHint.setText(String.format("Filtered with keyword: %s",
+                    JobDescriptionContainsKeywordPredicate.getKeywords(jobPredicate)));
+        }
         consoleHint.setText(JOB_HINT);
         viewListPlaceholder.getChildren().setAll(jobListPanel.getRoot());
         applicantDetailPlaceholder.getChildren().setAll(jobDetailPanel.getRoot());

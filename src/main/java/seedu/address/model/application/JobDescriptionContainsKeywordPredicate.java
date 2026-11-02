@@ -6,6 +6,8 @@ import java.util.Locale;
 import java.util.function.Predicate;
 
 import seedu.address.commons.util.ToStringBuilder;
+import seedu.address.model.applicant.Applicant;
+import seedu.address.model.applicant.NameContainsKeywordsPredicate;
 
 /**
  * Tests that a {@code Job}'s description contains a keyword.
@@ -26,6 +28,13 @@ public class JobDescriptionContainsKeywordPredicate implements Predicate<Job> {
     public boolean test(Job job) {
         requireNonNull(job);
         return job.toString().toLowerCase(Locale.ROOT).contains(keyword.toLowerCase(Locale.ROOT));
+    }
+
+    public static String getKeywords(Predicate<? super Job> predicate) {
+        if (predicate instanceof JobDescriptionContainsKeywordPredicate keywordsPredicate) {
+            return keywordsPredicate.keyword;
+        }
+        return null;
     }
 
     @Override
