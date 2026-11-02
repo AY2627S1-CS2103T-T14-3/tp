@@ -70,6 +70,16 @@ LinkedOut is a personal workspace for one recruiter. Your records are stored loc
 
 ## Features
 
+To copy a value from the applicant, application, or job detail panel using the keyboard:
+
+1. Use `view INDEX` (for example, `view 1`), `viewp`, or `viewj` to display the desired record.
+2. Press `Tab` (or `Shift+Tab` to move backwards) until the desired value has a blue focus highlight.
+3. Press `Ctrl+C` (Windows/Linux) or `Command+C` (macOS) to copy the focused value.
+
+You can also right-click a value and choose **Copy**.
+Names, emails, phone numbers, job roles, descriptions, and application statuses can be copied.
+The complete value is copied, including text that wraps onto multiple lines. Empty values cannot be copied.
+
 <div markdown="block" class="alert alert-info">
 
 **:information_source: Notes about the command format:**<br>

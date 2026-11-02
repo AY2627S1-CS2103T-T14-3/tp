@@ -74,6 +74,9 @@
     -fx-min-height: 58;
 }
 .detail-value { -fx-font-size: 14px; }
+.copyable-value:focused {
+    -fx-effect: dropshadow(gaussian, #2563eb, 4, 0.5, 0, 0);
+}
 .separator .line { -fx-border-color: #e7edf5; -fx-border-width: 1 0 0 0; }
 .application-section { -fx-background-color: #f7f9fd; -fx-background-radius: 8; -fx-padding: 14; }
 .status-badge {
