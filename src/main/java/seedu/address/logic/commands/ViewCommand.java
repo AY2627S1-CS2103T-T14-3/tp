@@ -3,6 +3,7 @@ package seedu.address.logic.commands;
 import static java.util.Objects.requireNonNull;
 
 import java.util.List;
+import java.util.Objects;
 
 import seedu.address.commons.core.index.Index;
 import seedu.address.commons.util.ToStringBuilder;
@@ -11,23 +12,29 @@ import seedu.address.model.Model;
 import seedu.address.model.applicant.Applicant;
 
 /**
- * Selects an applicant and shows their details using their index in the displayed list.
+ * Shows applicants, optionally selecting one using their index in the displayed list.
  */
 public class ViewCommand extends Command {
 
     public static final String COMMAND_WORD = "view";
 
     public static final String MESSAGE_USAGE = COMMAND_WORD
-            + ": Selects the applicant identified by the displayed index and shows their details in the UI.\n"
-            + "Parameters: INDEX (must be a positive integer)\n"
+            + ": Shows applicants, optionally selecting one and showing their details in the UI.\n"
+            + "Parameters: [INDEX] (must be a positive integer)\n"
             + "Example: " + COMMAND_WORD + " 1";
 
     public static final String MESSAGE_SUCCESS = "Viewing applicant: %1$s";
+    public static final String MESSAGE_SHOWING_APPLICANTS = "Showing applicants.";
     public static final String MESSAGE_INVALID_INDEX =
             "Invalid applicant index. Please enter an integer from 1 to %1$d.";
     public static final String MESSAGE_EMPTY_LIST = "There are no applicants in the displayed list to view.";
 
     private final Index targetIndex;
+
+    /** Creates a command to show the current applicant list without changing the selection. */
+    public ViewCommand() {
+        targetIndex = null;
+    }
 
     /**
      * Creates a command to view the applicant at {@code targetIndex}.
@@ -39,6 +46,9 @@ public class ViewCommand extends Command {
     @Override
     public CommandResult execute(Model model) throws CommandException {
         requireNonNull(model);
+        if (targetIndex == null) {
+            return new CommandResult(MESSAGE_SHOWING_APPLICANTS, ViewRequest.applicants());
+        }
         List<Applicant> lastShownList = model.getFilteredApplicantList();
 
         if (lastShownList.isEmpty()) {
@@ -64,7 +74,7 @@ public class ViewCommand extends Command {
             return false;
         }
 
-        return targetIndex.equals(otherViewCommand.targetIndex);
+        return Objects.equals(targetIndex, otherViewCommand.targetIndex);
     }
 
     @Override

@@ -23,7 +23,7 @@ import seedu.address.logic.commands.FindCommand;
 import seedu.address.logic.commands.HelpCommand;
 import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.commands.SetApplicationStatusCommand;
-import seedu.address.logic.commands.ViewApplicantCommand;
+import seedu.address.logic.commands.UndoCommand;
 import seedu.address.logic.commands.ViewApplicationCommand;
 import seedu.address.logic.commands.ViewCommand;
 import seedu.address.logic.commands.ViewJobCommand;
@@ -70,20 +70,33 @@ public class AddressBookParser {
             case DeleteJobCommand.COMMAND_WORD -> new DeleteJobCommandParser().parse(arguments);
             case EditCommand.COMMAND_WORD -> new EditCommandParser().parse(arguments);
             case EditJobCommand.COMMAND_WORD -> new EditJobCommandParser().parse(arguments);
-            case ClearCommand.COMMAND_WORD -> new ClearCommand();
+            case ClearCommand.COMMAND_WORD -> new ClearCommandParser().parse(arguments);
             case FindCommand.COMMAND_WORD -> new FindCommandParser().parse(arguments);
             case ListCommand.COMMAND_WORD -> new ListCommand();
-            case ViewApplicantCommand.COMMAND_WORD -> new ViewApplicantCommand();
-            case ViewApplicationCommand.COMMAND_WORD -> new ViewApplicationCommand();
+            case ViewApplicationCommand.COMMAND_WORD -> new ViewApplicationCommandParser().parse(arguments);
             case SetApplicationStatusCommand.COMMAND_WORD -> new SetApplicationStatusCommandParser().parse(arguments);
             case ViewCommand.COMMAND_WORD -> new ViewCommandParser().parse(arguments);
             case ViewJobCommand.COMMAND_WORD -> new ViewJobCommandParser().parse(arguments);
             case ByeCommand.COMMAND_WORD, "exit" -> new ByeCommandParser().parse(arguments);
             case HelpCommand.COMMAND_WORD -> new HelpCommand();
+            case UndoCommand.COMMAND_WORD -> parseUndoCommand(arguments);
             default -> {
                 logger.finer("This user input caused a ParseException: " + userInput);
                 throw new ParseException(MESSAGE_UNKNOWN_COMMAND);
             }
         };
+    }
+
+    /**
+     * Returns an undo command, which accepts no arguments.
+     *
+     * @param arguments text after the command word.
+     * @throws ParseException if {@code arguments} is not blank.
+     */
+    private UndoCommand parseUndoCommand(String arguments) throws ParseException {
+        if (!arguments.isBlank()) {
+            throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, UndoCommand.MESSAGE_USAGE));
+        }
+        return new UndoCommand();
     }
 }

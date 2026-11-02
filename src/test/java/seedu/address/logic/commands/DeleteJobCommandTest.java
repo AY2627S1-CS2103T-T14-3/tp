@@ -7,6 +7,8 @@ import static seedu.address.logic.commands.CommandTestUtil.assertCommandFailure;
 import static seedu.address.logic.commands.CommandTestUtil.assertCommandSuccess;
 import static seedu.address.testutil.TypicalApplicants.ALICE;
 import static seedu.address.testutil.TypicalApplicants.BENSON;
+import static seedu.address.testutil.TypicalApplicants.CARL;
+import static seedu.address.testutil.TypicalApplicants.DANIEL;
 import static seedu.address.testutil.TypicalApplicants.getTypicalAddressBook;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST;
 import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND;
@@ -68,7 +70,8 @@ public class DeleteJobCommandTest {
         model.updateFilteredApplicantList(applicant -> applicant.equals(ALICE));
         model.updateFilteredJobList(job -> job.toString().contains("Data"));
         DeleteJobCommand command = new DeleteJobCommand(INDEX_FIRST);
-        String expectedMessage = String.format(DeleteJobCommand.MESSAGE_DELETE_JOB_SUCCESS, ANALYST.getJobRole());
+        String expectedMessage = String.format(DeleteJobCommand.MESSAGE_DELETE_JOB_SUCCESS, ANALYST.getJobRole())
+                + "\nWarning: Applications deleted with this job: 1.";
 
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
         expectedModel.updateFilteredJobList(job -> job.toString().contains("Data"));
@@ -81,6 +84,26 @@ public class DeleteJobCommandTest {
         assertFalse(model.hasJob(ANALYST));
         assertEquals(List.of(engineerApplication), model.getApplicationList());
         assertTrue(model.hasApplicant(BENSON));
+    }
+
+    @Test
+    public void execute_jobWithApplications_warnsAboutAllDeletedApplications() throws Exception {
+        model.addApplication(new Application(ALICE, ENGINEER, Application.Status.PENDING));
+        model.addApplication(new Application(BENSON,
+                new Job(ENGINEER.getJobRole(), "Different description"), Application.Status.ACCEPT));
+        model.addApplication(new Application(CARL, ENGINEER, Application.Status.REJECT));
+        Application unrelatedApplication = new Application(DANIEL, ANALYST, Application.Status.PENDING);
+        model.addApplication(unrelatedApplication);
+        model.updateFilteredApplicantList(applicant -> applicant.equals(ALICE));
+
+        CommandResult result = new DeleteJobCommand(INDEX_FIRST).execute(model);
+
+        assertEquals(String.format(DeleteJobCommand.MESSAGE_DELETE_JOB_SUCCESS, ENGINEER.getJobRole())
+                + "\nWarning: Applications deleted with this job: 3.", result.getFeedbackToUser());
+        assertEquals(List.of(unrelatedApplication), model.getApplicationList());
+        assertEquals(getTypicalAddressBook().getApplicantList(), model.getAddressBook().getApplicantList());
+        assertFalse(model.hasJob(ENGINEER));
+        assertTrue(model.hasJob(ANALYST));
     }
 
     @Test

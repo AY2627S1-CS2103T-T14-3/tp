@@ -103,7 +103,7 @@ public class LinkedOutUiTest {
             assertFalse(applicantsTab.isSelected());
             assertTrue(applicationsTab.isSelected());
 
-            command(window, "viewa");
+            command(window, "view");
             assertTrue(applicantsTab.isSelected());
             assertFalse(applicationsTab.isSelected());
         });
@@ -226,12 +226,15 @@ public class LinkedOutUiTest {
             command(window, "addj -job Engineer");
             command(window, "find Alice");
             command(window, "addp 1 -j Engineer -s accept");
+            command(window, "viewp 1");
+            assertEquals("Applications", label(window, "listTitle").getText());
             command(window, "delete 1");
 
             assertApplicantName(window, "Alice Pauline");
             assertEquals(ALICE.getEmail().value, label(window, "email").getText());
             assertEquals(ALICE.getPhone().value, label(window, "phone").getText());
             assertApplication(window, "Engineer", "No information ~", "Accepted");
+            assertTrue(feedback(window).contains("Warning: The applicant's application was also deleted."));
             assertEquals("0 applicants", label(window, "applicantCount").getText());
             assertTrue(model.getApplicationList().isEmpty());
             ListView<?> applicants = (ListView<?>) window.getRoot().getScene().lookup("#applicantListView");
@@ -463,11 +466,13 @@ public class LinkedOutUiTest {
             jobs.getSelectionModel().select(0);
             pulse(window);
             ScrollPane details = (ScrollPane) window.getRoot().getScene().lookup(".detail-scroll");
+            details.setMaxHeight(48);
             details.setPrefViewportHeight(36);
-            pulse(window);
             details.requestFocus();
+            pulse(window);
             pressArrowOn(window, details, KeyCode.DOWN);
             assertEquals("Software Engineer", label(window, "jobName").getText());
+            assertTrue(details.isFocused());
             assertTrue(details.getVvalue() > 0);
         });
     }
@@ -486,6 +491,28 @@ public class LinkedOutUiTest {
             command(window, "find completely-random-string");
             assertApplicantName(window, "No applicant selected");
             assertEquals("0 applicants", label(window, "applicantCount").getText());
+        });
+    }
+
+    @Test
+    public void viewCommand_noIndex_switchesToApplicantsAndKeepsFilterAndSelection() throws Exception {
+        withWindow((window, model) -> {
+            command(window, "find Meier");
+            command(window, "view 2");
+            for (String otherView : List.of("viewj", "viewp")) {
+                command(window, otherView);
+                command(window, "view");
+
+                assertEquals("Applicants", label(window, "listTitle").getText());
+                assertEquals(ViewCommand.MESSAGE_SHOWING_APPLICANTS, feedback(window));
+                assertEquals(List.of(BENSON, DANIEL), model.getFilteredApplicantList());
+                assertApplicantDetails(window, DANIEL);
+            }
+
+            command(window, "clear");
+            command(window, "view");
+            assertEquals(ViewCommand.MESSAGE_SHOWING_APPLICANTS, feedback(window));
+            assertEquals("No applicant selected", label(window, "applicantName").getText());
         });
     }
 
@@ -542,7 +569,7 @@ public class LinkedOutUiTest {
                 command(window, "view 2");
                 ListView<?> applicants = (ListView<?>) window.getRoot().getScene().lookup("#applicantListView");
                 TextField input = (TextField) window.getRoot().getScene().lookup("#commandTextField");
-                for (String invalidCommand : List.of("view 3", "view 0", "view", "view 1 extra")) {
+                for (String invalidCommand : List.of("view 3", "view 0", "view 1 extra")) {
                     input.setText(invalidCommand);
                     input.fireEvent(new ActionEvent());
                     assertEquals(invalidCommand, input.getText());
@@ -653,7 +680,13 @@ public class LinkedOutUiTest {
         withWindow((window, model) -> {
             command(window, "addj -j Janitor");
             command(window, "addp 2 -j Janitor");
+            command(window, "viewp 2");
+            assertEquals("Applications", label(window, "listTitle").getText());
+            command(window, "viewj 1");
+            pulse(window);
+            assertEquals("Janitor", label(window, "jobName").getText());
             command(window, "deletej 1");
+            assertTrue(feedback(window).contains("Warning: Applications deleted with this job: 1."));
             command(window, "viewp");
             assertEquals("0 applications", label(window, "applicantCount").getText());
             command(window, "view 2");

@@ -36,6 +36,12 @@ public class AddJobCommandParserTest {
     }
 
     @Test
+    public void parse_longUnknownOption_throwsParseException() {
+        String expected = String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddJobCommand.MESSAGE_USAGE);
+        assertParseFailure(parser, " -" + "a-".repeat(2000) + "a value", expected);
+    }
+
+    @Test
     public void parse_invalidRole_throwsParseException() {
         String expected = String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddJobCommand.MESSAGE_USAGE);
         assertParseFailure(parser, "", expected);

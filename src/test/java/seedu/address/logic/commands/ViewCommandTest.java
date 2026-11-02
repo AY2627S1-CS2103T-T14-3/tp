@@ -24,6 +24,23 @@ public class ViewCommandTest {
     private final Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs());
 
     @Test
+    public void execute_noIndex_showsApplicantsAndKeepsFilter() {
+        Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
+        showApplicantAtIndex(model, INDEX_SECOND);
+        showApplicantAtIndex(expectedModel, INDEX_SECOND);
+
+        assertCommandSuccess(new ViewCommand(), model,
+                new CommandResult(ViewCommand.MESSAGE_SHOWING_APPLICANTS, ViewRequest.applicants()), expectedModel);
+    }
+
+    @Test
+    public void execute_noIndexEmptyList_showsApplicants() {
+        assertCommandSuccess(new ViewCommand(), new ModelManager(),
+                new CommandResult(ViewCommand.MESSAGE_SHOWING_APPLICANTS, ViewRequest.applicants()),
+                new ModelManager());
+    }
+
+    @Test
     public void execute_validIndexUnfilteredList_returnsApplicantWithoutChangingModel() {
         Model expectedModel = new ModelManager(model.getAddressBook(), new UserPrefs());
         CommandResult expectedResult = new CommandResult("Viewing applicant: Alice Pauline",
@@ -74,6 +91,9 @@ public class ViewCommandTest {
         assertFalse(command.equals(new ViewCommand(INDEX_SECOND)));
         assertFalse(command.equals(null));
         assertFalse(command.equals(new ListCommand()));
+        assertFalse(command.equals(new ViewCommand()));
+        assertEquals(new ViewCommand(), new ViewCommand());
+        assertFalse(new ViewCommand().equals(command));
     }
 
     @Test

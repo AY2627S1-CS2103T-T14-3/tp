@@ -78,6 +78,8 @@ public class DeleteCommandTest {
 
         CommandResult result = new DeleteCommand(INDEX_FIRST).execute(model);
 
+        assertEquals(String.format(DeleteCommand.MESSAGE_DELETE_APPLICANT_SUCCESS, Messages.format(applicant))
+                + "\nWarning: The applicant's application was also deleted.", result.getFeedbackToUser());
         assertEquals(new CommandResult.DeletedApplicant(applicant, application),
                 result.getDeletedApplicant().orElseThrow());
         assertFalse(model.hasApplicant(applicant));
