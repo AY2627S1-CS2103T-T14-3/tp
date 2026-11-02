@@ -180,7 +180,6 @@ public class AddressBook implements ReadOnlyAddressBook {
     public void setJob(Job target, Job editedJob) {
         requireNonNull(editedJob);
 
-        applications.setJob(target, editedJob);
         jobs.setJob(target, editedJob);
         applications.setJob(target, editedJob);
     }
