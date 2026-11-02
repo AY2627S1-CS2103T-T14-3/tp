@@ -102,6 +102,14 @@ public class ApplicantListPanel extends UiPart<Region> {
         applicantListView.scrollTo(applicant);
     }
 
+    /**
+     * Selects the applicant {@code offset} rows away and scrolls that row into view.
+     * Stops at either end of the list.
+     */
+    public void selectOffset(int offset) {
+        ListNavigation.selectOffset(applicantListView, offset);
+    }
+
     /** Clears the list selection when displaying a deleted applicant. */
     public void clearSelection() {
         applicantListView.getSelectionModel().clearSelection();

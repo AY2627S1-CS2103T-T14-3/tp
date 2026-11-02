@@ -54,6 +54,14 @@ public class JobListPanel extends UiPart<Region> {
     }
 
     /**
+     * Selects the job {@code offset} rows away and scrolls that row into view.
+     * Stops at either end of the list.
+     */
+    public void selectOffset(int offset) {
+        ListNavigation.selectOffset(jobListView, offset);
+    }
+
+    /**
      * Custom {@code ListCell} that displays the graphics of a {@code Job} using a {@code JobCard}.
      */
     class JobListViewCell extends ListCell<Job> {

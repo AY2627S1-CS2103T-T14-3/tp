@@ -45,6 +45,8 @@ LinkedOut is a personal workspace for one recruiter. Your records are stored loc
 
    * `view 1` : Shows the first displayed applicant's details.
 
+   * `Up` / `Down` : Selects the previous or next record in the list on screen.
+
    * `add -n John Doe -p 98765432 -e johnd@example.com` : Adds an applicant named `John Doe`.
 
    * `bye` : Exits the app.
@@ -132,6 +134,14 @@ Examples:
 Shows a list of all applicants in the address book.
 
 Format: `list`
+
+### Moving through the current list
+
+Press `Up` or `Down` to select the previous or next record in the list on screen.
+The detail panel updates to match. This works on the Applicants, Applications, and Jobs tabs, including
+while you are typing a command. The selection stops at the first and last records.
+
+You can still click a record, or use `view INDEX` to jump to an applicant.
 
 ### Viewing applicants: `viewa`
 
@@ -447,5 +457,6 @@ Action | Format, Examples
 **View applicants** | `viewa`
 **View applications** | `viewp`
 **View applicant** | `view INDEX`<br> e.g., `view 1`
+**Select previous / next** | `Up` / `Down`
 **Help** | `help`
 **Bye** | `bye` or `exit`

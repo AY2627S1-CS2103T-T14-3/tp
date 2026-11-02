@@ -12,6 +12,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
@@ -170,6 +171,35 @@ public class MainWindow extends UiPart<Stage> {
 
         CommandBox commandBox = new CommandBox(this::executeCommand);
         commandBoxPlaceholder.getChildren().add(commandBox.getRoot());
+        getRoot().addEventFilter(KeyEvent.KEY_PRESSED, this::handleListNavigation);
+    }
+
+    /**
+     * Moves the selection on the current tab when Up or Down is pressed.
+     * The command box keeps focus so a typed command is left unchanged.
+     */
+    private void handleListNavigation(KeyEvent event) {
+        if (event.isShiftDown() || event.isControlDown() || event.isAltDown() || event.isMetaDown()) {
+            return;
+        }
+
+        int offset = 0;
+        if (event.getCode() == KeyCode.UP) {
+            offset = -1;
+        } else if (event.getCode() == KeyCode.DOWN) {
+            offset = 1;
+        }
+        if (offset == 0) {
+            return;
+        }
+
+        switch (currentView) {
+            case APPLICANTS -> applicantListPanel.selectOffset(offset);
+            case APPLICATIONS -> applicationListPanel.selectOffset(offset);
+            case JOBS -> jobListPanel.selectOffset(offset);
+            default -> throw new IllegalStateException("Unexpected view type: " + currentView);
+        }
+        event.consume();
     }
 
     /** Shows the requested list and its matching detail panel. */
@@ -187,7 +217,7 @@ public class MainWindow extends UiPart<Stage> {
 
     private void showApplicantsView() {
         listTitle.setText("Applicants");
-        listHint.setText("Select an applicant to view their details.");
+        listHint.setText("Use the up and down arrows to select an applicant.");
         consoleHint.setText(APPLICANT_HINT);
         viewListPlaceholder.getChildren().setAll(applicantListPanel.getRoot());
         applicantDetailPlaceholder.getChildren().setAll(applicantDetailPanel.getRoot());
@@ -196,7 +226,7 @@ public class MainWindow extends UiPart<Stage> {
 
     private void showApplicationsView() {
         listTitle.setText("Applications");
-        listHint.setText("Each row shows an applicant, job, and status.");
+        listHint.setText("Use the up and down arrows to select an application.");
         consoleHint.setText(APPLICATION_HINT);
         viewListPlaceholder.getChildren().setAll(applicationListPanel.getRoot());
         applicantDetailPlaceholder.getChildren().setAll(applicantDetailPanel.getRoot());
@@ -205,7 +235,7 @@ public class MainWindow extends UiPart<Stage> {
 
     private void showJobsView() {
         listTitle.setText("Jobs");
-        listHint.setText("Select a job to view its details.");
+        listHint.setText("Use the up and down arrows to select a job.");
         consoleHint.setText(JOB_HINT);
         viewListPlaceholder.getChildren().setAll(jobListPanel.getRoot());
         applicantDetailPlaceholder.getChildren().setAll(jobDetailPanel.getRoot());
