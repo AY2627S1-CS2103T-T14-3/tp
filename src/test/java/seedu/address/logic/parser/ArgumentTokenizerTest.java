@@ -171,6 +171,21 @@ public class ArgumentTokenizerTest {
     }
 
     @Test
+    public void tokenizeOptions_longUnknownOption_throwsParseException() {
+        assertMalformedOptions("-" + "a-".repeat(2000) + "a value", nameOption);
+        assertMalformedOptions("-n John -" + "a-".repeat(2000) + "a value", nameOption);
+    }
+
+    @Test
+    public void tokenizeOptions_longNonOption_preservesValue() throws ParseException {
+        for (String value : List.of("-" + "a-".repeat(2000), "-" + "a-".repeat(2000) + "a!")) {
+            ArgumentMultimap options = ArgumentTokenizer.tokenizeOptions("-n " + value,
+                    NO_PREAMBLE, nameOption);
+            assertArgumentPresent(options, nameOption, value);
+        }
+    }
+
+    @Test
     public void tokenizeOptions_unknownOption_throwsParseException() {
         assertMalformedOptions("-n John Doe -unknown value",
                 nameOption);
