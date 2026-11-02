@@ -28,6 +28,7 @@ public class JobDetailPanel extends UiPart<Region> {
     /** Creates the detail panel with no job selected. */
     public JobDetailPanel() {
         super(FXML);
+        enableCopy(jobName, jobDescription);
         showJob(null);
     }
 

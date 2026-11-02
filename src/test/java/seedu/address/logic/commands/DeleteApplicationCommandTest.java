@@ -9,8 +9,8 @@ import static seedu.address.logic.commands.CommandTestUtil.showApplicantAtIndex;
 import static seedu.address.testutil.TypicalApplicants.ALICE;
 import static seedu.address.testutil.TypicalApplicants.BENSON;
 import static seedu.address.testutil.TypicalApplicants.getTypicalAddressBook;
-import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_APPLICANT;
-import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND_APPLICANT;
+import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST;
+import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND;
 
 import org.junit.jupiter.api.Test;
 
@@ -40,7 +40,7 @@ public class DeleteApplicationCommandTest {
                 DeleteApplicationCommand.MESSAGE_SUCCESS, ALICE.getName(), ALICE.getEmail()),
                 ViewRequest.applicant(ALICE));
 
-        assertCommandSuccess(new DeleteApplicationCommand(INDEX_FIRST_APPLICANT), model,
+        assertCommandSuccess(new DeleteApplicationCommand(INDEX_FIRST), model,
                 expectedResult, expectedModel);
         assertFalse(model.hasApplication(ALICE));
         assertTrue(model.hasApplicant(ALICE));
@@ -54,24 +54,24 @@ public class DeleteApplicationCommandTest {
         Application otherApplication = new Application(ALICE, job, Application.Status.PENDING);
         model.addApplication(otherApplication);
         model.addApplication(new Application(BENSON, job, Application.Status.REJECT));
-        showApplicantAtIndex(model, INDEX_SECOND_APPLICANT);
+        showApplicantAtIndex(model, INDEX_SECOND);
 
         Model expectedModel = new ModelManager(getTypicalAddressBook(), new UserPrefs());
         expectedModel.addJob(job);
         expectedModel.addApplication(otherApplication);
-        showApplicantAtIndex(expectedModel, INDEX_SECOND_APPLICANT);
+        showApplicantAtIndex(expectedModel, INDEX_SECOND);
         CommandResult expectedResult = new CommandResult(String.format(
                 DeleteApplicationCommand.MESSAGE_SUCCESS, BENSON.getName(), BENSON.getEmail()),
                 ViewRequest.applicant(BENSON));
 
-        assertCommandSuccess(new DeleteApplicationCommand(INDEX_FIRST_APPLICANT), model,
+        assertCommandSuccess(new DeleteApplicationCommand(INDEX_FIRST), model,
                 expectedResult, expectedModel);
         assertEquals(1, model.getFilteredApplicantList().size());
     }
 
     @Test
     public void execute_missingApplication_throwsCommandException() {
-        assertCommandFailure(new DeleteApplicationCommand(INDEX_FIRST_APPLICANT), model,
+        assertCommandFailure(new DeleteApplicationCommand(INDEX_FIRST), model,
                 DeleteApplicationCommand.MESSAGE_MISSING_APPLICATION);
     }
 
@@ -85,24 +85,24 @@ public class DeleteApplicationCommandTest {
 
     @Test
     public void execute_invalidIndexFilteredList_throwsCommandException() {
-        showApplicantAtIndex(model, INDEX_FIRST_APPLICANT);
+        showApplicantAtIndex(model, INDEX_FIRST);
 
-        assertCommandFailure(new DeleteApplicationCommand(INDEX_SECOND_APPLICANT), model,
+        assertCommandFailure(new DeleteApplicationCommand(INDEX_SECOND), model,
                 String.format(DeleteApplicationCommand.MESSAGE_INVALID_INDEX, 1));
     }
 
     @Test
     public void execute_emptyList_throwsCommandException() {
-        assertCommandFailure(new DeleteApplicationCommand(INDEX_FIRST_APPLICANT), new ModelManager(),
+        assertCommandFailure(new DeleteApplicationCommand(INDEX_FIRST), new ModelManager(),
                 DeleteApplicationCommand.MESSAGE_EMPTY_LIST);
     }
 
     @Test
     public void equals() {
-        DeleteApplicationCommand command = new DeleteApplicationCommand(INDEX_FIRST_APPLICANT);
+        DeleteApplicationCommand command = new DeleteApplicationCommand(INDEX_FIRST);
         assertTrue(command.equals(command));
-        assertTrue(command.equals(new DeleteApplicationCommand(INDEX_FIRST_APPLICANT)));
-        assertFalse(command.equals(new DeleteApplicationCommand(INDEX_SECOND_APPLICANT)));
+        assertTrue(command.equals(new DeleteApplicationCommand(INDEX_FIRST)));
+        assertFalse(command.equals(new DeleteApplicationCommand(INDEX_SECOND)));
         assertFalse(command.equals(null));
         assertFalse(command.equals(new ListCommand()));
     }

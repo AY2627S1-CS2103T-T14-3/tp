@@ -95,7 +95,7 @@ public class AddApplicationCommandParser implements Parser<AddApplicationCommand
      * @return parse exception describing the expected command format
      */
     private static ParseException unrecognized(String args) {
-        String input = (AddApplicationCommand.COMMAND_WORD + args).trim().replaceAll("\\s+", " ");
+        String input = (AddApplicationCommand.COMMAND_WORD + args).strip().replaceAll("\\s+", " ");
         return new ParseException(String.format(AddApplicationCommand.MESSAGE_UNRECOGNIZED, input));
     }
 }

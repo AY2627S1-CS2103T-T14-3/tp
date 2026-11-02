@@ -14,6 +14,7 @@ import static seedu.address.testutil.TypicalApplicants.GEORGE;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.BiConsumer;
@@ -25,12 +26,20 @@ import org.junit.jupiter.api.io.TempDir;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.geometry.Bounds;
+import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollBar;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import seedu.address.logic.LogicManager;
 import seedu.address.logic.commands.AddApplicationCommand;
@@ -42,6 +51,8 @@ import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
 import seedu.address.model.applicant.Applicant;
+import seedu.address.model.application.Application;
+import seedu.address.model.application.Job;
 import seedu.address.storage.JsonAddressBookStorage;
 import seedu.address.storage.JsonUserPrefsStorage;
 import seedu.address.storage.StorageManager;
@@ -91,6 +102,162 @@ public class LinkedOutUiTest {
     }
 
     @Test
+    public void applicantCards_longFields_stayWithinListWhenResized() throws Exception {
+        withWindow((window, model) -> {
+            Applicant applicant = new ApplicantBuilder(ALICE).withName("LongName".repeat(100))
+                    .withEmail("long".repeat(40) + "@example.com").withPhone("1234567890".repeat(5)).build();
+            model.setApplicant(ALICE, applicant);
+
+            for (int width : List.of(1200, 900, 1100)) {
+                window.getRoot().getScene().getRoot().resize(width, 680);
+                assertCardsFitList(window, "applicantListView", "applicant-card");
+            }
+            assertEquals(applicant, model.getFilteredApplicantList().getFirst());
+        });
+    }
+
+    @Test
+    public void applicationCards_longFields_keepStatusVisibleWhenResized() throws Exception {
+        withWindow((window, model) -> {
+            Applicant applicant = new ApplicantBuilder(ALICE).withName("LongName".repeat(100)).build();
+            model.setApplicant(ALICE, applicant);
+            Job job = new Job("LongRole".repeat(100), "Long description ".repeat(40));
+            model.addJob(job);
+            model.addApplication(new Application(applicant, job, Application.Status.PENDING));
+            command(window, "viewp");
+
+            for (int width : List.of(1200, 900, 1100)) {
+                window.getRoot().getScene().getRoot().resize(width, 680);
+                assertCardsFitList(window, "applicationListView", "application-card");
+                Label status = (Label) window.getRoot().getScene()
+                        .lookup(".application-card #statusBadge");
+                assertEquals("Pending", status.getText());
+                assertBadgeFits(status);
+                for (String id : List.of("name", "job")) {
+                    Label summary = (Label) window.getRoot().getScene()
+                            .lookup(".application-card #" + id);
+                    assertTrue(summary.getHeight() <= summary.prefHeight(-1) + 1,
+                            "Card summaries should remain a single line when fields are long");
+                }
+            }
+            assertEquals(job.toString(), ((Label) window.getRoot().getScene()
+                    .lookup(".application-card #job")).getText());
+        });
+    }
+
+    @Test
+    public void applicationDetails_longJobFields_keepFullStatusVisibleWhenResized() throws Exception {
+        withWindow((window, model) -> {
+            Job job = new Job("LongRole".repeat(10), "Long description ".repeat(40));
+            model.addJob(job);
+            Application application = new Application(ALICE, job, Application.Status.PENDING);
+            model.addApplication(application);
+            command(window, "view 1");
+
+            for (Application.Status status : Application.Status.values()) {
+                Application updatedApplication = new Application(ALICE, job, status);
+                model.setApplication(application, updatedApplication);
+                application = updatedApplication;
+                for (int width : List.of(1200, 900, 1100)) {
+                    window.getRoot().getScene().getRoot().resize(width, 680);
+                    pulse(window);
+                    pulse(window);
+                    Label badge = label(window, "applicationStatusBadge");
+                    String expectedStatus = switch (status) {
+                        case ACCEPT -> "Accepted";
+                        case REJECT -> "Rejected";
+                        case PENDING -> "Pending";
+                    };
+                    assertApplication(window, job.getJobRole(), job.getJobDescription(), expectedStatus);
+                    assertBadgeFits(badge);
+                    Node viewport = window.getRoot().getScene().lookup(".detail-scroll .viewport");
+                    Bounds viewportBounds = viewport.localToScene(viewport.getLayoutBounds());
+                    Bounds badgeBounds = badge.localToScene(badge.getLayoutBounds());
+                    // Long details may scroll vertically, but the badge must fit horizontally.
+                    assertTrue(badgeBounds.getMinX() >= viewportBounds.getMinX()
+                            && badgeBounds.getMaxX() <= viewportBounds.getMaxX(),
+                            "Status bounds " + badgeBounds + " exceed detail viewport width " + viewportBounds);
+                }
+            }
+        });
+    }
+
+    @Test
+    public void copyApplicantDetails_usesCurrentSelectionAndDisablesEmptyValues() throws Exception {
+        withWindow(window -> {
+            assertCopiesText(window, "applicantName", ALICE.getName().fullName);
+            assertCopiesText(window, "email", ALICE.getEmail().value);
+            assertCopiesText(window, "phone", ALICE.getPhone().value);
+
+            command(window, "view 2");
+            assertCopiesText(window, "email", BENSON.getEmail().value);
+            assertCopiesText(window, "phone", BENSON.getPhone().value);
+
+            command(window, "clear");
+            assertTrue(label(window, "email").getContextMenu().getItems().getFirst().isDisable());
+            assertTrue(label(window, "phone").getContextMenu().getItems().getFirst().isDisable());
+        });
+    }
+
+    @Test
+    public void copyApplicationAndJobDetails_preservesCompleteText() throws Exception {
+        withWindow((window, model) -> {
+            String description = "First line\n第二行";
+            model.addJob(new Job("Engineer", description));
+            command(window, "addp 1 -j Engineer");
+            command(window, "viewp");
+            assertCopiesText(window, "applicationStatus", "Engineer");
+            assertCopiesText(window, "applicationStatusBadge", "Pending");
+            assertCopiesText(window, "jobDesc", description);
+
+            command(window, "set 1 -s accept");
+            assertCopiesText(window, "applicationStatusBadge", "Accepted");
+            command(window, "viewj");
+            pulse(window);
+            assertCopiesText(window, "jobName", "Engineer");
+            assertCopiesText(window, "jobDescription", description);
+        });
+    }
+
+    @Test
+    public void copyShortcut_tabNavigation_reachesDetailValues() throws Exception {
+        withWindow(window -> {
+            TextField input = (TextField) window.getRoot().getScene().lookup("#commandTextField");
+            input.requestFocus();
+            Label email = label(window, "email");
+            for (int i = 0; i < 20 && window.getRoot().getScene().getFocusOwner() != email; i++) {
+                window.getRoot().getScene().getFocusOwner().fireEvent(
+                        new KeyEvent(KeyEvent.KEY_PRESSED, "", "", KeyCode.TAB, false, false, false, false));
+            }
+            assertEquals(email, window.getRoot().getScene().getFocusOwner());
+            email.fireEvent(copyKeyEvent());
+            assertEquals(ALICE.getEmail().value, Clipboard.getSystemClipboard().getString());
+        });
+    }
+
+    @Test
+    public void copyShortcut_textInputAndEmptyValues_preservesExpectedClipboard() throws Exception {
+        withWindow(window -> {
+            TextField input = (TextField) window.getRoot().getScene().lookup("#commandTextField");
+            input.setText("find Alice");
+            input.requestFocus();
+            input.selectRange(5, 10);
+            input.fireEvent(copyKeyEvent());
+            assertEquals("Alice", Clipboard.getSystemClipboard().getString());
+
+            Label email = label(window, "email");
+            email.requestFocus();
+            email.fireEvent(new KeyEvent(KeyEvent.KEY_PRESSED, "c", "c", KeyCode.C,
+                    false, false, false, false));
+            assertEquals("Alice", Clipboard.getSystemClipboard().getString());
+
+            command(window, "clear");
+            email.fireEvent(copyKeyEvent());
+            assertEquals("Alice", Clipboard.getSystemClipboard().getString());
+        });
+    }
+
+    @Test
     public void sidebarCommands_switchBetweenApplicantAndApplicationTabs() throws Exception {
         withWindow(window -> {
             ToggleButton applicantsTab = (ToggleButton) window.getRoot().getScene().lookup("#applicantsTab");
@@ -100,7 +267,7 @@ public class LinkedOutUiTest {
             assertFalse(applicantsTab.isSelected());
             assertTrue(applicationsTab.isSelected());
 
-            command(window, "viewa");
+            command(window, "view");
             assertTrue(applicantsTab.isSelected());
             assertFalse(applicationsTab.isSelected());
         });
@@ -223,12 +390,15 @@ public class LinkedOutUiTest {
             command(window, "addj -job Engineer");
             command(window, "find Alice");
             command(window, "addp 1 -j Engineer -s accept");
+            command(window, "viewp 1");
+            assertEquals("Applications", label(window, "listTitle").getText());
             command(window, "delete 1");
 
             assertApplicantName(window, "Alice Pauline");
             assertEquals(ALICE.getEmail().value, label(window, "email").getText());
             assertEquals(ALICE.getPhone().value, label(window, "phone").getText());
             assertApplication(window, "Engineer", "No information ~", "Accepted");
+            assertTrue(feedback(window).contains("Warning: The applicant's application was also deleted."));
             assertEquals("0 applicants", label(window, "applicantCount").getText());
             assertTrue(model.getApplicationList().isEmpty());
             ListView<?> applicants = (ListView<?>) window.getRoot().getScene().lookup("#applicantListView");
@@ -383,6 +553,95 @@ public class LinkedOutUiTest {
     }
 
     @Test
+    public void arrowKeys_applicantList_selectsNeighborAndKeepsTypedCommand() throws Exception {
+        withWindow(window -> {
+            TextField input = (TextField) window.getRoot().getScene().lookup("#commandTextField");
+            input.setText("list");
+
+            assertApplicantName(window, "Alice Pauline");
+            pressArrow(window, KeyCode.DOWN);
+            assertApplicantName(window, "Benson Meier");
+            assertEquals("list", input.getText());
+
+            pressArrow(window, KeyCode.UP);
+            assertApplicantName(window, "Alice Pauline");
+            pressArrow(window, KeyCode.UP);
+            assertApplicantName(window, "Alice Pauline");
+
+            selectApplicant(window, 6);
+            pressArrow(window, KeyCode.DOWN);
+            assertApplicantName(window, "George Best");
+
+            command(window, "find completely-random-string");
+            pressArrow(window, KeyCode.DOWN);
+            assertApplicantName(window, "No applicant selected");
+
+            command(window, "list");
+            command(window, "delete 1");
+            pressArrow(window, KeyCode.DOWN);
+            assertApplicantName(window, "Benson Meier");
+        });
+    }
+
+    @Test
+    public void arrowKeys_jobsAndApplications_selectsNeighbor() throws Exception {
+        withWindow(window -> {
+            command(window, "addj -j Software Engineer");
+            command(window, "addj -j Data Analyst");
+            command(window, "viewj");
+            pressArrow(window, KeyCode.UP);
+            assertEquals("Software Engineer", label(window, "jobName").getText());
+            pressArrow(window, KeyCode.DOWN);
+            assertEquals("Data Analyst", label(window, "jobName").getText());
+
+            command(window, "addp 1 -j Software Engineer");
+            command(window, "addp 2 -j Data Analyst");
+            command(window, "viewp");
+            pressArrow(window, KeyCode.DOWN);
+            assertApplicantName(window, "Benson Meier");
+            pressArrow(window, KeyCode.UP);
+            assertApplicantName(window, "Alice Pauline");
+        });
+    }
+
+    @Test
+    public void arrowKeys_feedbackAndJobDetails_keepSelection() throws Exception {
+        withWindow(window -> {
+            TextField input = (TextField) window.getRoot().getScene().lookup("#commandTextField");
+            input.setText("add");
+            input.fireEvent(new ActionEvent());
+            TextArea feedback = (TextArea) window.getRoot().getScene().lookup("#resultDisplay");
+            feedback.requestFocus();
+            int caret = feedback.getCaretPosition();
+            assertApplicantName(window, "Alice Pauline");
+            pressArrowOn(window, feedback, KeyCode.DOWN);
+            assertApplicantName(window, "Alice Pauline");
+            assertTrue(feedback.getCaretPosition() > caret);
+
+            ListView<?> applicants = (ListView<?>) window.getRoot().getScene().lookup("#applicantListView");
+            applicants.requestFocus();
+            pressArrowOn(window, applicants, KeyCode.DOWN);
+            assertApplicantName(window, "Benson Meier");
+
+            command(window, "addj -j Software Engineer -d " + "Long role details. ".repeat(40));
+            command(window, "addj -j Data Analyst");
+            command(window, "viewj");
+            ListView<?> jobs = (ListView<?>) window.getRoot().getScene().lookup("#jobListView");
+            jobs.getSelectionModel().select(0);
+            pulse(window);
+            ScrollPane details = (ScrollPane) window.getRoot().getScene().lookup(".detail-scroll");
+            details.setMaxHeight(48);
+            details.setPrefViewportHeight(36);
+            details.requestFocus();
+            pulse(window);
+            pressArrowOn(window, details, KeyCode.DOWN);
+            assertEquals("Software Engineer", label(window, "jobName").getText());
+            assertTrue(details.isFocused());
+            assertTrue(details.getVvalue() > 0);
+        });
+    }
+
+    @Test
     public void selectApplicant_anotherApplicant_applicantNameUpdated() throws Exception {
         withWindow(window -> {
             selectApplicant(window, 1);
@@ -396,6 +655,28 @@ public class LinkedOutUiTest {
             command(window, "find completely-random-string");
             assertApplicantName(window, "No applicant selected");
             assertEquals("0 applicants", label(window, "applicantCount").getText());
+        });
+    }
+
+    @Test
+    public void viewCommand_noIndex_switchesToApplicantsAndKeepsFilterAndSelection() throws Exception {
+        withWindow((window, model) -> {
+            command(window, "find Meier");
+            command(window, "view 2");
+            for (String otherView : List.of("viewj", "viewp")) {
+                command(window, otherView);
+                command(window, "view");
+
+                assertEquals("Applicants", label(window, "listTitle").getText());
+                assertEquals(ViewCommand.MESSAGE_SHOWING_APPLICANTS, feedback(window));
+                assertEquals(List.of(BENSON, DANIEL), model.getFilteredApplicantList());
+                assertApplicantDetails(window, DANIEL);
+            }
+
+            command(window, "clear");
+            command(window, "view");
+            assertEquals(ViewCommand.MESSAGE_SHOWING_APPLICANTS, feedback(window));
+            assertEquals("No applicant selected", label(window, "applicantName").getText());
         });
     }
 
@@ -452,7 +733,7 @@ public class LinkedOutUiTest {
                 command(window, "view 2");
                 ListView<?> applicants = (ListView<?>) window.getRoot().getScene().lookup("#applicantListView");
                 TextField input = (TextField) window.getRoot().getScene().lookup("#commandTextField");
-                for (String invalidCommand : List.of("view 3", "view 0", "view", "view 1 extra")) {
+                for (String invalidCommand : List.of("view 3", "view 0", "view 1 extra")) {
                     input.setText(invalidCommand);
                     input.fireEvent(new ActionEvent());
                     assertEquals(invalidCommand, input.getText());
@@ -527,13 +808,16 @@ public class LinkedOutUiTest {
         withWindow(window -> {
             command(window, "addj -job Janitor");
             command(window, "addp 2 -j Janitor");
-            command(window, "set 2 -status accept");
-            ListView<?> applicants = (ListView<?>) window.getRoot().getScene().lookup("#applicantListView");
-            assertEquals(1, applicants.getSelectionModel().getSelectedIndex());
-            assertApplicantDetails(window, BENSON);
-            assertApplication(window, "Janitor", "No information ~", "Accepted");
-            assertEquals(String.format(SetApplicationStatusCommand.MESSAGE_SUCCESS,
-                    BENSON.getName(), BENSON.getEmail(), "accept"), feedback(window));
+            for (Map.Entry<String, String> status : Map.of("accept", "Accepted", "reject", "Rejected",
+                    "pending", "Pending").entrySet()) {
+                command(window, "set 2 -status " + status.getKey());
+                ListView<?> applicants = (ListView<?>) window.getRoot().getScene().lookup("#applicantListView");
+                assertEquals(1, applicants.getSelectionModel().getSelectedIndex());
+                assertApplicantDetails(window, BENSON);
+                assertApplication(window, "Janitor", "No information ~", status.getValue());
+                assertEquals(String.format(SetApplicationStatusCommand.MESSAGE_SUCCESS,
+                        BENSON.getName(), BENSON.getEmail(), status.getValue()), feedback(window));
+            }
         });
     }
 
@@ -563,7 +847,13 @@ public class LinkedOutUiTest {
         withWindow((window, model) -> {
             command(window, "addj -j Janitor");
             command(window, "addp 2 -j Janitor");
+            command(window, "viewp 2");
+            assertEquals("Applications", label(window, "listTitle").getText());
+            command(window, "viewj 1");
+            pulse(window);
+            assertEquals("Janitor", label(window, "jobName").getText());
             command(window, "deletej 1");
+            assertTrue(feedback(window).contains("Warning: Applications deleted with this job: 1."));
             command(window, "viewp");
             assertEquals("0 applications", label(window, "applicantCount").getText());
             command(window, "view 2");
@@ -610,7 +900,7 @@ public class LinkedOutUiTest {
             assertEquals("Jobs", label(window, "listTitle").getText());
             assertEquals("2 jobs", label(window, "applicantCount").getText());
             assertEquals("Product Designer", label(window, "jobName").getText());
-            assertEquals("Edited job: Product Designer : No information ~", feedback(window));
+            assertEquals("Edited job: \nRole: Product Designer\nDescription: No information ~", feedback(window));
             ListView<?> jobs = (ListView<?>) window.getRoot().getScene().lookup("#jobListView");
             assertEquals("Product Designer : No information ~", jobs.getSelectionModel().getSelectedItem().toString());
             assertEquals(1, jobs.getSelectionModel().getSelectedIndex());
@@ -644,7 +934,7 @@ public class LinkedOutUiTest {
             assertEquals("Software Engineer", label(window, "jobName").getText());
             assertEquals("Open", label(window, "openBadge").getText());
             assertNull(window.getRoot().getScene().lookup("#applicantSummary"));
-            assertEquals("New job added: Software Engineer : No information ~", feedback(window));
+            assertEquals("New job added: Software Engineer", feedback(window));
 
             command(window, "addj -j Data Analyst");
             pulse(window);
@@ -721,6 +1011,18 @@ public class LinkedOutUiTest {
         });
     }
 
+    private void pressArrow(MainWindow window, KeyCode code) {
+        TextField input = (TextField) window.getRoot().getScene().lookup("#commandTextField");
+        input.requestFocus();
+        pressArrowOn(window, input, code);
+    }
+
+    private void pressArrowOn(MainWindow window, Node target, KeyCode code) {
+        target.fireEvent(new KeyEvent(
+                KeyEvent.KEY_PRESSED, "", "", code, false, false, false, false));
+        pulse(window);
+    }
+
     private void selectApplicant(MainWindow window, int zeroBasedIndex) {
         ListView<?> applicants = (ListView<?>) window.getRoot().getScene().lookup("#applicantListView");
         applicants.getSelectionModel().select(zeroBasedIndex);
@@ -748,6 +1050,30 @@ public class LinkedOutUiTest {
         assertEquals(status, badge.getText());
     }
 
+    /** Verifies that the menu and keyboard shortcut copy the complete, current detail value. */
+    private void assertCopiesText(MainWindow window, String id, String expected) {
+        Label value = label(window, id);
+        assertNotNull(value.getContextMenu(), "Missing Copy menu: " + id);
+        assertTrue(value.isFocusTraversable());
+        assertFalse(value.getContextMenu().getItems().getFirst().isDisable());
+        value.getContextMenu().getItems().getFirst().fire();
+        assertEquals(expected, Clipboard.getSystemClipboard().getString());
+
+        ClipboardContent previous = new ClipboardContent();
+        previous.putString("Previous clipboard value");
+        Clipboard.getSystemClipboard().setContent(previous);
+        value.requestFocus();
+        assertEquals(value, window.getRoot().getScene().getFocusOwner());
+        value.fireEvent(copyKeyEvent());
+        assertEquals(expected, Clipboard.getSystemClipboard().getString());
+    }
+
+    /** Creates a copy keystroke using the platform's shortcut modifier. */
+    private KeyEvent copyKeyEvent() {
+        boolean isMac = System.getProperty("os.name").startsWith("Mac");
+        return new KeyEvent(KeyEvent.KEY_PRESSED, "c", "c", KeyCode.C, false, !isMac, false, isMac);
+    }
+
     private Label label(MainWindow window, String id) {
         Label label = (Label) window.getRoot().getScene().lookup("#" + id);
         assertNotNull(label, "Missing applicant detail: " + id);
@@ -764,6 +1090,43 @@ public class LinkedOutUiTest {
 
     private String feedback(MainWindow window) {
         return ((TextArea) window.getRoot().getScene().lookup("#resultDisplay")).getText();
+    }
+
+    /** Verifies that a status badge displays its full text within its row. */
+    private void assertBadgeFits(Label badge) {
+        assertTrue(badge.isVisible());
+        assertTrue(badge.getWidth() >= badge.prefWidth(-1) - 1,
+                "Status width " + badge.getWidth() + " vs preferred " + badge.prefWidth(-1));
+        Bounds rowBounds = badge.getParent().getLayoutBounds();
+        assertTrue(rowBounds.contains(badge.getBoundsInParent()),
+                "The full status badge should remain inside its row");
+    }
+
+    /** Verifies that cards fit the viewport without a horizontal scrollbar. */
+    private void assertCardsFitList(MainWindow window, String listId, String cardClass) {
+        pulse(window);
+        pulse(window);
+        ListView<?> list = (ListView<?>) window.getRoot().getScene().lookup("#" + listId);
+        assertFalse(list.lookupAll("." + cardClass).isEmpty());
+        int visibleCardCount = 0;
+        for (Node card : list.lookupAll("." + cardClass)) {
+            // VirtualFlow retains offscreen cells at their old widths until they are reused.
+            if (!card.getParent().isVisible()) {
+                continue;
+            }
+            visibleCardCount++;
+            assertTrue(card.getLayoutBounds().getWidth() >= list.getWidth() - 30,
+                    "Visible cards should fill the list width, allowing space for its scrollbar");
+            assertTrue(card.getLayoutBounds().getWidth() <= list.getWidth() + 1,
+                    "Card width " + card.getLayoutBounds().getWidth() + " exceeds list width " + list.getWidth());
+        }
+        assertTrue(visibleCardCount > 0);
+        for (Node node : list.lookupAll(".scroll-bar")) {
+            ScrollBar bar = (ScrollBar) node;
+            if (bar.getOrientation() == Orientation.HORIZONTAL) {
+                assertFalse(bar.isVisible(), "Long fields must not cause horizontal scrolling");
+            }
+        }
     }
 
     private void pulse(MainWindow window) {

@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 
 import seedu.address.logic.parser.Option;
 import seedu.address.model.applicant.Applicant;
+import seedu.address.model.application.Job;
 
 /**
  * Container for user visible messages.
@@ -13,8 +14,8 @@ import seedu.address.model.applicant.Applicant;
 public class Messages {
 
     public static final String MESSAGE_UNKNOWN_COMMAND = "Unknown command.\n"
-            + "Available commands: add, addj, addp, bye, clear, delete, deletej, deletep, edit, exit, find, help, "
-            + "list, set, view, viewa, viewj, viewp.";
+            + "Available commands: add, addj, addp, bye, clear, delete, deletej, deletep, edit, editj, exit, "
+            + "find, help, list, set, undo, view, viewj, viewp.";
     public static final String MESSAGE_INVALID_COMMAND_FORMAT = "Invalid command format!\n%1$s";
     public static final String MESSAGE_INVALID_APPLICANT_DISPLAYED_INDEX = "The applicant index provided is invalid.";
     public static final String MESSAGE_APPLICANTS_LISTED_OVERVIEW = "%1$d applicant(s) listed!";
@@ -45,6 +46,18 @@ public class Messages {
                 .append(applicant.getPhone())
                 .append("; Email: ")
                 .append(applicant.getEmail());
+        return builder.toString();
+    }
+
+    /**
+     * Formats the {@code person} for display to the user.
+     */
+    public static String format(Job job) {
+        final StringBuilder builder = new StringBuilder();
+        builder.append("\nRole: ")
+                .append(job.getJobRole())
+                .append("\nDescription: ")
+                .append(job.getJobDescription());
         return builder.toString();
     }
 

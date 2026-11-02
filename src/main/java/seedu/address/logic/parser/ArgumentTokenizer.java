@@ -32,7 +32,7 @@ public class ArgumentTokenizer {
     public static final boolean NO_PREAMBLE = false;
 
     /** A whitespace-delimited token which looks like an option under the command grammar. */
-    private static final Pattern OPTION_TOKEN = Pattern.compile("(?<!\\S)(-[a-z]+(?:-[a-z]+)*)(?=\\s|$)");
+    private static final Pattern OPTION_TOKEN = Pattern.compile("(?<!\\S)(-[a-z]+(?:-[a-z]++)*+)(?=\\s|$)");
 
     /**
      * Strictly tokenizes hyphen-prefixed command options according to {@code options}.
@@ -74,7 +74,7 @@ public class ArgumentTokenizer {
             int valueEnd = i + 1 < occurrences.size()
                     ? occurrences.get(i + 1).startPosition()
                     : argsString.length();
-            String value = argsString.substring(occurrence.endPosition(), valueEnd).trim();
+            String value = argsString.substring(occurrence.endPosition(), valueEnd).strip();
             if ((option.getKind() == Kind.FLAG && !value.isEmpty())
                     || (option != Option.OPTION_EMPTY && option.getKind() != Kind.FLAG && value.isEmpty())) {
                 throw malformedOptions();
@@ -127,7 +127,7 @@ public class ArgumentTokenizer {
     private static void validateNoPositionalPreamble(String argsString, List<OptionOccurrence> occurrences)
             throws ParseException {
         int firstOptionStart = occurrences.isEmpty() ? argsString.length() : occurrences.getFirst().startPosition();
-        if (!argsString.substring(0, firstOptionStart).trim().isEmpty()) {
+        if (!argsString.substring(0, firstOptionStart).strip().isEmpty()) {
             throw malformedOptions();
         }
     }

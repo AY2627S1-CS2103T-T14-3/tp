@@ -12,12 +12,15 @@ import seedu.address.logic.parser.exceptions.ParseException;
 public class ViewCommandParser implements Parser<ViewCommand> {
 
     /**
-     * Parses the given arguments into a command to view an applicant.
+     * Parses the given arguments into a command to show applicants or select one by index.
      *
-     * @throws ParseException if the arguments are not a single positive integer.
+     * @throws ParseException if nonblank arguments are not a single positive integer.
      */
     @Override
     public ViewCommand parse(String args) throws ParseException {
+        if (args.isBlank()) {
+            return new ViewCommand();
+        }
         try {
             Index index = ParserUtil.parseIndex(args);
             return new ViewCommand(index);

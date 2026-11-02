@@ -34,8 +34,9 @@
       <VBox spacing="8" styleClass="application-section">
         <Label styleClass="section-title" text="Application" />
         <HBox alignment="CENTER_LEFT" spacing="10">
-          <Label fx:id="applicationStatus" styleClass="muted-label" text="No application recorded." wrapText="true" HBox.hgrow="ALWAYS" />
-          <Label fx:id="applicationStatusBadge" styleClass="status-badge" />
+          <Label fx:id="applicationStatus" styleClass="muted-label" text="No application recorded."
+                 minWidth="0" maxWidth="Infinity" wrapText="true" HBox.hgrow="ALWAYS" />
+          <Label fx:id="applicationStatusBadge" styleClass="status-badge" minWidth="-Infinity" />
         </HBox>
             <Label fx:id="jobDesc" styleClass="muted-label" visible="false" wrapText="true" />
       </VBox>

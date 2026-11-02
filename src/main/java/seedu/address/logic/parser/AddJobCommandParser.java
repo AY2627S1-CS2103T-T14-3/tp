@@ -34,14 +34,14 @@ public class AddJobCommandParser implements Parser<AddJobCommand> {
                     String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddJobCommand.MESSAGE_USAGE), pe);
         }
 
-        String role = values.getValue(OPTION_JOB_ROLE_REQ).get().trim();
+        String role = values.getValue(OPTION_JOB_ROLE_REQ).get();
         if (!Job.isValidRole(role)) {
             throw new ParseException(MESSAGE_INVALID_JOB_ROLE);
         }
 
         // Job description is given
         if (values.getValue(OPTION_JOB_DESC_OPT).isPresent()) {
-            return new AddJobCommand(new Job(role, values.getValue(OPTION_JOB_DESC_OPT).get().trim()));
+            return new AddJobCommand(new Job(role, values.getValue(OPTION_JOB_DESC_OPT).get()));
         }
 
         return new AddJobCommand(new Job(role));

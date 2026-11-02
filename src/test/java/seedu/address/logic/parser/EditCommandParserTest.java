@@ -7,8 +7,8 @@ import static seedu.address.logic.commands.CommandTestUtil.VALID_PHONE_AMY;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
 import static seedu.address.testutil.Assert.assertThrows;
-import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST_APPLICANT;
-import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND_APPLICANT;
+import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST;
+import static seedu.address.testutil.TypicalIndexes.INDEX_SECOND;
 
 import java.util.List;
 
@@ -41,7 +41,7 @@ public class EditCommandParserTest {
         EditApplicantDescriptor descriptor = new EditApplicantDescriptorBuilder().withName(VALID_NAME_AMY)
                 .withPhone(VALID_PHONE_AMY).withEmail(VALID_EMAIL_AMY).build();
         assertParseSuccess(parser, " 2" + NAME_OPTION + PHONE_OPTION + EMAIL_OPTION,
-                new EditCommand(INDEX_SECOND_APPLICANT, descriptor));
+                new EditCommand(INDEX_SECOND, descriptor));
     }
 
     @Test
@@ -49,26 +49,26 @@ public class EditCommandParserTest {
         EditApplicantDescriptor descriptor = new EditApplicantDescriptorBuilder().withName(VALID_NAME_AMY)
                 .withEmail(VALID_EMAIL_AMY).build();
         assertParseSuccess(parser, " 1" + NAME_OPTION + EMAIL_OPTION,
-                new EditCommand(INDEX_FIRST_APPLICANT, descriptor));
+                new EditCommand(INDEX_FIRST, descriptor));
     }
 
     @Test
     public void parse_oneFieldSpecified_success() {
         EditApplicantDescriptor nameOnly = new EditApplicantDescriptorBuilder().withName(VALID_NAME_AMY).build();
-        assertParseSuccess(parser, " 1" + NAME_OPTION, new EditCommand(INDEX_FIRST_APPLICANT, nameOnly));
+        assertParseSuccess(parser, " 1" + NAME_OPTION, new EditCommand(INDEX_FIRST, nameOnly));
 
         EditApplicantDescriptor phoneOnly = new EditApplicantDescriptorBuilder().withPhone(VALID_PHONE_AMY).build();
-        assertParseSuccess(parser, " 1" + PHONE_OPTION, new EditCommand(INDEX_FIRST_APPLICANT, phoneOnly));
+        assertParseSuccess(parser, " 1" + PHONE_OPTION, new EditCommand(INDEX_FIRST, phoneOnly));
 
         EditApplicantDescriptor emailOnly = new EditApplicantDescriptorBuilder().withEmail(VALID_EMAIL_AMY).build();
-        assertParseSuccess(parser, " 1" + EMAIL_OPTION, new EditCommand(INDEX_FIRST_APPLICANT, emailOnly));
+        assertParseSuccess(parser, " 1" + EMAIL_OPTION, new EditCommand(INDEX_FIRST, emailOnly));
     }
 
     @Test
     public void parse_longAndMixedAliasesInAnyOrder_success() {
         EditApplicantDescriptor descriptor = new EditApplicantDescriptorBuilder().withName(VALID_NAME_AMY)
                 .withPhone(VALID_PHONE_AMY).withEmail(VALID_EMAIL_AMY).build();
-        EditCommand expected = new EditCommand(INDEX_FIRST_APPLICANT, descriptor);
+        EditCommand expected = new EditCommand(INDEX_FIRST, descriptor);
         assertParseSuccess(parser, " 1 -email " + VALID_EMAIL_AMY + " -phone " + VALID_PHONE_AMY
                 + " -name " + VALID_NAME_AMY, expected);
         assertParseSuccess(parser, " 1" + EMAIL_OPTION + " -name " + VALID_NAME_AMY + PHONE_OPTION, expected);
@@ -81,14 +81,37 @@ public class EditCommandParserTest {
         EditApplicantDescriptor descriptor = new EditApplicantDescriptorBuilder().withName(VALID_NAME_AMY)
                 .withPhone(VALID_PHONE_AMY).build();
         assertParseSuccess(parser, " \t1 \t-n\t" + VALID_NAME_AMY + " \t-p\t" + VALID_PHONE_AMY + " \t",
-                new EditCommand(INDEX_FIRST_APPLICANT, descriptor));
+                new EditCommand(INDEX_FIRST, descriptor));
     }
 
     @Test
     public void parse_hyphenInsideValue_success() {
         EditApplicantDescriptor descriptor = new EditApplicantDescriptorBuilder()
                 .withEmail("amy-bee@example.com").build();
-        assertParseSuccess(parser, " 1 -e amy-bee@example.com", new EditCommand(INDEX_FIRST_APPLICANT, descriptor));
+        assertParseSuccess(parser, " 1 -e amy-bee@example.com", new EditCommand(INDEX_FIRST, descriptor));
+    }
+
+    @Test
+    public void parse_commonPunctuationAndUnicodeName_success() {
+        for (String name : List.of("Mary-Jane Tan", "Shaun O'Brien", "Rajesh s/o Kumar", "J. R. Tan",
+                "José Lim", "Jose\u0301 Lim", "Shaun O’Brien", "陈伟")) {
+            EditApplicantDescriptor descriptor = new EditApplicantDescriptorBuilder().withName(name).build();
+            assertParseSuccess(parser, "1 -n " + name, new EditCommand(INDEX_FIRST, descriptor));
+        }
+    }
+
+    @Test
+    public void parse_punycodeEmail_success() {
+        EditApplicantDescriptor descriptor = new EditApplicantDescriptorBuilder()
+                .withEmail("amy@xn--bcher-kva.de").build();
+        assertParseSuccess(parser, "1 -e amy@xn--bcher-kva.de", new EditCommand(INDEX_FIRST, descriptor));
+    }
+
+    @Test
+    public void parse_longEmail_failure() {
+        for (String email : List.of("a.".repeat(2000) + "a@example.com", "a".repeat(20000) + "!")) {
+            assertParseFailure(parser, "1 -e " + email, Email.MESSAGE_CONSTRAINTS);
+        }
     }
 
     @Test

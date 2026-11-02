@@ -178,6 +178,8 @@ public class AddressBook implements ReadOnlyAddressBook {
      * The edited role must not match another stored job.
      */
     public void setJob(Job target, Job editedJob) {
+        requireNonNull(editedJob);
+
         jobs.setJob(target, editedJob);
         applications.setJob(target, editedJob);
     }

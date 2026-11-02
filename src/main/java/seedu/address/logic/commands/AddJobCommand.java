@@ -15,7 +15,7 @@ public class AddJobCommand extends Command {
     public static final String COMMAND_WORD = "addj";
 
     public static final String MESSAGE_USAGE = COMMAND_WORD + ": Adds a job to the job list.\n"
-            + "Parameters: -j JOB_DESCRIPTION\n"
+            + "Parameters: -j JOB_ROLE [-d JOB_DESCRIPTION]\n"
             + "Example: " + COMMAND_WORD + " -j Software Engineer Intern";
 
     public static final String MESSAGE_SUCCESS = "New job added: %1$s";
@@ -40,7 +40,7 @@ public class AddJobCommand extends Command {
         }
 
         model.addJob(job);
-        return new CommandResult(String.format(MESSAGE_SUCCESS, job), ViewRequest.job(job));
+        return new CommandResult(String.format(MESSAGE_SUCCESS, job.getJobRole()), ViewRequest.job(job));
     }
 
     @Override

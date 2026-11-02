@@ -67,6 +67,31 @@ public class EmailTest {
     }
 
     @Test
+    public void isValidEmail_consecutiveDomainHyphens_success() {
+        assertTrue(Email.isValidEmail("alice@xn--bcher-kva.de"));
+        assertTrue(Email.isValidEmail("alice@example.xn--p1ai"));
+        assertTrue(Email.isValidEmail("alice@a---b.com"));
+        assertFalse(Email.isValidEmail("alice@--example.com"));
+        assertFalse(Email.isValidEmail("alice@example--.com"));
+        assertFalse(Email.isValidEmail("alice@example.c"));
+    }
+
+    @Test
+    public void isValidEmail_lengthBoundary_expectedResult() {
+        String email = "a".repeat(242) + "@example.com";
+        assertTrue(Email.isValidEmail(email)); // 254 characters
+        assertFalse(Email.isValidEmail("a" + email));
+    }
+
+    @Test
+    public void isValidEmail_longInput_returnsFalse() {
+        assertFalse(Email.isValidEmail("a.".repeat(2000) + "a@example.com"));
+        assertFalse(Email.isValidEmail("a".repeat(20000) + "!"));
+        assertFalse(Email.isValidEmail("a@" + "a".repeat(240) + "!"));
+        assertFalse(Email.isValidEmail("a@" + "a-".repeat(2000) + "a.com"));
+    }
+
+    @Test
     public void equals() {
         Email email = new Email("valid@email");
 
