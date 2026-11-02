@@ -81,9 +81,14 @@ The **API** of this component is specified in [`Ui.java`](https://github.com/AY2
 
 ![Structure of the UI Component](images/UiClassDiagram.png)
 
-The UI consists of a `MainWindow` and its parts, such as `CommandBox`, `ResultDisplay`, `ApplicantListPanel`, and `StatusBarFooter`. All of these, including `MainWindow`, inherit from the abstract `UiPart` class, which captures common behavior among classes that represent visible GUI parts.
+This partial diagram shows `MainWindow`, its console, the three list panels, and the two detail panels.
+The Applicants and Applications views share `ApplicantDetailPanel`; the Jobs view uses `JobDetailPanel`.
+These parts inherit from `UiPart`, which provides FXML loading and shared UI behavior. Inheritance links,
+list-cell cards, JavaFX controls, and the `ListNavigation` helper are omitted for readability.
 
-Up and Down move the selection in the list for the current tab and scroll that record into view. The command box keeps keyboard focus, because a single-line command field does not use those keys for editing.
+`ListNavigation` moves selection in the active list when Up or Down is pressed from the command box or
+list. The command box keeps keyboard focus. Text areas, copyable detail values, and other controls retain
+their normal arrow-key behavior; `MainWindow#handleListNavigation` checks the event target before navigating.
 
 The `UI` component uses the JavaFX UI framework. The layouts of these UI parts are defined in matching `.fxml` files in `src/main/resources/view`. For example, [`MainWindow.fxml`](https://github.com/AY2627S1-CS2103T-T14-3/tp/blob/master/src/main/resources/view/MainWindow.fxml) specifies the layout of [`MainWindow`](https://github.com/AY2627S1-CS2103T-T14-3/tp/blob/master/src/main/java/seedu/address/ui/MainWindow.java).
 
@@ -106,15 +111,16 @@ The sequence diagram below illustrates the interactions within the `Logic` compo
 
 ![Interactions Inside the Logic Component for the `delete 1` Command](images/DeleteSequenceDiagram.png)
 
-<div markdown="span" class="alert alert-info">:information_source: **Note:** The lifeline for `DeleteCommandParser` should end at the destroy marker (X), but due to a limitation of PlantUML, it continues to the end of the diagram.
-</div>
+The sequence shows a successful deletion with a valid index and a successful save. Errors and lower-level
+model operations are omitted. The parser is temporary, while the command result carries the deleted
+applicant's former details for the UI.
 
 How the `Logic` component works:
 
 1. When `Logic` is called upon to execute a command, it passes the command to `AddressBookParser`. For commands such as `delete`, `clear`, and `viewp`, it creates the matching command parser and uses it to parse the arguments. `help` and `list` are constructed directly.
 1. This results in a `Command` object (more precisely, an object of one of its subclasses e.g., `DeleteCommand`) which is executed by the `LogicManager`.
 1. The command can communicate with the `Model` when it is executed (e.g. to delete an applicant).<br>
-   Note that although this is shown as a single step in the diagram above for simplicity, the code can require several interactions between the command object and the `Model` to complete the operation.
+   The sequence shows the applicant lookup and application lookup before deletion; the model handles dependent-record removal internally.
 1. The result of the command execution is encapsulated as a `CommandResult` object which is returned from `Logic`.
 1. If the command changed the stored applicants, jobs, or applications, `LogicManager` remembers the previous address book. `undo` restores the newest remembered copy and does not itself become another undo step. The history is kept in memory for the session only.
 
@@ -135,12 +141,15 @@ See [Command parsing and validation](#command-parsing-and-validation) for the op
 ### Model component
 **API** : [`Model.java`](https://github.com/AY2627S1-CS2103T-T14-3/tp/blob/master/src/main/java/seedu/address/model/Model.java)
 
-<img src="images/ModelClassDiagram.png" width="450" />
+<img src="images/ModelClassDiagram.png" width="900" />
 
+
+The model diagram shows the three record collections, application references, filtered views, and bounded
+undo snapshots. `Application.Status` and other value-object details are omitted for readability.
 
 The `Model` component,
 
-* stores the address book data i.e., all `Applicant` objects (which are contained in a `UniqueApplicantList` object).
+* stores applicants, jobs, and applications in `UniqueApplicantList`, `UniqueJobList`, and `UniqueApplicationList`.
 * stores the `Applicant` objects selected by the current filter, such as search results, in a separate _filtered_ list. It exposes this list as an unmodifiable `ObservableList<Applicant>` that the UI can observe and bind to, so the UI updates when the list changes.
 * stores a `UserPrefs` object that represents the user’s preferences (currently, just the GUI settings). This is exposed to the outside as a `ReadOnlyUserPrefs` object.
 * does not depend on any of the other three components (as the `Model` represents data entities of the domain, they should make sense on their own without depending on other components)
@@ -201,7 +210,7 @@ Jobs are stored in the same JSON address book under `jobs`.
 
 **API** : [`Storage.java`](https://github.com/AY2627S1-CS2103T-T14-3/tp/blob/master/src/main/java/seedu/address/storage/Storage.java)
 
-<img src="images/StorageClassDiagram.png" width="550" />
+<img src="images/StorageClassDiagram.png" width="800" />
 
 The `Storage` component,
 * can save both address book data and user preference data in JSON format, and read them back into corresponding objects.
@@ -213,7 +222,7 @@ array and in each application's `job` field. `role` must be non-blank; `descript
 although an empty string is valid. `Job` strips surrounding whitespace from both fields. Duplicate jobs are
 rejected by role, independently of their descriptions.
 
-`JsonSerializableAddressBook#toModelType` loads persons, then jobs, then applications. A missing `jobs` or
+`JsonSerializableAddressBook#toModelType` loads applicants, then jobs, then applications. A missing `jobs` or
 `applications` array is treated as empty. `JsonAdaptedApplication#toModelType` resolves the applicant by exact
 name and the job by role equality against those already loaded. It uses the stored job from `jobs`, so that
 job's description takes precedence over the description embedded in the application. Unknown applicants,
