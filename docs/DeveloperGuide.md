@@ -45,7 +45,7 @@ The following provides a quick overview of the main components and their interac
 
 **Main components of the architecture**
 
-**`Main`** (consisting of classes [`Main`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/Main.java) and [`MainApp`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/MainApp.java)) is in charge of the app launch and shut down.
+**`Main`** (consisting of classes [`Main`](https://github.com/AY2627S1-CS2103T-T14-3/tp/blob/master/src/main/java/seedu/address/Main.java) and [`MainApp`](https://github.com/AY2627S1-CS2103T-T14-3/tp/blob/master/src/main/java/seedu/address/MainApp.java)) is in charge of the app launch and shut down.
 * At app launch, it initializes the other components in the correct sequence, and connects them up with each other.
 * At shut down, it shuts down the other components and invokes cleanup methods where necessary.
 
@@ -77,7 +77,7 @@ The sections below give more details of each component.
 
 ### UI component
 
-The **API** of this component is specified in [`Ui.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/ui/Ui.java)
+The **API** of this component is specified in [`Ui.java`](https://github.com/AY2627S1-CS2103T-T14-3/tp/blob/master/src/main/java/seedu/address/ui/Ui.java)
 
 ![Structure of the UI Component](images/UiClassDiagram.png)
 
@@ -85,7 +85,7 @@ The UI consists of a `MainWindow` and its parts, such as `CommandBox`, `ResultDi
 
 Up and Down move the selection in the list for the current tab and scroll that record into view. The command box keeps keyboard focus, because a single-line command field does not use those keys for editing.
 
-The `UI` component uses the JavaFX UI framework. The layouts of these UI parts are defined in matching `.fxml` files in `src/main/resources/view`. For example, [`MainWindow.fxml`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/resources/view/MainWindow.fxml) specifies the layout of [`MainWindow`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/ui/MainWindow.java).
+The `UI` component uses the JavaFX UI framework. The layouts of these UI parts are defined in matching `.fxml` files in `src/main/resources/view`. For example, [`MainWindow.fxml`](https://github.com/AY2627S1-CS2103T-T14-3/tp/blob/master/src/main/resources/view/MainWindow.fxml) specifies the layout of [`MainWindow`](https://github.com/AY2627S1-CS2103T-T14-3/tp/blob/master/src/main/java/seedu/address/ui/MainWindow.java).
 
 The `UI` component,
 
@@ -96,7 +96,7 @@ The `UI` component,
 
 ### Logic component
 
-**API** : [`Logic.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/logic/Logic.java)
+**API** : [`Logic.java`](https://github.com/AY2627S1-CS2103T-T14-3/tp/blob/master/src/main/java/seedu/address/logic/Logic.java)
 
 Here's a (partial) class diagram of the `Logic` component:
 
@@ -133,7 +133,7 @@ How the parsing works:
 See [Command parsing and validation](#command-parsing-and-validation) for the option rules and a parsing walkthrough.
 
 ### Model component
-**API** : [`Model.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/model/Model.java)
+**API** : [`Model.java`](https://github.com/AY2627S1-CS2103T-T14-3/tp/blob/master/src/main/java/seedu/address/model/Model.java)
 
 <img src="images/ModelClassDiagram.png" width="450" />
 
@@ -145,7 +145,7 @@ The `Model` component,
 * stores a `UserPrefs` object that represents the user’s preferences (currently, just the GUI settings). This is exposed to the outside as a `ReadOnlyUserPrefs` object.
 * does not depend on any of the other three components (as the `Model` represents data entities of the domain, they should make sense on their own without depending on other components)
 
-The `Application` model class in [`Application.java`](../src/main/java/seedu/address/model/application/Application.java)
+The `Application` model class in [`Application.java`](https://github.com/AY2627S1-CS2103T-T14-3/tp/blob/master/src/main/java/seedu/address/model/application/Application.java)
 represents one applicant’s job application. It contains a reference to the applicant’s `Applicant`, together with an
 immutable job and application status. Applicant identity is determined using `Applicant#isSameApplicant`, while
 `Application#equals` compares the complete applicant, job identity, and status. A job has a non-blank role and a
@@ -197,16 +197,9 @@ so subsequent saves contain no applications for the deleted role. Adding an appl
 This cascade does not change the JSON format introduced by the job model.
 Jobs are stored in the same JSON address book under `jobs`.
 
-<div markdown="span" class="alert alert-info">:information_source: **Note:** The alternative, arguably more object-oriented, design below keeps a unique list of tags in `AddressBook`, and each `Applicant` references tags from that list. This lets `AddressBook` maintain one `Tag` object per unique tag instead of each `Applicant` holding its own `Tag` objects.<br>
-
-<img src="images/BetterModelClassDiagram.png" width="450" />
-
-</div>
-
-
 ### Storage component
 
-**API** : [`Storage.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/storage/Storage.java)
+**API** : [`Storage.java`](https://github.com/AY2627S1-CS2103T-T14-3/tp/blob/master/src/main/java/seedu/address/storage/Storage.java)
 
 <img src="images/StorageClassDiagram.png" width="550" />
 
@@ -398,11 +391,6 @@ serialized and starts empty when the application restarts.
 edit, and preserving history after a failed deletion. `AddressBookParserTest` covers the argument-free syntax
 and rejects `undo 1` and the case-mismatched command `Undo`.
 
-### \[Proposed\] Data archiving
-
-_{Explain here how the data archiving feature will be implemented}_
-
-
 --------------------------------------------------------------------------------------------------------------------
 
 ## **Documentation, logging, testing, dev-ops**
@@ -433,16 +421,14 @@ Recruiters
 - who is comfortable using CLI apps.
 
 **Value Proposition:**
-The application will manage students applying to
-a role in a company.
-Recruiters can use the application to
-keep track of student applications for job roles,
-as well as to look up the list of
-employees to contact if there are changes to
-a student’s application status.
-
+LinkedOut helps a recruiter manage student applicants and their applications across multiple job roles.
+Applicant contact details, job descriptions, and application outcomes are stored together locally, so the
+recruiter can review whom to contact and where each application stands using text commands.
 
 ### User stories
+
+These stories capture product requirements, including ideas beyond the implemented scope. Refer to the
+[User Guide](UserGuide.md#features) for the commands supported by this version.
 
 Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unlikely to have) - `*`
 
@@ -480,22 +466,22 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 **MSS**
 
-1.  User requests to add an applicant with their name and email.
+1.  User requests to add an applicant with their name, phone number, and email.
 2.  LinkedOut adds the applicant and displays the updated applicant list.
-3.  User requests to add an application to the applicant, providing the job description and optionally the application status.
+3.  User requests to add an application to the applicant, identifying an existing job role and optionally the application status.
 4.  LinkedOut adds the application and displays the applicant's updated details.
 
     Use case ends.
 
 **Extensions**
 
-* 1a. The applicant's name or email is invalid or missing.
+* 1a. The applicant's name, phone number, or email is invalid or missing.
 
   * 1a1. LinkedOut shows an error message.
 
     Use case resumes at step 1.
 
-* 1b. Another applicant has the same name or email.
+* 1b. Another applicant has the same name or email, ignoring case.
 
   * 1b1. LinkedOut shows an error message.
 
@@ -519,7 +505,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
     Use case resumes at step 3.
 
-* 3c. The application details are invalid or missing.
+* 3c. The role is not in the job list, or the application details are invalid or missing.
 
   * 3c1. LinkedOut shows an error message.
 
@@ -568,7 +554,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 * 3b. The application already has the requested status.
 
-  * 3b1. LinkedOut informs the user that no changes were made.
+  * 3b1. LinkedOut shows the usual status-update confirmation and the applicant's details; the stored status remains the same.
 
     Use case ends.
 
@@ -605,11 +591,11 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
     Use case ends.
 
-*{More to be added}*
-
 ### Non-Functional Requirements
 
-1.  Should work on any _mainstream OS_ as long as it has Java `25` or above installed.
+These are design targets; this section does not report measured performance results.
+
+1.  Should work on Windows, Linux, and macOS with Java `25` installed.
 2.  Should be able to hold up to 1000 applicants and applications without noticeable sluggishness in performance for typical usage.
 3.  A user with above average typing speed for regular English text (i.e. not code, not system admin commands) should be able to accomplish most of the tasks faster using commands than using the mouse.
 4.  A new user should be able to add a new applicant or application immediately upon app launch.
@@ -618,8 +604,8 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 ### Glossary
 
-* **Mainstream OS**: Windows, Linux, Unix, or macOS
-* **Applicant**: An applicant registered in LinkedOut with a name and email address, whose job application can be tracked.
+* **Mainstream OS**: Windows, Linux, or macOS
+* **Applicant**: A person registered in LinkedOut with a name, phone number, and email address, whose job application can be tracked.
 * **Application**: A record linking an applicant to an existing job and an application status. An applicant can have at most one application.
 * **Job**: An open role stored in the job list, identified by its role name and accompanied by a description.
 * **Job role**: The name identifying a job, matched exactly after trimming surrounding spaces.
@@ -657,8 +643,6 @@ testers are expected to do more *exploratory* testing.
    2. Relaunch from the same folder using `java -jar "linkedout.jar"`.<br>
        Expected: The most recent window size and location are retained.
 
-3. { more test cases …​ }_
-
 ### Deleting an applicant
 
 1. Deleting an applicant while all applicants are being shown
@@ -673,8 +657,6 @@ testers are expected to do more *exploratory* testing.
 
    4. Other incorrect delete commands to try: `delete`, `delete x`, `...` (where x is larger than the list size)<br>
       Expected: Similar to previous.
-
-2. { more test cases …​ }_
 
 ### Clearing all entries
 
@@ -745,8 +727,25 @@ testers are expected to do more *exploratory* testing.
 
 ### Saving data
 
-1. Dealing with missing/corrupted data files
+Use a disposable LinkedOut home folder for these tests. Close the application before editing its data file,
+and keep a backup of valid `data/addressbook.json` outside that folder.
 
-   1. {Explain how to simulate missing or corrupted data files and state the expected behavior.}_
+1. Missing data file
 
-2. { more test cases …​ }_
+   1. With LinkedOut closed, move `data/addressbook.json` out of the home folder, then launch from that folder.<br>
+      Expected: LinkedOut shows the sample applicants and jobs, with no applications recorded.
+
+   2. Run `list` and close LinkedOut.<br>
+      Expected: A new `data/addressbook.json` contains the sample records. Relaunching loads those records.
+
+2. Invalid data file
+
+   1. With LinkedOut closed, replace `data/addressbook.json` with the text `not valid JSON`, then relaunch.<br>
+      Expected: LinkedOut opens with empty applicant, application, and job lists. The invalid file remains
+      unchanged until a command successfully saves records. Close the app before running any commands.
+
+   2. Restore the valid backup, append a second JSON value such as `{}` after its closing brace, and relaunch.<br>
+      Expected: The entire file is rejected and the lists are empty; the valid first object is not loaded.
+
+   3. Close LinkedOut, restore the unmodified valid backup, and relaunch.<br>
+      Expected: The backed-up applicants, jobs, and applications are loaded again.

@@ -484,10 +484,6 @@ When loading, the application uses the matching job from `jobs`, including that 
 migrated. Back up the file before updating it. Convert each job to the object format above, including the `job`
 inside each application, and ensure every application refers to a role in `jobs`.
 
-### Archiving data files `[coming in v2.0]`
-
-_Details coming soon ..._
-
 --------------------------------------------------------------------------------------------------------------------
 
 ## FAQ
