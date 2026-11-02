@@ -253,7 +253,7 @@ public class MainWindow extends UiPart<Stage> {
             listTitle.setText("Applicants");
             listHint.setText("Use the up and down arrows to select an applicant.");
         } else {
-            listTitle.setText(String.format("Search: Found %d out of %d applicant(s)",
+            listTitle.setText(String.format("Found %d out of %d applicant(s)",
                     applicantFilteredList.size(), totalApplicants));
             listHint.setText(String.format("Filtered with keyword(s): %s",
                     NameContainsKeywordsPredicate.getKeywords(applicantPredicate)));
@@ -275,7 +275,7 @@ public class MainWindow extends UiPart<Stage> {
             listTitle.setText("Applications");
             listHint.setText("Use the up and down arrows to select an application.");
         } else {
-            listTitle.setText(String.format("Search: From %d out of %d applicant(s)",
+            listTitle.setText(String.format("From %d out of %d applicant(s)",
                     applicantFilteredList.size(), totalApplicants));
             listHint.setText(String.format("Filtered with keyword(s): %s",
                     NameContainsKeywordsPredicate.getKeywords(applicantPredicate)));
@@ -297,7 +297,7 @@ public class MainWindow extends UiPart<Stage> {
             listTitle.setText("Jobs");
             listHint.setText("Use the up and down arrows to select a job.");
         } else {
-            listTitle.setText(String.format("Search: Found %d out of %d job(s)",
+            listTitle.setText(String.format("Found %d out of %d job(s)",
                     jobFilteredList.size(), totalJobs));
             listHint.setText(String.format("Filtered with keyword: %s",
                     JobDescriptionContainsKeywordPredicate.getKeywords(jobPredicate)));
@@ -376,7 +376,6 @@ public class MainWindow extends UiPart<Stage> {
             primaryStage.setX(guiSettings.getWindowCoordinates().getX());
             primaryStage.setY(guiSettings.getWindowCoordinates().getY());
         }
-        listTitle.setMinWidth(0);
         listTitle.setPrefWidth(0);
     }
 
