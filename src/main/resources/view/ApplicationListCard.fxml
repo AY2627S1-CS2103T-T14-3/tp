@@ -7,7 +7,7 @@
 <HBox fx:id="cardPane" spacing="10" alignment="CENTER_LEFT" styleClass="application-card"
       xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
   <Label fx:id="id" styleClass="list-index" minWidth="28" />
-  <VBox spacing="4" HBox.hgrow="ALWAYS">
+  <VBox spacing="4" minWidth="0" prefWidth="0" HBox.hgrow="ALWAYS">
     <Label fx:id="name" styleClass="list-name" wrapText="true" maxWidth="Infinity" />
     <Label fx:id="job" styleClass="application-job" wrapText="true" maxWidth="Infinity" />
   </VBox>

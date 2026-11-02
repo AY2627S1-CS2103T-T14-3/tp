@@ -7,6 +7,9 @@ LinkedOut is a **desktop application for recruiters and HR administrators managi
 and application outcomes**. Type commands to manage your records, then review them in applicant, application,
 and job lists with a detail panel for the selected record. Each applicant can have one application.
 
+Long applicant fields in list cards are shortened to fit the available width. Application cards wrap their name
+and job text. Select a record to read its full details.
+
 LinkedOut is a personal workspace for one recruiter. Your records are stored locally on your computer.
 
 * Table of Contents

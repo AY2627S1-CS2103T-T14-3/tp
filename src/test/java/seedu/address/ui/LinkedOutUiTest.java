@@ -25,9 +25,11 @@ import org.junit.jupiter.api.io.TempDir;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.geometry.Orientation;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
@@ -42,6 +44,8 @@ import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
 import seedu.address.model.applicant.Applicant;
+import seedu.address.model.application.Application;
+import seedu.address.model.application.Job;
 import seedu.address.storage.JsonAddressBookStorage;
 import seedu.address.storage.JsonUserPrefsStorage;
 import seedu.address.storage.StorageManager;
@@ -87,6 +91,45 @@ public class LinkedOutUiTest {
             Applicant selected = (Applicant) applicants.getSelectionModel().getSelectedItem();
             assertEquals(selected.getName().fullName, label(window, "applicantName").getText());
             assertApplication(window, "No application recorded.", null, null);
+        });
+    }
+
+    @Test
+    public void applicantCards_longFields_stayWithinListWhenResized() throws Exception {
+        withWindow((window, model) -> {
+            Applicant applicant = new ApplicantBuilder(ALICE).withName("LongName".repeat(100))
+                    .withEmail("long".repeat(40) + "@example.com").withPhone("1234567890".repeat(5)).build();
+            model.setApplicant(ALICE, applicant);
+
+            for (int width : List.of(1200, 900, 1100)) {
+                window.getRoot().getScene().getRoot().resize(width, 680);
+                assertCardsFitList(window, "applicantListView", "applicant-card");
+            }
+            assertEquals(applicant, model.getFilteredApplicantList().getFirst());
+        });
+    }
+
+    @Test
+    public void applicationCards_longFields_keepStatusVisibleWhenResized() throws Exception {
+        withWindow((window, model) -> {
+            Applicant applicant = new ApplicantBuilder(ALICE).withName("LongName".repeat(100)).build();
+            model.setApplicant(ALICE, applicant);
+            Job job = new Job("LongRole".repeat(100), "Long description ".repeat(40));
+            model.addJob(job);
+            model.addApplication(new Application(applicant, job, Application.Status.PENDING));
+            command(window, "viewp");
+
+            for (int width : List.of(1200, 900, 1100)) {
+                window.getRoot().getScene().getRoot().resize(width, 680);
+                assertCardsFitList(window, "applicationListView", "application-card");
+                Label status = (Label) window.getRoot().getScene()
+                        .lookup(".application-card #statusBadge");
+                assertEquals("Pending", status.getText());
+                assertTrue(status.getWidth() >= status.prefWidth(-1) - 1,
+                        "Status width " + status.getWidth() + " vs preferred " + status.prefWidth(-1));
+            }
+            assertEquals(job.toString(), ((Label) window.getRoot().getScene()
+                    .lookup(".application-card #job")).getText());
         });
     }
 
@@ -764,6 +807,33 @@ public class LinkedOutUiTest {
 
     private String feedback(MainWindow window) {
         return ((TextArea) window.getRoot().getScene().lookup("#resultDisplay")).getText();
+    }
+
+    /** Verifies that cards fit the viewport without a horizontal scrollbar. */
+    private void assertCardsFitList(MainWindow window, String listId, String cardClass) {
+        pulse(window);
+        pulse(window);
+        ListView<?> list = (ListView<?>) window.getRoot().getScene().lookup("#" + listId);
+        assertFalse(list.lookupAll("." + cardClass).isEmpty());
+        int visibleCardCount = 0;
+        for (Node card : list.lookupAll("." + cardClass)) {
+            // VirtualFlow retains offscreen cells at their old widths until they are reused.
+            if (!card.getParent().isVisible()) {
+                continue;
+            }
+            visibleCardCount++;
+            assertTrue(card.getLayoutBounds().getWidth() >= list.getWidth() - 30,
+                    "Visible cards should fill the list width, allowing space for its scrollbar");
+            assertTrue(card.getLayoutBounds().getWidth() <= list.getWidth() + 1,
+                    "Card width " + card.getLayoutBounds().getWidth() + " exceeds list width " + list.getWidth());
+        }
+        assertTrue(visibleCardCount > 0);
+        for (Node node : list.lookupAll(".scroll-bar")) {
+            ScrollBar bar = (ScrollBar) node;
+            if (bar.getOrientation() == Orientation.HORIZONTAL) {
+                assertFalse(bar.isVisible(), "Long fields must not cause horizontal scrolling");
+            }
+        }
     }
 
     private void pulse(MainWindow window) {
