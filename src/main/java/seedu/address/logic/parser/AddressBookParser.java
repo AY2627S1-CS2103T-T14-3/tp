@@ -8,7 +8,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import seedu.address.commons.core.LogsCenter;
-import seedu.address.commons.core.index.Index;
 import seedu.address.logic.commands.AddApplicationCommand;
 import seedu.address.logic.commands.AddCommand;
 import seedu.address.logic.commands.AddJobCommand;
@@ -70,18 +69,10 @@ public class AddressBookParser {
             case DeleteJobCommand.COMMAND_WORD -> new DeleteJobCommandParser().parse(arguments);
             case EditCommand.COMMAND_WORD -> new EditCommandParser().parse(arguments);
             case EditJobCommand.COMMAND_WORD -> new EditJobCommandParser().parse(arguments);
-            case ClearCommand.COMMAND_WORD -> {
-                if (!arguments.isBlank()) {
-                    throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT,
-                            ClearCommand.MESSAGE_USAGE));
-                }
-                yield new ClearCommand();
-            }
+            case ClearCommand.COMMAND_WORD -> new ClearCommandParser().parse(arguments);
             case FindCommand.COMMAND_WORD -> new FindCommandParser().parse(arguments);
             case ListCommand.COMMAND_WORD -> new ListCommand();
-            case ViewApplicationCommand.COMMAND_WORD -> arguments.isBlank()
-                    ? new ViewApplicationCommand()
-                    : new ViewApplicationCommand(parseViewIndex(arguments, ViewApplicationCommand.MESSAGE_USAGE));
+            case ViewApplicationCommand.COMMAND_WORD -> new ViewApplicationCommandParser().parse(arguments);
             case SetApplicationStatusCommand.COMMAND_WORD -> new SetApplicationStatusCommandParser().parse(arguments);
             case ViewCommand.COMMAND_WORD -> new ViewCommandParser().parse(arguments);
             case ViewJobCommand.COMMAND_WORD -> new ViewJobCommandParser().parse(arguments);
@@ -92,14 +83,5 @@ public class AddressBookParser {
                 throw new ParseException(MESSAGE_UNKNOWN_COMMAND);
             }
         };
-    }
-
-    /** Parses a view index, reporting invalid arguments with the invoked command's usage. */
-    private Index parseViewIndex(String arguments, String messageUsage) throws ParseException {
-        try {
-            return ParserUtil.parseIndex(arguments);
-        } catch (ParseException pe) {
-            throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT, messageUsage), pe);
-        }
     }
 }

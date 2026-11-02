@@ -293,14 +293,14 @@ An embedded hyphen, such as the one in `alice-tan@example.com`, does not start a
 Consider `add -name Alice -p 91234567 -email alice@example.com`:
 
 1. `AddressBookParser` recognises `add` and passes the remaining arguments to `AddCommandParser`.
-1. `AddCommandParser` calls `tokenizeOptions` with `NO_PREAMBLE` and the required name, phone, and email options
+2. `AddCommandParser` calls `tokenizeOptions` with `NO_PREAMBLE` and the required name, phone, and email options
    from `CliSyntax`.
-1. The tokenizer maps `-name`, `-p`, and `-email` to `OPTION_NAME_REQ`, `OPTION_PHONE_REQ`, and `OPTION_EMAIL_REQ`.
+3. The tokenizer maps `-name`, `-p`, and `-email` to `OPTION_NAME_REQ`, `OPTION_PHONE_REQ`, and `OPTION_EMAIL_REQ`.
    Each alias resolves to the same configured `Option` object as its short form. The resulting `ArgumentMultimap`
    stores `Alice`, `91234567`, and `alice@example.com` under those keys.
-1. After the tokenizer checks that every required option is present with a value and no option is repeated,
+4. After the tokenizer checks that every required option is present with a value and no option is repeated,
    `AddCommandParser` retrieves the strings and uses `ParserUtil` to validate the name, phone, and email.
-1. The parser constructs a `Person` and returns an `AddCommand`. Checking whether the applicant's name or email
+5. The parser constructs a `Person` and returns an `AddCommand`. Checking whether the applicant's name or email
    conflicts with an existing record happens when the command executes against the model.
 
 For an indexed command such as `addp 1 -j Engineer`, `AddApplicationCommandParser` enables `HAS_PREAMBLE`.
