@@ -224,6 +224,8 @@ Deletes all applicants, applications, and jobs. This command takes effect immedi
 
 Format: `clear`
 
+Accepts no arguments. Extra text (e.g. `clear applicants`) is rejected without deleting any data.
+
 The applicant list is shown. Details left on screen after a deletion are replaced by the empty detail panel.
 
 ### Exiting the program: `bye`
