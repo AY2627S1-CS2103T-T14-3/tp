@@ -70,7 +70,13 @@ public class AddressBookParser {
             case DeleteJobCommand.COMMAND_WORD -> new DeleteJobCommandParser().parse(arguments);
             case EditCommand.COMMAND_WORD -> new EditCommandParser().parse(arguments);
             case EditJobCommand.COMMAND_WORD -> new EditJobCommandParser().parse(arguments);
-            case ClearCommand.COMMAND_WORD -> new ClearCommand();
+            case ClearCommand.COMMAND_WORD -> {
+                if (!arguments.isBlank()) {
+                    throw new ParseException(String.format(MESSAGE_INVALID_COMMAND_FORMAT,
+                            ClearCommand.MESSAGE_USAGE));
+                }
+                yield new ClearCommand();
+            }
             case FindCommand.COMMAND_WORD -> new FindCommandParser().parse(arguments);
             case ListCommand.COMMAND_WORD -> new ListCommand();
             case ViewApplicationCommand.COMMAND_WORD -> arguments.isBlank()
