@@ -61,7 +61,7 @@ public class EditJobCommand extends Command {
         }
 
         Job jobToEdit = lastShownList.get(targetIndex.getZeroBased());
-        Job editedJob = createEditedPerson(jobToEdit, editJobDescriptor);
+        Job editedJob = createEditedJob(jobToEdit, editJobDescriptor);
 
         if (!jobToEdit.equals(editedJob) && model.hasJob(editedJob)) {
             throw new CommandException(MESSAGE_DUPLICATE_JOB);
@@ -73,7 +73,10 @@ public class EditJobCommand extends Command {
                 ViewRequest.job(editedJob));
     }
 
-    private static Job createEditedPerson(Job jobToEdit, EditJobDescriptor editJobDescriptor) {
+    /**
+     * Creates a job with the supplied edits, preserving the existing values for omitted fields.
+     */
+    private static Job createEditedJob(Job jobToEdit, EditJobDescriptor editJobDescriptor) {
         assert jobToEdit != null;
 
         String role = editJobDescriptor.getRole().orElse(jobToEdit.getJobRole());
@@ -103,8 +106,8 @@ public class EditJobCommand extends Command {
 
 
     /**
-     * Stores the details to edit the person with. Each non-empty field value will replace the
-     * corresponding field value of the person.
+     * Stores the details to edit the job with. Each non-empty field value will replace the
+     * corresponding field value of the job.
      */
     public static class EditJobDescriptor {
         private String jobRole;

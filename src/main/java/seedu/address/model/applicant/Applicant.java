@@ -31,7 +31,7 @@ public class Applicant {
         return name;
     }
 
-    /** Returns this person's display name. */
+    /** Returns this applicant's display name. */
     public String getDisplayName() {
         return name.fullName;
     }
