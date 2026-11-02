@@ -166,8 +166,9 @@ duplicate roles are rejected, surrounding spaces are ignored, and other differen
 fields modified. There must be at least one modified field provided. If there exists another job with the same job role
 as the would-be-new job, the command will fail instead. `Model#setJob` delegates to `AddressBook#setJob` and
 `UniqueJobList#setJob`, which replaces the job at the same position and enforces uniqueness. 
-`UniqueApplicationList#setJob` updates matching applications to reference the edited job, keeping their applicants and
-statuses. This prevents stale role references that the storage loader would reject.
+`UniqueApplicationList#setJob` updates all matching applications to reference the edited job, keeping their applicants and
+statuses. Description-only edits also take effect immediately. This prevents stale role references that the storage loader
+would reject.
 After editing, the command clears the job filter and returns the edited job in `CommandResult` so it
 is visible and selected even if the new role no longer matches the previous filter.
 These four commands ask the UI to show the job list and the selected role's detail panel. The panel shows
@@ -708,16 +709,19 @@ testers are expected to do more *exploratory* testing.
 
 1. Editing a job and its application references
 
-   1. Prerequisites: Create the Research Assistant job above and an applicant without an application.
-      Use `list` to find that applicant's index, then `addp INDEX -j Research Assistant -s accept`.
+   1. Prerequisites: Create the Research Assistant job above and three applicants without applications.
+      Use `list` to find their indices, then `addp INDEX -j Research Assistant -s accept` for each applicant.
       Use `viewj -f survey` to find the job's filtered index.
 
    1. Test case: `editj INDEX -j Senior Research Assistant`, using the job's filtered index.<br>
-      Expected: The full job list is shown with the replacement selected. Its description is `No information ~`.
-      Viewing the applicant shows the new role and default description; the status remains accepted.
+      Expected: The full job list is shown with the replacement selected and the existing description preserved.
+      Viewing each applicant shows the new role and preserved description; all statuses remain accepted.
+
+   1. Test case: `editj INDEX -d New description`, using the job's index in the full list.<br>
+      Expected: All three applications show `New description` immediately, without restarting the app.
 
    1. Close and relaunch the app.<br>
-      Expected: The replacement job and updated application load with the same role, description, and status.
+      Expected: The replacement job and all three applications load with the same role, description, and statuses.
 
 ### Saving data
 
