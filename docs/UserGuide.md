@@ -19,13 +19,13 @@ LinkedOut is a personal workspace for one recruiter. Your records are stored loc
 1. Install Java `25`. Open a terminal and run `java -version` to check that the version shown is `25`.<br>
    **Mac users:** Follow the [Java installation instructions](https://se-education.org/guides/tutorials/javaInstallationMac.html) for your system.
 
-1. Download `linkedout.jar` from the [LinkedOut releases page](https://github.com/AY2627S1-CS2103T-T14-3/tp/releases).
+2. Download `linkedout.jar` from the [LinkedOut releases page](https://github.com/AY2627S1-CS2103T-T14-3/tp/releases).
    To build the latest source instead, see the [build instructions](DevOps.md#build-automation).
 
-1. Copy the JAR file to an empty folder where you have permission to create files. This will be your
+3. Copy the JAR file to an empty folder where you have permission to create files. This will be your
    LinkedOut _home folder_, containing your records and preferences.
 
-1. In the terminal, `cd` to that folder and run `java -jar "linkedout.jar"`.
+4. In the terminal, `cd` to that folder and run `java -jar "linkedout.jar"`.
    If you renamed the file, use its actual name in the command. Launching from the terminal ensures that
    LinkedOut uses the Java version you checked; double-clicking the JAR may use a different version or fail.
 
@@ -34,7 +34,7 @@ LinkedOut is a personal workspace for one recruiter. Your records are stored loc
 
    ![LinkedOut on first launch, showing sample applicants and the selected applicant's details](images/Ui.png)
 
-1. Type a command in the command box and press Enter to execute it. For example, type **`help`** and press Enter to open the help window.<br>
+5. Type a command in the command box and press Enter to execute it. For example, type **`help`** and press Enter to open the help window.<br>
    Some example commands you can try:
 
    * `list` : Lists all applicants.
@@ -60,7 +60,7 @@ LinkedOut is a personal workspace for one recruiter. Your records are stored loc
 
    The first applicant now has an accepted application for the sample Software Engineer Intern job.
 
-1. Refer to the [Features](#features) section below for details of each command.
+6. Refer to the [Features](#features) section below for details of each command.
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -81,7 +81,7 @@ LinkedOut is a personal workspace for one recruiter. Your records are stored loc
 
 * `add` and `edit` use hyphen-prefixed options such as `-n NAME`.
 
-* Extraneous parameters for `help`, `list`, and `clear` are ignored. `bye` and its alias `exit` reject extra parameters.<br>
+* Extraneous parameters for `help` and `list` are ignored. `clear`, `bye`, and its alias `exit` reject extra parameters.<br>
   For example, `help 123` is interpreted as `help`.
 
 * If you are using a PDF version of this document, be careful when copying and pasting commands that span multiple lines as space characters surrounding line-breaks may be omitted when copied over to the application.
