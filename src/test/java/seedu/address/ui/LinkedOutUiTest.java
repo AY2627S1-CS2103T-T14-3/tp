@@ -31,6 +31,10 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import seedu.address.logic.LogicManager;
 import seedu.address.logic.commands.AddApplicationCommand;
@@ -42,6 +46,7 @@ import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
 import seedu.address.model.applicant.Applicant;
+import seedu.address.model.application.Job;
 import seedu.address.storage.JsonAddressBookStorage;
 import seedu.address.storage.JsonUserPrefsStorage;
 import seedu.address.storage.StorageManager;
@@ -87,6 +92,81 @@ public class LinkedOutUiTest {
             Applicant selected = (Applicant) applicants.getSelectionModel().getSelectedItem();
             assertEquals(selected.getName().fullName, label(window, "applicantName").getText());
             assertApplication(window, "No application recorded.", null, null);
+        });
+    }
+
+    @Test
+    public void copyApplicantDetails_usesCurrentSelectionAndDisablesEmptyValues() throws Exception {
+        withWindow(window -> {
+            assertCopiesText(window, "applicantName", ALICE.getName().fullName);
+            assertCopiesText(window, "email", ALICE.getEmail().value);
+            assertCopiesText(window, "phone", ALICE.getPhone().value);
+
+            command(window, "view 2");
+            assertCopiesText(window, "email", BENSON.getEmail().value);
+            assertCopiesText(window, "phone", BENSON.getPhone().value);
+
+            command(window, "clear");
+            assertTrue(label(window, "email").getContextMenu().getItems().getFirst().isDisable());
+            assertTrue(label(window, "phone").getContextMenu().getItems().getFirst().isDisable());
+        });
+    }
+
+    @Test
+    public void copyApplicationAndJobDetails_preservesCompleteText() throws Exception {
+        withWindow((window, model) -> {
+            String description = "First line\n第二行";
+            model.addJob(new Job("Engineer", description));
+            command(window, "addp 1 -j Engineer");
+            command(window, "viewp");
+            assertCopiesText(window, "applicationStatus", "Engineer");
+            assertCopiesText(window, "applicationStatusBadge", "Pending");
+            assertCopiesText(window, "jobDesc", description);
+
+            command(window, "set 1 -s accept");
+            assertCopiesText(window, "applicationStatusBadge", "Accepted");
+            command(window, "viewj");
+            pulse(window);
+            assertCopiesText(window, "jobName", "Engineer");
+            assertCopiesText(window, "jobDescription", description);
+        });
+    }
+
+    @Test
+    public void copyShortcut_tabNavigation_reachesDetailValues() throws Exception {
+        withWindow(window -> {
+            TextField input = (TextField) window.getRoot().getScene().lookup("#commandTextField");
+            input.requestFocus();
+            Label email = label(window, "email");
+            for (int i = 0; i < 20 && window.getRoot().getScene().getFocusOwner() != email; i++) {
+                window.getRoot().getScene().getFocusOwner().fireEvent(
+                        new KeyEvent(KeyEvent.KEY_PRESSED, "", "", KeyCode.TAB, false, false, false, false));
+            }
+            assertEquals(email, window.getRoot().getScene().getFocusOwner());
+            email.fireEvent(copyKeyEvent());
+            assertEquals(ALICE.getEmail().value, Clipboard.getSystemClipboard().getString());
+        });
+    }
+
+    @Test
+    public void copyShortcut_textInputAndEmptyValues_preservesExpectedClipboard() throws Exception {
+        withWindow(window -> {
+            TextField input = (TextField) window.getRoot().getScene().lookup("#commandTextField");
+            input.setText("find Alice");
+            input.requestFocus();
+            input.selectRange(5, 10);
+            input.fireEvent(copyKeyEvent());
+            assertEquals("Alice", Clipboard.getSystemClipboard().getString());
+
+            Label email = label(window, "email");
+            email.requestFocus();
+            email.fireEvent(new KeyEvent(KeyEvent.KEY_PRESSED, "c", "c", KeyCode.C,
+                    false, false, false, false));
+            assertEquals("Alice", Clipboard.getSystemClipboard().getString());
+
+            command(window, "clear");
+            email.fireEvent(copyKeyEvent());
+            assertEquals("Alice", Clipboard.getSystemClipboard().getString());
         });
     }
 
@@ -223,12 +303,15 @@ public class LinkedOutUiTest {
             command(window, "addj -job Engineer");
             command(window, "find Alice");
             command(window, "addp 1 -j Engineer -s accept");
+            command(window, "viewp 1");
+            assertEquals("Applications", label(window, "listTitle").getText());
             command(window, "delete 1");
 
             assertApplicantName(window, "Alice Pauline");
             assertEquals(ALICE.getEmail().value, label(window, "email").getText());
             assertEquals(ALICE.getPhone().value, label(window, "phone").getText());
             assertApplication(window, "Engineer", "No information ~", "Accepted");
+            assertTrue(feedback(window).contains("Warning: The applicant's application was also deleted."));
             assertEquals("0 applicants", label(window, "applicantCount").getText());
             assertTrue(model.getApplicationList().isEmpty());
             ListView<?> applicants = (ListView<?>) window.getRoot().getScene().lookup("#applicantListView");
@@ -585,7 +668,13 @@ public class LinkedOutUiTest {
         withWindow((window, model) -> {
             command(window, "addj -j Janitor");
             command(window, "addp 2 -j Janitor");
+            command(window, "viewp 2");
+            assertEquals("Applications", label(window, "listTitle").getText());
+            command(window, "viewj 1");
+            pulse(window);
+            assertEquals("Janitor", label(window, "jobName").getText());
             command(window, "deletej 1");
+            assertTrue(feedback(window).contains("Warning: Applications deleted with this job: 1."));
             command(window, "viewp");
             assertEquals("0 applications", label(window, "applicantCount").getText());
             command(window, "view 2");
@@ -768,6 +857,30 @@ public class LinkedOutUiTest {
         assertEquals(jobDescription, jobDescLabel.getText());
         assertTrue(badge.isVisible());
         assertEquals(status, badge.getText());
+    }
+
+    /** Verifies that the menu and keyboard shortcut copy the complete, current detail value. */
+    private void assertCopiesText(MainWindow window, String id, String expected) {
+        Label value = label(window, id);
+        assertNotNull(value.getContextMenu(), "Missing Copy menu: " + id);
+        assertTrue(value.isFocusTraversable());
+        assertFalse(value.getContextMenu().getItems().getFirst().isDisable());
+        value.getContextMenu().getItems().getFirst().fire();
+        assertEquals(expected, Clipboard.getSystemClipboard().getString());
+
+        ClipboardContent previous = new ClipboardContent();
+        previous.putString("Previous clipboard value");
+        Clipboard.getSystemClipboard().setContent(previous);
+        value.requestFocus();
+        assertEquals(value, window.getRoot().getScene().getFocusOwner());
+        value.fireEvent(copyKeyEvent());
+        assertEquals(expected, Clipboard.getSystemClipboard().getString());
+    }
+
+    /** Creates a copy keystroke using the platform's shortcut modifier. */
+    private KeyEvent copyKeyEvent() {
+        boolean isMac = System.getProperty("os.name").startsWith("Mac");
+        return new KeyEvent(KeyEvent.KEY_PRESSED, "c", "c", KeyCode.C, false, !isMac, false, isMac);
     }
 
     private Label label(MainWindow window, String id) {

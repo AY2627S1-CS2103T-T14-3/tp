@@ -47,6 +47,8 @@ LinkedOut is a personal workspace for one recruiter. Your records are stored loc
 
    * `add -n John Doe -p 98765432 -e johnd@example.com` : Adds an applicant named `John Doe`.
 
+   * `undo` : Restores the records from before the last change.
+
    * `bye` : Exits the app.
 
    To try the recruitment workflow with the sample data, run these commands in order:
@@ -65,6 +67,16 @@ LinkedOut is a personal workspace for one recruiter. Your records are stored loc
 --------------------------------------------------------------------------------------------------------------------
 
 ## Features
+
+To copy a value from the applicant, application, or job detail panel using the keyboard:
+
+1. Use `view INDEX` (for example, `view 1`), `viewp`, or `viewj` to display the desired record.
+2. Press `Tab` (or `Shift+Tab` to move backwards) until the desired value has a blue focus highlight.
+3. Press `Ctrl+C` (Windows/Linux) or `Command+C` (macOS) to copy the focused value.
+
+You can also right-click a value and choose **Copy**.
+Names, emails, phone numbers, job roles, descriptions, and application statuses can be copied.
+The complete value is copied, including text that wraps onto multiple lines. Empty values cannot be copied.
 
 <div markdown="block" class="alert alert-info">
 
@@ -106,6 +118,11 @@ to use another applicant's name or email is rejected, ignoring letter case. For 
 The spelling and capitalization you enter are preserved. You can change an applicant's own capitalization with `edit`.
 Saved data containing duplicate names or emails, including those differing only in case, is treated as invalid;
 correct the duplicates before loading it.
+
+Email addresses must be at most 254 characters long. Domain labels may contain consecutive hyphens,
+including Punycode names such as `alice@xn--bcher-kva.de`, but must start and end with a letter or digit.
+The length limit also applies when editing applicants and loading saved data; older records exceeding
+it must be corrected before loading.
 
 Format: `add -n NAME -p PHONE_NUMBER -e EMAIL`
 
@@ -204,6 +221,8 @@ The applicant and their application are removed together. Jobs remain in the job
 remain visible in the detail panel, marked as deleted, until you select another applicant or run another successful
 applicant command.
 Opening Help, either with `help` or through the menu, preserves these deleted details.
+If the applicant had an application, the result includes a warning that the application was also deleted.
+Deletion takes effect immediately, without a confirmation prompt.
 
 Format: `delete INDEX`
 
@@ -214,6 +233,7 @@ Format: `delete INDEX`
 Examples:
 * `list` followed by `delete 2` deletes the 2nd applicant in the address book.
 * `find Betsy` followed by `delete 1` deletes the 1st applicant in the results of the `find` command.
+* `undo` puts that applicant, and their application if they had one, back into the address book.
 
 ### Clearing all entries: `clear`
 
@@ -378,6 +398,7 @@ Format: `deletej INDEX`
 
 * `INDEX` is the positive integer shown beside a job in the job list currently displayed. After `viewj -f jan`, index 1 is the first matching job.
 * Deleting a role also deletes all applications with the same job role. Applicants and their contact details are kept.
+* If applications were removed, the result includes a warning with the number deleted, including those hidden by a filter. Deletion takes effect immediately, without a confirmation prompt.
 * Job roles are matched exactly after trimming surrounding spaces; different letter cases identify different jobs.
 * An empty list, a missing index, or an index past the end of the list produces an error and leaves the jobs unchanged.
 
@@ -385,6 +406,25 @@ Examples:
 
 * `deletej 1` deletes the first job.
 * `viewj` followed by `deletej 2` deletes the second job.
+* `undo` puts that job back, together with the applications that were removed with it.
+
+### Undoing the last change: `undo`
+
+Restores applicants, jobs, and applications to the state before the most recent command that changed them.
+Use this after deleting or editing the wrong record.
+
+Format: `undo`
+
+* The command accepts no arguments.
+* Only changes to stored records are undone. `list`, `find`, `view`, `viewp`, and `viewj` do not count as changes.
+* Each `undo` steps back one change, up to the ten most recent changes in this session.
+* Closing LinkedOut clears this history. The restored records are saved in the usual way.
+* The current tab stays where it is. The lists update to show the restored records.
+
+Examples:
+* `delete 1` followed by `undo` restores that applicant.
+* `deletej 2` followed by `undo` restores that job and any applications removed with it.
+* `add -n John Doe -p 98765432 -e johnd@example.com` followed by `undo` removes John Doe again.
 
 ### Saving the data
 
@@ -454,6 +494,7 @@ Action | Format, Examples
 **Delete job** | `deletej INDEX`<br> e.g., `deletej 1`
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
+**Undo** | `undo`
 **Edit** | `edit INDEX [-n NAME] [-p PHONE] [-e EMAIL]`<br> e.g., `edit 1 -p 91234567 -e john@example.com`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
 **List** | `list`

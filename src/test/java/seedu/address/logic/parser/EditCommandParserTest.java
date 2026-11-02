@@ -92,6 +92,20 @@ public class EditCommandParserTest {
     }
 
     @Test
+    public void parse_punycodeEmail_success() {
+        EditApplicantDescriptor descriptor = new EditApplicantDescriptorBuilder()
+                .withEmail("amy@xn--bcher-kva.de").build();
+        assertParseSuccess(parser, "1 -e amy@xn--bcher-kva.de", new EditCommand(INDEX_FIRST, descriptor));
+    }
+
+    @Test
+    public void parse_longEmail_failure() {
+        for (String email : List.of("a.".repeat(2000) + "a@example.com", "a".repeat(20000) + "!")) {
+            assertParseFailure(parser, "1 -e " + email, Email.MESSAGE_CONSTRAINTS);
+        }
+    }
+
+    @Test
     public void parse_missingIndex_failure() {
         for (String args : List.of("", " ", NAME_OPTION, PHONE_OPTION, EMAIL_OPTION,
                 NAME_OPTION + PHONE_OPTION + EMAIL_OPTION)) {

@@ -25,6 +25,8 @@ public class DeleteCommand extends Command {
             + "Example: " + COMMAND_WORD + " 1";
 
     public static final String MESSAGE_DELETE_APPLICANT_SUCCESS = "Deleted applicant: %1$s";
+    public static final String MESSAGE_APPLICATION_DELETED =
+            "\nWarning: The applicant's application was also deleted.";
 
     private final Index targetIndex;
 
@@ -45,7 +47,8 @@ public class DeleteCommand extends Command {
         Application application = model.getApplication(applicantToDelete).orElse(null);
         model.deleteApplicant(applicantToDelete);
         return CommandResult.deletedApplicant(
-                String.format(MESSAGE_DELETE_APPLICANT_SUCCESS, Messages.format(applicantToDelete)),
+                String.format(MESSAGE_DELETE_APPLICANT_SUCCESS, Messages.format(applicantToDelete))
+                        + (application == null ? "" : MESSAGE_APPLICATION_DELETED),
                 applicantToDelete, application);
     }
 
