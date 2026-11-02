@@ -167,6 +167,10 @@ public class MainWindow extends UiPart<Stage> {
                 refreshSelectedDetails());
         logic.getApplicationList().addListener((ListChangeListener<Application>) change ->
                 refreshSelectedDetails());
+        logic.getFilteredApplicantList().addListener((ListChangeListener<Applicant>) change ->
+                refreshListDetails());
+        logic.getFilteredJobList().addListener((ListChangeListener<Job>) change ->
+                refreshListDetails());
 
         showView(ViewType.APPLICANTS);
 
@@ -318,6 +322,15 @@ public class MainWindow extends UiPart<Stage> {
             case APPLICANTS -> showSelectedApplicant();
             case APPLICATIONS -> showSelectedApplication();
             case JOBS -> showSelectedJob();
+            default -> throw new IllegalStateException("Unexpected view type: " + currentView);
+        }
+    }
+
+    private void refreshListDetails() {
+        switch (currentView) {
+            case APPLICANTS -> showApplicantsView();
+            case APPLICATIONS -> showApplicationsView();
+            case JOBS -> showJobsView();
             default -> throw new IllegalStateException("Unexpected view type: " + currentView);
         }
     }

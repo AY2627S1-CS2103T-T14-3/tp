@@ -413,7 +413,7 @@ public class LinkedOutUiTest {
             command(window, "find Alice");
             command(window, "addp 1 -j Engineer -s accept");
             command(window, "viewp 1");
-            assertEquals("Applications", label(window, "listTitle").getText());
+            assertEquals("Search: From 1 out of 7 applicant(s)", label(window, "listTitle").getText());
             command(window, "delete 1");
 
             assertApplicantName(window, "Alice Pauline");
@@ -692,7 +692,7 @@ public class LinkedOutUiTest {
                 command(window, otherView);
                 command(window, "view");
 
-                assertEquals("Applicants", label(window, "listTitle").getText());
+                assertEquals("Search: Found 2 out of 7 applicant(s)", label(window, "listTitle").getText());
                 assertEquals(ViewCommand.MESSAGE_SHOWING_APPLICANTS, feedback(window));
                 assertEquals(List.of(BENSON, DANIEL), model.getFilteredApplicantList());
                 assertApplicantDetails(window, DANIEL);
