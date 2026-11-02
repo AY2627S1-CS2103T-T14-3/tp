@@ -191,6 +191,7 @@ public class MainWindow extends UiPart<Stage> {
 
     private void showApplicantsView() {
         FilteredList<Applicant> applicantFilteredList = logic.getFilteredApplicantList();
+        int totalApplicants = logic.getApplicantList().size();
         Predicate<? super Applicant> applicantPredicate = applicantFilteredList.getPredicate();
 
         if (applicantPredicate == null
@@ -199,7 +200,8 @@ public class MainWindow extends UiPart<Stage> {
             listTitle.setText("Applicants");
             listHint.setText("Select an applicant to view their details.");
         } else {
-            listTitle.setText(String.format("Search: Found %d applicant(s)", applicantFilteredList.size()));
+            listTitle.setText(String.format("Search: Found %d out of %d applicant(s)",
+                    applicantFilteredList.size(), totalApplicants));
             listHint.setText(String.format("Filtered with keyword(s): %s",
                     NameContainsKeywordsPredicate.getKeywords(applicantPredicate)));
         }

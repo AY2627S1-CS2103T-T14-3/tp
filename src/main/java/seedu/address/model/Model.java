@@ -152,6 +152,12 @@ public interface Model {
      */
     void updateFilteredJobList(Predicate<Job> predicate);
 
+    /**
+     * Returns an unmodifiable view of the full applicant list.
+     * @return every stored applicant
+     */
+    ObservableList<Applicant> getApplicantList();
+
     /** Returns an unmodifiable view of the filtered applicant list */
     FilteredList<Applicant> getFilteredApplicantList();
 

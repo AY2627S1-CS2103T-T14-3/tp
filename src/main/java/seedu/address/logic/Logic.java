@@ -24,6 +24,12 @@ public interface Logic {
     CommandResult execute(String commandText) throws CommandException, ParseException;
 
     /** Returns an unmodifiable view of the filtered list of applicants */
+    ObservableList<Applicant> getApplicantList();
+
+    /**
+     * Returns an unmodifiable view of the filtered applicant list.
+     * @return applicant that match the current filter
+     */
     FilteredList<Applicant> getFilteredApplicantList();
 
     /** Returns an unmodifiable view of the recorded applications */
