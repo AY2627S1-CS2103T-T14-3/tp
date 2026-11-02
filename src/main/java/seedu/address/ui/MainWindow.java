@@ -246,7 +246,7 @@ public class MainWindow extends UiPart<Stage> {
             listTitle.setText("Jobs");
             listHint.setText("Select a job to view its details.");
         } else {
-            listTitle.setText(String.format("Search: Found %d out of %d jobs(s)",
+            listTitle.setText(String.format("Search: Found %d out of %d job(s)",
                     jobFilteredList.size(), totalJobs));
             listHint.setText(String.format("Filtered with keyword: %s",
                     JobDescriptionContainsKeywordPredicate.getKeywords(jobPredicate)));
@@ -316,6 +316,8 @@ public class MainWindow extends UiPart<Stage> {
             primaryStage.setX(guiSettings.getWindowCoordinates().getX());
             primaryStage.setY(guiSettings.getWindowCoordinates().getY());
         }
+        listTitle.setMinWidth(0);
+        listTitle.setPrefWidth(0);
     }
 
     /** Opens the help window or focuses on it if it is already open. */
