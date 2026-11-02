@@ -115,6 +115,17 @@ public class JsonAddressBookStorageTest {
     }
 
     @Test
+    public void readAndSaveAddressBook_internationalPhone_preservesFormatting() throws Exception {
+        JsonAddressBookStorage storage = new JsonAddressBookStorage(testFolder.resolve("phones.json"));
+        for (String phone : List.of("+65 9123 4567", "+1-202-555-0123", "9123-4567")) {
+            AddressBook original = new AddressBook();
+            original.addApplicant(new ApplicantBuilder().withPhone(phone).build());
+            storage.saveAddressBook(original);
+            assertEquals(original, new AddressBook(storage.readAddressBook().orElseThrow()));
+        }
+    }
+
+    @Test
     public void saveAddressBook_nullAddressBook_throwsNullPointerException() {
         assertThrows(NullPointerException.class, () -> saveAddressBook(null, "SomeFile.json"));
     }
