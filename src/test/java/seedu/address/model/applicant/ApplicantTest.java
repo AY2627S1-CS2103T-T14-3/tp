@@ -9,6 +9,8 @@ import static seedu.address.logic.commands.CommandTestUtil.VALID_PHONE_BOB;
 import static seedu.address.testutil.TypicalApplicants.ALICE;
 import static seedu.address.testutil.TypicalApplicants.BOB;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 import seedu.address.testutil.ApplicantBuilder;
@@ -54,6 +56,18 @@ public class ApplicantTest {
         assertTrue(ALICE.hasSameNameOrEmail(new ApplicantBuilder(BOB).withName(ALICE.getName().fullName).build()));
         assertTrue(ALICE.hasSameNameOrEmail(new ApplicantBuilder(BOB).withEmail(ALICE.getEmail().value).build()));
         assertFalse(ALICE.hasSameNameOrEmail(BOB));
+    }
+
+    @Test
+    public void hasSameNameOrEmail_caseVariants_returnsTrue() {
+        for (Applicant applicant : List.of(
+                new ApplicantBuilder(BOB).withName("ALICE PAULINE").build(),
+                new ApplicantBuilder(BOB).withEmail("ALICE@example.com").build(),
+                new ApplicantBuilder(BOB).withEmail("alice@EXAMPLE.COM").build())) {
+            assertTrue(ALICE.hasSameNameOrEmail(applicant));
+            assertTrue(applicant.hasSameNameOrEmail(ALICE));
+            assertFalse(ALICE.equals(applicant));
+        }
     }
 
     @Test
