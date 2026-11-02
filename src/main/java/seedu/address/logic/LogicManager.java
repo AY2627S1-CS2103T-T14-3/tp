@@ -5,6 +5,7 @@ import java.nio.file.AccessDeniedException;
 import java.util.logging.Logger;
 
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.LogsCenter;
 import seedu.address.logic.commands.Command;
@@ -95,8 +96,13 @@ public class LogicManager implements Logic {
     }
 
     @Override
-    public ObservableList<Applicant> getFilteredApplicantList() {
+    public FilteredList<Applicant> getFilteredApplicantList() {
         return model.getFilteredApplicantList();
+    }
+
+    @Override
+    public ObservableList<Applicant> getApplicantList() {
+        return model.getApplicantList();
     }
 
     @Override
@@ -110,7 +116,7 @@ public class LogicManager implements Logic {
     }
 
     @Override
-    public ObservableList<Job> getFilteredJobList() {
+    public FilteredList<Job> getFilteredJobList() {
         return model.getFilteredJobList();
     }
 

@@ -15,6 +15,7 @@ import java.util.function.Predicate;
 import org.junit.jupiter.api.Test;
 
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.logic.Messages;
 import seedu.address.logic.commands.exceptions.CommandException;
@@ -214,7 +215,7 @@ public class AddCommandTest {
         }
 
         @Override
-        public ObservableList<Job> getFilteredJobList() {
+        public FilteredList<Job> getFilteredJobList() {
             throw new AssertionError("This method should not be called.");
         }
 
@@ -224,7 +225,12 @@ public class AddCommandTest {
         }
 
         @Override
-        public ObservableList<Applicant> getFilteredApplicantList() {
+        public ObservableList<Applicant> getApplicantList() {
+            throw new AssertionError("This method should not be called.");
+        }
+
+        @Override
+        public FilteredList<Applicant> getFilteredApplicantList() {
             throw new AssertionError("This method should not be called.");
         }
 
