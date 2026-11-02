@@ -8,7 +8,9 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextInputControl;
 import javafx.scene.control.ToggleButton;
@@ -175,8 +177,8 @@ public class MainWindow extends UiPart<Stage> {
     }
 
     /**
-     * Moves the selection on the current tab when Up or Down is pressed.
-     * The command box keeps focus so a typed command is left unchanged.
+     * Moves the selection when Up or Down is pressed in the command box or a list.
+     * The result text and detail panes keep those keys for their own scrolling.
      */
     private void handleListNavigation(KeyEvent event) {
         if (event.isShiftDown() || event.isControlDown() || event.isAltDown() || event.isMetaDown()) {
@@ -189,7 +191,7 @@ public class MainWindow extends UiPart<Stage> {
         } else if (event.getCode() == KeyCode.DOWN) {
             offset = 1;
         }
-        if (offset == 0) {
+        if (offset == 0 || !isCommandOrList(event.getTarget())) {
             return;
         }
 
@@ -200,6 +202,21 @@ public class MainWindow extends UiPart<Stage> {
             default -> throw new IllegalStateException("Unexpected view type: " + currentView);
         }
         event.consume();
+    }
+
+    /**
+     * Returns true if {@code target} is the command box or a record list.
+     */
+    private static boolean isCommandOrList(Object target) {
+        if (!(target instanceof Node node)) {
+            return false;
+        }
+        for (Node current = node; current != null; current = current.getParent()) {
+            if (current instanceof ListView || "commandTextField".equals(current.getId())) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /** Shows the requested list and its matching detail panel. */

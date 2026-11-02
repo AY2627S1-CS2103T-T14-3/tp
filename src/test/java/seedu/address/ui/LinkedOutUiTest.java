@@ -28,6 +28,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
@@ -437,6 +438,41 @@ public class LinkedOutUiTest {
     }
 
     @Test
+    public void arrowKeys_feedbackAndJobDetails_keepSelection() throws Exception {
+        withWindow(window -> {
+            TextField input = (TextField) window.getRoot().getScene().lookup("#commandTextField");
+            input.setText("add");
+            input.fireEvent(new ActionEvent());
+            TextArea feedback = (TextArea) window.getRoot().getScene().lookup("#resultDisplay");
+            feedback.requestFocus();
+            int caret = feedback.getCaretPosition();
+            assertApplicantName(window, "Alice Pauline");
+            pressArrowOn(window, feedback, KeyCode.DOWN);
+            assertApplicantName(window, "Alice Pauline");
+            assertTrue(feedback.getCaretPosition() > caret);
+
+            ListView<?> applicants = (ListView<?>) window.getRoot().getScene().lookup("#applicantListView");
+            applicants.requestFocus();
+            pressArrowOn(window, applicants, KeyCode.DOWN);
+            assertApplicantName(window, "Benson Meier");
+
+            command(window, "addj -j Software Engineer -d " + "Long role details. ".repeat(40));
+            command(window, "addj -j Data Analyst");
+            command(window, "viewj");
+            ListView<?> jobs = (ListView<?>) window.getRoot().getScene().lookup("#jobListView");
+            jobs.getSelectionModel().select(0);
+            pulse(window);
+            ScrollPane details = (ScrollPane) window.getRoot().getScene().lookup(".detail-scroll");
+            details.setPrefViewportHeight(36);
+            pulse(window);
+            details.requestFocus();
+            pressArrowOn(window, details, KeyCode.DOWN);
+            assertEquals("Software Engineer", label(window, "jobName").getText());
+            assertTrue(details.getVvalue() > 0);
+        });
+    }
+
+    @Test
     public void selectApplicant_anotherApplicant_applicantNameUpdated() throws Exception {
         withWindow(window -> {
             selectApplicant(window, 1);
@@ -776,7 +812,13 @@ public class LinkedOutUiTest {
     }
 
     private void pressArrow(MainWindow window, KeyCode code) {
-        window.getRoot().fireEvent(new KeyEvent(
+        TextField input = (TextField) window.getRoot().getScene().lookup("#commandTextField");
+        input.requestFocus();
+        pressArrowOn(window, input, code);
+    }
+
+    private void pressArrowOn(MainWindow window, Node target, KeyCode code) {
+        target.fireEvent(new KeyEvent(
                 KeyEvent.KEY_PRESSED, "", "", code, false, false, false, false));
         pulse(window);
     }
