@@ -186,7 +186,7 @@ by `ApplicationListPanel`. Application indexes can therefore have gaps and do no
 Selections are returned through the existing `ViewRequest.applicant`, `ViewRequest.application`, and `ViewRequest.job`
 factories, which let `MainWindow` switch views, select the record, and refresh the detail panel.
 `find`, `add`, `edit`, and `clear` also request the applicants view. `add` and `edit` select the changed applicant
-so the detail panel shows that person. `clear` replaces a deleted-applicant snapshot with the empty panel.
+so the detail panel shows that applicant. `clear` replaces a deleted-applicant snapshot with the empty panel.
 `help` does not request a view, so that snapshot stays in place.
 
 Deleting a job cascades through `AddressBook#removeJob`
@@ -197,12 +197,10 @@ so subsequent saves contain no applications for the deleted role. Adding an appl
 This cascade does not change the JSON format introduced by the job model.
 Jobs are stored in the same JSON address book under `jobs`.
 
-<div markdown="span" class="alert alert-info">:information_source: **Note:** The alternative, arguably more object-oriented, design below keeps a unique list of tags in `AddressBook`, and each `Applicant` references tags from that list. This lets `AddressBook` maintain one `Tag` object per unique tag instead of each `Applicant` holding its own `Tag` objects.<br>
+The diagram below shows the stored applicants, jobs, and applications. Each `Application` references one
+`Applicant` and one `Job`.
 
 <img src="images/BetterModelClassDiagram.png" width="450" />
-
-</div>
-
 
 ### Storage component
 
@@ -220,7 +218,7 @@ array and in each application's `job` field. `role` must be non-blank; `descript
 although an empty string is valid. `Job` strips surrounding whitespace from both fields. Duplicate jobs are
 rejected by role, independently of their descriptions.
 
-`JsonSerializableAddressBook#toModelType` loads persons, then jobs, then applications. A missing `jobs` or
+`JsonSerializableAddressBook#toModelType` loads applicants, then jobs, then applications. A missing `jobs` or
 `applications` array is treated as empty. `JsonAdaptedApplication#toModelType` resolves the applicant by exact
 name and the job by role equality against those already loaded. It uses the stored job from `jobs`, so that
 job's description takes precedence over the description embedded in the application. Unknown applicants,

@@ -18,5 +18,5 @@ Applicant *--> Phone
 Applicant *--> Email
 
 Application -right-> "1" Job
-Application --> "1" Person
+Application --> "1" Applicant
 @enduml
