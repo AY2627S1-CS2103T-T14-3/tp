@@ -45,6 +45,11 @@ public class LogicManager implements Logic {
         addressBookParser = new AddressBookParser();
     }
 
+    /**
+     * {@inheritDoc}
+     * Remembers the records from before a command that changes them.
+     * An undo command is not remembered, so the next undo steps further back.
+     */
     @Override
     public CommandResult execute(String commandText) throws CommandException, ParseException {
         logger.info("----------------[USER COMMAND][" + commandText + "]");

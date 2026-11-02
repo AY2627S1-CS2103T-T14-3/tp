@@ -29,6 +29,7 @@ public class ModelManager implements Model {
     private final UserPrefs userPrefs;
     private final FilteredList<Applicant> filteredApplicants;
     private final FilteredList<Job> filteredJobs;
+    /** Earlier address books, newest first. Kept only for this session. */
     private final Deque<ReadOnlyAddressBook> previousAddressBooks = new ArrayDeque<>();
 
     /**
@@ -79,6 +80,12 @@ public class ModelManager implements Model {
         return addressBook;
     }
 
+    /**
+     * Remembers {@code previousState} so a later undo can restore it.
+     * Drops the oldest copy when more than {@code MAXIMUM_UNDO_STATES} states are stored.
+     *
+     * @param previousState Address book from before the latest change. Cannot be null.
+     */
     @Override
     public void rememberStateForUndo(ReadOnlyAddressBook previousState) {
         requireNonNull(previousState);
@@ -88,6 +95,11 @@ public class ModelManager implements Model {
         }
     }
 
+    /**
+     * Replaces the current address book with the most recently remembered state.
+     *
+     * @return True if a remembered state was restored.
+     */
     @Override
     public boolean undoAddressBook() {
         if (previousAddressBooks.isEmpty()) {
