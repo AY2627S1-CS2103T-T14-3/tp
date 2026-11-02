@@ -6,8 +6,6 @@ import java.util.Locale;
 import java.util.function.Predicate;
 
 import seedu.address.commons.util.ToStringBuilder;
-import seedu.address.model.applicant.Applicant;
-import seedu.address.model.applicant.NameContainsKeywordsPredicate;
 
 /**
  * Tests that a {@code Job}'s description contains a keyword.
