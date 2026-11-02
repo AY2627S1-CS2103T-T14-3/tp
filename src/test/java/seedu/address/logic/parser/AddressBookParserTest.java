@@ -8,16 +8,21 @@ import static seedu.address.logic.commands.AddApplicationCommand.MESSAGE_INVALID
 import static seedu.address.testutil.Assert.assertThrows;
 import static seedu.address.testutil.TypicalIndexes.INDEX_FIRST;
 
+import java.lang.reflect.Modifier;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
+import org.junit.platform.commons.support.ReflectionSupport;
 
 import seedu.address.logic.commands.AddApplicationCommand;
 import seedu.address.logic.commands.AddCommand;
 import seedu.address.logic.commands.AddJobCommand;
 import seedu.address.logic.commands.ByeCommand;
 import seedu.address.logic.commands.ClearCommand;
+import seedu.address.logic.commands.Command;
 import seedu.address.logic.commands.DeleteApplicationCommand;
 import seedu.address.logic.commands.DeleteCommand;
 import seedu.address.logic.commands.DeleteJobCommand;
@@ -268,5 +273,21 @@ public class AddressBookParserTest {
     @Test
     public void parseCommand_unknownCommand_throwsParseException() {
         assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> parser.parseCommand("unknownCommand"));
+    }
+
+    @Test
+    public void parseCommand_unknownCommand_listsAllCommands() throws Exception {
+        List<Class<?>> commandClasses = ReflectionSupport.findAllClassesInPackage(Command.class.getPackageName(),
+                candidate -> Command.class.isAssignableFrom(candidate)
+                        && !Modifier.isAbstract(candidate.getModifiers()) && candidate.getEnclosingClass() == null,
+                name -> name.endsWith("Command"));
+        assertTrue(commandClasses.contains(HelpCommand.class));
+        // The parser also accepts exit as an alias for bye.
+        Set<String> commandWords = new TreeSet<>(Set.of("exit"));
+        for (Class<?> commandClass : commandClasses) {
+            commandWords.add((String) commandClass.getField("COMMAND_WORD").get(null));
+        }
+        String expectedMessage = "Unknown command.\nAvailable commands: " + String.join(", ", commandWords) + ".";
+        assertThrows(ParseException.class, expectedMessage, () -> parser.parseCommand("unknownCommand"));
     }
 }

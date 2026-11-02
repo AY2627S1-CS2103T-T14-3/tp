@@ -345,6 +345,7 @@ Format: `set INDEX -s STATUS`
 * `STATUS` is required. Accepted statuses are `accept`, `reject`, and `pending`. The value is case-sensitive.
 * Alias: `-status` for `-s`.
 * A successful command selects that applicant and shows the job and updated status in the detail panel.
+* Feedback and status badges use `Accepted`, `Rejected`, and `Pending`; command inputs remain lowercase.
 * An applicant who does not have an application cannot have a status set.
 
 Examples:
