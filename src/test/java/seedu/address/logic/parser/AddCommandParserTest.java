@@ -67,6 +67,16 @@ public class AddCommandParserTest {
     }
 
     @Test
+    public void parse_commonPunctuationAndUnicodeName_success() {
+        for (String name : List.of("Mary-Jane Tan", "Shaun O'Brien", "Rajesh s/o Kumar", "J. R. Tan",
+                "José Lim", "Jose\u0301 Lim", "Shaun O’Brien", "陈伟")) {
+            Applicant expectedApplicant = new ApplicantBuilder(BOB).withName(name).build();
+            assertParseSuccess(parser, " -n " + name + PHONE_OPTION + EMAIL_OPTION,
+                    new AddCommand(expectedApplicant));
+        }
+    }
+
+    @Test
     public void parse_punycodeEmail_success() {
         Applicant expectedApplicant = new ApplicantBuilder(BOB).withEmail("bob@xn--bcher-kva.de").build();
         assertParseSuccess(parser, NAME_OPTION + PHONE_OPTION + " -e bob@xn--bcher-kva.de",

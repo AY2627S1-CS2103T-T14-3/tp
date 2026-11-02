@@ -141,6 +141,7 @@ Email | `-e` | `-email`
 * All three fields are required. Each option must appear exactly once and have a non-empty value.
 * Short and long aliases can be mixed, and options can appear in any order.
 * Values containing spaces, such as a full name, do not need quotation marks.
+* Names must start with a Unicode letter or digit. They can contain Unicode letters (including combining accents), digits, spaces, apostrophes (`'` or `’`), hyphens (`-`), periods (`.`), and slashes (`/`). These rules also apply to `edit`.
 * Unknown options, repeated options (including different aliases for the same field), missing values, and text before the first option produce a format error with a usage hint.
 * The applicant list is shown and the new applicant is selected.
 * Standalone words such as `-unknown` are treated as options, even inside a value.

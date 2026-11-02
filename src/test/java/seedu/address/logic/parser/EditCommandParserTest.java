@@ -92,6 +92,15 @@ public class EditCommandParserTest {
     }
 
     @Test
+    public void parse_commonPunctuationAndUnicodeName_success() {
+        for (String name : List.of("Mary-Jane Tan", "Shaun O'Brien", "Rajesh s/o Kumar", "J. R. Tan",
+                "José Lim", "Jose\u0301 Lim", "Shaun O’Brien", "陈伟")) {
+            EditApplicantDescriptor descriptor = new EditApplicantDescriptorBuilder().withName(name).build();
+            assertParseSuccess(parser, "1 -n " + name, new EditCommand(INDEX_FIRST, descriptor));
+        }
+    }
+
+    @Test
     public void parse_punycodeEmail_success() {
         EditApplicantDescriptor descriptor = new EditApplicantDescriptorBuilder()
                 .withEmail("amy@xn--bcher-kva.de").build();

@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.testutil.Assert.assertThrows;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 public class NameTest {
@@ -36,6 +38,22 @@ public class NameTest {
         assertTrue(Name.isValidName("peter the 2nd")); // alphanumeric characters
         assertTrue(Name.isValidName("Capital Tan")); // with capital letters
         assertTrue(Name.isValidName("David Roger Jackson Ray Jr 2nd")); // long names
+    }
+
+    @Test
+    public void isValidName_commonPunctuationAndUnicode_returnsTrue() {
+        for (String name : List.of("Mary-Jane Tan", "Shaun O'Brien", "Rajesh s/o Kumar", "J. R. Tan",
+                "José Lim", "Jose\u0301 Lim", "Shaun O’Brien", "陈伟", "முருகன்", "عَلِيّ", "田中 太郎")) {
+            assertTrue(Name.isValidName(name), name);
+        }
+    }
+
+    @Test
+    public void isValidName_blankPunctuationOnlyOrUnsupportedCharacters_returnsFalse() {
+        for (String name : List.of("", " ", "   ", "-", "'", "’", "/", ".", "- './", "\u0301",
+                " Peter", "-Peter", "Peter\tTan", "Peter\nTan", "Peter@Tan", "Peter*", "Peter😀")) {
+            assertFalse(Name.isValidName(name), name);
+        }
     }
 
     @Test
