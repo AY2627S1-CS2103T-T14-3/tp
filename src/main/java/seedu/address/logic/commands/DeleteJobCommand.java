@@ -24,6 +24,8 @@ public class DeleteJobCommand extends Command {
             + "Example: " + COMMAND_WORD + " 1";
 
     public static final String MESSAGE_DELETE_JOB_SUCCESS = "Deleted job and any associated applications: %1$s";
+    public static final String MESSAGE_APPLICATIONS_DELETED =
+            "\nWarning: Applications deleted with this job: %1$d.";
     public static final String MESSAGE_EMPTY_LIST = "There are no jobs to delete.";
     public static final String MESSAGE_INVALID_INDEX =
             "Invalid job index. Please enter an integer from 1 to %1$d.";
@@ -52,8 +54,12 @@ public class DeleteJobCommand extends Command {
         }
 
         Job jobToDelete = lastShownList.get(targetIndex.getZeroBased());
+        int applicationCountBeforeDeletion = model.getApplicationList().size();
         model.deleteJob(jobToDelete);
-        return new CommandResult(String.format(MESSAGE_DELETE_JOB_SUCCESS, jobToDelete.getJobRole()),
+        int deletedApplicationCount = applicationCountBeforeDeletion - model.getApplicationList().size();
+        return new CommandResult(String.format(MESSAGE_DELETE_JOB_SUCCESS, jobToDelete.getJobRole())
+                + (deletedApplicationCount == 0 ? "" : String.format(MESSAGE_APPLICATIONS_DELETED,
+                        deletedApplicationCount)),
                 ViewRequest.jobs());
     }
 
