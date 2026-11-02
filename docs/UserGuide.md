@@ -47,6 +47,8 @@ LinkedOut is a personal workspace for one recruiter. Your records are stored loc
 
    * `add -n John Doe -p 98765432 -e johnd@example.com` : Adds an applicant named `John Doe`.
 
+   * `undo` : Restores the records from before the last change.
+
    * `bye` : Exits the app.
 
    To try the recruitment workflow with the sample data, run these commands in order:
@@ -212,6 +214,7 @@ Format: `delete INDEX`
 Examples:
 * `list` followed by `delete 2` deletes the 2nd applicant in the address book.
 * `find Betsy` followed by `delete 1` deletes the 1st applicant in the results of the `find` command.
+* `undo` puts that applicant, and their application if they had one, back into the address book.
 
 ### Clearing all entries: `clear`
 
@@ -372,6 +375,25 @@ Examples:
 
 * `deletej 1` deletes the first job.
 * `viewj` followed by `deletej 2` deletes the second job.
+* `undo` puts that job back, together with the applications that were removed with it.
+
+### Undoing the last change: `undo`
+
+Restores applicants, jobs, and applications to the state before the most recent command that changed them.
+Use this after deleting or editing the wrong record.
+
+Format: `undo`
+
+* The command accepts no arguments.
+* Only changes to stored records are undone. `list`, `find`, `view`, `viewa`, `viewp`, and `viewj` do not count as changes.
+* Each `undo` steps back one change, up to the ten most recent changes in this session.
+* Closing LinkedOut clears this history. The restored records are saved in the usual way.
+* The current tab stays where it is. The lists update to show the restored records.
+
+Examples:
+* `delete 1` followed by `undo` restores that applicant.
+* `deletej 2` followed by `undo` restores that job and any applications removed with it.
+* `add -n John Doe -p 98765432 -e johnd@example.com` followed by `undo` removes John Doe again.
 
 ### Saving the data
 
@@ -441,6 +463,7 @@ Action | Format, Examples
 **Delete job** | `deletej INDEX`<br> e.g., `deletej 1`
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
+**Undo** | `undo`
 **Edit** | `edit INDEX [-n NAME] [-p PHONE] [-e EMAIL]`<br> e.g., `edit 1 -p 91234567 -e john@example.com`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
 **List** | `list`

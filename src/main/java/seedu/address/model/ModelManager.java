@@ -3,6 +3,8 @@ package seedu.address.model;
 import static java.util.Objects.requireNonNull;
 import static seedu.address.commons.util.CollectionUtil.requireAllNonNull;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
@@ -21,10 +23,13 @@ import seedu.address.model.application.Job;
 public class ModelManager implements Model {
     private static final Logger logger = LogsCenter.getLogger(ModelManager.class);
 
+    private static final int MAXIMUM_UNDO_STATES = 10;
+
     private final AddressBook addressBook;
     private final UserPrefs userPrefs;
     private final FilteredList<Applicant> filteredApplicants;
     private final FilteredList<Job> filteredJobs;
+    private final Deque<ReadOnlyAddressBook> previousAddressBooks = new ArrayDeque<>();
 
     /**
      * Initializes a ModelManager with the given addressBook and userPrefs.
@@ -72,6 +77,24 @@ public class ModelManager implements Model {
     @Override
     public ReadOnlyAddressBook getAddressBook() {
         return addressBook;
+    }
+
+    @Override
+    public void rememberStateForUndo(ReadOnlyAddressBook previousState) {
+        requireNonNull(previousState);
+        previousAddressBooks.addFirst(previousState);
+        if (previousAddressBooks.size() > MAXIMUM_UNDO_STATES) {
+            previousAddressBooks.removeLast();
+        }
+    }
+
+    @Override
+    public boolean undoAddressBook() {
+        if (previousAddressBooks.isEmpty()) {
+            return false;
+        }
+        setAddressBook(previousAddressBooks.removeFirst());
+        return true;
     }
 
     @Override

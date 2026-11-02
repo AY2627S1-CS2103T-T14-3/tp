@@ -9,10 +9,13 @@ import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.LogsCenter;
 import seedu.address.logic.commands.Command;
 import seedu.address.logic.commands.CommandResult;
+import seedu.address.logic.commands.UndoCommand;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.AddressBookParser;
 import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.model.AddressBook;
 import seedu.address.model.Model;
+import seedu.address.model.ReadOnlyAddressBook;
 import seedu.address.model.applicant.Applicant;
 import seedu.address.model.application.Application;
 import seedu.address.model.application.Job;
@@ -46,9 +49,15 @@ public class LogicManager implements Logic {
     public CommandResult execute(String commandText) throws CommandException, ParseException {
         logger.info("----------------[USER COMMAND][" + commandText + "]");
 
-        CommandResult commandResult;
         Command command = addressBookParser.parseCommand(commandText);
-        commandResult = command.execute(model);
+        ReadOnlyAddressBook stateBeforeCommand = null;
+        if (!(command instanceof UndoCommand)) {
+            stateBeforeCommand = new AddressBook(model.getAddressBook());
+        }
+        CommandResult commandResult = command.execute(model);
+        if (stateBeforeCommand != null && !stateBeforeCommand.equals(model.getAddressBook())) {
+            model.rememberStateForUndo(stateBeforeCommand);
+        }
 
         try {
             storage.saveAddressBook(model.getAddressBook());

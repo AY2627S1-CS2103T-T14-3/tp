@@ -114,6 +114,7 @@ How the `Logic` component works:
 1. The command can communicate with the `Model` when it is executed (e.g. to delete an applicant).<br>
    Note that although this is shown as a single step in the diagram above for simplicity, the code can require several interactions between the command object and the `Model` to complete the operation.
 1. The result of the command execution is encapsulated as a `CommandResult` object which is returned from `Logic`.
+1. If the command changed the stored applicants, jobs, or applications, `LogicManager` remembers the previous address book. `undo` restores the newest remembered copy and does not itself become another undo step. The history is kept in memory for the session only.
 
 Here are the other classes in `Logic` (omitted from the class diagram above) that are used for parsing a user command:
 

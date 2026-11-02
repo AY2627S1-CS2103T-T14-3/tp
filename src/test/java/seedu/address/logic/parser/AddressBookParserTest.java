@@ -27,6 +27,7 @@ import seedu.address.logic.commands.FindCommand;
 import seedu.address.logic.commands.HelpCommand;
 import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.commands.SetApplicationStatusCommand;
+import seedu.address.logic.commands.UndoCommand;
 import seedu.address.logic.commands.ViewApplicantCommand;
 import seedu.address.logic.commands.ViewApplicationCommand;
 import seedu.address.logic.commands.ViewCommand;
@@ -152,6 +153,16 @@ public class AddressBookParserTest {
                 parser.parseCommand("  addj    -j  Software Engineer  -d\tSome Description"));
         assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () ->
                 parser.parseCommand("Addj -j Engineer -d Engineer"));
+    }
+
+    @Test
+    public void parseCommand_undo() throws Exception {
+        assertEquals(new UndoCommand(), parser.parseCommand("undo"));
+        assertEquals(new UndoCommand(), parser.parseCommand("  undo  "));
+        assertThrows(ParseException.class,
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, UndoCommand.MESSAGE_USAGE), () ->
+                parser.parseCommand("undo 1"));
+        assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> parser.parseCommand("Undo"));
     }
 
     @Test
