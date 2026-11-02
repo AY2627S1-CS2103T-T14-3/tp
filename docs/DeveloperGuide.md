@@ -172,8 +172,15 @@ After editing, the command clears the job filter and returns the edited job in `
 is visible and selected even if the new role no longer matches the previous filter.
 These four commands ask the UI to show the job list and the selected role's detail panel. The panel shows
 that role only. It does not list applicants by comparing the role text with application job descriptions.
-The `view` command selects an applicant from the currently displayed applicant list and shows the applicant's
-details. `list` and `viewa` show the applicant list. `viewp` shows each application with its applicant, job, and status.
+The `view INDEX` command selects an applicant from the currently displayed applicant list and shows the applicant's
+details. Bare `view` shows the current applicant list, preserving its filter and selection; `list` shows all applicants.
+Bare `viewp` shows each application with its applicant, job, and status. `viewp INDEX` selects the application
+belonging to the applicant at that index in `Model#getFilteredApplicantList`, matching the applicant index printed
+by `ApplicationListPanel`. Application indexes can therefore have gaps and do not follow application storage order.
+`viewj INDEX` selects from `Model#getFilteredJobList`. Indexed view commands preserve filters and stored data;
+`viewj` without arguments still resets the job filter. A job index cannot be combined with `-f`.
+Selections are returned through the existing `ViewRequest.applicant`, `ViewRequest.application`, and `ViewRequest.job`
+factories, which let `MainWindow` switch views, select the record, and refresh the detail panel.
 `find`, `add`, `edit`, and `clear` also request the applicants view. `add` and `edit` select the changed applicant
 so the detail panel shows that person. `clear` replaces a deleted-applicant snapshot with the empty panel.
 `help` does not request a view, so that snapshot stays in place.
