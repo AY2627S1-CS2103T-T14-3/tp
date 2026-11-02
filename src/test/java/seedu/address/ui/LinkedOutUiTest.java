@@ -31,6 +31,7 @@ import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollBar;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
@@ -551,6 +552,95 @@ public class LinkedOutUiTest {
     }
 
     @Test
+    public void arrowKeys_applicantList_selectsNeighborAndKeepsTypedCommand() throws Exception {
+        withWindow(window -> {
+            TextField input = (TextField) window.getRoot().getScene().lookup("#commandTextField");
+            input.setText("list");
+
+            assertApplicantName(window, "Alice Pauline");
+            pressArrow(window, KeyCode.DOWN);
+            assertApplicantName(window, "Benson Meier");
+            assertEquals("list", input.getText());
+
+            pressArrow(window, KeyCode.UP);
+            assertApplicantName(window, "Alice Pauline");
+            pressArrow(window, KeyCode.UP);
+            assertApplicantName(window, "Alice Pauline");
+
+            selectApplicant(window, 6);
+            pressArrow(window, KeyCode.DOWN);
+            assertApplicantName(window, "George Best");
+
+            command(window, "find completely-random-string");
+            pressArrow(window, KeyCode.DOWN);
+            assertApplicantName(window, "No applicant selected");
+
+            command(window, "list");
+            command(window, "delete 1");
+            pressArrow(window, KeyCode.DOWN);
+            assertApplicantName(window, "Benson Meier");
+        });
+    }
+
+    @Test
+    public void arrowKeys_jobsAndApplications_selectsNeighbor() throws Exception {
+        withWindow(window -> {
+            command(window, "addj -j Software Engineer");
+            command(window, "addj -j Data Analyst");
+            command(window, "viewj");
+            pressArrow(window, KeyCode.UP);
+            assertEquals("Software Engineer", label(window, "jobName").getText());
+            pressArrow(window, KeyCode.DOWN);
+            assertEquals("Data Analyst", label(window, "jobName").getText());
+
+            command(window, "addp 1 -j Software Engineer");
+            command(window, "addp 2 -j Data Analyst");
+            command(window, "viewp");
+            pressArrow(window, KeyCode.DOWN);
+            assertApplicantName(window, "Benson Meier");
+            pressArrow(window, KeyCode.UP);
+            assertApplicantName(window, "Alice Pauline");
+        });
+    }
+
+    @Test
+    public void arrowKeys_feedbackAndJobDetails_keepSelection() throws Exception {
+        withWindow(window -> {
+            TextField input = (TextField) window.getRoot().getScene().lookup("#commandTextField");
+            input.setText("add");
+            input.fireEvent(new ActionEvent());
+            TextArea feedback = (TextArea) window.getRoot().getScene().lookup("#resultDisplay");
+            feedback.requestFocus();
+            int caret = feedback.getCaretPosition();
+            assertApplicantName(window, "Alice Pauline");
+            pressArrowOn(window, feedback, KeyCode.DOWN);
+            assertApplicantName(window, "Alice Pauline");
+            assertTrue(feedback.getCaretPosition() > caret);
+
+            ListView<?> applicants = (ListView<?>) window.getRoot().getScene().lookup("#applicantListView");
+            applicants.requestFocus();
+            pressArrowOn(window, applicants, KeyCode.DOWN);
+            assertApplicantName(window, "Benson Meier");
+
+            command(window, "addj -j Software Engineer -d " + "Long role details. ".repeat(40));
+            command(window, "addj -j Data Analyst");
+            command(window, "viewj");
+            ListView<?> jobs = (ListView<?>) window.getRoot().getScene().lookup("#jobListView");
+            jobs.getSelectionModel().select(0);
+            pulse(window);
+            ScrollPane details = (ScrollPane) window.getRoot().getScene().lookup(".detail-scroll");
+            details.setMaxHeight(48);
+            details.setPrefViewportHeight(36);
+            details.requestFocus();
+            pulse(window);
+            pressArrowOn(window, details, KeyCode.DOWN);
+            assertEquals("Software Engineer", label(window, "jobName").getText());
+            assertTrue(details.isFocused());
+            assertTrue(details.getVvalue() > 0);
+        });
+    }
+
+    @Test
     public void selectApplicant_anotherApplicant_applicantNameUpdated() throws Exception {
         withWindow(window -> {
             selectApplicant(window, 1);
@@ -915,6 +1005,18 @@ public class LinkedOutUiTest {
                 window.getRoot().close();
             }
         });
+    }
+
+    private void pressArrow(MainWindow window, KeyCode code) {
+        TextField input = (TextField) window.getRoot().getScene().lookup("#commandTextField");
+        input.requestFocus();
+        pressArrowOn(window, input, code);
+    }
+
+    private void pressArrowOn(MainWindow window, Node target, KeyCode code) {
+        target.fireEvent(new KeyEvent(
+                KeyEvent.KEY_PRESSED, "", "", code, false, false, false, false));
+        pulse(window);
     }
 
     private void selectApplicant(MainWindow window, int zeroBasedIndex) {

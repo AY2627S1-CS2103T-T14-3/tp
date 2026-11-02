@@ -82,6 +82,14 @@ public class ApplicationListPanel extends UiPart<Region> {
     }
 
     /**
+     * Selects the application {@code offset} rows away and scrolls that row into view.
+     * Stops at either end of the list.
+     */
+    public void selectOffset(int offset) {
+        ListNavigation.selectOffset(applicationListView, offset);
+    }
+
+    /**
      * Returns the one-based index of the applicant who owns {@code application}.
      * @param application application shown in this list.
      */
