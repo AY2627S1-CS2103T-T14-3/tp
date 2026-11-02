@@ -6,6 +6,12 @@ import java.io.IOException;
 import java.net.URL;
 
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.Tooltip;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import seedu.address.MainApp;
 
 /**
@@ -56,6 +62,26 @@ public abstract class UiPart<T> {
      */
     public T getRoot() {
         return fxmlLoader.getRoot();
+    }
+
+    /**
+     * Adds a Copy menu for each label's current text, including text hidden by wrapping or truncation.
+     *
+     * @param labels detail values to make copyable.
+     */
+    protected static void enableCopy(Label... labels) {
+        for (Label label : labels) {
+            MenuItem copy = new MenuItem("Copy");
+            copy.disableProperty().bind(label.textProperty().isEmpty());
+            copy.setOnAction(event -> {
+                ClipboardContent content = new ClipboardContent();
+                content.putString(label.getText());
+                Clipboard.getSystemClipboard().setContent(content);
+            });
+            label.setContextMenu(new ContextMenu(copy));
+            label.setTooltip(new Tooltip("Right-click to copy."));
+            label.setFocusTraversable(true);
+        }
     }
 
     /**

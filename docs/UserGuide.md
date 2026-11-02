@@ -66,6 +66,10 @@ LinkedOut is a personal workspace for one recruiter. Your records are stored loc
 
 ## Features
 
+To copy a value from the applicant, application, or job detail panel, right-click the value and choose **Copy**.
+Names, emails, phone numbers, job roles, descriptions, and application statuses can be copied.
+The complete value is copied, including text that wraps onto multiple lines. Empty values cannot be copied.
+
 <div markdown="block" class="alert alert-info">
 
 **:information_source: Notes about the command format:**<br>

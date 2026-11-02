@@ -31,6 +31,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.input.Clipboard;
 import javafx.stage.Stage;
 import seedu.address.logic.LogicManager;
 import seedu.address.logic.commands.AddApplicationCommand;
@@ -42,6 +43,7 @@ import seedu.address.model.Model;
 import seedu.address.model.ModelManager;
 import seedu.address.model.UserPrefs;
 import seedu.address.model.applicant.Applicant;
+import seedu.address.model.application.Job;
 import seedu.address.storage.JsonAddressBookStorage;
 import seedu.address.storage.JsonUserPrefsStorage;
 import seedu.address.storage.StorageManager;
@@ -87,6 +89,43 @@ public class LinkedOutUiTest {
             Applicant selected = (Applicant) applicants.getSelectionModel().getSelectedItem();
             assertEquals(selected.getName().fullName, label(window, "applicantName").getText());
             assertApplication(window, "No application recorded.", null, null);
+        });
+    }
+
+    @Test
+    public void copyApplicantDetails_usesCurrentSelectionAndDisablesEmptyValues() throws Exception {
+        withWindow(window -> {
+            assertCopiesText(window, "applicantName", ALICE.getName().fullName);
+            assertCopiesText(window, "email", ALICE.getEmail().value);
+            assertCopiesText(window, "phone", ALICE.getPhone().value);
+
+            command(window, "view 2");
+            assertCopiesText(window, "email", BENSON.getEmail().value);
+            assertCopiesText(window, "phone", BENSON.getPhone().value);
+
+            command(window, "clear");
+            assertTrue(label(window, "email").getContextMenu().getItems().getFirst().isDisable());
+            assertTrue(label(window, "phone").getContextMenu().getItems().getFirst().isDisable());
+        });
+    }
+
+    @Test
+    public void copyApplicationAndJobDetails_preservesCompleteText() throws Exception {
+        withWindow((window, model) -> {
+            String description = "First line\n第二行";
+            model.addJob(new Job("Engineer", description));
+            command(window, "addp 1 -j Engineer");
+            command(window, "viewp");
+            assertCopiesText(window, "applicationStatus", "Engineer");
+            assertCopiesText(window, "applicationStatusBadge", "Pending");
+            assertCopiesText(window, "jobDesc", description);
+
+            command(window, "set 1 -s accept");
+            assertCopiesText(window, "applicationStatusBadge", "Accepted");
+            command(window, "viewj");
+            pulse(window);
+            assertCopiesText(window, "jobName", "Engineer");
+            assertCopiesText(window, "jobDescription", description);
         });
     }
 
@@ -746,6 +785,16 @@ public class LinkedOutUiTest {
         assertEquals(jobDescription, jobDescLabel.getText());
         assertTrue(badge.isVisible());
         assertEquals(status, badge.getText());
+    }
+
+    /** Verifies that Copy uses the complete, current value of a detail label. */
+    private void assertCopiesText(MainWindow window, String id, String expected) {
+        Label value = label(window, id);
+        assertNotNull(value.getContextMenu(), "Missing Copy menu: " + id);
+        assertTrue(value.isFocusTraversable());
+        assertFalse(value.getContextMenu().getItems().getFirst().isDisable());
+        value.getContextMenu().getItems().getFirst().fire();
+        assertEquals(expected, Clipboard.getSystemClipboard().getString());
     }
 
     private Label label(MainWindow window, String id) {
