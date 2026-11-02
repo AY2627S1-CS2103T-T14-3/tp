@@ -12,10 +12,10 @@ import seedu.address.model.UserPrefs;
 /** Tests that sidebar toggle commands return the requested view without changing model data. */
 public class SidebarViewCommandTest {
     @Test
-    public void viewApplicantCommand_requestsApplicantsView() throws Exception {
+    public void viewCommand_requestsApplicantsView() throws Exception {
         Model model = new ModelManager(getTypicalAddressBook(), new UserPrefs());
-        assertEquals(new CommandResult(ViewApplicantCommand.MESSAGE_SUCCESS,
-                ViewRequest.applicants()), new ViewApplicantCommand().execute(model));
+        assertEquals(new CommandResult(ViewCommand.MESSAGE_SHOWING_APPLICANTS,
+                ViewRequest.applicants()), new ViewCommand().execute(model));
     }
 
     @Test

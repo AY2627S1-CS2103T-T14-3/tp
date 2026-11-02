@@ -19,13 +19,13 @@ LinkedOut is a personal workspace for one recruiter. Your records are stored loc
 1. Install Java `25`. Open a terminal and run `java -version` to check that the version shown is `25`.<br>
    **Mac users:** Follow the [Java installation instructions](https://se-education.org/guides/tutorials/javaInstallationMac.html) for your system.
 
-1. Download `linkedout.jar` from the [LinkedOut releases page](https://github.com/AY2627S1-CS2103T-T14-3/tp/releases).
+2. Download `linkedout.jar` from the [LinkedOut releases page](https://github.com/AY2627S1-CS2103T-T14-3/tp/releases).
    To build the latest source instead, see the [build instructions](DevOps.md#build-automation).
 
-1. Copy the JAR file to an empty folder where you have permission to create files. This will be your
+3. Copy the JAR file to an empty folder where you have permission to create files. This will be your
    LinkedOut _home folder_, containing your records and preferences.
 
-1. In the terminal, `cd` to that folder and run `java -jar "linkedout.jar"`.
+4. In the terminal, `cd` to that folder and run `java -jar "linkedout.jar"`.
    If you renamed the file, use its actual name in the command. Launching from the terminal ensures that
    LinkedOut uses the Java version you checked; double-clicking the JAR may use a different version or fail.
 
@@ -34,12 +34,12 @@ LinkedOut is a personal workspace for one recruiter. Your records are stored loc
 
    ![LinkedOut on first launch, showing sample applicants and the selected applicant's details](images/Ui.png)
 
-1. Type a command in the command box and press Enter to execute it. For example, type **`help`** and press Enter to open the help window.<br>
+5. Type a command in the command box and press Enter to execute it. For example, type **`help`** and press Enter to open the help window.<br>
    Some example commands you can try:
 
    * `list` : Lists all applicants.
 
-   * `viewa` : Shows the applicants view.
+   * `view` : Shows the applicants view.
 
    * `viewj` : Shows the jobs view.
 
@@ -60,7 +60,7 @@ LinkedOut is a personal workspace for one recruiter. Your records are stored loc
 
    The first applicant now has an accepted application for the sample Software Engineer Intern job.
 
-1. Refer to the [Features](#features) section below for details of each command.
+6. Refer to the [Features](#features) section below for details of each command.
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -81,7 +81,7 @@ LinkedOut is a personal workspace for one recruiter. Your records are stored loc
 
 * `add` and `edit` use hyphen-prefixed options such as `-n NAME`.
 
-* Extraneous parameters for `help`, `list`, and `clear` are ignored. `bye` and its alias `exit` reject extra parameters.<br>
+* Extraneous parameters for `help` and `list` are ignored. `clear`, `bye`, and its alias `exit` reject extra parameters.<br>
   For example, `help 123` is interpreted as `help`.
 
 * If you are using a PDF version of this document, be careful when copying and pasting commands that span multiple lines as space characters surrounding line-breaks may be omitted when copied over to the application.
@@ -134,21 +134,20 @@ Shows a list of all applicants in the address book.
 
 Format: `list`
 
-### Viewing applicants: `viewa`
-
-Switches the list to the Applicants tab and displays the current applicant list.
-
-Format: `viewa`
-
-The command accepts no arguments.
-
 ### Viewing applications: `viewp`
 
 Switches the list to the Applications tab. Each row shows the applicant's index and name, the job, and a status of Accepted, Rejected, or Pending. The index matches the applicant list, including a filtered list.
 
-Format: `viewp`
+Format: `viewp [INDEX]`
 
-The command accepts no arguments.
+* Without an index, shows the applications list.
+* With an index, selects that application and shows its applicant, job, and status in the detail panel.
+* `INDEX` must be the positive applicant index printed on the application row, not its position in the applications list.
+  For example, if only applicant 2 has an application, select that row with `viewp 2`.
+* The applicant filter is kept unchanged. After filtering applicants, use the indexes shown in the filtered list.
+* Invalid or out-of-range indexes produce an error. An applicant without an application also produces an error.
+
+Example: `viewp 2` selects the application belonging to applicant 2 in the current applicant list.
 
 ### Editing an applicant: `edit`
 
@@ -232,22 +231,27 @@ Alias: `exit`, which follows the same validation and behaviour as `bye`.
 
 Format: `bye`
 
-### Viewing an applicant: `view`
+### Viewing applicants: `view`
 
-Selects an applicant in the list, scrolls to their entry, and shows their name, email and phone in the applicant detail panel.
-The command result display confirms the applicant's name.
+Switches to the Applicants tab, preserving the current applicant list and filter.
+With an index, selects an applicant, scrolls to their entry, and shows their name, email and phone in the detail panel.
+The command result display confirms the selected applicant's name.
 
-Format: `view INDEX`
+Format: `view [INDEX]`
 
+Use `viewp INDEX` for an application or `viewj INDEX` for a job.
+
+* Without an index, shows the current applicant list without changing its selection. An empty list is allowed.
 * `INDEX` is the positive integer shown beside an applicant in the current list.
 * When the list is filtered, the index refers to that filtered list.
 * The command keeps the applicant list and its filter unchanged.
-* Missing, additional, or invalid arguments produce a format error with a usage hint.
+* Additional or invalid arguments produce a format error with a usage hint.
   An index beyond the displayed list produces an error showing the valid range.
-  An empty list produces a message that there are no applicants to view.
+  Supplying an index for an empty list produces a message that there are no applicants to view.
 
 Examples:
 
+* `view` shows the current applicant list. Unlike `list`, it does not clear an active filter.
 * `view 1` selects the first applicant in the displayed list and shows their details.
 * `find Meier` followed by `view 2` shows the details of the second applicant in the search results.
 
@@ -345,19 +349,23 @@ Examples:
 
 Shows open roles. The list on the right switches to jobs, and the detail panel shows the selected role.
 
-Format: `viewj [-f KEYWORD]`
+Format: `viewj [INDEX]` or `viewj [-f KEYWORD]`
 
-* Without `-f`, every job is shown.
+* Without any arguments, every job is shown.
+* `INDEX` selects a job using its positive index in the current job list and shows its details, keeping the job filter.
+  Invalid or out-of-range indexes produce an error; an empty list produces a message that there are no jobs to view.
+* An index and `-f` cannot be used together. Filter first, then select a job from the results.
 * `-f KEYWORD` searches the combined text `ROLE : DESCRIPTION`. Matching ignores case and does not need a full word, so `jan` matches the role `Janitor`. Text found only in the description also matches. A multi-word keyword is matched as one substring.
 * Alias: `-filter` for `-f`.
 * The command word is case-sensitive. `Viewj` is not recognised.
 * `editj` and `deletej` use the index in the list currently displayed, including a filtered list.
-* `list`, `view`, `viewa`, `find`, `add`, `edit`, and `clear` switch the list back to applicants. `viewp` switches to applications.
+* `list`, `view`, `find`, `add`, `edit`, and `clear` switch the list back to applicants. `viewp` switches to applications.
 
 Examples:
 
 * `viewj` lists every job. An empty list shows "No jobs to display."
 * `viewj -f jan` lists roles such as Janitor.
+* `viewj -f jan` followed by `viewj 1` selects the first matching job and keeps the filtered list.
 * After `addj -j Research Assistant -d Analyse survey responses`, `viewj -f survey` includes that job because its description matches.
 
 ### Deleting a job: `deletej`
@@ -440,15 +448,14 @@ Action | Format, Examples
 **Set application status** | `set INDEX -s STATUS`<br> e.g., `set 1 -s accept`
 **Add job** | `addj -j JOB_ROLE [-d JOB_DESCRIPTION]`<br> e.g., `addj -j Software Engineer`
 **Edit job** | `editj INDEX -j JOB_ROLE`<br> e.g., `editj 1 -j Senior Software Engineer`
-**View jobs** | `viewj [-f KEYWORD]`<br> e.g., `viewj -f engineer`
+**View jobs** | `viewj [INDEX]` or `viewj [-f KEYWORD]`<br> e.g., `viewj 1` or `viewj -f engineer`
 **Delete job** | `deletej INDEX`<br> e.g., `deletej 1`
 **Clear** | `clear`
 **Delete** | `delete INDEX`<br> e.g., `delete 3`
 **Edit** | `edit INDEX [-n NAME] [-p PHONE] [-e EMAIL]`<br> e.g., `edit 1 -p 91234567 -e john@example.com`
 **Find** | `find KEYWORD [MORE_KEYWORDS]`<br> e.g., `find James Jake`
 **List** | `list`
-**View applicants** | `viewa`
-**View applications** | `viewp`
-**View applicant** | `view INDEX`<br> e.g., `view 1`
+**View applicants** | `view [INDEX]`<br> e.g., `view 1`
+**View applications** | `viewp [INDEX]`<br> e.g., `viewp 2` (uses the displayed applicant index)
 **Help** | `help`
 **Bye** | `bye` or `exit`
