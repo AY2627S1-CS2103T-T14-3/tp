@@ -27,7 +27,6 @@ import seedu.address.logic.commands.FindCommand;
 import seedu.address.logic.commands.HelpCommand;
 import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.commands.SetApplicationStatusCommand;
-import seedu.address.logic.commands.ViewApplicantCommand;
 import seedu.address.logic.commands.ViewApplicationCommand;
 import seedu.address.logic.commands.ViewCommand;
 import seedu.address.logic.commands.ViewJobCommand;
@@ -74,15 +73,41 @@ public class AddressBookParserTest {
     public void parseCommand_view() throws Exception {
         assertEquals(new ViewCommand(INDEX_FIRST), parser.parseCommand("view 1"));
         assertEquals(new ViewCommand(INDEX_FIRST), parser.parseCommand("  view   1  "));
-        String expectedMessage = String.format(MESSAGE_INVALID_COMMAND_FORMAT, ViewCommand.MESSAGE_USAGE);
-        assertThrows(ParseException.class, expectedMessage, () -> parser.parseCommand("view"));
+        assertEquals(new ViewCommand(), parser.parseCommand("view"));
+        assertEquals(new ViewCommand(), parser.parseCommand("  view   "));
         assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> parser.parseCommand("View 1"));
     }
 
     @Test
     public void parseCommand_sidebarViewToggles() throws Exception {
-        assertTrue(parser.parseCommand(ViewApplicantCommand.COMMAND_WORD) instanceof ViewApplicantCommand);
-        assertTrue(parser.parseCommand(ViewApplicationCommand.COMMAND_WORD) instanceof ViewApplicationCommand);
+        assertEquals(new ViewApplicationCommand(), parser.parseCommand("viewp"));
+        assertEquals(new ViewApplicationCommand(), parser.parseCommand("  viewp   "));
+    }
+
+    @Test
+    public void parseCommand_indexedViews_selectsRequestedItem() throws Exception {
+        assertEquals(new ViewApplicationCommand(INDEX_FIRST), parser.parseCommand("viewp 1"));
+        assertEquals(new ViewApplicationCommand(INDEX_FIRST), parser.parseCommand("  viewp   1  "));
+        assertEquals(new ViewJobCommand(INDEX_FIRST), parser.parseCommand("viewj 1"));
+        assertEquals(new ViewJobCommand(INDEX_FIRST), parser.parseCommand("  viewj   1  "));
+    }
+
+    @Test
+    public void parseCommand_invalidViewArguments_reportsInvokedCommandUsage() {
+        for (String args : List.of("0", "-1", "1.5", "2147483648", "abc", "1 2", "1 -f jan")) {
+            assertThrows(ParseException.class,
+                    String.format(MESSAGE_INVALID_COMMAND_FORMAT, ViewCommand.MESSAGE_USAGE), ()
+                            -> parser.parseCommand("view " + args));
+            assertThrows(ParseException.class,
+                    String.format(MESSAGE_INVALID_COMMAND_FORMAT, ViewApplicationCommand.MESSAGE_USAGE), ()
+                            -> parser.parseCommand("viewp " + args));
+        }
+    }
+
+    @Test
+    public void parseCommand_removedViewa_throwsUnknownCommand() {
+        assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> parser.parseCommand("viewa"));
+        assertThrows(ParseException.class, MESSAGE_UNKNOWN_COMMAND, () -> parser.parseCommand("viewa 1"));
     }
 
     @Test
