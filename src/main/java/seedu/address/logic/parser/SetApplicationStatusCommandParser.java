@@ -22,7 +22,7 @@ public class SetApplicationStatusCommandParser implements Parser<SetApplicationS
      */
     public SetApplicationStatusCommand parse(String args) throws ParseException {
         requireNonNull(args);
-        String[] tokens = args.strip().split("\\s+", 2);
+        String[] tokens = args.strip().split("\\p{javaWhitespace}+", 2);
         Index index = parseIndex(args, tokens[0]);
         String optionArgs = tokens.length == 2 ? tokens[1] : "";
         Application.Status status = parseStatus(args, optionArgs);

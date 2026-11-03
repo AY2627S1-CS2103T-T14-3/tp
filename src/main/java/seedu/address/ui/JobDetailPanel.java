@@ -64,7 +64,7 @@ public class JobDetailPanel extends UiPart<Region> {
     private static String initialsOf(String description) {
         StringBuilder builder = new StringBuilder();
         int initialCount = 0;
-        for (String word : description.split("\\s+")) {
+        for (String word : description.split("\\p{javaWhitespace}+")) {
             if (word.isEmpty()) {
                 continue;
             }
