@@ -100,6 +100,19 @@ public class JsonAddressBookStorageTest {
     }
 
     @Test
+    public void readAddressBook_apostropheEmail_preservesEmail() throws Exception {
+        Path filePath = testFolder.resolve("apostrophe-email.json");
+        String json = "{\"applicants\":[{\"name\":\"Sean O'Connor\",\"phone\":\"93456789\","
+                + "\"email\":\"sean.o'connor@example.com\"}],\"jobs\":[],\"applications\":[]}";
+        Files.writeString(filePath, json);
+
+        ReadOnlyAddressBook loaded = new JsonAddressBookStorage(filePath).readAddressBook().orElseThrow();
+        assertEquals(1, loaded.getApplicantList().size());
+        assertEquals("Sean O'Connor", loaded.getApplicantList().getFirst().getName().fullName);
+        assertEquals("sean.o'connor@example.com", loaded.getApplicantList().getFirst().getEmail().value);
+    }
+
+    @Test
     public void readAndSaveAddressBook_allInOrder_success() throws Exception {
         Path filePath = testFolder.resolve("TempAddressBook.json");
         AddressBook original = getTypicalAddressBook();

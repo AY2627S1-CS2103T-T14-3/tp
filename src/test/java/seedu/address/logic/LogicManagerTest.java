@@ -154,6 +154,37 @@ public class LogicManagerTest {
     }
 
     @Test
+    public void execute_addApostropheEmail_savesApplicant() throws Exception {
+        logic.execute("add -n Sean O'Connor -p 93456789 -e sean.o'connor@example.com");
+        Applicant expectedApplicant = new ApplicantBuilder().withName("Sean O'Connor").withPhone("93456789")
+                .withEmail("sean.o'connor@example.com").build();
+
+        assertEquals(List.of(expectedApplicant), model.getAddressBook().getApplicantList());
+        JsonAddressBookStorage savedStorage =
+                new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
+        assertEquals(model.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
+    }
+
+    @Test
+    public void execute_editApostropheEmail_updatesApplicationAndSavesApplicant() throws Exception {
+        model.addApplicant(AMY);
+        logic.execute("addj -j Engineer");
+        logic.execute("addp 1 -j Engineer -s accept");
+        logic.execute("edit 1 -e amy.o'connor@example.com");
+        Applicant editedApplicant = new ApplicantBuilder(AMY).withEmail("amy.o'connor@example.com").build();
+
+        assertEquals(List.of(editedApplicant), model.getAddressBook().getApplicantList());
+        Application editedApplication = model.getApplication(editedApplicant).orElseThrow();
+        assertEquals("amy.o'connor@example.com", editedApplication.getApplicant().getEmail().value);
+        assertEquals(Application.Status.ACCEPT, editedApplication.getStatus());
+        JsonAddressBookStorage savedStorage =
+                new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
+        ReadOnlyAddressBook saved = savedStorage.readAddressBook().orElseThrow();
+        assertEquals(model.getAddressBook(), saved);
+        assertEquals("amy.o'connor@example.com", saved.getApplicationList().getFirst().getApplicant().getEmail().value);
+    }
+
+    @Test
     public void execute_addCaseVariantDuplicate_throwsCommandException() throws Exception {
         logic.execute("add -n Amy Bee -p 11111111 -e amy@example.com");
         for (String fields : List.of("-n amy bee -e other@example.com", "-n AMY BEE -e other@example.com",

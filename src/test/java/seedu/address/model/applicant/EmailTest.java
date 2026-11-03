@@ -76,6 +76,28 @@ public class EmailTest {
     }
 
     @Test
+    public void isValidEmail_internalApostrophes_returnsTrue() {
+        for (String localPart : List.of("sean.o'connor", "o''connor", "sean.o'+_connor")) {
+            assertTrue(Email.isValidEmail(localPart + "@example.com"));
+        }
+    }
+
+    @Test
+    public void isValidEmail_apostrophesOutsideSupportedPositions_returnsFalse() {
+        for (String email : List.of("'sean@example.com", "sean'@example.com", "sean@exam'ple.com",
+                "sean..o'connor@example.com", "sean.o\u2019connor@example.com")) {
+            assertFalse(Email.isValidEmail(email));
+        }
+    }
+
+    @Test
+    public void isValidEmail_apostropheLengthBoundary_expectedResult() {
+        String email = "a".repeat(240) + "'b@example.com";
+        assertTrue(Email.isValidEmail(email)); // 254 characters
+        assertFalse(Email.isValidEmail("a" + email));
+    }
+
+    @Test
     public void isValidEmail_invalidLocalPunctuation_returnsFalse() {
         for (String localPart : List.of("alice..lee", "alice+.._lee", "alice...lee", "+alice", "alice+",
                 "_alice", "alice_", ".alice", "alice.", "-alice", "alice-", "++", "alice!lee")) {
