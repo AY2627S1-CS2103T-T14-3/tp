@@ -59,6 +59,7 @@ public class EmailTest {
         assertTrue(Email.isValidEmail("PeterJack.1190@example.com")); // period in local part
         assertTrue(Email.isValidEmail("PeterJack+1190@example.com")); // '+' symbol in local part
         assertTrue(Email.isValidEmail("PeterJack-1190@example.com")); // hyphen in local part
+        assertTrue(Email.isValidEmail("sean.o'connor@example.com")); // apostrophe in local part
         assertTrue(Email.isValidEmail("a@bc")); // minimal
         assertTrue(Email.isValidEmail("test@localhost")); // alphabets only
         assertTrue(Email.isValidEmail("123@145")); // numeric local part and domain name
@@ -78,7 +79,8 @@ public class EmailTest {
     @Test
     public void isValidEmail_invalidLocalPunctuation_returnsFalse() {
         for (String localPart : List.of("alice..lee", "alice+.._lee", "alice...lee", "+alice", "alice+",
-                "_alice", "alice_", ".alice", "alice.", "-alice", "alice-", "++", "alice!lee")) {
+                "_alice", "alice_", ".alice", "alice.", "-alice", "alice-", "'alice", "alice'",
+                "++", "alice!lee")) {
             assertFalse(Email.isValidEmail(localPart + "@example.com"));
         }
     }
