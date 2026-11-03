@@ -90,6 +90,9 @@ list-cell cards, JavaFX controls, and the `ListNavigation` helper are omitted fo
 list. The command box keeps keyboard focus. Text areas, copyable detail values, and other controls retain
 their normal arrow-key behavior; `MainWindow#handleListNavigation` checks the event target before navigating.
 
+Applicant and job detail avatars use the uppercase initial of each of the first two words.
+Initial extraction preserves complete Unicode code points, including supplementary characters.
+
 The `UI` component uses the JavaFX UI framework. The layouts of these UI parts are defined in matching `.fxml` files in `src/main/resources/view`. For example, [`MainWindow.fxml`](https://github.com/AY2627S1-CS2103T-T14-3/tp/blob/master/src/main/resources/view/MainWindow.fxml) specifies the layout of [`MainWindow`](https://github.com/AY2627S1-CS2103T-T14-3/tp/blob/master/src/main/java/seedu/address/ui/MainWindow.java).
 
 The `UI` component,
@@ -208,6 +211,16 @@ Jobs are stored in the same JSON address book under `jobs`.
 
 ### Storage component
 
+Null records inside the saved `applicants`, `jobs`, or `applications` arrays are rejected through
+`IllegalValueException`, which storage translates into `DataLoadingException`. Startup then uses an empty
+address book, following the same recovery path as other invalid records.
+
+`JsonUtil.readJsonFile` also rejects a root-level JSON `null` with `DataLoadingException`.
+Only a missing file returns an empty optional; a file containing `null` follows the invalid-file recovery path.
+
+`JsonUserPrefsStorage` rejects explicit null GUI settings as a loading error so startup uses default preferences.
+Omitting the GUI settings field still uses its default value.
+
 **API** : [`Storage.java`](https://github.com/AY2627S1-CS2103T-T14-3/tp/blob/master/src/main/java/seedu/address/storage/Storage.java)
 
 <img src="images/StorageClassDiagram.png" width="800" />
@@ -303,6 +316,7 @@ applicants, applications, and jobs, and requests the applicants view. `LogicMana
 Flag support is provided by the tokenizer and covered by its tests; the shared options in `CliSyntax` use the
 required and optional kinds. The tokenizer trims surrounding whitespace from values and accepts options in any order.
 It recognises lowercase, hyphen-prefixed option tokens separated by whitespace, such as `-n`, `-name`, or `-job`.
+Option boundaries use Java whitespace (`Character.isWhitespace`), matching `String.strip()` when trimming values.
 An embedded hyphen, such as the one in `alice-tan@example.com`, does not start an option.
 
 #### Example: adding an applicant

@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
@@ -25,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import javafx.application.Platform;
+import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
 import javafx.geometry.Bounds;
 import javafx.geometry.Orientation;
@@ -61,6 +63,9 @@ import seedu.address.testutil.TypicalApplicants;
 
 /** Integration checks for applicant selection and the existing command workflow. */
 public class LinkedOutUiTest {
+    /** Allows for rounding when JavaFX snaps layout sizes to the display grid. */
+    private static final double LAYOUT_TOLERANCE = 1;
+
     @TempDir
     public Path testFolder;
 
@@ -73,6 +78,47 @@ public class LinkedOutUiTest {
             started.complete(null);
         });
         started.get(15, TimeUnit.SECONDS);
+    }
+
+    @Test
+    public void applicantInitials_supplementaryCharacters_preservesCompleteInitials() throws Exception {
+        withWindow((window, model) -> {
+            for (Map.Entry<String, String> entry : Map.of(
+                    "\uD840\uDC00 Ming Third", "\uD840\uDC00M",
+                    "Alice \uD840\uDC00 Third", "A\uD840\uDC00",
+                    "\uD840\uDC00 \uD840\uDC01 Third", "\uD840\uDC00\uD840\uDC01",
+                    "\uD801\uDC28 Ming Third", "\uD801\uDC00M",
+                    "Alice Bob Carol", "AB",
+                    "Alice", "A").entrySet()) {
+                Applicant previous = model.getFilteredApplicantList().getFirst();
+                model.setApplicant(previous, new ApplicantBuilder(previous).withName(entry.getKey()).build());
+                command(window, "view 1");
+                pulse(window);
+
+                assertEquals(entry.getKey(), label(window, "applicantName").getText());
+                assertEquals(entry.getValue(), label(window, "initials").getText());
+            }
+        });
+    }
+
+    @Test
+    public void jobInitials_supplementaryCharacters_preservesFirstTwoWordInitials() throws Exception {
+        withWindow((window, model) -> {
+            for (Map.Entry<String, String> entry : Map.of(
+                    "\uD840\uDC00 Engineer Third", "\uD840\uDC00E",
+                    "Engineer \uD840\uDC00 Third", "E\uD840\uDC00",
+                    "\uD840\uDC00 \uD840\uDC01 Third", "\uD840\uDC00\uD840\uDC01",
+                    "\uD801\uDC28 Engineer Third", "\uD801\uDC00E",
+                    "Software Engineer Intern", "SE",
+                    "\uD840\uDC00", "\uD840\uDC00").entrySet()) {
+                model.addJob(new Job(entry.getKey()));
+                command(window, "viewj " + model.getFilteredJobList().size());
+                pulse(window);
+
+                assertEquals(entry.getKey(), label(window, "jobName").getText());
+                assertEquals(entry.getValue(), label(window, "initials").getText());
+            }
+        });
     }
 
     @Test
@@ -105,7 +151,8 @@ public class LinkedOutUiTest {
     public void applicantCards_longFields_stayWithinListWhenResized() throws Exception {
         withWindow((window, model) -> {
             Applicant applicant = new ApplicantBuilder(ALICE).withName("LongName".repeat(100))
-                    .withEmail("long".repeat(40) + "@example.com").withPhone("1234567890".repeat(5)).build();
+                    .withEmail("long".repeat(40) + "@example.com")
+                    .withPhone("+1-2-3-4-5-6-7-8-9-0-1-2-3-4-5").build();
             model.setApplicant(ALICE, applicant);
 
             for (int width : List.of(1200, 900, 1100)) {
@@ -174,11 +221,28 @@ public class LinkedOutUiTest {
                     Bounds viewportBounds = viewport.localToScene(viewport.getLayoutBounds());
                     Bounds badgeBounds = badge.localToScene(badge.getLayoutBounds());
                     // Long details may scroll vertically, but the badge must fit horizontally.
-                    assertTrue(badgeBounds.getMinX() >= viewportBounds.getMinX()
-                            && badgeBounds.getMaxX() <= viewportBounds.getMaxX(),
+                    assertTrue(badgeBounds.getMinX() >= viewportBounds.getMinX() - LAYOUT_TOLERANCE
+                            && badgeBounds.getMaxX() <= viewportBounds.getMaxX() + LAYOUT_TOLERANCE,
                             "Status bounds " + badgeBounds + " exceed detail viewport width " + viewportBounds);
                 }
             }
+        });
+    }
+
+    @Test
+    public void applicationDetails_focusedStatusBadge_keepsFullStatusVisible() throws Exception {
+        withWindow((window, model) -> {
+            Job job = new Job("LongRole".repeat(10), "Long description ".repeat(40));
+            model.addJob(job);
+            model.addApplication(new Application(ALICE, job, Application.Status.PENDING));
+            command(window, "view 1");
+            Label badge = label(window, "applicationStatusBadge");
+            // Apply the focus style without depending on the operating system to focus the test window.
+            badge.pseudoClassStateChanged(PseudoClass.getPseudoClass("focused"), true);
+            pulse(window);
+            pulse(window);
+            assertNotNull(badge.getEffect(), "The regression check must include the focus glow");
+            assertBadgeFits(badge);
         });
     }
 
@@ -285,7 +349,7 @@ public class LinkedOutUiTest {
             pulse(window);
 
             ListView<?> applications = (ListView<?>) window.getRoot().getScene().lookup("#applicationListView");
-            assertEquals("Applications", label(window, "listTitle").getText());
+            assertEquals("From 1 out of 7 applicant(s)", label(window, "listTitle").getText());
             assertEquals("1 application", label(window, "applicantCount").getText());
             assertEquals(1, applications.getItems().size());
             assertEquals("1. ", ((Label) applications.lookup("#id")).getText());
@@ -391,7 +455,7 @@ public class LinkedOutUiTest {
             command(window, "find Alice");
             command(window, "addp 1 -j Engineer -s accept");
             command(window, "viewp 1");
-            assertEquals("Applications", label(window, "listTitle").getText());
+            assertEquals("From 1 out of 7 applicant(s)", label(window, "listTitle").getText());
             command(window, "delete 1");
 
             assertApplicantName(window, "Alice Pauline");
@@ -478,7 +542,7 @@ public class LinkedOutUiTest {
             assertEquals("Jobs", label(window, "listTitle").getText());
 
             command(window, "find Alice");
-            assertEquals("Applicants", label(window, "listTitle").getText());
+            assertEquals("Found 1 out of 7 applicant(s)", label(window, "listTitle").getText());
             assertEquals("1 applicant(s) listed!", feedback(window));
             assertEquals("1 applicant", label(window, "applicantCount").getText());
             assertApplicantDetails(window, ALICE);
@@ -495,6 +559,9 @@ public class LinkedOutUiTest {
             assertEquals("Deleted applicant. These details are no longer stored.",
                     label(window, "selectionHint").getText());
 
+            assertEquals("Found 0 out of 6 applicant(s)", label(window, "listTitle").getText());
+            assertEquals("Filtered with keyword(s): Alice", label(window, "listHint").getText());
+            command(window, "list");
             command(window, "clear");
             assertEquals("Applicants", label(window, "listTitle").getText());
             assertEquals("No applicant selected", label(window, "applicantName").getText());
@@ -636,7 +703,12 @@ public class LinkedOutUiTest {
             pulse(window);
             pressArrowOn(window, details, KeyCode.DOWN);
             assertEquals("Software Engineer", label(window, "jobName").getText());
-            assertTrue(details.isFocused());
+            // JavaFX may move focus to a copyable value inside the detail pane.
+            Node focusOwner = window.getRoot().getScene().getFocusOwner();
+            while (focusOwner != null && focusOwner != details) {
+                focusOwner = focusOwner.getParent();
+            }
+            assertSame(details, focusOwner);
             assertTrue(details.getVvalue() > 0);
         });
     }
@@ -667,7 +739,7 @@ public class LinkedOutUiTest {
                 command(window, otherView);
                 command(window, "view");
 
-                assertEquals("Applicants", label(window, "listTitle").getText());
+                assertEquals("Found 2 out of 7 applicant(s)", label(window, "listTitle").getText());
                 assertEquals(ViewCommand.MESSAGE_SHOWING_APPLICANTS, feedback(window));
                 assertEquals(List.of(BENSON, DANIEL), model.getFilteredApplicantList());
                 assertApplicantDetails(window, DANIEL);
@@ -832,7 +904,7 @@ public class LinkedOutUiTest {
             assertEquals("1 application", label(window, "applicantCount").getText());
             command(window, "deletep 1");
 
-            assertEquals("Applicants", label(window, "listTitle").getText());
+            assertEquals("Found 2 out of 7 applicant(s)", label(window, "listTitle").getText());
             assertApplicantDetails(window, BENSON);
             assertApplication(window, "No application recorded.", null, null);
             assertEquals(String.format(DeleteApplicationCommand.MESSAGE_SUCCESS,
@@ -1095,11 +1167,16 @@ public class LinkedOutUiTest {
     /** Verifies that a status badge displays its full text within its row. */
     private void assertBadgeFits(Label badge) {
         assertTrue(badge.isVisible());
-        assertTrue(badge.getWidth() >= badge.prefWidth(-1) - 1,
+        assertTrue(badge.getWidth() >= badge.prefWidth(-1) - LAYOUT_TOLERANCE,
                 "Status width " + badge.getWidth() + " vs preferred " + badge.prefWidth(-1));
         Bounds rowBounds = badge.getParent().getLayoutBounds();
-        assertTrue(rowBounds.contains(badge.getBoundsInParent()),
-                "The full status badge should remain inside its row");
+        // Compare layout boxes so a decorative focus glow does not count as clipped content.
+        Bounds badgeBounds = badge.localToParent(badge.getLayoutBounds());
+        assertTrue(badgeBounds.getMinX() >= rowBounds.getMinX() - LAYOUT_TOLERANCE
+                && badgeBounds.getMaxX() <= rowBounds.getMaxX() + LAYOUT_TOLERANCE
+                && badgeBounds.getMinY() >= rowBounds.getMinY() - LAYOUT_TOLERANCE
+                && badgeBounds.getMaxY() <= rowBounds.getMaxY() + LAYOUT_TOLERANCE,
+                "Status layout bounds " + badgeBounds + " exceed row bounds " + rowBounds);
     }
 
     /** Verifies that cards fit the viewport without a horizontal scrollbar. */

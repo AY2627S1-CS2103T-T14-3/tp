@@ -17,7 +17,7 @@ import seedu.address.model.Model;
 import seedu.address.model.application.Job;
 
 /**
- * Replaces the role of a job identified using its displayed index and updates its applications.
+ * Edits a job's role or description using its displayed index and updates its applications.
  */
 public class EditJobCommand extends Command {
 
@@ -25,9 +25,10 @@ public class EditJobCommand extends Command {
 
     public static final String MESSAGE_USAGE = COMMAND_WORD
             + ": Edits the job identified by the index number used in the displayed job list.\n"
-            + "Parameters: INDEX (must be a positive integer) -j JOB_ROLE\n"
-            + "Alias: -job for -j\n"
-            + "Example: " + COMMAND_WORD + " 1 -j Software Engineer Intern";
+            + "Parameters: INDEX (must be a positive integer) [-j JOB_ROLE] [-d JOB_DESCRIPTION]\n"
+            + "At least one field must be provided. Omitted fields keep their existing values.\n"
+            + "Aliases: -job for -j; -desc and -description for -d\n"
+            + "Example: " + COMMAND_WORD + " 1 -j Software Engineer Intern -d Builds software";
 
     public static final String MESSAGE_EDIT_JOB_SUCCESS = "Edited job: %1$s";
     public static final String MESSAGE_DUPLICATE_JOB = "This job already exists in the job list.";
@@ -61,7 +62,7 @@ public class EditJobCommand extends Command {
         }
 
         Job jobToEdit = lastShownList.get(targetIndex.getZeroBased());
-        Job editedJob = createEditedPerson(jobToEdit, editJobDescriptor);
+        Job editedJob = createEditedJob(jobToEdit, editJobDescriptor);
 
         if (!jobToEdit.equals(editedJob) && model.hasJob(editedJob)) {
             throw new CommandException(MESSAGE_DUPLICATE_JOB);
@@ -73,7 +74,10 @@ public class EditJobCommand extends Command {
                 ViewRequest.job(editedJob));
     }
 
-    private static Job createEditedPerson(Job jobToEdit, EditJobDescriptor editJobDescriptor) {
+    /**
+     * Creates a job with the supplied edits, preserving the existing values for omitted fields.
+     */
+    private static Job createEditedJob(Job jobToEdit, EditJobDescriptor editJobDescriptor) {
         assert jobToEdit != null;
 
         String role = editJobDescriptor.getRole().orElse(jobToEdit.getJobRole());
@@ -103,8 +107,8 @@ public class EditJobCommand extends Command {
 
 
     /**
-     * Stores the details to edit the person with. Each non-empty field value will replace the
-     * corresponding field value of the person.
+     * Stores the details to edit the job with. Each non-empty field value will replace the
+     * corresponding field value of the job.
      */
     public static class EditJobDescriptor {
         private String jobRole;

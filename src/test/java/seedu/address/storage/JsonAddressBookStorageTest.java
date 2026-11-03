@@ -64,6 +64,29 @@ public class JsonAddressBookStorageTest {
     }
 
     @Test
+    public void readAddressBook_nullRoot_throwsDataLoadingException() throws Exception {
+        Path filePath = testFolder.resolve("NullAddressBook.json");
+        Files.writeString(filePath, "null");
+
+        assertThrows(DataLoadingException.class, () -> new JsonAddressBookStorage(filePath).readAddressBook());
+        assertEquals("null", Files.readString(filePath));
+    }
+
+    @Test
+    public void readAddressBook_nullRecords_throwsDataLoadingException() throws Exception {
+        Path filePath = testFolder.resolve("NullRecords.json");
+        JsonAddressBookStorage storage = new JsonAddressBookStorage(filePath);
+        for (String field : List.of("applicants", "jobs", "applications")) {
+            String json = "{\"applicants\":[],\"jobs\":[],\"applications\":[]}"
+                    .replace("\"" + field + "\":[]", "\"" + field + "\":[null]");
+            Files.writeString(filePath, json);
+
+            assertThrows(DataLoadingException.class, storage::readAddressBook);
+            assertEquals(json, Files.readString(filePath));
+        }
+    }
+
+    @Test
     public void readAddressBook_trailingJson_throwsDataLoadingException() throws Exception {
         Path filePath = testFolder.resolve("TrailingAddressBook.json");
         JsonAddressBookStorage storage = new JsonAddressBookStorage(filePath);
@@ -109,6 +132,17 @@ public class JsonAddressBookStorageTest {
                 "José Lim", "Jose\u0301 Lim", "Shaun O’Brien", "陈伟")) {
             AddressBook original = new AddressBook();
             original.addApplicant(new ApplicantBuilder().withName(name).build());
+            storage.saveAddressBook(original);
+            assertEquals(original, new AddressBook(storage.readAddressBook().orElseThrow()));
+        }
+    }
+
+    @Test
+    public void readAndSaveAddressBook_internationalPhone_preservesFormatting() throws Exception {
+        JsonAddressBookStorage storage = new JsonAddressBookStorage(testFolder.resolve("phones.json"));
+        for (String phone : List.of("+65 9123 4567", "+1-202-555-0123", "9123-4567")) {
+            AddressBook original = new AddressBook();
+            original.addApplicant(new ApplicantBuilder().withPhone(phone).build());
             storage.saveAddressBook(original);
             assertEquals(original, new AddressBook(storage.readAddressBook().orElseThrow()));
         }

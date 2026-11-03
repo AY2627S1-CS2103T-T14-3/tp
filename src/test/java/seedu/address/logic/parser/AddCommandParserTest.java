@@ -77,6 +77,22 @@ public class AddCommandParserTest {
     }
 
     @Test
+    public void parse_adjacentEmailPunctuation_success() {
+        for (String email : List.of("alice__lee@example.com", "alice++lee@example.com", "alice._lee@example.com")) {
+            Applicant expectedApplicant = new ApplicantBuilder(BOB).withEmail(email).build();
+            assertParseSuccess(parser, NAME_OPTION + PHONE_OPTION + " -e " + email,
+                    new AddCommand(expectedApplicant));
+        }
+    }
+
+    @Test
+    public void parse_invalidEmailPunctuation_failure() {
+        for (String email : List.of("alice+..lee@example.com", "_alice@example.com", "alice+@example.com")) {
+            assertParseFailure(parser, NAME_OPTION + PHONE_OPTION + " -e " + email, Email.MESSAGE_CONSTRAINTS);
+        }
+    }
+
+    @Test
     public void parse_punycodeEmail_success() {
         Applicant expectedApplicant = new ApplicantBuilder(BOB).withEmail("bob@xn--bcher-kva.de").build();
         assertParseSuccess(parser, NAME_OPTION + PHONE_OPTION + " -e bob@xn--bcher-kva.de",
@@ -87,6 +103,23 @@ public class AddCommandParserTest {
     public void parse_longEmail_failure() {
         for (String email : List.of("a.".repeat(2000) + "a@example.com", "a".repeat(20000) + "!")) {
             assertParseFailure(parser, NAME_OPTION + PHONE_OPTION + " -e " + email, Email.MESSAGE_CONSTRAINTS);
+        }
+    }
+
+    @Test
+    public void parse_internationalPhone_success() {
+        for (String phone : List.of("123", "+65 9123 4567", "+1-202-555-0123", "9123-4567")) {
+            Applicant applicant = new ApplicantBuilder(BOB).withPhone(phone).build();
+            for (String option : List.of(" -p ", " -phone ")) {
+                assertParseSuccess(parser, NAME_OPTION + option + phone + EMAIL_OPTION, new AddCommand(applicant));
+            }
+        }
+    }
+
+    @Test
+    public void parse_invalidPhoneLength_failure() {
+        for (String phone : List.of("12", "1234567890123456", "123456789012345678901234567890")) {
+            assertParseFailure(parser, NAME_OPTION + " -p " + phone + EMAIL_OPTION, Phone.MESSAGE_CONSTRAINTS);
         }
     }
 

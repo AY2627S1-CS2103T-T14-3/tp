@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.model.applicant.Applicant;
 import seedu.address.model.application.Application;
@@ -157,7 +158,7 @@ public interface Model {
      * Returns an unmodifiable view of the filtered job list.
      * @return jobs that match the current filter
      */
-    ObservableList<Job> getFilteredJobList();
+    FilteredList<Job> getFilteredJobList();
 
     /**
      * Updates the filter of the filtered job list to filter by the given {@code predicate}.
@@ -166,8 +167,14 @@ public interface Model {
      */
     void updateFilteredJobList(Predicate<Job> predicate);
 
+    /**
+     * Returns an unmodifiable view of the full applicant list.
+     * @return every stored applicant
+     */
+    ObservableList<Applicant> getApplicantList();
+
     /** Returns an unmodifiable view of the filtered applicant list */
-    ObservableList<Applicant> getFilteredApplicantList();
+    FilteredList<Applicant> getFilteredApplicantList();
 
     /**
      * Updates the filter of the filtered applicant list to filter by the given {@code predicate}.

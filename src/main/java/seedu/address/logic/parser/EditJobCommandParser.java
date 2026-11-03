@@ -11,12 +11,12 @@ import seedu.address.logic.commands.EditJobCommand.EditJobDescriptor;
 import seedu.address.logic.parser.exceptions.ParseException;
 
 /**
- * Parses a displayed job index and a replacement role into an EditJobCommand.
+ * Parses a displayed job index and role or description edits into an EditJobCommand.
  */
 public class EditJobCommandParser implements Parser<EditJobCommand> {
 
     /**
-     * Parses a leading job index followed by a required job role.
+     * Parses a leading job index followed by at least one role or description edit.
      *
      * @throws ParseException if the arguments do not conform to the expected format.
      */

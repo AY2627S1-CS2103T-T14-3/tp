@@ -95,6 +95,7 @@ The complete value is copied, including text that wraps onto multiple lines. Emp
   For example, `edit INDEX [-n NAME] [-p PHONE] [-e EMAIL]` can be used as `edit 1 -n John Doe -p 98765432` or as `edit 1 -n John Doe`.
 
 * Surrounding spaces, tabs, and Unicode whitespace such as em spaces are ignored in parameter values.
+  These whitespace characters can also separate an option from its value or from the preceding value.
   Internal text is preserved and must follow the field's validation rules. A required value containing only
   whitespace is treated as missing. Surrounding whitespace is also ignored around the complete command.
   Non-whitespace control characters are rejected.
@@ -130,10 +131,18 @@ The spelling and capitalization you enter are preserved. You can change an appli
 Saved data containing duplicate names or emails, including those differing only in case, is treated as invalid;
 correct the duplicates before loading it.
 
-Email addresses must be at most 254 characters long. Domain labels may contain consecutive hyphens,
+Email addresses must be at most 254 characters long. The local part must start and end with a letter or digit.
+It may contain adjacent supported punctuation (`+`, `_`, `.`, `-`), such as `alice__lee@example.com`,
+but consecutive periods are rejected. Domain labels may contain consecutive hyphens,
 including Punycode names such as `alice@xn--bcher-kva.de`, but must start and end with a letter or digit.
 The length limit also applies when editing applicants and loading saved data; older records exceeding
 it must be corrected before loading.
+
+Phone numbers must contain 3 to 15 digits. An optional leading `+` and single spaces or hyphens
+between digits are accepted, for example `+65 9123 4567` or `+1-202-555-0123`.
+The first digit after `+` must be 1–9; local numbers without `+` may start with `0`. Formatting is preserved
+when displaying and saving the number. These rules also apply to `edit` and loading saved data;
+older records with more than 15 digits must be corrected before loading.
 
 Format: `add -n NAME -p PHONE_NUMBER -e EMAIL`
 
@@ -162,6 +171,7 @@ Examples:
 
 * `add -n John Doe -p 98765432 -e johnd@example.com`
 * `add -name Betsy Crowe -email betsycrowe@example.com -phone 1234567`
+* `add -n Amy Lee -p +65 9123 4567 -e amy@example.com`
 
 ### Listing all applicants: `list`
 

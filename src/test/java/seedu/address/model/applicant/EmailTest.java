@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.testutil.Assert.assertThrows;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 public class EmailTest {
@@ -64,6 +66,28 @@ public class EmailTest {
         assertTrue(Email.isValidEmail("peter_jack@very-very-very-long-example.com")); // long domain name
         assertTrue(Email.isValidEmail("if.you.dream.it_you.can.do.it@example.com")); // long local part
         assertTrue(Email.isValidEmail("e1234567@u.nus.edu")); // more than one period in domain
+    }
+
+    @Test
+    public void isValidEmail_adjacentLocalPunctuation_returnsTrue() {
+        for (String punctuation : List.of("__", "++", "--", "_+", "+-", "._", "_.", "-.-", "_+.-")) {
+            assertTrue(Email.isValidEmail("alice" + punctuation + "lee@example.com"));
+        }
+    }
+
+    @Test
+    public void isValidEmail_invalidLocalPunctuation_returnsFalse() {
+        for (String localPart : List.of("alice..lee", "alice+.._lee", "alice...lee", "+alice", "alice+",
+                "_alice", "alice_", ".alice", "alice.", "-alice", "alice-", "++", "alice!lee")) {
+            assertFalse(Email.isValidEmail(localPart + "@example.com"));
+        }
+    }
+
+    @Test
+    public void isValidEmail_adjacentPunctuationLengthBoundary_expectedResult() {
+        String email = "a" + "+".repeat(240) + "b@example.com";
+        assertTrue(Email.isValidEmail(email)); // 254 characters
+        assertFalse(Email.isValidEmail("a" + email));
     }
 
     @Test

@@ -72,6 +72,9 @@ class JsonSerializableAddressBook {
     public AddressBook toModelType() throws IllegalValueException {
         AddressBook addressBook = new AddressBook();
         for (JsonAdaptedApplicant jsonAdaptedApplicant : applicants) {
+            if (jsonAdaptedApplicant == null) {
+                throw new IllegalValueException("Applicants list contains a null record.");
+            }
             Applicant applicant = jsonAdaptedApplicant.toModelType();
             if (addressBook.hasApplicant(applicant)) {
                 throw new IllegalValueException(MESSAGE_DUPLICATE_APPLICANT);
@@ -79,6 +82,9 @@ class JsonSerializableAddressBook {
             addressBook.addApplicant(applicant);
         }
         for (JsonAdaptedJob jsonAdaptedJob : jobs) {
+            if (jsonAdaptedJob == null) {
+                throw new IllegalValueException("Jobs list contains a null record.");
+            }
             Job job = jsonAdaptedJob.toModelType(addressBook);
             if (addressBook.hasJob(job)) {
                 throw new IllegalValueException(MESSAGE_DUPLICATE_JOB);
@@ -86,6 +92,9 @@ class JsonSerializableAddressBook {
             addressBook.addJob(job);
         }
         for (JsonAdaptedApplication jsonAdaptedApplication : applications) {
+            if (jsonAdaptedApplication == null) {
+                throw new IllegalValueException("Applications list contains a null record.");
+            }
             Application application = jsonAdaptedApplication.toModelType(addressBook);
             if (addressBook.hasApplication(application.getApplicant())) {
                 throw new IllegalValueException(MESSAGE_DUPLICATE_APPLICATION);

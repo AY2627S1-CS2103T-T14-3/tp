@@ -101,6 +101,21 @@ public class EditCommandParserTest {
     }
 
     @Test
+    public void parse_adjacentEmailPunctuation_success() {
+        for (String email : List.of("carol__lee@example.com", "carol++lee@example.com", "carol._lee@example.com")) {
+            EditApplicantDescriptor descriptor = new EditApplicantDescriptorBuilder().withEmail(email).build();
+            assertParseSuccess(parser, "1 -e " + email, new EditCommand(INDEX_FIRST, descriptor));
+        }
+    }
+
+    @Test
+    public void parse_invalidEmailPunctuation_failure() {
+        for (String email : List.of("carol+..lee@example.com", "_carol@example.com", "carol+@example.com")) {
+            assertParseFailure(parser, "1 -e " + email, Email.MESSAGE_CONSTRAINTS);
+        }
+    }
+
+    @Test
     public void parse_punycodeEmail_success() {
         EditApplicantDescriptor descriptor = new EditApplicantDescriptorBuilder()
                 .withEmail("amy@xn--bcher-kva.de").build();
@@ -111,6 +126,23 @@ public class EditCommandParserTest {
     public void parse_longEmail_failure() {
         for (String email : List.of("a.".repeat(2000) + "a@example.com", "a".repeat(20000) + "!")) {
             assertParseFailure(parser, "1 -e " + email, Email.MESSAGE_CONSTRAINTS);
+        }
+    }
+
+    @Test
+    public void parse_internationalPhone_success() {
+        for (String phone : List.of("123", "+65 9123 4567", "+1-202-555-0123", "9123-4567")) {
+            EditApplicantDescriptor descriptor = new EditApplicantDescriptorBuilder().withPhone(phone).build();
+            for (String option : List.of(" -p ", " -phone ")) {
+                assertParseSuccess(parser, "1" + option + phone, new EditCommand(INDEX_FIRST, descriptor));
+            }
+        }
+    }
+
+    @Test
+    public void parse_invalidPhoneLength_failure() {
+        for (String phone : List.of("12", "1234567890123456", "123456789012345678901234567890")) {
+            assertParseFailure(parser, "1 -p " + phone, Phone.MESSAGE_CONSTRAINTS);
         }
     }
 

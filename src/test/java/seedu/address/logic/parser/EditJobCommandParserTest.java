@@ -1,5 +1,7 @@
 package seedu.address.logic.parser;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseFailure;
 import static seedu.address.logic.parser.CommandParserTestUtil.assertParseSuccess;
@@ -10,6 +12,7 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 import seedu.address.logic.commands.EditJobCommand;
+import seedu.address.logic.parser.exceptions.ParseException;
 import seedu.address.testutil.EditJobDescriptorBuilder;
 
 /**
@@ -18,6 +21,18 @@ import seedu.address.testutil.EditJobDescriptorBuilder;
 public class EditJobCommandParserTest {
 
     private final EditJobCommandParser parser = new EditJobCommandParser();
+
+    @Test
+    public void parse_missingDescriptionValue_errorExplainsSupportedEdits() {
+        ParseException exception = assertThrows(ParseException.class, () -> parser.parse("1 -d"));
+        String message = exception.getMessage();
+
+        assertTrue(message.contains("[-j JOB_ROLE] [-d JOB_DESCRIPTION]"));
+        assertTrue(message.contains("At least one field must be provided."));
+        assertTrue(message.contains("Omitted fields keep their existing values."));
+        assertTrue(message.contains("-job for -j"));
+        assertTrue(message.contains("-desc and -description for -d"));
+    }
 
     @Test
     public void parse_validRole_returnsEditJobCommand() {

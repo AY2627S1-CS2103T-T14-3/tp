@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static seedu.address.testutil.Assert.assertThrows;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
@@ -31,6 +32,25 @@ public class JsonUserPrefsStorageTest {
     private Optional<UserPrefs> readUserPrefs(String userPrefsFileInTestDataFolder) throws DataLoadingException {
         Path prefsFilePath = addToTestDataPathIfNotNull(userPrefsFileInTestDataFolder);
         return new JsonUserPrefsStorage(prefsFilePath).readUserPrefs(prefsFilePath);
+    }
+
+    @Test
+    public void readUserPrefs_nullRoot_throwsDataLoadingException() throws Exception {
+        Path filePath = testFolder.resolve("NullPrefs.json");
+        Files.writeString(filePath, "null");
+
+        assertThrows(DataLoadingException.class, () -> new JsonUserPrefsStorage(filePath).readUserPrefs());
+        assertEquals("null", Files.readString(filePath));
+    }
+
+    @Test
+    public void readUserPrefs_nullGuiSettings_throwsDataLoadingException() throws Exception {
+        Path filePath = testFolder.resolve("NullGuiSettings.json");
+        String json = "{\"guiSettings\":null}";
+        Files.writeString(filePath, json);
+
+        assertThrows(DataLoadingException.class, () -> new JsonUserPrefsStorage(filePath).readUserPrefs());
+        assertEquals(json, Files.readString(filePath));
     }
 
     @Test

@@ -91,7 +91,7 @@ public class EditCommand extends Command {
      * edited with {@code editApplicantDescriptor}.
      */
     private static Applicant createEditedApplicant(Applicant applicantToEdit,
-                                                   EditApplicantDescriptor editApplicantDescriptor) {
+            EditApplicantDescriptor editApplicantDescriptor) {
         assert applicantToEdit != null;
 
         Name updatedName = editApplicantDescriptor.getName().orElse(applicantToEdit.getName());

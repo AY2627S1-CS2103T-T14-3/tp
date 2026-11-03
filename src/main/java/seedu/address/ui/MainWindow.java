@@ -1,11 +1,13 @@
 package seedu.address.ui;
 
 import java.nio.file.Path;
+import java.util.function.Predicate;
 import java.util.logging.Logger;
 
 import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -31,8 +33,12 @@ import seedu.address.logic.commands.ViewSelection;
 import seedu.address.logic.commands.ViewType;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.exceptions.ParseException;
+import seedu.address.model.Model;
 import seedu.address.model.applicant.Applicant;
+import seedu.address.model.applicant.NameContainsKeywordsPredicate;
 import seedu.address.model.application.Application;
+import seedu.address.model.application.Job;
+import seedu.address.model.application.JobDescriptionContainsKeywordPredicate;
 
 /** The main window containing the command console and list views. */
 public class MainWindow extends UiPart<Stage> {
@@ -161,6 +167,10 @@ public class MainWindow extends UiPart<Stage> {
                 refreshSelectedDetails());
         logic.getApplicationList().addListener((ListChangeListener<Application>) change ->
                 refreshSelectedDetails());
+        logic.getFilteredApplicantList().addListener((ListChangeListener<Applicant>) change ->
+                refreshListDetails());
+        logic.getFilteredJobList().addListener((ListChangeListener<Job>) change ->
+                refreshListDetails());
 
         showView(ViewType.APPLICANTS);
 
@@ -233,17 +243,43 @@ public class MainWindow extends UiPart<Stage> {
     }
 
     private void showApplicantsView() {
-        listTitle.setText("Applicants");
-        listHint.setText("Use the up and down arrows to select an applicant.");
+        FilteredList<Applicant> applicantFilteredList = logic.getFilteredApplicantList();
+        int totalApplicants = logic.getApplicantList().size();
+        Predicate<? super Applicant> applicantPredicate = applicantFilteredList.getPredicate();
+
+        if (applicantPredicate == null
+                || applicantPredicate.equals(Model.PREDICATE_SHOW_ALL_APPLICANTS)
+                || NameContainsKeywordsPredicate.getKeywords(applicantPredicate) == null) {
+            listTitle.setText("Applicants");
+            listHint.setText("Use the up and down arrows to select an applicant.");
+        } else {
+            listTitle.setText(String.format("Found %d out of %d applicant(s)",
+                    applicantFilteredList.size(), totalApplicants));
+            listHint.setText(String.format("Filtered with keyword(s): %s",
+                    NameContainsKeywordsPredicate.getKeywords(applicantPredicate)));
+        }
         consoleHint.setText(APPLICANT_HINT);
         viewListPlaceholder.getChildren().setAll(applicantListPanel.getRoot());
         applicantDetailPlaceholder.getChildren().setAll(applicantDetailPanel.getRoot());
-        bindCount(logic.getFilteredApplicantList(), "applicant", "applicants");
+        bindCount(applicantFilteredList, "applicant", "applicants");
     }
 
     private void showApplicationsView() {
-        listTitle.setText("Applications");
-        listHint.setText("Use the up and down arrows to select an application.");
+        FilteredList<Applicant> applicantFilteredList = logic.getFilteredApplicantList();
+        int totalApplicants = logic.getApplicantList().size();
+        Predicate<? super Applicant> applicantPredicate = applicantFilteredList.getPredicate();
+
+        if (applicantPredicate == null
+                || applicantPredicate.equals(Model.PREDICATE_SHOW_ALL_APPLICANTS)
+                || NameContainsKeywordsPredicate.getKeywords(applicantPredicate) == null) {
+            listTitle.setText("Applications");
+            listHint.setText("Use the up and down arrows to select an application.");
+        } else {
+            listTitle.setText(String.format("From %d out of %d applicant(s)",
+                    applicantFilteredList.size(), totalApplicants));
+            listHint.setText(String.format("Filtered with keyword(s): %s",
+                    NameContainsKeywordsPredicate.getKeywords(applicantPredicate)));
+        }
         consoleHint.setText(APPLICATION_HINT);
         viewListPlaceholder.getChildren().setAll(applicationListPanel.getRoot());
         applicantDetailPlaceholder.getChildren().setAll(applicantDetailPanel.getRoot());
@@ -251,8 +287,21 @@ public class MainWindow extends UiPart<Stage> {
     }
 
     private void showJobsView() {
-        listTitle.setText("Jobs");
-        listHint.setText("Use the up and down arrows to select a job.");
+        FilteredList<Job> jobFilteredList = logic.getFilteredJobList();
+        int totalJobs = logic.getJobList().size();
+        Predicate<? super Job> jobPredicate = jobFilteredList.getPredicate();
+
+        if (jobPredicate == null
+                || jobPredicate.equals(Model.PREDICATE_SHOW_ALL_JOBS)
+                || JobDescriptionContainsKeywordPredicate.getKeywords(jobPredicate) == null) {
+            listTitle.setText("Jobs");
+            listHint.setText("Use the up and down arrows to select a job.");
+        } else {
+            listTitle.setText(String.format("Found %d out of %d job(s)",
+                    jobFilteredList.size(), totalJobs));
+            listHint.setText(String.format("Filtered with keyword: %s",
+                    JobDescriptionContainsKeywordPredicate.getKeywords(jobPredicate)));
+        }
         consoleHint.setText(JOB_HINT);
         viewListPlaceholder.getChildren().setAll(jobListPanel.getRoot());
         applicantDetailPlaceholder.getChildren().setAll(jobDetailPanel.getRoot());
@@ -273,6 +322,15 @@ public class MainWindow extends UiPart<Stage> {
             case APPLICANTS -> showSelectedApplicant();
             case APPLICATIONS -> showSelectedApplication();
             case JOBS -> showSelectedJob();
+            default -> throw new IllegalStateException("Unexpected view type: " + currentView);
+        }
+    }
+
+    private void refreshListDetails() {
+        switch (currentView) {
+            case APPLICANTS -> showApplicantsView();
+            case APPLICATIONS -> showApplicationsView();
+            case JOBS -> showJobsView();
             default -> throw new IllegalStateException("Unexpected view type: " + currentView);
         }
     }
@@ -318,6 +376,7 @@ public class MainWindow extends UiPart<Stage> {
             primaryStage.setX(guiSettings.getWindowCoordinates().getX());
             primaryStage.setY(guiSettings.getWindowCoordinates().getY());
         }
+        listTitle.setPrefWidth(0);
     }
 
     /** Opens the help window or focuses on it if it is already open. */

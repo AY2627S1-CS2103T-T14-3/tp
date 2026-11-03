@@ -61,7 +61,8 @@ public class ApplicantDetailPanel extends UiPart<Region> {
 
         applicantName.setText(applicant.getName().fullName);
         initials.setText(Stream.of(applicant.getName().fullName.split("\\s+"))
-                .limit(2).map(word -> word.substring(0, 1).toUpperCase(java.util.Locale.ROOT))
+                .limit(2).map(word -> word.substring(0, word.offsetByCodePoints(0, 1))
+                        .toUpperCase(java.util.Locale.ROOT))
                 .collect(Collectors.joining()));
         selectionHint.setText("Applicant contact information");
         email.setText(applicant.getEmail().value);
@@ -72,11 +73,11 @@ public class ApplicantDetailPanel extends UiPart<Region> {
     /**
      * Displays a deleted applicant's former details with an explicit deletion label.
      *
-     * @param person the deleted applicant.
+     * @param applicant the deleted applicant.
      * @param application the former application, or null when none was recorded.
      */
-    public void showDeletedApplicant(Applicant person, Application application) {
-        showApplicant(person, application);
+    public void showDeletedApplicant(Applicant applicant, Application application) {
+        showApplicant(applicant, application);
         selectionHint.setText("Deleted applicant. These details are no longer stored.");
     }
 

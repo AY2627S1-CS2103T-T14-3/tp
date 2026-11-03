@@ -28,6 +28,13 @@ public class JobDescriptionContainsKeywordPredicate implements Predicate<Job> {
         return job.toString().toLowerCase(Locale.ROOT).contains(keyword.toLowerCase(Locale.ROOT));
     }
 
+    public static String getKeywords(Predicate<? super Job> predicate) {
+        if (predicate instanceof JobDescriptionContainsKeywordPredicate keywordsPredicate) {
+            return keywordsPredicate.keyword;
+        }
+        return null;
+    }
+
     @Override
     public boolean equals(Object other) {
         if (other == this) {

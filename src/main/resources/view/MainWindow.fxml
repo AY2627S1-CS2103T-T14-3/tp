@@ -12,9 +12,9 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.stage.Stage?>
 
-<fx:root type="javafx.stage.Stage" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-         title="LinkedOut" minWidth="900" minHeight="680" onCloseRequest="#handleExit">
+<fx:root minHeight="680" minWidth="900" onCloseRequest="#handleExit" title="LinkedOut" type="javafx.stage.Stage" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
   <scene>
     <Scene>
       <stylesheets>
@@ -30,39 +30,37 @@
           </Menu>
         </MenuBar>
         <HBox alignment="CENTER_LEFT" spacing="14" styleClass="brand-header">
-          <Label text="LO" styleClass="brand-mark" />
+          <Label styleClass="brand-mark" text="LO" />
           <VBox spacing="3">
-            <Label text="LinkedOut" styleClass="brand-title" />
-            <Label text="Your next great hire starts here." styleClass="muted-label" />
+            <Label styleClass="brand-title" text="LinkedOut" />
+            <Label styleClass="muted-label" text="Your next great hire starts here." />
           </VBox>
         </HBox>
-        <SplitPane dividerPositions="0.65" VBox.vgrow="ALWAYS" styleClass="workspace-split">
+        <SplitPane dividerPositions="0.65" styleClass="workspace-split" VBox.vgrow="ALWAYS">
           <items>
-            <VBox spacing="16" minWidth="450" styleClass="left-column">
+            <VBox minWidth="450" spacing="16" styleClass="left-column">
               <VBox spacing="10" styleClass="panel,console-panel">
-                <Label text="Command console" styleClass="section-title" />
-                <Label fx:id="consoleHint" text="Find and manage applicants using commands."
-                       styleClass="muted-label" wrapText="true" />
+                <Label styleClass="section-title" text="Command console" />
+                <Label fx:id="consoleHint" styleClass="muted-label" text="Find and manage applicants using commands." wrapText="true" />
                 <StackPane fx:id="commandBoxPlaceholder" />
-                <Label text="Command feedback" styleClass="field-heading" />
-                <StackPane fx:id="resultDisplayPlaceholder" minHeight="65" prefHeight="80" maxHeight="80" />
+                <Label styleClass="field-heading" text="Command feedback" />
+                <StackPane fx:id="resultDisplayPlaceholder" maxHeight="80" minHeight="65" prefHeight="80" />
               </VBox>
               <StackPane fx:id="applicantDetailPlaceholder" VBox.vgrow="ALWAYS" />
             </VBox>
-            <VBox spacing="12" minWidth="280" styleClass="panel,applicant-list-panel">
+            <VBox minWidth="280" spacing="12" styleClass="panel,applicant-list-panel">
               <fx:define><ToggleGroup fx:id="viewToggleGroup" /></fx:define>
               <HBox alignment="CENTER_LEFT" spacing="10">
-                <Label fx:id="listTitle" text="Applicants" styleClass="section-title"
-                       HBox.hgrow="ALWAYS" maxWidth="Infinity" />
+                <Label fx:id="listTitle" maxWidth="Infinity" styleClass="section-title" text="Applicants" HBox.hgrow="ALWAYS" />
                 <Label fx:id="applicantCount" styleClass="count-badge" />
               </HBox>
               <HBox alignment="CENTER_LEFT" spacing="8">
-                <ToggleButton fx:id="applicantsTab" text="Applicants" styleClass="view-tab"
-                              selected="true" toggleGroup="$viewToggleGroup" />
-                <ToggleButton fx:id="applicationsTab" text="Applications" styleClass="view-tab"
-                              toggleGroup="$viewToggleGroup" />
-                <ToggleButton fx:id="jobsTab" text="Jobs" styleClass="view-tab"
-                              toggleGroup="$viewToggleGroup" />
+                <ToggleButton fx:id="applicantsTab" selected="true" styleClass="view-tab" text="Applicants">
+                           <toggleGroup>
+                              <ToggleGroup fx:id="viewToggleGroup" />
+                           </toggleGroup></ToggleButton>
+                <ToggleButton fx:id="applicationsTab" styleClass="view-tab" text="Applications" toggleGroup="$viewToggleGroup" />
+                <ToggleButton fx:id="jobsTab" styleClass="view-tab" text="Jobs" toggleGroup="$viewToggleGroup" />
               </HBox>
               <Label fx:id="listHint" text="Use the up and down arrows to select an applicant."
                      styleClass="muted-label" wrapText="true" />
