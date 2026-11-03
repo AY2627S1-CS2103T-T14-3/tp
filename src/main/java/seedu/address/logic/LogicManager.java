@@ -50,20 +50,21 @@ public class LogicManager implements Logic {
      * {@inheritDoc}
      * Remembers the records from before a command that changes them.
      * An undo command is not remembered, so the next undo steps further back.
+     * Saves only after a command that changes stored records.
      */
     @Override
     public CommandResult execute(String commandText) throws CommandException, ParseException {
         logger.info("----------------[USER COMMAND][" + commandText + "]");
 
         Command command = addressBookParser.parseCommand(commandText);
-        ReadOnlyAddressBook stateBeforeCommand = null;
-        if (!(command instanceof UndoCommand)) {
-            stateBeforeCommand = new AddressBook(model.getAddressBook());
-        }
+        ReadOnlyAddressBook stateBeforeCommand = new AddressBook(model.getAddressBook());
         CommandResult commandResult = command.execute(model);
-        if (stateBeforeCommand != null
-                && storedRecordsChanged(stateBeforeCommand, model.getAddressBook())) {
+        boolean recordsChanged = storedRecordsChanged(stateBeforeCommand, model.getAddressBook());
+        if (!(command instanceof UndoCommand) && recordsChanged) {
             model.rememberStateForUndo(stateBeforeCommand);
+        }
+        if (!recordsChanged) {
+            return commandResult;
         }
 
         try {

@@ -24,9 +24,11 @@ import seedu.address.logic.commands.DeleteApplicationCommand;
 import seedu.address.logic.commands.DeleteJobCommand;
 import seedu.address.logic.commands.EditCommand;
 import seedu.address.logic.commands.EditJobCommand;
+import seedu.address.logic.commands.HelpCommand;
 import seedu.address.logic.commands.ListCommand;
 import seedu.address.logic.commands.UndoCommand;
 import seedu.address.logic.commands.ViewApplicationCommand;
+import seedu.address.logic.commands.ViewJobCommand;
 import seedu.address.logic.commands.ViewRequest;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.exceptions.ParseException;
@@ -91,6 +93,9 @@ public class LogicManagerTest {
         assertEquals(UndoCommand.MESSAGE_SUCCESS, undoApplicant.getFeedbackToUser());
         assertEquals("Amy Bee", model.getFilteredApplicantList().get(0).getName().fullName);
         assertEquals(1, model.getJobList().size());
+        JsonAddressBookStorage savedStorage =
+                new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
+        assertEquals(model.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
 
         logic.execute("deletej 1");
         assertEquals(0, model.getJobList().size());
@@ -441,14 +446,26 @@ public class LogicManagerTest {
     }
 
     @Test
-    public void execute_bye_savesDataBeforeRequestingExit() throws Exception {
-        model.addApplicant(AMY);
-
-        assertEquals(new CommandResult("", false, true), logic.execute("bye"));
-
+    public void execute_unchangedCommands_doNotRequireSave() throws Exception {
+        logic.execute(ApplicantUtil.getAddCommand(AMY));
         JsonAddressBookStorage savedStorage =
                 new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
-        assertEquals(model.getAddressBook(), savedStorage.readAddressBook().orElseThrow());
+        ReadOnlyAddressBook saved = savedStorage.readAddressBook().orElseThrow();
+
+        JsonAddressBookStorage throwingStorage = new JsonAddressBookStorage(
+                temporaryFolder.resolve("unused.json")) {
+            @Override
+            public void saveAddressBook(ReadOnlyAddressBook addressBook) throws IOException {
+                throw DUMMY_AD_EXCEPTION;
+            }
+        };
+        logic = new LogicManager(model, new StorageManager(throwingStorage,
+                new JsonUserPrefsStorage(temporaryFolder.resolve("ExceptionUserPrefs.json"))));
+
+        assertEquals(new CommandResult(HelpCommand.SHOWING_HELP_MESSAGE, true, false), logic.execute("help"));
+        assertEquals(new CommandResult(ViewJobCommand.MESSAGE_SUCCESS, ViewRequest.jobs()), logic.execute("viewj"));
+        assertEquals(new CommandResult("", false, true), logic.execute("bye"));
+        assertEquals(saved, savedStorage.readAddressBook().orElseThrow());
     }
 
     @Test
