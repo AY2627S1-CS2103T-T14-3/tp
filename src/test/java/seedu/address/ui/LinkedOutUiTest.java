@@ -662,8 +662,12 @@ public class LinkedOutUiTest {
             pulse(window);
             pressArrowOn(window, details, KeyCode.DOWN);
             assertEquals("Software Engineer", label(window, "jobName").getText());
-            // Scene focus ownership does not depend on the operating system activating the test window.
-            assertSame(details, window.getRoot().getScene().getFocusOwner());
+            // JavaFX may move focus to a copyable value inside the detail pane.
+            Node focusOwner = window.getRoot().getScene().getFocusOwner();
+            while (focusOwner != null && focusOwner != details) {
+                focusOwner = focusOwner.getParent();
+            }
+            assertSame(details, focusOwner);
             assertTrue(details.getVvalue() > 0);
         });
     }
