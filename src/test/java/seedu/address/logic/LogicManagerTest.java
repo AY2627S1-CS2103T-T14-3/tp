@@ -446,6 +446,66 @@ public class LogicManagerTest {
     }
 
     @Test
+    public void execute_saveFailure_retryPersistsEditedPhone() throws Exception {
+        logic.execute("add -n Amy Bee -p 11111111 -e amy@example.com");
+        JsonAddressBookStorage savedStorage =
+                new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
+        String originalPhone = savedStorage.readAddressBook().orElseThrow()
+                .getApplicantList().get(0).getPhone().value;
+        boolean[] failNextSave = {true};
+        JsonAddressBookStorage flakyStorage = new JsonAddressBookStorage(
+                temporaryFolder.resolve("addressBook.json")) {
+            @Override
+            public void saveAddressBook(ReadOnlyAddressBook addressBook) throws IOException {
+                if (failNextSave[0]) {
+                    failNextSave[0] = false;
+                    throw DUMMY_AD_EXCEPTION;
+                }
+                super.saveAddressBook(addressBook);
+            }
+        };
+        logic = new LogicManager(model, new StorageManager(flakyStorage,
+                new JsonUserPrefsStorage(temporaryFolder.resolve("ExceptionUserPrefs.json"))));
+
+        String editCommand = "edit 1 -p 99999999";
+        assertThrows(CommandException.class, String.format(LogicManager.FILE_OPS_PERMISSION_ERROR_FORMAT,
+                DUMMY_AD_EXCEPTION.getMessage()), () -> logic.execute(editCommand));
+        assertEquals("99999999", model.getFilteredApplicantList().get(0).getPhone().value);
+        assertEquals(originalPhone, savedStorage.readAddressBook().orElseThrow()
+                .getApplicantList().get(0).getPhone().value);
+
+        logic.execute(editCommand);
+        assertEquals("99999999", savedStorage.readAddressBook().orElseThrow()
+                .getApplicantList().get(0).getPhone().value);
+    }
+
+    @Test
+    public void execute_saveFailure_byePersistsEditedPhone() throws Exception {
+        logic.execute("add -n Amy Bee -p 11111111 -e amy@example.com");
+        boolean[] failNextSave = {true};
+        JsonAddressBookStorage flakyStorage = new JsonAddressBookStorage(
+                temporaryFolder.resolve("addressBook.json")) {
+            @Override
+            public void saveAddressBook(ReadOnlyAddressBook addressBook) throws IOException {
+                if (failNextSave[0]) {
+                    failNextSave[0] = false;
+                    throw DUMMY_AD_EXCEPTION;
+                }
+                super.saveAddressBook(addressBook);
+            }
+        };
+        logic = new LogicManager(model, new StorageManager(flakyStorage,
+                new JsonUserPrefsStorage(temporaryFolder.resolve("ExceptionUserPrefs.json"))));
+
+        assertThrows(CommandException.class, () -> logic.execute("edit 1 -p 99999999"));
+        assertEquals(new CommandResult("", false, true), logic.execute("bye"));
+        JsonAddressBookStorage savedStorage =
+                new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
+        assertEquals("99999999", savedStorage.readAddressBook().orElseThrow()
+                .getApplicantList().get(0).getPhone().value);
+    }
+
+    @Test
     public void execute_unchangedCommands_doNotRequireSave() throws Exception {
         logic.execute(ApplicantUtil.getAddCommand(AMY));
         JsonAddressBookStorage savedStorage =

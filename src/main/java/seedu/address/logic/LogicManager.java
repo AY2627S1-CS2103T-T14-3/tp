@@ -37,6 +37,9 @@ public class LogicManager implements Logic {
     private final Storage storage;
     private final AddressBookParser addressBookParser;
 
+    /** Records are in memory but have not been written. */
+    private boolean hasUnsavedChanges;
+
     /**
      * Constructs a {@code LogicManager} with the given {@code Model} and {@code Storage}.
      */
@@ -50,7 +53,7 @@ public class LogicManager implements Logic {
      * {@inheritDoc}
      * Remembers the records from before a command that changes them.
      * An undo command is not remembered, so the next undo steps further back.
-     * Saves only after a command that changes stored records.
+     * Saves after stored records change. A failed save is written on a later command.
      */
     @Override
     public CommandResult execute(String commandText) throws CommandException, ParseException {
@@ -63,9 +66,10 @@ public class LogicManager implements Logic {
         if (!(command instanceof UndoCommand) && recordsChanged) {
             model.rememberStateForUndo(stateBeforeCommand);
         }
-        if (!recordsChanged) {
+        if (!recordsChanged && !hasUnsavedChanges) {
             return commandResult;
         }
+        hasUnsavedChanges = true;
 
         try {
             storage.saveAddressBook(model.getAddressBook());
@@ -74,6 +78,7 @@ public class LogicManager implements Logic {
         } catch (IOException ioe) {
             throw new CommandException(String.format(FILE_OPS_ERROR_FORMAT, ioe.getMessage()), ioe);
         }
+        hasUnsavedChanges = false;
 
         return commandResult;
     }
