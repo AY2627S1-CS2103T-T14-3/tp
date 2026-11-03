@@ -76,6 +76,15 @@ public class AddressBookParserTest {
     }
 
     @Test
+    public void parseCommand_unicodeSeparators_keepsCommandAndRole() throws Exception {
+        assertEquals(new ViewCommand(INDEX_FIRST), parser.parseCommand("view\u20031"));
+        assertEquals(new SetApplicationStatusCommand(INDEX_FIRST, Application.Status.ACCEPT),
+                parser.parseCommand("set 1\u2003-s accept"));
+        assertEquals(new AddJobCommand(new Job("Data\u2028Analyst")),
+                parser.parseCommand("addj -j Data\u2028Analyst"));
+    }
+
+    @Test
     public void parseCommand_view() throws Exception {
         assertEquals(new ViewCommand(INDEX_FIRST), parser.parseCommand("view 1"));
         assertEquals(new ViewCommand(INDEX_FIRST), parser.parseCommand("  view   1  "));

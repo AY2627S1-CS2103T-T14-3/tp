@@ -110,6 +110,7 @@ public class LinkedOutUiTest {
                     "\uD840\uDC00 \uD840\uDC01 Third", "\uD840\uDC00\uD840\uDC01",
                     "\uD801\uDC28 Engineer Third", "\uD801\uDC00E",
                     "Software Engineer Intern", "SE",
+                    "Software\u2003Engineer", "SE",
                     "\uD840\uDC00", "\uD840\uDC00").entrySet()) {
                 model.addJob(new Job(entry.getKey()));
                 command(window, "viewj " + model.getFilteredJobList().size());

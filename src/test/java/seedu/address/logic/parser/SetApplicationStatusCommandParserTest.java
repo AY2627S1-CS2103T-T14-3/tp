@@ -20,6 +20,7 @@ public class SetApplicationStatusCommandParserTest {
         SetApplicationStatusCommand expected = new SetApplicationStatusCommand(
                 INDEX_SECOND, Application.Status.ACCEPT);
         assertParseSuccess(parser, " 2 -s accept", expected);
+        assertParseSuccess(parser, " 2\u2003-s accept", expected);
         assertParseSuccess(parser, " 2 -status accept", expected);
     }
 
