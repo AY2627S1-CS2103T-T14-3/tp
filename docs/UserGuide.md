@@ -157,7 +157,9 @@ Email | `-e` | `-email`
 * Names must start with a Unicode letter or digit. They can contain Unicode letters (including combining accents), digits, spaces, apostrophes (`'` or `’`), hyphens (`-`), periods (`.`), and slashes (`/`). These rules also apply to `edit`.
 * Unknown options, repeated options (including different aliases for the same field), missing values, and text before the first option produce a format error with a usage hint.
 * The applicant list is shown and the new applicant is selected.
-* Standalone words such as `-unknown` are treated as options, even inside a value.
+* Standalone words such as `-unknown` are treated as options, even inside a value. Options are case-sensitive;
+  uppercase or mixed-case option-like words such as `-D` and `-Description` are rejected. This rule also
+  applies to job roles and descriptions; embedded hyphens such as `Senior-Engineer` remain part of the value.
 * The legacy `add n/NAME p/PHONE_NUMBER e/EMAIL` format is no longer accepted.
 
 Examples:

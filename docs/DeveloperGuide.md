@@ -294,7 +294,9 @@ applicants, applications, and jobs, and requests the applicants view. `LogicMana
 
 Flag support is provided by the tokenizer and covered by its tests; the shared options in `CliSyntax` use the
 required and optional kinds. The tokenizer trims surrounding whitespace from values and accepts options in any order.
-It recognises lowercase, hyphen-prefixed option tokens separated by whitespace, such as `-n`, `-name`, or `-job`.
+It recognizes alphabetic, hyphen-prefixed option-like tokens separated by whitespace, such as `-n`, `-name`, or `-job`.
+Alias lookup is case-sensitive: uppercase or mixed-case tokens such as `-D` and `-Description` are rejected
+as unsupported options rather than stored as part of a value.
 An embedded hyphen, such as the one in `alice-tan@example.com`, does not start an option.
 
 #### Example: adding an applicant

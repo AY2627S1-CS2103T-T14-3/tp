@@ -31,8 +31,9 @@ public class ArgumentTokenizer {
     public static final boolean HAS_PREAMBLE = true;
     public static final boolean NO_PREAMBLE = false;
 
-    /** A whitespace-delimited token which looks like an option under the command grammar. */
-    private static final Pattern OPTION_TOKEN = Pattern.compile("(?<!\\S)(-[a-z]+(?:-[a-z]++)*+)(?=\\s|$)");
+    /** Recognizes option-like tokens in either case; alias lookup remains case-sensitive. */
+    private static final Pattern OPTION_TOKEN = Pattern.compile("(?<!\\S)(-[a-z]+(?:-[a-z]++)*+)(?=\\s|$)",
+            Pattern.CASE_INSENSITIVE);
 
     /**
      * Strictly tokenizes hyphen-prefixed command options according to {@code options}.
