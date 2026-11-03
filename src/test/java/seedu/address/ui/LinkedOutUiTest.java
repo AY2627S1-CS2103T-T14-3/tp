@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assumptions.assumeFalse;
 import static seedu.address.logic.Messages.MESSAGE_INVALID_COMMAND_FORMAT;
@@ -702,7 +703,12 @@ public class LinkedOutUiTest {
             pulse(window);
             pressArrowOn(window, details, KeyCode.DOWN);
             assertEquals("Software Engineer", label(window, "jobName").getText());
-            assertTrue(details.isFocused());
+            // JavaFX may move focus to a copyable value inside the detail pane.
+            Node focusOwner = window.getRoot().getScene().getFocusOwner();
+            while (focusOwner != null && focusOwner != details) {
+                focusOwner = focusOwner.getParent();
+            }
+            assertSame(details, focusOwner);
             assertTrue(details.getVvalue() > 0);
         });
     }
