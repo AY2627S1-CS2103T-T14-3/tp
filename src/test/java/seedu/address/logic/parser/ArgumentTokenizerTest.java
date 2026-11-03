@@ -45,6 +45,22 @@ public class ArgumentTokenizerTest {
     }
 
     @Test
+    public void tokenizeOptions_uppercaseOptionLikeTokens_throwsParseException() {
+        for (String option : List.of("-N", "-Name", "-UNKNOWN", "-Unknown-Option")) {
+            assertMalformedOptions("-n John " + option + " value", nameOption);
+            assertMalformedOptions(option + " value -n John", nameOption);
+        }
+    }
+
+    @Test
+    public void tokenizeOptions_embeddedUppercaseHyphens_preservesValue() throws ParseException {
+        for (String value : List.of("Senior-Engineer", "C++-Developer", "Release-ABC", "word-D")) {
+            ArgumentMultimap options = ArgumentTokenizer.tokenizeOptions("-n " + value, NO_PREAMBLE, nameOption);
+            assertArgumentPresent(options, nameOption, value);
+        }
+    }
+
+    @Test
     public void tokenizeOptions_unicodePadding_stripsValuesAndPreamble() throws ParseException {
         ArgumentMultimap options = ArgumentTokenizer.tokenizeOptions(
                 "\u2003 2\u2009 -n \u2003John  Doe\u2009 -e \u3000john@example.com\u2003",

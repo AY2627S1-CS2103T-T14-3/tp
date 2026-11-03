@@ -10,6 +10,7 @@ import static seedu.address.testutil.TypicalApplicants.AMY;
 
 import java.io.IOException;
 import java.nio.file.AccessDeniedException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -19,6 +20,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import seedu.address.logic.commands.AddApplicationCommand;
 import seedu.address.logic.commands.AddCommand;
+import seedu.address.logic.commands.AddJobCommand;
 import seedu.address.logic.commands.CommandResult;
 import seedu.address.logic.commands.DeleteApplicationCommand;
 import seedu.address.logic.commands.DeleteJobCommand;
@@ -60,6 +62,22 @@ public class LogicManagerTest {
         JsonUserPrefsStorage userPrefsStorage = new JsonUserPrefsStorage(temporaryFolder.resolve("userPrefs.json"));
         StorageManager storage = new StorageManager(addressBookStorage, userPrefsStorage);
         logic = new LogicManager(model, storage);
+    }
+
+    @Test
+    public void execute_uppercaseJobOptionTypos_preservesRecordsAndSavedFile() throws Exception {
+        logic.execute("addj -j Existing -d Original description");
+        Path filePath = temporaryFolder.resolve("addressBook.json");
+        String saved = Files.readString(filePath);
+
+        assertParseException("addj -j Engineer -D Intended description",
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, AddJobCommand.MESSAGE_USAGE));
+        assertParseException("editj 1 -j Engineer -D Intended description",
+                String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditJobCommand.MESSAGE_USAGE));
+
+        assertEquals(saved, Files.readString(filePath));
+        assertEquals("Existing", model.getJobList().getFirst().getJobRole());
+        assertEquals("Original description", model.getJobList().getFirst().getJobDescription());
     }
 
     @Test

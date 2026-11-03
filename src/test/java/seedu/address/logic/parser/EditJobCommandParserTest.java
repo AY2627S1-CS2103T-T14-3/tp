@@ -20,6 +20,15 @@ public class EditJobCommandParserTest {
     private final EditJobCommandParser parser = new EditJobCommandParser();
 
     @Test
+    public void parse_uppercaseOptionTypos_throwsParseException() {
+        String expected = String.format(MESSAGE_INVALID_COMMAND_FORMAT, EditJobCommand.MESSAGE_USAGE);
+        for (String args : List.of("1 -j Engineer -D Intended description", "1 -d Original -Description More",
+                "1 -j Engineer -JOB Analyst")) {
+            assertParseFailure(parser, args, expected);
+        }
+    }
+
+    @Test
     public void parse_validRole_returnsEditJobCommand() {
         EditJobCommand expected = new EditJobCommand(INDEX_FIRST,
                 new EditJobDescriptorBuilder().withRole("Software Engineer Intern").build());
