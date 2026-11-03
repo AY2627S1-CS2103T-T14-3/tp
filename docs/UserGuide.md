@@ -130,7 +130,9 @@ The spelling and capitalization you enter are preserved. You can change an appli
 Saved data containing duplicate names or emails, including those differing only in case, is treated as invalid;
 correct the duplicates before loading it.
 
-Email addresses must be at most 254 characters long. Domain labels may contain consecutive hyphens,
+Email addresses must be at most 254 characters long. The local part must start and end with a letter or digit.
+It may contain adjacent supported punctuation (`+`, `_`, `.`, `-`), such as `alice__lee@example.com`,
+but consecutive periods are rejected. Domain labels may contain consecutive hyphens,
 including Punycode names such as `alice@xn--bcher-kva.de`, but must start and end with a letter or digit.
 The length limit also applies when editing applicants and loading saved data; older records exceeding
 it must be corrected before loading.

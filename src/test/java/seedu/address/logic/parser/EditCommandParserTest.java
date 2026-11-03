@@ -101,6 +101,21 @@ public class EditCommandParserTest {
     }
 
     @Test
+    public void parse_adjacentEmailPunctuation_success() {
+        for (String email : List.of("carol__lee@example.com", "carol++lee@example.com", "carol._lee@example.com")) {
+            EditApplicantDescriptor descriptor = new EditApplicantDescriptorBuilder().withEmail(email).build();
+            assertParseSuccess(parser, "1 -e " + email, new EditCommand(INDEX_FIRST, descriptor));
+        }
+    }
+
+    @Test
+    public void parse_invalidEmailPunctuation_failure() {
+        for (String email : List.of("carol+..lee@example.com", "_carol@example.com", "carol+@example.com")) {
+            assertParseFailure(parser, "1 -e " + email, Email.MESSAGE_CONSTRAINTS);
+        }
+    }
+
+    @Test
     public void parse_punycodeEmail_success() {
         EditApplicantDescriptor descriptor = new EditApplicantDescriptorBuilder()
                 .withEmail("amy@xn--bcher-kva.de").build();

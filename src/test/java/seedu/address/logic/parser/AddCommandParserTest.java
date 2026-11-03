@@ -77,6 +77,22 @@ public class AddCommandParserTest {
     }
 
     @Test
+    public void parse_adjacentEmailPunctuation_success() {
+        for (String email : List.of("alice__lee@example.com", "alice++lee@example.com", "alice._lee@example.com")) {
+            Applicant expectedApplicant = new ApplicantBuilder(BOB).withEmail(email).build();
+            assertParseSuccess(parser, NAME_OPTION + PHONE_OPTION + " -e " + email,
+                    new AddCommand(expectedApplicant));
+        }
+    }
+
+    @Test
+    public void parse_invalidEmailPunctuation_failure() {
+        for (String email : List.of("alice+..lee@example.com", "_alice@example.com", "alice+@example.com")) {
+            assertParseFailure(parser, NAME_OPTION + PHONE_OPTION + " -e " + email, Email.MESSAGE_CONSTRAINTS);
+        }
+    }
+
+    @Test
     public void parse_punycodeEmail_success() {
         Applicant expectedApplicant = new ApplicantBuilder(BOB).withEmail("bob@xn--bcher-kva.de").build();
         assertParseSuccess(parser, NAME_OPTION + PHONE_OPTION + " -e bob@xn--bcher-kva.de",
