@@ -95,6 +95,7 @@ The complete value is copied, including text that wraps onto multiple lines. Emp
   For example, `edit INDEX [-n NAME] [-p PHONE] [-e EMAIL]` can be used as `edit 1 -n John Doe -p 98765432` or as `edit 1 -n John Doe`.
 
 * Surrounding spaces, tabs, and Unicode whitespace such as em spaces are ignored in parameter values.
+  These whitespace characters can also separate an option from its value or from the preceding value.
   Internal text is preserved and must follow the field's validation rules. A required value containing only
   whitespace is treated as missing. Surrounding whitespace is also ignored around the complete command.
   Non-whitespace control characters are rejected.

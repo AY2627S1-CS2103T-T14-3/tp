@@ -45,6 +45,47 @@ public class ArgumentTokenizerTest {
     }
 
     @Test
+    public void tokenizeOptions_unicodeOptionBoundaries_preservesValuesAndPreamble() throws ParseException {
+        for (String whitespace : List.of("\u2003", "\u2009", "\u3000", "\u001c")) {
+            ArgumentMultimap options = ArgumentTokenizer.tokenizeOptions(
+                    "2" + whitespace + "-name" + whitespace + "John  Doe" + whitespace
+                            + "-email" + whitespace + "john@example.com",
+                    HAS_PREAMBLE, nameOption, emailOption);
+
+            assertEquals("2", options.getPreamble());
+            assertArgumentPresent(options, nameOption, "John  Doe");
+            assertArgumentPresent(options, emailOption, "john@example.com");
+        }
+    }
+
+    @Test
+    public void tokenizeOptions_unicodeFlagBoundary_acceptsFlagWithoutValue() throws ParseException {
+        ArgumentMultimap options = ArgumentTokenizer.tokenizeOptions("-t\u2003-n\u2009John",
+                NO_PREAMBLE, testFlag, nameOption);
+
+        assertTrue(options.contains(testFlag));
+        assertArgumentPresent(options, nameOption, "John");
+    }
+
+    @Test
+    public void tokenizeOptions_unicodeOptionBoundaries_rejectsUnknownAndDuplicateOptions() {
+        for (String whitespace : List.of("\u2003", "\u2009", "\u3000")) {
+            assertMalformedOptions("-n John" + whitespace + "-unknown" + whitespace + "Doe", nameOption);
+            assertMultipleOptions("-n John" + whitespace + "-name" + whitespace + "Jane", "-n", nameOption);
+        }
+    }
+
+    @Test
+    public void tokenizeOptions_nonJavaWhitespace_preservesValue() throws ParseException {
+        for (String nonWhitespace : List.of("\u00a0", "\u2007", "\u202f", "\u0085")) {
+            String value = "John" + nonWhitespace + "-unknown" + nonWhitespace + "Doe";
+            ArgumentMultimap options = ArgumentTokenizer.tokenizeOptions("-n " + value, NO_PREAMBLE, nameOption);
+
+            assertArgumentPresent(options, nameOption, value);
+        }
+    }
+
+    @Test
     public void tokenizeOptions_unicodePadding_stripsValuesAndPreamble() throws ParseException {
         ArgumentMultimap options = ArgumentTokenizer.tokenizeOptions(
                 "\u2003 2\u2009 -n \u2003John  Doe\u2009 -e \u3000john@example.com\u2003",
