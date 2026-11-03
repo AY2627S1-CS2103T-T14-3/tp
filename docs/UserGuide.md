@@ -388,8 +388,8 @@ Format: `addj -j JOB_ROLE [-d JOB_DESCRIPTION]`
 
 Examples:
 
-* `addj -j Software Engineer Intern` adds that role and shows it in the job list.
-* `addj -job Data Analyst -desc Analyses the data` adds a Data Analyst role.
+* `addj -j Site Reliability Intern` adds that role and shows it in the job list.
+* `addj -job Data Analyst Intern -desc Analyses the data` adds a Data Analyst Intern role.
 
 ### Editing a job: `editj`
 
