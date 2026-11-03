@@ -63,12 +63,14 @@ public class JobDetailPanel extends UiPart<Region> {
      */
     private static String initialsOf(String description) {
         StringBuilder builder = new StringBuilder();
+        int initialCount = 0;
         for (String word : description.split("\\s+")) {
             if (word.isEmpty()) {
                 continue;
             }
-            builder.append(word.substring(0, 1).toUpperCase(Locale.ROOT));
-            if (builder.length() == 2) {
+            builder.append(word.substring(0, word.offsetByCodePoints(0, 1)).toUpperCase(Locale.ROOT));
+            initialCount++;
+            if (initialCount == 2) {
                 break;
             }
         }

@@ -85,6 +85,9 @@ The UI consists of a `MainWindow` and its parts, such as `CommandBox`, `ResultDi
 
 Up and Down move the selection in the list for the current tab and scroll that record into view. The command box keeps keyboard focus, because a single-line command field does not use those keys for editing.
 
+Applicant and job detail avatars use the uppercase initial of each of the first two words.
+Initial extraction preserves complete Unicode code points, including supplementary characters.
+
 The `UI` component uses the JavaFX UI framework. The layouts of these UI parts are defined in matching `.fxml` files in `src/main/resources/view`. For example, [`MainWindow.fxml`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/resources/view/MainWindow.fxml) specifies the layout of [`MainWindow`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/ui/MainWindow.java).
 
 The `UI` component,
