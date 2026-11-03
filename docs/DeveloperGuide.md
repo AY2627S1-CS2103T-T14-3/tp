@@ -90,6 +90,11 @@ list-cell cards, JavaFX controls, and the `ListNavigation` helper are omitted fo
 list. The command box keeps keyboard focus. Text areas, copyable detail values, and other controls retain
 their normal arrow-key behavior; `MainWindow#handleListNavigation` checks the event target before navigating.
 
+`MainWindow` reads the filtered applicant and job predicates to display search-result totals and keywords.
+`NameContainsKeywordsPredicate#getKeywords` and `JobDescriptionContainsKeywordPredicate#getKeywords` expose
+those keywords. The Applications view uses the applicant predicate, so its heading reports matching applicants
+rather than the number of applications. List-change listeners refresh headings after record changes, including undo.
+
 Applicant and job detail avatars use the uppercase initial of each of the first two words.
 Initial extraction preserves complete Unicode code points, including supplementary characters.
 
@@ -153,7 +158,7 @@ undo snapshots. `Application.Status` and other value-object details are omitted 
 The `Model` component,
 
 * stores applicants, jobs, and applications in `UniqueApplicantList`, `UniqueJobList`, and `UniqueApplicationList`.
-* stores the `Applicant` objects selected by the current filter, such as search results, in a separate _filtered_ list. It exposes this list as an unmodifiable `ObservableList<Applicant>` that the UI can observe and bind to, so the UI updates when the list changes.
+* stores the `Applicant` objects selected by the current filter, such as search results, in a separate _filtered_ list. It exposes a `FilteredList<Applicant>` that the UI observes for record updates and inspects for its active predicate. Jobs have an equivalent filtered list.
 * stores a `UserPrefs` object that represents the user’s preferences (currently, just the GUI settings). This is exposed to the outside as a `ReadOnlyUserPrefs` object.
 * does not depend on any of the other three components (as the `Model` represents data entities of the domain, they should make sense on their own without depending on other components)
 

@@ -155,9 +155,9 @@ Phone | `-p` | `-phone`
 Email | `-e` | `-email`
 
 * All three fields are required. Each option must appear exactly once and have a non-empty value.
-* Phone numbers contain only digits and must be at least three digits long. Spaces, `+`, and hyphens are not accepted.
-* The email local part contains letters and digits, optionally separated by single `+`, `_`, `.`, or `-` characters.
-  It cannot start or end with those separators. The last domain label must have at least two characters.
+* Phone numbers follow the 3-to-15-digit international/local format described above.
+* The email local part accepts the punctuation described above, including adjacent punctuation except `..`.
+  The last domain label must have at least two characters.
   These phone and email rules also apply to `edit` and saved records.
 * Short and long aliases can be mixed, and options can appear in any order.
 * Values containing spaces, such as a full name, do not need quotation marks.
@@ -200,6 +200,8 @@ Format: `viewp [INDEX]`
 * `INDEX` must be the positive applicant index printed on the application row, not its position in the applications list.
   For example, if only applicant 2 has an application, select that row with `viewp 2`.
 * The applicant filter is kept unchanged. After filtering applicants, use the indexes shown in the filtered list.
+* When filtered, the heading shows `From N out of M applicant(s)`. These numbers count applicants, including
+  those without applications; the application count badge counts the displayed applications.
 * Invalid or out-of-range indexes produce an error. An applicant without an application also produces an error.
 
 Example: `viewp 2` selects the application belonging to applicant 2 in the current applicant list.
@@ -243,6 +245,8 @@ Format: `find KEYWORD [MORE_KEYWORDS]`
 * Only full words match; for example, `Han` does not match `Hans`.
 * Applicants matching at least one keyword are returned (an `OR` search); for example, `Hans Bo` returns `Hans Gruber` and `Bo Yang`.
 * The applicant list is shown, including when jobs or applications were visible.
+* The list heading shows `Found N out of M applicant(s)` and the hint lists the search keywords.
+  Run `list` to clear the filter and return to the full applicant list.
 
 Examples:
 
@@ -421,6 +425,7 @@ Format: `viewj [INDEX]` or `viewj [-f KEYWORD]`
 * An index and `-f` cannot be used together. Filter first, then select a job from the results.
 * `-f KEYWORD` searches the combined text `ROLE : DESCRIPTION`. Matching ignores case and does not need a full word, so `jan` matches the role `Janitor`. Text found only in the description also matches. A multi-word keyword is matched as one substring.
 * Alias: `-filter` for `-f`.
+* A filtered list shows `Found N out of M job(s)` and the filter keyword in the hint. Run bare `viewj` to clear it.
 * The command word is case-sensitive. `Viewj` is not recognised.
 * `editj` and `deletej` use the index in the list currently displayed, including a filtered list.
 * `list`, `view`, `find`, `add`, `edit`, and `clear` switch the list back to applicants. `viewp` switches to applications.
@@ -485,7 +490,8 @@ while the application is closed. Back it up before making changes.
 <div markdown="span" class="alert alert-warning">:exclamation: **Caution:**
 If your changes make the data file invalid, LinkedOut starts with empty lists on the next run.
 The invalid file remains on disk until a successfully executed command saves the in-memory records over it.
-Restore your backup before continuing if your records fail to load.<br>
+Restore your backup before continuing if your records fail to load. JSON `null` as the whole file or as an
+entry in any record array is invalid too.<br>
 Values outside the accepted ranges can cause loading errors or unexpected behavior. Edit the file only if you
 are confident that you can update it correctly.
 </div>
