@@ -506,6 +506,38 @@ public class LogicManagerTest {
     }
 
     @Test
+    public void execute_persistentSaveFailure_helpAndViewStillReturn() throws Exception {
+        logic.execute("add -n Amy Bee -p 11111111 -e amy@example.com");
+        boolean[] failSaves = {true};
+        JsonAddressBookStorage flakyStorage = new JsonAddressBookStorage(
+                temporaryFolder.resolve("addressBook.json")) {
+            @Override
+            public void saveAddressBook(ReadOnlyAddressBook addressBook) throws IOException {
+                if (failSaves[0]) {
+                    throw DUMMY_AD_EXCEPTION;
+                }
+                super.saveAddressBook(addressBook);
+            }
+        };
+        logic = new LogicManager(model, new StorageManager(flakyStorage,
+                new JsonUserPrefsStorage(temporaryFolder.resolve("ExceptionUserPrefs.json"))));
+
+        assertThrows(CommandException.class, () -> logic.execute("edit 1 -p 99999999"));
+        assertEquals(new CommandResult(HelpCommand.SHOWING_HELP_MESSAGE, true, false), logic.execute("help"));
+        assertEquals(new CommandResult(ViewJobCommand.MESSAGE_SUCCESS, ViewRequest.jobs()), logic.execute("viewj"));
+        Applicant editedApplicant = model.getFilteredApplicantList().get(0);
+        assertEquals(new CommandResult("Viewing applicant: Amy Bee", ViewRequest.applicant(editedApplicant)),
+                logic.execute("view 1"));
+
+        failSaves[0] = false;
+        assertEquals(new CommandResult("", false, true), logic.execute("bye"));
+        JsonAddressBookStorage savedStorage =
+                new JsonAddressBookStorage(temporaryFolder.resolve("addressBook.json"));
+        assertEquals("99999999", savedStorage.readAddressBook().orElseThrow()
+                .getApplicantList().get(0).getPhone().value);
+    }
+
+    @Test
     public void execute_unchangedCommands_doNotRequireSave() throws Exception {
         logic.execute(ApplicantUtil.getAddCommand(AMY));
         JsonAddressBookStorage savedStorage =

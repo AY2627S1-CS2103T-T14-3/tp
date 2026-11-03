@@ -10,7 +10,11 @@ import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.LogsCenter;
 import seedu.address.logic.commands.Command;
 import seedu.address.logic.commands.CommandResult;
+import seedu.address.logic.commands.HelpCommand;
 import seedu.address.logic.commands.UndoCommand;
+import seedu.address.logic.commands.ViewApplicationCommand;
+import seedu.address.logic.commands.ViewCommand;
+import seedu.address.logic.commands.ViewJobCommand;
 import seedu.address.logic.commands.exceptions.CommandException;
 import seedu.address.logic.parser.AddressBookParser;
 import seedu.address.logic.parser.exceptions.ParseException;
@@ -73,14 +77,28 @@ public class LogicManager implements Logic {
 
         try {
             storage.saveAddressBook(model.getAddressBook());
-        } catch (AccessDeniedException e) {
-            throw new CommandException(String.format(FILE_OPS_PERMISSION_ERROR_FORMAT, e.getMessage()), e);
-        } catch (IOException ioe) {
-            throw new CommandException(String.format(FILE_OPS_ERROR_FORMAT, ioe.getMessage()), ioe);
+            hasUnsavedChanges = false;
+        } catch (IOException exception) {
+            if (keepsResultAfterSaveFailure(command)) {
+                return commandResult;
+            }
+            String format = exception instanceof AccessDeniedException
+                    ? FILE_OPS_PERMISSION_ERROR_FORMAT
+                    : FILE_OPS_ERROR_FORMAT;
+            throw new CommandException(String.format(format, exception.getMessage()), exception);
         }
-        hasUnsavedChanges = false;
 
         return commandResult;
+    }
+
+    /**
+     * Returns true if {@code command} should still report its result when saving fails.
+     */
+    private static boolean keepsResultAfterSaveFailure(Command command) {
+        return command instanceof HelpCommand
+                || command instanceof ViewCommand
+                || command instanceof ViewJobCommand
+                || command instanceof ViewApplicationCommand;
     }
 
     /**
