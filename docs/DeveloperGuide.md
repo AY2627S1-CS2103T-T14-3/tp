@@ -45,7 +45,7 @@ The following provides a quick overview of the main components and their interac
 
 **Main components of the architecture**
 
-**`Main`** (consisting of classes [`Main`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/Main.java) and [`MainApp`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/MainApp.java)) is in charge of the app launch and shut down.
+**`Main`** (consisting of classes [`Main`](https://github.com/AY2627S1-CS2103T-T14-3/tp/blob/master/src/main/java/seedu/address/Main.java) and [`MainApp`](https://github.com/AY2627S1-CS2103T-T14-3/tp/blob/master/src/main/java/seedu/address/MainApp.java)) is in charge of the app launch and shut down.
 * At app launch, it initializes the other components in the correct sequence, and connects them up with each other.
 * At shut down, it shuts down the other components and invokes cleanup methods where necessary.
 
@@ -77,18 +77,28 @@ The sections below give more details of each component.
 
 ### UI component
 
-The **API** of this component is specified in [`Ui.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/ui/Ui.java)
+The **API** of this component is specified in [`Ui.java`](https://github.com/AY2627S1-CS2103T-T14-3/tp/blob/master/src/main/java/seedu/address/ui/Ui.java)
 
 ![Structure of the UI Component](images/UiClassDiagram.png)
 
-The UI consists of a `MainWindow` and its parts, such as `CommandBox`, `ResultDisplay`, `ApplicantListPanel`, and `StatusBarFooter`. All of these, including `MainWindow`, inherit from the abstract `UiPart` class, which captures common behavior among classes that represent visible GUI parts.
+This partial diagram shows `MainWindow`, its console, the three list panels, and the two detail panels.
+The Applicants and Applications views share `ApplicantDetailPanel`; the Jobs view uses `JobDetailPanel`.
+These parts inherit from `UiPart`, which provides FXML loading and shared UI behavior. Inheritance links,
+list-cell cards, JavaFX controls, and the `ListNavigation` helper are omitted for readability.
 
-Up and Down move the selection in the list for the current tab and scroll that record into view. The command box keeps keyboard focus, because a single-line command field does not use those keys for editing.
+`ListNavigation` moves selection in the active list when Up or Down is pressed from the command box or
+list. The command box keeps keyboard focus. Text areas, copyable detail values, and other controls retain
+their normal arrow-key behavior; `MainWindow#handleListNavigation` checks the event target before navigating.
+
+`MainWindow` reads the filtered applicant and job predicates to display search-result totals and keywords.
+`NameContainsKeywordsPredicate#getKeywords` and `JobDescriptionContainsKeywordPredicate#getKeywords` expose
+those keywords. The Applications view uses the applicant predicate, so its heading reports matching applicants
+rather than the number of applications. List-change listeners refresh headings after record changes, including undo.
 
 Applicant and job detail avatars use the uppercase initial of each of the first two words.
 Initial extraction preserves complete Unicode code points, including supplementary characters.
 
-The `UI` component uses the JavaFX UI framework. The layouts of these UI parts are defined in matching `.fxml` files in `src/main/resources/view`. For example, [`MainWindow.fxml`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/resources/view/MainWindow.fxml) specifies the layout of [`MainWindow`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/ui/MainWindow.java).
+The `UI` component uses the JavaFX UI framework. The layouts of these UI parts are defined in matching `.fxml` files in `src/main/resources/view`. For example, [`MainWindow.fxml`](https://github.com/AY2627S1-CS2103T-T14-3/tp/blob/master/src/main/resources/view/MainWindow.fxml) specifies the layout of [`MainWindow`](https://github.com/AY2627S1-CS2103T-T14-3/tp/blob/master/src/main/java/seedu/address/ui/MainWindow.java).
 
 The `UI` component,
 
@@ -99,7 +109,7 @@ The `UI` component,
 
 ### Logic component
 
-**API** : [`Logic.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/logic/Logic.java)
+**API** : [`Logic.java`](https://github.com/AY2627S1-CS2103T-T14-3/tp/blob/master/src/main/java/seedu/address/logic/Logic.java)
 
 Here's a (partial) class diagram of the `Logic` component:
 
@@ -109,15 +119,16 @@ The sequence diagram below illustrates the interactions within the `Logic` compo
 
 ![Interactions Inside the Logic Component for the `delete 1` Command](images/DeleteSequenceDiagram.png)
 
-<div markdown="span" class="alert alert-info">:information_source: **Note:** The lifeline for `DeleteCommandParser` should end at the destroy marker (X), but due to a limitation of PlantUML, it continues to the end of the diagram.
-</div>
+The sequence shows a successful deletion with a valid index and a successful save. Errors and lower-level
+model operations are omitted. The parser is temporary, while the command result carries the deleted
+applicant's former details for the UI.
 
 How the `Logic` component works:
 
 1. When `Logic` is called upon to execute a command, it passes the command to `AddressBookParser`. For commands such as `delete`, `clear`, and `viewp`, it creates the matching command parser and uses it to parse the arguments. `help` and `list` are constructed directly.
 1. This results in a `Command` object (more precisely, an object of one of its subclasses e.g., `DeleteCommand`) which is executed by the `LogicManager`.
 1. The command can communicate with the `Model` when it is executed (e.g. to delete an applicant).<br>
-   Note that although this is shown as a single step in the diagram above for simplicity, the code can require several interactions between the command object and the `Model` to complete the operation.
+   The sequence shows the applicant lookup and application lookup before deletion; the model handles dependent-record removal internally.
 1. The result of the command execution is encapsulated as a `CommandResult` object which is returned from `Logic`.
 1. If the command changed the stored applicants, jobs, or applications, `LogicManager` remembers the previous address book. `undo` restores the newest remembered copy and does not itself become another undo step. The history is kept in memory for the session only.
 
@@ -136,19 +147,22 @@ How the parsing works:
 See [Command parsing and validation](#command-parsing-and-validation) for the option rules and a parsing walkthrough.
 
 ### Model component
-**API** : [`Model.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/model/Model.java)
+**API** : [`Model.java`](https://github.com/AY2627S1-CS2103T-T14-3/tp/blob/master/src/main/java/seedu/address/model/Model.java)
 
-<img src="images/ModelClassDiagram.png" width="450" />
+<img src="images/ModelClassDiagram.png" width="900" />
 
+
+The model diagram shows the three record collections, application references, filtered views, and bounded
+undo snapshots. `Application.Status` and other value-object details are omitted for readability.
 
 The `Model` component,
 
-* stores the address book data i.e., all `Applicant` objects (which are contained in a `UniqueApplicantList` object).
-* stores the `Applicant` objects selected by the current filter, such as search results, in a separate _filtered_ list. It exposes this list as an unmodifiable `ObservableList<Applicant>` that the UI can observe and bind to, so the UI updates when the list changes.
+* stores applicants, jobs, and applications in `UniqueApplicantList`, `UniqueJobList`, and `UniqueApplicationList`.
+* stores the `Applicant` objects selected by the current filter, such as search results, in a separate _filtered_ list. It exposes a `FilteredList<Applicant>` that the UI observes for record updates and inspects for its active predicate. Jobs have an equivalent filtered list.
 * stores a `UserPrefs` object that represents the user’s preferences (currently, just the GUI settings). This is exposed to the outside as a `ReadOnlyUserPrefs` object.
 * does not depend on any of the other three components (as the `Model` represents data entities of the domain, they should make sense on their own without depending on other components)
 
-The `Application` model class in [`Application.java`](../src/main/java/seedu/address/model/application/Application.java)
+The `Application` model class in [`Application.java`](https://github.com/AY2627S1-CS2103T-T14-3/tp/blob/master/src/main/java/seedu/address/model/application/Application.java)
 represents one applicant’s job application. It contains a reference to the applicant’s `Applicant`, together with an
 immutable job and application status. Applicant identity is determined using `Applicant#isSameApplicant`, while
 `Application#equals` compares the complete applicant, job identity, and status. A job has a non-blank role and a
@@ -171,7 +185,7 @@ duplicate roles are rejected, surrounding spaces are ignored, and other differen
 `editj INDEX [-j JOB_ROLE] [-d JOB_DESCRIPTION]` replaces a job at its displayed index with a new job with the specified
 fields modified. There must be at least one modified field provided. If there exists another job with the same job role
 as the would-be-new job, the command will fail instead. `Model#setJob` delegates to `AddressBook#setJob` and
-`UniqueJobList#setJob`, which replaces the job at the same position and enforces uniqueness. 
+`UniqueJobList#setJob`, which replaces the job at the same position and enforces uniqueness.
 `UniqueApplicationList#setJob` updates all matching applications to reference the edited job, keeping their applicants and
 statuses. Description-only edits also take effect immediately. This prevents stale role references that the storage loader
 would reject.
@@ -200,11 +214,6 @@ so subsequent saves contain no applications for the deleted role. Adding an appl
 This cascade does not change the JSON format introduced by the job model.
 Jobs are stored in the same JSON address book under `jobs`.
 
-The diagram below shows the stored applicants, jobs, and applications. Each `Application` references one
-`Applicant` and one `Job`.
-
-<img src="images/BetterModelClassDiagram.png" width="450" />
-
 ### Storage component
 
 Null records inside the saved `applicants`, `jobs`, or `applications` arrays are rejected through
@@ -217,14 +226,17 @@ Only a missing file returns an empty optional; a file containing `null` follows 
 `JsonUserPrefsStorage` rejects explicit null GUI settings as a loading error so startup uses default preferences.
 Omitting the GUI settings field still uses its default value.
 
-**API** : [`Storage.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/storage/Storage.java)
+**API** : [`Storage.java`](https://github.com/AY2627S1-CS2103T-T14-3/tp/blob/master/src/main/java/seedu/address/storage/Storage.java)
 
-<img src="images/StorageClassDiagram.png" width="550" />
+<img src="images/StorageClassDiagram.png" width="800" />
 
 The `Storage` component,
 * can save both address book data and user preference data in JSON format, and read them back into corresponding objects.
 * is implemented by `StorageManager`, which delegates the actual JSON file access to `JsonAddressBookStorage` and `JsonUserPrefsStorage` (one class per data file).
 * depends on some classes in the `Model` component (because the `Storage` component's job is to save/retrieve objects that belong to the `Model`)
+
+`JsonSerializableAddressBook` uses the top-level keys `applicants`, `jobs`, and `applications`. Applicant
+entries store `name`, `phone`, and `email`; the inherited `persons` key is not an alias for `applicants`.
 
 `JsonAdaptedJob` stores each job as an object containing `role` and `description`, both in the top-level `jobs`
 array and in each application's `job` field. `role` must be non-blank; `description` must be a non-null string,
@@ -259,9 +271,10 @@ with a different description, while allowing different roles to share a descript
 constructor supplies the default description `No information ~`.
 
 `AddJobCommandParser` accepts a required role (`-j` or `-job`) and an optional description (`-d`, `-desc`, or
-`-description`). `EditJobCommandParser` accepts an index and a required role, then constructs a replacement
-using the single-argument constructor. This explains the current description reset described in the
-[User Guide](UserGuide.md#editing-a-job-editj).
+`-description`). `EditJobCommandParser` accepts an index and optional role and description fields, requiring
+at least one field. It stores supplied values in `EditJobDescriptor`. `EditJobCommand` builds the replacement
+from those values and the existing job, preserving each omitted field. See
+[Editing a job in the User Guide](UserGuide.md#editing-a-job-editj).
 
 Despite its name, `JobDescriptionContainsKeywordPredicate` searches `Job#toString`, which returns
 `role + " : " + description`. It lowercases both that text and the keyword using `Locale.ROOT`, then calls
@@ -357,95 +370,57 @@ The parsing rules are exercised in `ArgumentTokenizerTest`, including aliases, o
 and conflicting option definitions. `AddCommandParserTest`, `AddApplicationCommandParserTest`, and
 `EditCommandParserTest` cover the command-specific validation and error messages.
 
-### \[Proposed\] Undo/redo feature
+### Undoing record changes
 
-#### Proposed Implementation
+The implemented `undo` command restores applicants, jobs, and applications from an in-memory history owned
+by `ModelManager`. There is no `redo` command.
+For command syntax and examples, see [Undoing the last change in the User Guide](UserGuide.md#undoing-the-last-change-undo).
 
-This section describes a proposed design, not the current implementation; `clear` cannot be undone in the current application.
-The proposed undo/redo mechanism is facilitated by `VersionedAddressBook`. It extends `AddressBook` with an undo/redo history, stored internally as an `addressBookStateList` and `currentStatePointer`. Additionally, it implements the following operations:
+#### Recording a change
 
-* `VersionedAddressBook#commit()` — Saves the current address book state in its history.
-* `VersionedAddressBook#undo()` — Restores the previous address book state from its history.
-* `VersionedAddressBook#redo()` — Restores a previously undone address book state from its history.
+1. `LogicManager#execute` parses the command and, unless it is an `UndoCommand`, copies the current records
+   with `new AddressBook(model.getAddressBook())` before executing it.
+2. After execution, `storedRecordsChanged` compares the previous and resulting records. It checks job
+   descriptions separately because `Job#equals` compares only roles. A description-only edit therefore
+   creates an undo entry even though the job's identity has not changed.
+3. If the records differ, `Model#rememberStateForUndo` adds the previous state to the front of
+   `ModelManager.previousAddressBooks`, a `Deque<ReadOnlyAddressBook>`. The deque keeps at most ten states;
+   adding an eleventh drops the oldest.
+4. `LogicManager` saves the resulting records through `Storage` using the normal command save path.
 
-These operations are exposed in the `Model` interface as `Model#commitAddressBook()`, `Model#undoAddressBook()` and `Model#redoAddressBook()` respectively.
+Commands that only change a filter, selection, or view do not create an entry. A command that leaves the
+records unchanged also creates no entry. Parsing and command-execution exceptions exit before history is
+recorded. Saving happens after the records and history have changed: a save failure reports an error but
+is not a transaction rollback.
 
-Given below is an example usage scenario and how the undo/redo mechanism behaves at each step.
+#### Restoring a change
 
-Step 1. The user launches the application for the first time. The `VersionedAddressBook` will be initialized with the initial address book state, and the `currentStatePointer` pointing to that single address book state.
+`UndoCommand#execute` calls `Model#undoAddressBook`. When a remembered state exists, `ModelManager` removes
+the newest state and passes it to `setAddressBook`, which resets the existing address book's records.
+This restores related records together, including applications removed by an applicant or job deletion.
+It also restores all records removed by `clear`.
 
-![UndoRedoState0](images/UndoRedoState0.png)
+On success, the command returns `Undone the last change.` without a view request, so the current tab stays
+selected. Observable lists update, and the existing applicant and job filters remain active. Filters, list
+selections, and window preferences are not part of the saved record snapshot. A restored record can therefore
+remain hidden by a filter; use `list` or `viewj` to show the full corresponding list.
 
-Step 2. The user executes `delete 5` command to delete the 5th applicant in the address book. The `delete` command calls `Model#commitAddressBook()`, causing the modified state of the address book after the `delete 5` command executes to be saved in the `addressBookStateList`, and the `currentStatePointer` is shifted to the newly inserted address book state.
+An undo command does not create another history entry. Repeated commands consume earlier states until the
+deque is empty, at which point `UndoCommand` throws a `CommandException` with `There is no change to undo.`.
+A successful undo is saved by `LogicManager` just like other successful commands. History itself is not
+serialized and starts empty when the application restarts.
 
-![UndoRedoState1](images/UndoRedoState1.png)
+#### Design considerations
 
-Step 3. The user executes `add n/David …​` to add a new applicant. The `add` command also calls `Model#commitAddressBook()`, causing another modified address book state to be saved into the `addressBookStateList`.
+* **Whole-record snapshots:** Copying the address book keeps restoration of applicants, jobs, and dependent
+  applications together. This is simpler than defining inverse operations for every mutating command,
+  especially cascading deletions, but uses memory proportional to the number and size of retained states.
+* **Bounded session history:** Keeping ten previous states limits retained snapshots. It allows several
+  corrections within a session without introducing persistent history or redo behavior.
 
-![UndoRedoState2](images/UndoRedoState2.png)
-
-<div markdown="span" class="alert alert-info">:information_source: **Note:** If a command fails its execution, it will not call `Model#commitAddressBook()`, so the address book state will not be saved into the `addressBookStateList`.
-
-</div>
-
-Step 4. The user now decides that adding the applicant was a mistake, and decides to undo that action by executing the `undo` command. The `undo` command will call `Model#undoAddressBook()`, which will shift the `currentStatePointer` once to the left, pointing it to the previous address book state, and restores the address book to that state.
-
-![UndoRedoState3](images/UndoRedoState3.png)
-
-<div markdown="span" class="alert alert-info">:information_source: **Note:** If the `currentStatePointer` is at index 0, pointing to the initial AddressBook state, then there are no previous AddressBook states to restore. The `undo` command uses `Model#canUndoAddressBook()` to check if this is the case. If so, it will return an error to the user rather
-than attempting to perform the undo.
-
-</div>
-
-The following sequence diagram shows how an undo operation goes through the `Logic` component:
-
-![UndoSequenceDiagram](images/UndoSequenceDiagram-Logic.png)
-
-<div markdown="span" class="alert alert-info">:information_source: **Note:** The lifeline for `UndoCommand` should end at the destroy marker (X), but due to a limitation of PlantUML, it continues to the end of the diagram.
-
-</div>
-
-Similarly, how an undo operation goes through the `Model` component is shown below:
-
-![UndoSequenceDiagram](images/UndoSequenceDiagram-Model.png)
-
-The `redo` command does the opposite — it calls `Model#redoAddressBook()`, which shifts the `currentStatePointer` once to the right, pointing to the previously undone state, and restores the address book to that state.
-
-<div markdown="span" class="alert alert-info">:information_source: **Note:** If the `currentStatePointer` is at index `addressBookStateList.size() - 1`, pointing to the latest address book state, then there are no undone AddressBook states to restore. The `redo` command uses `Model#canRedoAddressBook()` to check if this is the case. If so, it will return an error to the user rather than attempting to perform the redo.
-
-</div>
-
-Step 5. The user then decides to execute the command `list`. Commands that do not modify the address book, such as `list`, will usually not call `Model#commitAddressBook()`, `Model#undoAddressBook()` or `Model#redoAddressBook()`. Thus, the `addressBookStateList` remains unchanged.
-
-![UndoRedoState4](images/UndoRedoState4.png)
-
-Step 6. The user executes `clear`, which calls `Model#commitAddressBook()`. Since the `currentStatePointer` is not pointing at the end of the `addressBookStateList`, all address book states after the `currentStatePointer` will be purged. Reason: It no longer makes sense to redo the `add n/David …​` command. This is the behavior that most modern desktop applications follow.
-
-![UndoRedoState5](images/UndoRedoState5.png)
-
-The following activity diagram summarizes what happens when a user executes a new command:
-
-<img src="images/CommitActivityDiagram.png" width="250" />
-
-#### Design considerations:
-
-**Aspect: How undo & redo execute:**
-
-* **Alternative 1 (current choice):** Saves the entire address book.
-  * Pros: Easy to implement.
-  * Cons: May have performance issues in terms of memory usage.
-
-* **Alternative 2:** Individual command knows how to undo/redo by
-  itself.
-  * Pros: Will use less memory (e.g. for `delete`, just save the applicant being deleted).
-  * Cons: We must ensure that the implementation of each individual command is correct.
-
-_{more aspects and alternatives to be added}_
-
-### \[Proposed\] Data archiving
-
-_{Explain here how the data archiving feature will be implemented}_
-
+`LogicManagerTest` covers undoing deletions, stepping through successive changes, restoring a description-only
+edit, and preserving history after a failed deletion. `AddressBookParserTest` covers the argument-free syntax
+and rejects `undo 1` and the case-mismatched command `Undo`.
 
 --------------------------------------------------------------------------------------------------------------------
 
@@ -477,16 +452,14 @@ Recruiters
 - who is comfortable using CLI apps.
 
 **Value Proposition:**
-The application will manage students applying to
-a role in a company.
-Recruiters can use the application to
-keep track of student applications for job roles,
-as well as to look up the list of
-employees to contact if there are changes to
-a student’s application status.
-
+LinkedOut helps a recruiter manage student applicants and their applications across multiple job roles.
+Applicant contact details, job descriptions, and application outcomes are stored together locally, so the
+recruiter can review whom to contact and where each application stands using text commands.
 
 ### User stories
+
+These stories capture product requirements, including ideas beyond the implemented scope. Refer to the
+[User Guide](UserGuide.md#features) for the commands supported by this version.
 
 Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unlikely to have) - `*`
 
@@ -524,22 +497,22 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 **MSS**
 
-1.  User requests to add an applicant with their name and email.
+1.  User requests to add an applicant with their name, phone number, and email.
 2.  LinkedOut adds the applicant and displays the updated applicant list.
-3.  User requests to add an application to the applicant, providing the job description and optionally the application status.
+3.  User requests to add an application to the applicant, identifying an existing job role and optionally the application status.
 4.  LinkedOut adds the application and displays the applicant's updated details.
 
     Use case ends.
 
 **Extensions**
 
-* 1a. The applicant's name or email is invalid or missing.
+* 1a. The applicant's name, phone number, or email is invalid or missing.
 
   * 1a1. LinkedOut shows an error message.
 
     Use case resumes at step 1.
 
-* 1b. Another applicant has the same name or email.
+* 1b. Another applicant has the same name or email, ignoring case.
 
   * 1b1. LinkedOut shows an error message.
 
@@ -563,7 +536,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
     Use case resumes at step 3.
 
-* 3c. The application details are invalid or missing.
+* 3c. The role is not in the job list, or the application details are invalid or missing.
 
   * 3c1. LinkedOut shows an error message.
 
@@ -612,7 +585,7 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 * 3b. The application already has the requested status.
 
-  * 3b1. LinkedOut informs the user that no changes were made.
+  * 3b1. LinkedOut shows the usual status-update confirmation and the applicant's details; the stored status remains the same.
 
     Use case ends.
 
@@ -649,11 +622,11 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
     Use case ends.
 
-*{More to be added}*
-
 ### Non-Functional Requirements
 
-1.  Should work on any _mainstream OS_ as long as it has Java `25` or above installed.
+These are design targets; this section does not report measured performance results.
+
+1.  Should work on Windows, Linux, and macOS with Java `25` installed.
 2.  Should be able to hold up to 1000 applicants and applications without noticeable sluggishness in performance for typical usage.
 3.  A user with above average typing speed for regular English text (i.e. not code, not system admin commands) should be able to accomplish most of the tasks faster using commands than using the mouse.
 4.  A new user should be able to add a new applicant or application immediately upon app launch.
@@ -662,8 +635,8 @@ Priorities: High (must have) - `* * *`, Medium (nice to have) - `* *`, Low (unli
 
 ### Glossary
 
-* **Mainstream OS**: Windows, Linux, Unix, or macOS
-* **Applicant**: An applicant registered in LinkedOut with a name and email address, whose job application can be tracked.
+* **Mainstream OS**: Windows, Linux, or macOS
+* **Applicant**: A person registered in LinkedOut with a name, phone number, and email address, whose job application can be tracked.
 * **Application**: A record linking an applicant to an existing job and an application status. An applicant can have at most one application.
 * **Job**: An open role stored in the job list, identified by its role name and accompanied by a description.
 * **Job role**: The name identifying a job, matched exactly after trimming surrounding spaces.
@@ -701,8 +674,6 @@ testers are expected to do more *exploratory* testing.
    2. Relaunch from the same folder using `java -jar "linkedout.jar"`.<br>
        Expected: The most recent window size and location are retained.
 
-3. { more test cases …​ }_
-
 ### Deleting an applicant
 
 1. Deleting an applicant while all applicants are being shown
@@ -718,8 +689,6 @@ testers are expected to do more *exploratory* testing.
    4. Other incorrect delete commands to try: `delete`, `delete x`, `...` (where x is larger than the list size)<br>
       Expected: Similar to previous.
 
-2. { more test cases …​ }_
-
 ### Clearing all entries
 
 1. Create or load applicants, jobs, and at least one application. Use a disposable data file for this test:
@@ -731,6 +700,27 @@ testers are expected to do more *exploratory* testing.
 3. Test case: `clear`<br>
    Expected: The applicants view and empty detail panel are shown. Applicants, jobs, and applications are empty;
    after restarting the application, they remain empty.
+
+### Undoing changes
+
+1. Prerequisites: Use a disposable data folder. Start a fresh session so its undo history is empty.
+
+2. Test case: `undo`<br>
+   Expected: `There is no change to undo.` is shown and no records change.
+
+3. Run `addj -j Undo Test Role -d Original`, then `editj INDEX -d Revised`, using the new job's index.
+   Run `viewj`, followed by `undo`.<br>
+   Expected: The job still exists with description `Original`. Viewing the list did not consume an undo entry.
+
+4. Run `undo` again, then `viewj`.<br>
+   Expected: Undo Test Role is removed. No further undo is available in this session.
+
+5. With applicants, jobs, and applications present, run `clear`, then `undo`, then `list` and `viewj`.<br>
+   Expected: All records from before the clear are restored, including the applications.
+
+6. Close and relaunch LinkedOut, then run `undo`.<br>
+   Expected: The restored records are loaded, but `There is no change to undo.` is shown because history
+   does not survive a restart.
 
 ### Managing job roles and descriptions
 
@@ -768,8 +758,25 @@ testers are expected to do more *exploratory* testing.
 
 ### Saving data
 
-1. Dealing with missing/corrupted data files
+Use a disposable LinkedOut home folder for these tests. Close the application before editing its data file,
+and keep a backup of valid `data/addressbook.json` outside that folder.
 
-   1. {Explain how to simulate missing or corrupted data files and state the expected behavior.}_
+1. Missing data file
 
-2. { more test cases …​ }_
+   1. With LinkedOut closed, move `data/addressbook.json` out of the home folder, then launch from that folder.<br>
+      Expected: LinkedOut shows the sample applicants and jobs, with no applications recorded.
+
+   2. Run `list` and close LinkedOut.<br>
+      Expected: A new `data/addressbook.json` contains the sample records. Relaunching loads those records.
+
+2. Invalid data file
+
+   1. With LinkedOut closed, replace `data/addressbook.json` with the text `not valid JSON`, then relaunch.<br>
+      Expected: LinkedOut opens with empty applicant, application, and job lists. The invalid file remains
+      unchanged until a command successfully saves records. Close the app before running any commands.
+
+   2. Restore the valid backup, append a second JSON value such as `{}` after its closing brace, and relaunch.<br>
+      Expected: The entire file is rejected and the lists are empty; the valid first object is not loaded.
+
+   3. Close LinkedOut, restore the unmodified valid backup, and relaunch.<br>
+      Expected: The backed-up applicants, jobs, and applications are loaded again.

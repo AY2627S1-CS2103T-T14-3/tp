@@ -1,36 +1,22 @@
 @startuml
 !include style.puml
-skinparam arrowThickness 1.1
+hide empty members
 skinparam arrowColor STORAGE_COLOR
 skinparam classBackgroundColor STORAGE_COLOR
-
-package Storage as StoragePackage {
-
-Class "<<interface>>\nStorage" as Storage
-Class StorageManager
-
-package "UserPrefs Storage" #F4F6F6{
-Class JsonUserPrefsStorage
-}
-
-package "AddressBook Storage" #F4F6F6{
-Class JsonAddressBookStorage
-Class JsonSerializableAddressBook
-Class JsonAdaptedApplicant
-Class JsonAdaptedTag
-}
-
-}
-
-Class HiddenOutside #FFFFFF
-HiddenOutside ..> Storage
-
-StorageManager .up.|> Storage
-StorageManager -down-> "1" JsonUserPrefsStorage
-StorageManager -down-> "1" JsonAddressBookStorage
-
-JsonAddressBookStorage ..> JsonSerializableAddressBook
+interface Storage <<interface>>
+class StorageManager
+class JsonUserPrefsStorage
+class JsonAddressBookStorage
+class JsonSerializableAddressBook
+class JsonAdaptedApplicant
+class JsonAdaptedApplication
+class JsonAdaptedJob
+StorageManager ..|> Storage
+StorageManager --> "1" JsonUserPrefsStorage
+StorageManager --> "1" JsonAddressBookStorage
+JsonAddressBookStorage ..> JsonSerializableAddressBook : reads / writes
 JsonSerializableAddressBook --> "*" JsonAdaptedApplicant
-JsonAdaptedApplicant --> "*" JsonAdaptedTag
-
+JsonSerializableAddressBook --> "*" JsonAdaptedApplication
+JsonSerializableAddressBook --> "*" JsonAdaptedJob
+JsonAdaptedApplication --> "1" JsonAdaptedJob
 @enduml
