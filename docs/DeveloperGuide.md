@@ -204,6 +204,16 @@ The diagram below shows the stored applicants, jobs, and applications. Each `App
 
 ### Storage component
 
+Null records inside the saved `applicants`, `jobs`, or `applications` arrays are rejected through
+`IllegalValueException`, which storage translates into `DataLoadingException`. Startup then uses an empty
+address book, following the same recovery path as other invalid records.
+
+`JsonUtil.readJsonFile` also rejects a root-level JSON `null` with `DataLoadingException`.
+Only a missing file returns an empty optional; a file containing `null` follows the invalid-file recovery path.
+
+`JsonUserPrefsStorage` rejects explicit null GUI settings as a loading error so startup uses default preferences.
+Omitting the GUI settings field still uses its default value.
+
 **API** : [`Storage.java`](https://github.com/se-edu/addressbook-level3/tree/master/src/main/java/seedu/address/storage/Storage.java)
 
 <img src="images/StorageClassDiagram.png" width="550" />
