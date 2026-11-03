@@ -132,8 +132,10 @@ Saved data containing duplicate names or emails, including those differing only 
 correct the duplicates before loading it.
 
 Email addresses must be at most 254 characters long. The local part must start and end with a letter or digit.
-It may contain adjacent supported punctuation (`+`, `_`, `.`, `-`), such as `alice__lee@example.com`,
-but consecutive periods are rejected. Domain labels may contain consecutive hyphens,
+It may contain supported punctuation (`+`, `_`, `.`, `'`, `-`), including straight apostrophes as in
+`sean.o'connor@example.com`. Adjacent supported punctuation is allowed, as in `alice__lee@example.com`,
+but consecutive periods are rejected. These rules also apply when editing applicants and loading saved data.
+Domain labels may contain consecutive hyphens,
 including Punycode names such as `alice@xn--bcher-kva.de`, but must start and end with a letter or digit.
 The length limit also applies when editing applicants and loading saved data; older records exceeding
 it must be corrected before loading.
