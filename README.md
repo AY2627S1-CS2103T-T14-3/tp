@@ -30,6 +30,12 @@ For project documentation, visit the [LinkedOut product website](https://AY2627S
 
 LinkedOut uses [JavaFX](https://openjfx.io/) for the interface, [Jackson](https://github.com/FasterXML/jackson) for JSON storage, and [JUnit 5](https://github.com/junit-team/junit5) for testing.
 
+AI tools (including but not limited to Codex, Claude Code, Cursor, and Orca) are heavily used in the implementation of the project, including but not limited to:
+* Functional code and comments
+* Documentation
+* Tests
+* Code quality review
+
 This project is available under the [MIT License](LICENSE).
 
 _This project is based on the AddressBook-Level3 project created by the [SE-EDU initiative](https://se-education.org)._

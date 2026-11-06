@@ -17,6 +17,11 @@ An `Applicant` represents an applicant; `AddressBook` holds applicants, applicat
 
 * LinkedOut adapts the code and documentation of [AddressBook-Level3](https://github.com/se-edu/addressbook-level3),
   created by the [SE-EDU initiative](https://se-education.org).
+* AI tools (including but not limited to Codex, Claude Code, Cursor, and Orca) are heavily used in the implementation of the project, including but not limited to:
+  * Functional code and comments
+  * Documentation
+  * Tests
+  * Code quality review
 * The application uses [JavaFX](https://openjfx.io/) for its UI, [Jackson](https://github.com/FasterXML/jackson)
   for JSON storage, and [JUnit 5](https://github.com/junit-team/junit5) for testing.
 
